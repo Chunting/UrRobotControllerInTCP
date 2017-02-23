@@ -10,6 +10,7 @@ namespace cobotsys {
 Logger::Logger(){
     _current_entry = "INFO";
     _log_to_cout = false;
+    _cache_log_message = false;
     _prefix_width = 12;
 }
 
@@ -19,9 +20,12 @@ void Logger::println(const std::string &text){
 }
 
 void Logger::append(const std::string &entry, const std::string &message){
-    logs_.push_back({entry, message});
+    if (_cache_log_message)
+        logs_.push_back({entry, message});
+
     if (_append_filter)
         _append_filter(entry, message);
+
     if (_log_to_cout) {
         std::cout << "["
                   << std::setw(_prefix_width) << entry
@@ -66,6 +70,7 @@ Logger &Logger::instance(){
         first_init = false;
         logger.logToCout(true);
         logger._prefix_width = 12;
+        logger._cache_log_message = false;
     }
     return logger;
 }
@@ -88,6 +93,14 @@ Logger::MessageWrapper Logger::warning(){
 
 Logger::MessageWrapper Logger::notice(){
     return message("Notice");
+}
+
+Logger::MessageWrapper Logger::info(){
+    return message("Info");
+}
+
+void Logger::setCurrentInstanceName(const std::string &s){
+    _current_instance_name = s;
 }
 }
 

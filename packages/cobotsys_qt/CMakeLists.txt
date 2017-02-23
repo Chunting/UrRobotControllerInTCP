@@ -7,7 +7,19 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")      # 为了生成可重定位的�
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")  #
 
 # 工程名
-project(cobotsys)
+project(cobotsys_qt)
+
+# Qt编译扩展
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_AUTOUIC ON)
+
+# 依赖Qt的库
+find_package(Qt5Core REQUIRED)
+find_package(Qt5Gui REQUIRED)
+find_package(Qt5Widgets REQUIRED)
+find_package(Qt5OpenGL REQUIRED)
+find_package(Qt5Network REQUIRED)
 
 # 头文件引用
 include_directories(src)
@@ -19,4 +31,9 @@ file(GLOB ${PROJECT_NAME}_files src/*.cpp src/include/*.h)
 add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_files})
 
 # 依赖链接库
-target_link_libraries(${PROJECT_NAME})
+target_link_libraries(${PROJECT_NAME}
+        cobotsys
+        Qt5::Core
+        Qt5::Widgets
+        Qt5::OpenGL
+        Qt5::Network)

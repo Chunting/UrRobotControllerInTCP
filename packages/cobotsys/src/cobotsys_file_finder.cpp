@@ -8,6 +8,8 @@
 
 namespace cobotsys {
 
+std::vector<std::string> FileFinder::base_paths;
+
 std::string FileFinder::find(const std::string &base_name){
     if (isFileExist(base_name))
         return realPathOf(base_name);

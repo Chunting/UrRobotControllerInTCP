@@ -68,6 +68,7 @@ public:
     MessageWrapper error();
     MessageWrapper warning();
     MessageWrapper notice();
+    MessageWrapper info();
 
     void setCurrentEntry(const std::string &entry); // Will change all to Upper.
     const std::string &currentEntry() const;
@@ -85,6 +86,7 @@ public:
         return _log_to_cout;
     }
 
+    void setCurrentInstanceName(const std::string &s);
 protected:
     struct LogMessage {
         std::string entry;
@@ -94,7 +96,9 @@ protected:
     std::string _current_entry;
     std::function<void(const std::string &, const std::string &)> _append_filter;
     bool _log_to_cout;
+    bool _cache_log_message;
     int _prefix_width;
+    std::string _current_instance_name;
 };
 }
 #define COBOT_LOG    cobotsys::Logger::instance()
