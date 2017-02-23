@@ -10,3 +10,9 @@ std::ostream &operator<<(std::ostream &oss, const QString &str){
     oss << str.toLocal8Bit().constData();
     return oss;
 }
+
+std::ostream &operator<<(std::ostream &oss, const QJsonObject &obj)
+{
+    oss << QJsonDocument(obj).toJson(QJsonDocument::Compact).constData();
+    return oss;
+}

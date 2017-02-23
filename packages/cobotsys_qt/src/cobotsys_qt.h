@@ -8,9 +8,11 @@
 
 #include <ostream>
 #include <QString>
+#include <QJsonObject>
+#include <QJsonDocument>
 
 
 std::ostream &operator<<(std::ostream &oss, const QString &str);
-
+std::ostream &operator<<(std::ostream &oss, const QJsonObject &obj);
 
 #endif //PROJECT_COBOTSYS_QT_H

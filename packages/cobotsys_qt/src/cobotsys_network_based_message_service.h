@@ -15,13 +15,17 @@
 #include <memory>
 #include <cobotsys_qt.h>
 #include <cobotsys_logger.h>
+#include <sstream>
+#include <iomanip>
+
+#include <cobotsys_message.h>
 
 namespace cobotsys {
 
 namespace distributed_system {
 
 
-class MessageServer : public QObject {
+class MessageService : public QObject {
 Q_OBJECT
 public:
     class CONFIG {
@@ -33,15 +37,14 @@ public:
         int ttl;
     };
 public:
-    ~MessageServer();
+    ~MessageService();
 
-    static void lanuchServer(const CONFIG &conf = CONFIG());
+    static void lanuchService(const CONFIG &conf = CONFIG());
+    static void lanuchServiceServer(const CONFIG &conf = CONFIG());
 
-protected:
-    void processPendingDatagrams();
-
+    static void send(const QString &target, const QByteArray &data); // 无管理
 private:
-    MessageServer(const CONFIG &conf, QObject *parent = nullptr);
+    MessageService(const CONFIG &conf, QObject *parent = nullptr);
 
     class MessageServerImpl;
     MessageServerImpl *_priv;
