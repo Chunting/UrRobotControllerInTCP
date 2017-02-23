@@ -12,6 +12,7 @@
 #include <QTimer>
 #include <functional>
 #include <map>
+#include <chrono>
 #include <cobotsys_logger.h>
 
 namespace cobotsys {
@@ -24,6 +25,13 @@ enum class JsonReplyStatus {
     Success,
     Timeout,
 };
+
+struct JsonReply {
+    JsonReplyStatus replyStatus;
+    const QJsonObject &jsonObject;
+    std::chrono::duration<double> timeUsed; // Second
+};
+
 
 class JsonCallbackManager {
 public:
@@ -38,7 +46,7 @@ public:
 
 
     void writeJsonMessage(const QJsonObject &jsonObject,
-                          std::function<void(const QJsonObject &, JsonReplyStatus)> callback = nullptr);
+                          std::function<void(const JsonReply &reply)> callback = nullptr);
 
     void checkTimeout();
 protected:
@@ -50,7 +58,8 @@ protected:
     struct JsonCallbackTracker {
         qint64 sendTime;
         QJsonObject sendData;
-        std::function<void(const QJsonObject &, JsonReplyStatus)> callback;
+        std::function<void(const JsonReply &reply)> callback;
+        std::chrono::high_resolution_clock::time_point start;
     };
 
     std::map<QString, JsonCallbackTracker> _json_write_callbacks;

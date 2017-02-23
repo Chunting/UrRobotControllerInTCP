@@ -20,9 +20,13 @@ void JsonCallbackManager::processJson(const QJsonObject &jsonObject){
         auto iter = _json_write_callbacks.find(seqNum);
         if (iter != _json_write_callbacks.end()) {
             if (iter->second.callback) {
-                iter->second.callback(jsonObject, JsonReplyStatus::Success);
+                auto end = std::chrono::high_resolution_clock::now();
+                std::chrono::duration<double> diff = end - iter->second.start;
+                iter->second.callback({JsonReplyStatus::Success, jsonObject, diff});
             }
             _json_write_callbacks.erase(seqNum);
+        } else {
+            COBOT_LOG.warning() << "Unknown Json Reply: " << jsonObject;
         }
     } else if (jsonObject.contains(JSON_COMMAND_KEY)) {
         auto command = jsonObject[JSON_COMMAND_KEY].toString();
@@ -34,6 +38,8 @@ void JsonCallbackManager::processJson(const QJsonObject &jsonObject){
                     callPair.second(jsonObject);
                 }
             }
+        } else {
+            COBOT_LOG.warning() << "Un-handled Command: " << jsonObject;
         }
     } else {
         COBOT_LOG.warning() << "Unknown-type JSON document: " << QJsonDocument(jsonObject).toJson().constData();
@@ -61,7 +67,8 @@ JsonCallbackManager::JsonCallbackManager(std::function<void(const QJsonObject &)
 }
 
 void JsonCallbackManager::writeJsonMessage(const QJsonObject &jsonObject,
-                                           std::function<void(const QJsonObject &, JsonReplyStatus)> callback){
+                                           std::function<void(const JsonReply &)> callback){
+
     auto localJson = jsonObject;
     auto seqNum = QUuid::createUuid().toString();
 
@@ -70,6 +77,7 @@ void JsonCallbackManager::writeJsonMessage(const QJsonObject &jsonObject,
     ctrack.sendTime = QDateTime::currentMSecsSinceEpoch();
     ctrack.callback = callback;
     ctrack.sendData = localJson;
+    ctrack.start = std::chrono::high_resolution_clock::now();
 
     if (_json_writer) {
         _json_writer(localJson);
@@ -84,7 +92,9 @@ void JsonCallbackManager::checkTimeout(){
         auto diff_time = cur_mtime - pair.second.sendTime;
         if (diff_time > 500) {
             if (pair.second.callback) {
-                pair.second.callback(pair.second.sendData, JsonReplyStatus::Timeout);
+                auto end = std::chrono::high_resolution_clock::now();
+                std::chrono::duration<double> diff = end - pair.second.start;
+                pair.second.callback({JsonReplyStatus::Timeout, pair.second.sendData, diff});
             } else {
                 COBOT_LOG.notice() << "Timeout: " << pair.second.sendData << ", Diff: " << diff_time;
             }

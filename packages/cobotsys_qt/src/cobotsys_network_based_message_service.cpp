@@ -4,6 +4,7 @@
 //
 
 #include <QJsonParseError>
+#include <QtCore/QUuid>
 #include "cobotsys_network_based_message_service.h"
 #include "cobotsys_json_callback_manager.h"
 
@@ -23,6 +24,7 @@ public:
 
     std::shared_ptr<JsonCallbackManager> _json_callback_manager;
 
+    QString _server_id;
 
 public:
     MessageServerImpl(const CONFIG &conf, QObject *parent) : QObject(parent){
@@ -51,10 +53,11 @@ public:
 
     void initBasicJsonHandler(){
         _json_callback_manager->addJsonCommandListener("GetMessageServiceServer", "reply", [=](const QJsonObject &json){
-            COBOT_LOG.notice() << "Query Server: " << json;
+            COBOT_LOG.info() << "Query : " << json;
             auto rjson = json;
             rjson[JSON_REPLY] = "";
-            rjson["Server"] = "";
+            rjson["Server"] = _server_id;
+            COBOT_LOG.info() << "Reply : " << rjson;
             sendMessage(MessageEncoder::genJsonMessage(rjson));
         });
     }
@@ -62,19 +65,33 @@ public:
     void startAsService(){
     }
 
+    void QueryIfServerExist(){
+        QJsonObject json;
+        json[JSON_COMMAND_KEY] = "GetMessageServiceServer";
+        _json_callback_manager->writeJsonMessage(json, [=](const JsonReply &reply){
+            if (reply.replyStatus == JsonReplyStatus::Timeout) {
+                COBOT_LOG.info() << "No Server Exist";
+            } else {
+                COBOT_LOG.info() << "Result: " << reply.jsonObject << ", " << reply.timeUsed.count() * 1000 << "ms";
+            }
+        });
+    }
+
     void doQueryServiceServer(){
         QJsonObject json;
         json[JSON_COMMAND_KEY] = "GetMessageServiceServer";
-        _json_callback_manager->writeJsonMessage(json, [=](const QJsonObject &j, JsonReplyStatus status){
-            if (status == JsonReplyStatus::Timeout) {
+        _json_callback_manager->writeJsonMessage(json, [=](const JsonReply &reply){
+            if (reply.replyStatus == JsonReplyStatus::Timeout) {
                 doQueryServiceServer();
             } else {
-                COBOT_LOG.info() << "Success: " << j;
+                COBOT_LOG.info() << "Result: " << reply.jsonObject << ", " << reply.timeUsed.count() * 1000 << "ms";
             }
         });
     }
 
     void startAsServer(){
+        _server_id = QUuid::createUuid().toString();
+
         initBasicJsonHandler();
 
         doQueryServiceServer();
@@ -164,7 +181,6 @@ void MessageService::lanuchServiceServer(const MessageService::CONFIG &conf){
 }
 
 void MessageService::send(const QString &target, const QByteArray &data){
-
 }
 }
 }
