@@ -20,6 +20,8 @@ namespace cobotsys {
 #define JSON_COMMAND_KEY    "Command"
 #define JSON_COMMAND_SEQ    "SequenceNumber"
 #define JSON_REPLY          "Reply"
+#define JSON_SENDER         "Sender"
+#define JSON_RECEIVER       "Receiver"
 
 enum class JsonReplyStatus {
     Success,
@@ -35,7 +37,7 @@ struct JsonReply {
 
 class JsonCallbackManager {
 public:
-    JsonCallbackManager(std::function<void(const QJsonObject &)> jsonWriter);
+    JsonCallbackManager(std::function<void(const QJsonObject &)> jsonWriter, const QString &receiverId);
     ~JsonCallbackManager();
 
 
@@ -63,6 +65,7 @@ protected:
     };
 
     std::map<QString, JsonCallbackTracker> _json_write_callbacks;
+    QString _json_receiver;
 };
 }
 

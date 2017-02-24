@@ -16,17 +16,22 @@ JsonCallbackManager::~JsonCallbackManager(){
 
 void JsonCallbackManager::processJson(const QJsonObject &jsonObject){
     if (jsonObject.contains(JSON_COMMAND_SEQ) && jsonObject.contains(JSON_REPLY)) {
-        auto seqNum = jsonObject[JSON_COMMAND_SEQ].toString();
-        auto iter = _json_write_callbacks.find(seqNum);
-        if (iter != _json_write_callbacks.end()) {
-            if (iter->second.callback) {
-                auto end = std::chrono::high_resolution_clock::now();
-                std::chrono::duration<double> diff = end - iter->second.start;
-                iter->second.callback({JsonReplyStatus::Success, jsonObject, diff});
+        if (jsonObject[JSON_RECEIVER].toString() == _json_receiver) {
+            auto seqNum = jsonObject[JSON_COMMAND_SEQ].toString();
+            auto iter = _json_write_callbacks.find(seqNum);
+            if (iter != _json_write_callbacks.end()) {
+                if (iter->second.callback) {
+                    auto end = std::chrono::high_resolution_clock::now();
+                    std::chrono::duration<double> diff = end - iter->second.start;
+                    iter->second.callback({JsonReplyStatus::Success, jsonObject, diff});
+                }
+                _json_write_callbacks.erase(seqNum);
+            } else {
+                COBOT_LOG.warning() << "Unknown Json Reply: " << jsonObject;
             }
-            _json_write_callbacks.erase(seqNum);
         } else {
-            COBOT_LOG.warning() << "Unknown Json Reply: " << jsonObject;
+            // ignore json message if receiver is not same.
+            //COBOT_LOG.info() << jsonObject;
         }
     } else if (jsonObject.contains(JSON_COMMAND_KEY)) {
         auto command = jsonObject[JSON_COMMAND_KEY].toString();
@@ -62,8 +67,10 @@ bool JsonCallbackManager::addJsonCommandListener(const QString &jsonCommand, con
     return true;
 }
 
-JsonCallbackManager::JsonCallbackManager(std::function<void(const QJsonObject &)> jsonWriter){
+JsonCallbackManager::JsonCallbackManager(std::function<void(const QJsonObject &)> jsonWriter,
+                                         const QString &receiverId){
     _json_writer = jsonWriter;
+    _json_receiver = receiverId;
 }
 
 void JsonCallbackManager::writeJsonMessage(const QJsonObject &jsonObject,

@@ -8,6 +8,18 @@
 #include "cobotsys_network_based_message_service.h"
 #include "cobotsys_json_callback_manager.h"
 
+
+QHostAddress localIPv4(){
+    QList<QHostAddress> list = QNetworkInterface::allAddresses();
+
+    for (auto &address : list) {
+        if (address.protocol() == QAbstractSocket::IPv4Protocol && address != QHostAddress(QHostAddress::LocalHost))
+            return address;
+    }
+    return QHostAddress(QHostAddress::LocalHost);
+}
+
+
 namespace cobotsys {
 
 namespace distributed_system {
@@ -25,9 +37,13 @@ public:
     std::shared_ptr<JsonCallbackManager> _json_callback_manager;
 
     QString _server_id;
+    QString _instance_id;
+    QString _instance_id_short;
 
 public:
     MessageServerImpl(const CONFIG &conf, QObject *parent) : QObject(parent){
+        _instance_id = QUuid::createUuid().toString();
+        _instance_id_short = _instance_id.mid(1, 8);
         _config = conf;
         _udp_message_no = 0;
 
@@ -47,16 +63,26 @@ public:
 
         _json_callback_manager = std::make_shared<JsonCallbackManager>([=](const QJsonObject &j){
             sendJsonMessage(j);
-        });
+        }, _instance_id);
+
+        COBOT_LOG.notice() << "Instance ID: " << _instance_id;
     }
 
+    uint16_t getServiceServerPort() const{
+        return _config.port + 1;
+    }
 
-    void initBasicJsonHandler(){
+    void initServerJsonHandler(){
         _json_callback_manager->addJsonCommandListener("GetMessageServiceServer", "reply", [=](const QJsonObject &json){
             COBOT_LOG.info() << "Query : " << json;
             auto rjson = json;
             rjson[JSON_REPLY] = "";
             rjson["Server"] = _server_id;
+            rjson["ServerIp"] = localIPv4().toString();
+            rjson["ServerPort"] = getServiceServerPort();
+            rjson[JSON_RECEIVER] = rjson[JSON_SENDER].toString();
+            rjson.remove(JSON_SENDER);
+            rjson.remove(JSON_COMMAND_KEY);
             COBOT_LOG.info() << "Reply : " << rjson;
             sendJsonMessage(rjson);
         });
@@ -65,14 +91,16 @@ public:
     void startAsService(){
     }
 
-    void QueryIfServerExist(){
+    void queryIfServerExist(std::function<void()> on_no_server){
         QJsonObject json;
         json[JSON_COMMAND_KEY] = "GetMessageServiceServer";
+        json[JSON_SENDER] = _instance_id;
         _json_callback_manager->writeJsonMessage(json, [=](const JsonReply &reply){
             if (reply.replyStatus == JsonReplyStatus::Timeout) {
-                COBOT_LOG.info() << "No Server Exist";
+                if (on_no_server)
+                    on_no_server();
             } else {
-                COBOT_LOG.info() << "Result: " << reply.jsonObject << ", " << reply.timeUsed.count() * 1000 << "ms";
+                COBOT_LOG.info() << "Reply : " << reply.jsonObject << ", " << reply.timeUsed.count() * 1000 << "ms";
             }
         });
     }
@@ -80,28 +108,29 @@ public:
     void doQueryServiceServer(){
         QJsonObject json;
         json[JSON_COMMAND_KEY] = "GetMessageServiceServer";
+        json[JSON_SENDER] = _instance_id;
         _json_callback_manager->writeJsonMessage(json, [=](const JsonReply &reply){
             if (reply.replyStatus == JsonReplyStatus::Timeout) {
                 doQueryServiceServer();
             } else {
-                COBOT_LOG.info() << "Result: " << reply.jsonObject << ", " << reply.timeUsed.count() * 1000 << "ms";
+                COBOT_LOG.info() << "Reply : " << reply.jsonObject << ", " << reply.timeUsed.count() * 1000 << "ms";
             }
         });
     }
 
     void genServerId(){
         std::stringstream oss;
-        oss << QUuid::createUuid().toString() << "- PID {"
+        oss << _instance_id << " - PID {"
             << QCoreApplication::applicationPid() << "}";
         _server_id = QString::fromLocal8Bit(oss.str().c_str());
     }
 
     void startAsServer(){
-        genServerId();
-
-        initBasicJsonHandler();
-
-        doQueryServiceServer();
+        queryIfServerExist([=](){
+            genServerId();
+            initServerJsonHandler();
+            doQueryServiceServer();
+        });
     }
 
     void messageHandler(const Message &msg){
@@ -118,7 +147,14 @@ public:
         if (jsonDoc.isNull()) {
             COBOT_LOG.warning() << "JSON: " << jsonParseError.errorString();
         } else {
-            _json_callback_manager->processJson(jsonDoc.object());
+            auto jsonObject = jsonDoc.object();
+            if (jsonObject.contains(JSON_COMMAND_KEY)) {
+                if (_server_id.size()) {
+                    _json_callback_manager->processJson(jsonDoc.object());
+                }
+            } else {
+                _json_callback_manager->processJson(jsonDoc.object());
+            }
         }
     }
 
@@ -182,6 +218,7 @@ void MessageService::lanuchService(const MessageService::CONFIG &conf){
         message_service->_priv->startAsService();
     }
 }
+
 
 void MessageService::lanuchServiceServer(const MessageService::CONFIG &conf){
 

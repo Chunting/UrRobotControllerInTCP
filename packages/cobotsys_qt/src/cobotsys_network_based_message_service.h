@@ -12,6 +12,7 @@
 #include <QTcpSocket>
 #include <QTimer>
 #include <QCoreApplication>
+#include <QNetworkInterface>
 #include <memory>
 #include <cobotsys_qt.h>
 #include <cobotsys_logger.h>
