@@ -4,13 +4,11 @@
 //
 
 #include <cobotsys.h>
-#include <cobotsys_network_based_message_service.h>
 #include <QtCore/QCoreApplication>
 
 int main(int argc, char **argv){
     QCoreApplication a(argc, argv);
     cobotsys::init_library(argc, argv);
 
-    cobotsys::distributed_system::MessageService::lanuchServiceServer();
     return a.exec();
 }
