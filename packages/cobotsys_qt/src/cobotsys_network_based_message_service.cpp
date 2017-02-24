@@ -46,7 +46,7 @@ public:
         _decoder = std::shared_ptr<MessageDecoder>(new MessageDecoder(_message_handler));
 
         _json_callback_manager = std::make_shared<JsonCallbackManager>([=](const QJsonObject &j){
-            sendMessage(MessageEncoder::genJsonMessage(j));
+            sendJsonMessage(j);
         });
     }
 
@@ -58,7 +58,7 @@ public:
             rjson[JSON_REPLY] = "";
             rjson["Server"] = _server_id;
             COBOT_LOG.info() << "Reply : " << rjson;
-            sendMessage(MessageEncoder::genJsonMessage(rjson));
+            sendJsonMessage(rjson);
         });
     }
 
@@ -89,8 +89,15 @@ public:
         });
     }
 
+    void genServerId(){
+        std::stringstream oss;
+        oss << QUuid::createUuid().toString() << "- PID {"
+            << QCoreApplication::applicationPid() << "}";
+        _server_id = QString::fromLocal8Bit(oss.str().c_str());
+    }
+
     void startAsServer(){
-        _server_id = QUuid::createUuid().toString();
+        genServerId();
 
         initBasicJsonHandler();
 
@@ -113,6 +120,10 @@ public:
         } else {
             _json_callback_manager->processJson(jsonDoc.object());
         }
+    }
+
+    void sendJsonMessage(const QJsonObject &json){
+        sendMessage(MessageEncoder::genJsonMessage(json));
     }
 
     void sendMessage(const Message &msg){
