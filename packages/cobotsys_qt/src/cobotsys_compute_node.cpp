@@ -22,25 +22,31 @@ ComputeNode::ComputeNode(QObject *parent) : QObject(parent){
 ComputeNode::~ComputeNode(){
 }
 
-void ComputeNode::connectMaster(const ComputeNode::MasterConfig &config){
+void ComputeNode::connectMaster(const server::CONFIG &config){
+    _config = config;
     _client->connectToHost(config.address, config.port, QIODevice::ReadWrite);
 }
 
 void ComputeNode::onMasterConnect(){
+    COBOT_LOG.notice() << "ComputeNode: " << "Connect";
+    Q_EMIT masterConnected();
 }
 
 void ComputeNode::onMasterDisconnect(){
+    COBOT_LOG.notice() << "ComputeNode: " << "Disconnect";
+    Q_EMIT masterDisconnected();
 }
 
 void ComputeNode::onMasterFound(){
+    COBOT_LOG.notice() << "ComputeNode: " << "Found";
 }
 
 void ComputeNode::onError(QAbstractSocket::SocketError error){
+    COBOT_LOG.notice() << "ComputeNode: " << "Error";
 }
 
 void ComputeNode::onDataReady(){
 }
-
 
 //
 }

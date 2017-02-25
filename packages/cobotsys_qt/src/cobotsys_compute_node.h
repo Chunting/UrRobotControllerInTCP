@@ -11,6 +11,8 @@
 #include <QTcpServer>
 #include <QTcpSocket>
 #include <QString>
+#include <cobotsys_compute_config.h>
+#include <cobotsys_qt.h>
 
 namespace cobotsys {
 
@@ -18,21 +20,17 @@ namespace cobotsys {
 class ComputeNode : public QObject {
 Q_OBJECT
 public:
-    struct MasterConfig {
-        QHostAddress address;
-        uint16_t port;
-    };
 
 public:
     ComputeNode(QObject *parent = nullptr);
     ~ComputeNode();
 
 
-    void connectMaster(const MasterConfig &config);
+    void connectMaster(const server::CONFIG &config = server::CONFIG());
 
 Q_SIGNALS:
     void masterConnected();
-
+    void masterDisconnected();
 
 protected:
     void onMasterConnect();
@@ -43,7 +41,7 @@ protected:
     void onDataReady();
 protected:
     QTcpSocket *_client;
-    MasterConfig _config;
+    server::CONFIG _config;
 };
 
 
