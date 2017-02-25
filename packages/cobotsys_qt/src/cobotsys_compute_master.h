@@ -30,22 +30,30 @@ public:
 protected:
     void onNewConnection();
 
-
 protected:
     void onClientConnect();
     void onClientDisconnect();
     void onClientFound();
     void onClientError(QAbstractSocket::SocketError error);
     void onClientDataReady();
+
 protected:
-    struct TcpLink {
-        QTcpSocket *tcp_socket;
-        TcpLink();
+    struct TCPLink {
+        QTcpSocket *tcpSocket;
+        TCPLink();
+        ~TCPLink();
     };
+
+    std::shared_ptr<TCPLink> getLink();
+    void deleteTCPLink(std::shared_ptr<TCPLink> link);
+
+
+protected:
+    virtual void processClientData(QTcpSocket *clientLink, const QByteArray &ba);
 protected:
     QTcpServer *_server;
     server::CONFIG _config;
-    std::map<void *, std::shared_ptr<TcpLink> > _links;
+    std::map<void *, std::shared_ptr<TCPLink> > _links;
 };
 
 //

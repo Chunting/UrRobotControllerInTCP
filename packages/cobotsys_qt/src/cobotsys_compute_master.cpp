@@ -6,8 +6,14 @@
 #include "cobotsys_compute_master.h"
 
 namespace cobotsys {
-ComputeMaster::TcpLink::TcpLink(){
-    tcp_socket = nullptr;
+ComputeMaster::TCPLink::TCPLink(){
+    tcpSocket = nullptr;
+}
+
+ComputeMaster::TCPLink::~TCPLink(){
+    if (tcpSocket) {
+        tcpSocket->deleteLater();
+    }
 }
 }
 
@@ -29,9 +35,9 @@ void ComputeMaster::onNewConnection(){
             &ComputeMaster::onClientError);
     connect(tcp_socket, &QTcpSocket::readyRead, this, &ComputeMaster::onClientDataReady);
 
-    auto link = std::make_shared<TcpLink>();
+    auto link = std::make_shared<TCPLink>();
 
-    link->tcp_socket = tcp_socket;
+    link->tcpSocket = tcp_socket;
 
     _links[tcp_socket] = link;
 }
@@ -49,21 +55,57 @@ bool ComputeMaster::lanuchMaster(const server::CONFIG &config){
 }
 
 void ComputeMaster::onClientConnect(){
-    COBOT_LOG.notice() << "Master: Client Connect.";
+    auto pLink = getLink();
+    if (pLink) {
+        COBOT_LOG.notice() << "Master: " << "Client Connect.";
+    }
 }
 
 void ComputeMaster::onClientDisconnect(){
-    COBOT_LOG.notice() << "Master: Client Disconnect.";
+    auto pLink = getLink();
+    if (pLink) {
+        COBOT_LOG.notice() << "Master: " << "Client Disconnect.";
+
+        deleteTCPLink(pLink);
+    }
 }
 
 void ComputeMaster::onClientFound(){
-    COBOT_LOG.notice() << "Master: Client Found.";
+    auto pLink = getLink();
+    if (pLink) {
+        COBOT_LOG.notice() << "Master: " << "Client Found.";
+    }
 }
 
 void ComputeMaster::onClientError(QAbstractSocket::SocketError error){
+    auto pLink = getLink();
+    if (pLink) {
+        COBOT_LOG.notice() << "Master: " << "Client, " << pLink->tcpSocket->errorString();
+    }
 }
 
 void ComputeMaster::onClientDataReady(){
+    auto pLink = getLink();
+    if (pLink) {
+        auto ba = pLink->tcpSocket->readAll();
+        processClientData(pLink->tcpSocket, ba);
+    }
+}
+
+std::shared_ptr<ComputeMaster::TCPLink> ComputeMaster::getLink(){
+    auto iter = _links.find(sender());
+    if (iter != _links.end())
+        return iter->second;
+    return nullptr;
+}
+
+void ComputeMaster::deleteTCPLink(std::shared_ptr<ComputeMaster::TCPLink> link){
+    _links.erase(link->tcpSocket);
+}
+
+void ComputeMaster::processClientData(QTcpSocket *clientLink, const QByteArray &ba){
+    COBOT_LOG.info() << clientLink << ": " << ba.constData();
+    clientLink->write(ba);
 }
 
 

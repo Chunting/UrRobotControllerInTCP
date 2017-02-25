@@ -7,6 +7,7 @@
 #include <QtCore/QCoreApplication>
 #include <cobotsys_compute_master.h>
 #include <cobotsys_compute_node.h>
+#include <cobotsys_background_slave.h>
 
 
 
@@ -16,12 +17,12 @@ int main(int argc, char **argv){
 
 
     cobotsys::ComputeMaster master;
-    cobotsys::ComputeNode node;
+    cobotsys::BackgroundSlave slave;
 
     if (master.lanuchMaster()){
 
     } else {
-        node.connectMaster();
+        slave.connectMaster();
     }
 
     return a.exec();

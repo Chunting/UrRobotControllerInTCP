@@ -11,6 +11,7 @@
 #include <QTcpServer>
 #include <QTcpSocket>
 #include <QString>
+#include <QTimer>
 #include <cobotsys_compute_config.h>
 #include <cobotsys_qt.h>
 
@@ -25,8 +26,8 @@ public:
     ComputeNode(QObject *parent = nullptr);
     ~ComputeNode();
 
-
     void connectMaster(const server::CONFIG &config = server::CONFIG());
+    void writeData(const QByteArray &ba);
 
 Q_SIGNALS:
     void masterConnected();
@@ -40,8 +41,16 @@ protected:
 
     void onDataReady();
 protected:
+    virtual void processData(const QByteArray &ba);
+    virtual void connectHost(int delayMSec = 0);
+
+    virtual void processConnect();
+    virtual void processDisconnect();
+protected:
     QTcpSocket *_client;
     server::CONFIG _config;
+    bool _is_connected;
+    int _re_connect_delay;
 };
 
 

@@ -10,8 +10,19 @@
 namespace cobotsys {
 namespace server {
 
-CONFIG::CONFIG(){
+QHostAddress localIPv4(){
+    QList<QHostAddress> list = QNetworkInterface::allAddresses();
 
+    for (auto &address : list) {
+        if (address.protocol() == QAbstractSocket::IPv4Protocol && address != QHostAddress(QHostAddress::LocalHost))
+            return address;
+    }
+    return QHostAddress(QHostAddress::LocalHost);
+}
+
+CONFIG::CONFIG(){
+    address = localIPv4();
+    port = 45455;
 }
 
 

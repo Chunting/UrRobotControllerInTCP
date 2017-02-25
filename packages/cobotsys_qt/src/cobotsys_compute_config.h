@@ -7,11 +7,13 @@
 #define PROJECT_COBOTSYS_COMPUTE_CONFIG_H
 
 #include <QHostAddress>
+#include <QNetworkInterface>
 
 namespace cobotsys {
 
 
 namespace server {
+
 
 struct CONFIG {
     QHostAddress address;
@@ -19,6 +21,9 @@ struct CONFIG {
 
     CONFIG();
 };
+
+
+QHostAddress localIPv4();
 
 }
 
