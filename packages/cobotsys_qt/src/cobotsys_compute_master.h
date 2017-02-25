@@ -50,6 +50,7 @@ protected:
 
 protected:
     virtual void processClientData(QTcpSocket *clientLink, const QByteArray &ba);
+    virtual void processClientConnect(QTcpSocket *tcpSocket);
 protected:
     QTcpServer *_server;
     server::CONFIG _config;

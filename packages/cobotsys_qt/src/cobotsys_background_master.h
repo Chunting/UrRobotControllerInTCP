@@ -21,7 +21,7 @@ public:
 
     class BackgroundSlaveView {
     public:
-        BackgroundSlaveView(const QString &instancId);
+        BackgroundSlaveView(std::function<void(const QJsonObject &)> jsonHandler);
 
         friend class BackgroundMaster;
     protected:
@@ -29,20 +29,22 @@ public:
         void processMessage(const Message &m);
 
     protected:
-        QTcpSocket *_tcp_socket;
         std::shared_ptr<MessageDecoder> _decoder;
-        std::shared_ptr<JsonCallbackManager> _callback_manager;
+        std::function<void(const QJsonObject &)> _json_handler;
     };
 
 public:
-    BackgroundMaster(QObject *parent);
+    BackgroundMaster(QObject *parent = nullptr);
     ~BackgroundMaster();
 
 
 protected:
     virtual void processClientData(QTcpSocket *clientLink, const QByteArray &ba);
+    virtual void processClientConnect(QTcpSocket *tcpSocket);
 
+    void processJson(const QJsonObject &json, QTcpSocket *link);
 
+    static void directWriteJson(QTcpSocket *clientLink, const QJsonObject &json);
 protected:
     void createClientView(QTcpSocket *clientLink);
 

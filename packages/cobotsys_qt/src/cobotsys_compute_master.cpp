@@ -40,6 +40,8 @@ void ComputeMaster::onNewConnection(){
     link->tcp_socket = tcp_socket;
 
     _links[tcp_socket] = link;
+
+    processClientConnect(tcp_socket);
 }
 
 
@@ -106,6 +108,9 @@ void ComputeMaster::deleteTCPLink(std::shared_ptr<ComputeMaster::TCPLink> link){
 void ComputeMaster::processClientData(QTcpSocket *clientLink, const QByteArray &ba){
     COBOT_LOG.info() << clientLink << ": " << ba.constData();
     clientLink->write(ba);
+}
+
+void ComputeMaster::processClientConnect(QTcpSocket *tcpSocket){
 }
 
 

@@ -14,6 +14,12 @@ namespace cobotsys {
 JsonCallbackManager::~JsonCallbackManager(){
 }
 
+JsonCallbackManager::JsonCallbackManager(std::function<void(const QJsonObject &)> jsonWriter,
+                                         const QString &receiverId){
+    _json_writer = jsonWriter;
+    _json_receiver = receiverId;
+}
+
 void JsonCallbackManager::processJson(const QJsonObject &jsonObject){
     if (jsonObject.contains(JSON_COMMAND_SEQ) && jsonObject.contains(JSON_REPLY)) {
         if (jsonObject[JSON_RECEIVER].toString() == _json_receiver) {
@@ -67,12 +73,9 @@ bool JsonCallbackManager::addJsonCommandListener(const QString &jsonCommand, con
     return true;
 }
 
-JsonCallbackManager::JsonCallbackManager(const QString &receiverId){
-    _json_receiver = receiverId;
-}
 
-QJsonObject JsonCallbackManager::writeJsonMessage(const QJsonObject &jsonObject,
-                                                  std::function<void(const JsonReply &)> callback){
+void JsonCallbackManager::writeJsonMessage(const QJsonObject &jsonObject,
+                                           std::function<void(const JsonReply &)> callback){
 
     auto localJson = jsonObject;
     auto seqNum = QUuid::createUuid().toString();
@@ -84,7 +87,8 @@ QJsonObject JsonCallbackManager::writeJsonMessage(const QJsonObject &jsonObject,
     ctrack.sendData = localJson;
     ctrack.start = std::chrono::high_resolution_clock::now();
 
-    return localJson;
+    if (_json_writer)
+        _json_writer(localJson);
 }
 
 void JsonCallbackManager::checkTimeout(){

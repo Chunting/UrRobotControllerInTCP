@@ -8,6 +8,7 @@
 #include <cobotsys_compute_master.h>
 #include <cobotsys_compute_node.h>
 #include <cobotsys_background_slave.h>
+#include <cobotsys_background_master.h>
 
 
 
@@ -16,7 +17,7 @@ int main(int argc, char **argv){
     cobotsys::init_library(argc, argv);
 
 
-    cobotsys::ComputeMaster master;
+    cobotsys::BackgroundMaster master;
     cobotsys::BackgroundSlave slave;
 
     if (master.lanuchMaster()){

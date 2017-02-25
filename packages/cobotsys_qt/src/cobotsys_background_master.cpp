@@ -8,10 +8,11 @@
 
 namespace cobotsys {
 
-BackgroundMaster::BackgroundSlaveView::BackgroundSlaveView(const QString &instancId){
+BackgroundMaster::BackgroundSlaveView::BackgroundSlaveView(std::function<void(const QJsonObject &)> jsonHandler){
     _decoder = std::make_shared<MessageDecoder>([=](const Message &m){ processMessage(m); });
-    _callback_manager = std::make_shared<JsonCallbackManager>(instancId);
+    _json_handler = jsonHandler;
 }
+
 
 void BackgroundMaster::BackgroundSlaveView::processData(const QByteArray &ba){
     _decoder->decode(ba);
@@ -26,10 +27,15 @@ void BackgroundMaster::BackgroundSlaveView::processMessage(const distributed_sys
             COBOT_LOG.warning() << "JSON: " << jsonParseError.errorString();
         } else {
             auto jsonObject = jsonDoc.object();
-            _callback_manager->processJson(jsonObject);
+            if (_json_handler) {
+                _json_handler(jsonObject);
+            }
         }
     }
 }
+
+
+
 
 
 //
@@ -41,7 +47,6 @@ namespace cobotsys {
 
 BackgroundMaster::BackgroundMaster(QObject *parent) : ComputeMaster(parent){
     _instance_id = QUuid::createUuid().toString();
-
 }
 
 
@@ -62,8 +67,27 @@ void BackgroundMaster::processClientData(QTcpSocket *clientLink, const QByteArra
 void BackgroundMaster::createClientView(QTcpSocket *clientLink){
     auto iter = _slaves.find(clientLink);
     if (iter == _slaves.end()) {
-        _slaves.insert({clientLink, std::make_shared<BackgroundSlaveView>(_instance_id)});
+        auto view = std::make_shared<BackgroundSlaveView>([=](const QJsonObject &j){
+            processJson(j, clientLink);
+        });
+
+        _slaves.insert({clientLink, view});
     }
+}
+
+void BackgroundMaster::processJson(const QJsonObject &json, QTcpSocket *link){
+    COBOT_LOG.info() << json;
+}
+
+void BackgroundMaster::processClientConnect(QTcpSocket *tcpSocket){
+    QJsonObject json;
+    json[JSON_COMMAND_KEY] = "GetSlaveName";
+
+    directWriteJson(tcpSocket, json);
+}
+
+void BackgroundMaster::directWriteJson(QTcpSocket *clientLink, const QJsonObject &json){
+    clientLink->write(MessageEncoder::genJsonMessage(json).getData());
 }
 
 

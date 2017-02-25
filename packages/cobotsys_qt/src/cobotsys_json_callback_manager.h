@@ -37,7 +37,7 @@ struct JsonReply {
 
 class JsonCallbackManager {
 public:
-    JsonCallbackManager(const QString &receiverId);
+    JsonCallbackManager(std::function<void(const QJsonObject &)> jsonWriter, const QString &receiverId);
     ~JsonCallbackManager();
 
 
@@ -49,8 +49,8 @@ public:
                                 bool alwaysAdd = true);
 
 
-    QJsonObject writeJsonMessage(const QJsonObject &jsonObject,
-                                 std::function<void(const JsonReply &reply)> callback = nullptr);
+    void writeJsonMessage(const QJsonObject &jsonObject,
+                          std::function<void(const JsonReply &reply)> callback = nullptr);
 
     void checkTimeout();
 protected:
@@ -66,6 +66,7 @@ protected:
 
     std::map<QString, JsonCallbackTracker> _json_write_callbacks;
     QString _json_receiver;
+    std::function<void(const QJsonObject &)> _json_writer;
 };
 }
 
