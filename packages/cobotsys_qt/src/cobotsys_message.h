@@ -64,7 +64,7 @@ public:
     static Message genStringMessage(const std::string &msg);
     static Message genJsonMessage(const QJsonObject &msg);
 
-    static Message genMessage(const QByteArray& msg, MessageType type);
+    static Message genMessage(const QByteArray &msg, MessageType type);
 protected:
     QByteArray ba;
 };

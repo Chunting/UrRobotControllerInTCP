@@ -43,12 +43,14 @@ public:
 
     void processJson(const QJsonObject &jsonObject);
 
-    bool addJsonCommandListener(const QString &jsonCommand, const QString &callbackName,
-                                std::function<void(const QJsonObject &)> callback, bool alwaysAdd = true);
+    bool addJsonCommandListener(const QString &jsonCommand,
+                                const QString &callbackName,
+                                std::function<void(const QJsonObject &)> callback,
+                                bool alwaysAdd = true);
 
 
     QJsonObject writeJsonMessage(const QJsonObject &jsonObject,
-                          std::function<void(const JsonReply &reply)> callback = nullptr);
+                                 std::function<void(const JsonReply &reply)> callback = nullptr);
 
     void checkTimeout();
 protected:
