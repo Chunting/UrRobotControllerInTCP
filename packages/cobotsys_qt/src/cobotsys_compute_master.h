@@ -39,7 +39,7 @@ protected:
 
 protected:
     struct TCPLink {
-        QTcpSocket *tcpSocket;
+        QTcpSocket *tcp_socket;
         TCPLink();
         ~TCPLink();
     };
