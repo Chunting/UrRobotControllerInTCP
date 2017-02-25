@@ -7,6 +7,7 @@
 #define PROJECT_COBOTSYS_BACKGROUND_MASTER_H
 
 #include <cobotsys_compute_master.h>
+#include <cobotsys_json_callback_manager.h>
 
 namespace cobotsys {
 
@@ -22,8 +23,8 @@ protected:
     virtual void processClientData(QTcpSocket *clientLink, const QByteArray &ba);
 
 protected:
-
-
+    std::shared_ptr<JsonCallbackManager> _callback_manager;
+    QString _instance_id;
 };
 
 
