@@ -20,7 +20,7 @@ public:
     ~BackgroundTask();
 
 
-    void run(const BackgroundTaskSettings &settings);
+    bool run(const BackgroundTaskSettings &settings);
     void stop();
 
 Q_SIGNALS:

@@ -3,6 +3,8 @@
 // Copyright (c) 2017 Wuhan Collaborative Robot Technology Co.,Ltd. All rights reserved.
 //
 
+#include <cobotsys_file_finder.h>
+#include <cobotsys_qt.h>
 #include "cobotsys_background_task.h"
 
 namespace cobotsys {
@@ -13,7 +15,15 @@ BackgroundTask::BackgroundTask(QObject *parent) : QObject(parent){
 BackgroundTask::~BackgroundTask(){
 }
 
-void BackgroundTask::run(const BackgroundTaskSettings &settings){
+bool BackgroundTask::run(const BackgroundTaskSettings &settings){
+    // Check if setting file is empty.
+    for (const auto &iter : settings.getTaskSettings()) {
+        if (cobotsys::FileFinder::find(iter.getPath().toLocal8Bit().constData()).empty()) {
+            COBOT_LOG.error() << "Can not find file: " << iter.getPath();
+            return false;
+        }
+    }
+
     const auto &v_conf = settings.getTaskSettings();
     auto num_process = v_conf.size();
 

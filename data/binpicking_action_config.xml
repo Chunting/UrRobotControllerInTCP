@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<!--
+0 - Program
+1 - BashScript
+2 = RosNode
+-->
+<opencv_storage>
+    <action_binpicking>
+        <Task>
+            <!--<_>-->
+                <!--<path>test_bp_pub_mat</path>-->
+                <!--<task_process_type>0</task_process_type>-->
+                <!--<show_console_print>0</show_console_print>-->
+                <!--<ENV></ENV>-->
+                <!--<ROS_PARAM></ROS_PARAM>-->
+                <!--<command_line>"sdfdf  sdfsd"</command_line>-->
+            <!--</_>-->
+            <_>
+                <path>cobot_binpicking_alpha_detect_xj</path>
+                <task_process_type>2</task_process_type>
+                <show_console_print>1</show_console_print>
+                <ENV>
+                    <_>
+                        <key>ROS_MASTER_URI</key>
+                        <value>http://192.168.10.189:11311</value>
+                    </_>
+                    <_>
+                        <key>ROS_IP</key>
+                        <value>"192.168.10.102"</value><!--如果是IP地址，这里需要加上引号，这个是OpenCV带来的限制-->
+                    </_>
+                </ENV>
+                <ROS_PARAM>
+                    <_>
+                        <key>use_imshow</key>
+                        <value>false</value>
+                    </_>
+                </ROS_PARAM>
+            </_>
+            <_>
+                <path>run_kinect2.sh</path>
+                <task_process_type>1</task_process_type>
+                <show_console_print>1</show_console_print>
+                <ENV>
+                    <_>
+                        <key>ROS_MASTER_URI</key>
+                        <value>http://192.168.10.189:11311</value>
+                    </_>
+                    <_>
+                        <key>ROS_IP</key>
+                        <value>"192.168.10.102"</value><!--如果是IP地址，这里西药加上引号，这个是OpenCV带来的限制-->
+                    </_>
+                </ENV>
+                <ROS_PARAM></ROS_PARAM>
+            </_>
+        </Task>
+    </action_binpicking>
+    <action_calibration>
+        <Task>
+            <_>
+                <path>doCalibration.sh</path>
+                <task_process_type>1</task_process_type>
+                <show_console_print>1</show_console_print>
+                <ENV>
+                    <!--<_>
+                        <key>ROS_MASTER_URI</key>
+                        <value>http://localhost:11311</value>
+                    </_>
+                    <_>
+                        <key>ROS_IP</key>
+                        <value>"192.168.10.107"</value>
+                    </_>-->
+                </ENV>
+                <ROS_PARAM></ROS_PARAM>
+            </_>
+        </Task>
+    </action_calibration>
+</opencv_storage>

@@ -1,0 +1,7 @@
+<RCC>
+  <qresource prefix="icons">
+    <file>resources/close_all.png</file>
+    <file>resources/cobot_logo_icon.png</file>
+    <file>resources/trash.png</file>
+  </qresource>
+</RCC>

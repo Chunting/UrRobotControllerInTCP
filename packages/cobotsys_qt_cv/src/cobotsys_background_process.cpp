@@ -8,6 +8,7 @@
 #include <signal.h>
 #include <cobotsys_file_finder.h>
 #include "cobotsys_background_process.h"
+#include <cobotsys_qt.h>
 
 
 namespace cobotsys {
@@ -24,7 +25,7 @@ namespace ros_con_special {
 
 const char *none = "";
 
-void replace_con_pattern(QByteArray &ba, const char *s_part, const char* e_part){
+void replace_con_pattern(QByteArray &ba, const char *s_part, const char *e_part){
     int pos_cur = 0;
     int pos_idx = 0;
     int pos_m;
@@ -85,6 +86,11 @@ void BackgroundProcess::run(const ProcessRunSettings &runSettings){
     }
 
     auto file = cobotsys::FileFinder::find(runSettings.getPath().toLocal8Bit().constData());
+    if (file.empty()) {
+        COBOT_LOG.error() << "Can't file file: " << runSettings.getPath();
+        return;
+    }
+
     auto qfile = QString::fromLocal8Bit(file.c_str());
     _run_settings = runSettings;
     _no_print = !runSettings.showConsolePrint();
