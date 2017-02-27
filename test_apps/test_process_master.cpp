@@ -20,7 +20,7 @@ int main(int argc, char **argv){
     cobotsys::BackgroundProcessServer app;
     cobotsys::BackgroundProcessClient client;
 
-    if (app.getMaster().lanuchMaster()) {
+    if (app.getServer().lanuchMaster()) {
 
 
     } else {

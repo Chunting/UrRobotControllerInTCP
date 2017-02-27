@@ -15,10 +15,10 @@ BackgroundProcessServer::SlaveTaskView::SlaveTaskView(){
 
 
 BackgroundProcessServer::BackgroundProcessServer(QObject *parent) : QObject(parent){
-    _master = new BackgroundServer(this);
-    _master->setJsonHandler(this, &BackgroundProcessServer::onSlaveJson);
-    connect(_master, &BackgroundServer::clientConnected, this, &BackgroundProcessServer::onSlaveConnect);
-    connect(_master, &BackgroundServer::clientDisconnected, this, &BackgroundProcessServer::onSlaveDisconnect);
+    _server = new BackgroundServer(this);
+    _server->setJsonHandler(this, &BackgroundProcessServer::onClientJson);
+    connect(_server, &BackgroundServer::clientConnected, this, &BackgroundProcessServer::onClientConnect);
+    connect(_server, &BackgroundServer::clientDisconnected, this, &BackgroundProcessServer::onClientDisconnect);
 }
 
 
@@ -29,7 +29,7 @@ void BackgroundProcessServer::runScript(const QString &script_name, std::functio
     QJsonObject json;
     json[JSON_COMMAND_KEY] = BACK_CMD_RUN_SCRIPT;
     json[BACK_KEY_SCRIPT_NAME] = script_name;
-    _master->writeJson(json, [=](const cobotsys::JsonReply &reply){
+    _server->writeJson(json, [=](const cobotsys::JsonReply &reply){
         if (on_slave_reply) {
             on_slave_reply(reply.reply_status == JsonReplyStatus::Success);
         }
@@ -39,11 +39,11 @@ void BackgroundProcessServer::runScript(const QString &script_name, std::functio
 void BackgroundProcessServer::onScriptFinish(){
 }
 
-BackgroundServer &BackgroundProcessServer::getMaster(){
-    return *_master;
+BackgroundServer &BackgroundProcessServer::getServer(){
+    return *_server;
 }
 
-void BackgroundProcessServer::onSlaveJson(const QJsonObject &json){
+void BackgroundProcessServer::onClientJson(const QJsonObject &json){
     QString slave_name = json[JSON_SENDER].toString();
     auto iter = _views.find(slave_name);
     if (iter != _views.end()) {
@@ -51,13 +51,17 @@ void BackgroundProcessServer::onSlaveJson(const QJsonObject &json){
     }
 }
 
-void BackgroundProcessServer::onSlaveConnect(const QString &slave_name){
+void BackgroundProcessServer::onClientConnect(const QString &slave_name){
     _views[slave_name] = SlaveTaskView();
 }
 
-void BackgroundProcessServer::onSlaveDisconnect(const QString &slave_name){
-    COBOT_LOG.warning() << "Client Exit: " << slave_name;
-    _views.erase(slave_name);
+void BackgroundProcessServer::onClientDisconnect(const QString &client_name){
+    COBOT_LOG.warning() << "Client Exit: " << client_name;
+    _views.erase(client_name);
+}
+
+BackgroundServer *BackgroundProcessServer::getServerPtr(){
+    return _server;
 }
 
 

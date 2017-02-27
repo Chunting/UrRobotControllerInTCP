@@ -19,16 +19,16 @@ public:
 
     void runScript(const QString &script_name, std::function<void(bool)> on_slave_reply = nullptr);
 
-    BackgroundServer &getMaster();
-
+    BackgroundServer &getServer();
+    BackgroundServer *getServerPtr();
 protected:
     void onScriptFinish();
-    void onSlaveJson(const QJsonObject &json);
-    void onSlaveConnect(const QString &slave_name);
-    void onSlaveDisconnect(const QString &slave_name);
+    void onClientJson(const QJsonObject &json);
+    void onClientConnect(const QString &slave_name);
+    void onClientDisconnect(const QString &client_name);
 
 protected:
-    BackgroundServer *_master;
+    BackgroundServer *_server;
 
     struct SlaveTaskView {
         bool is_running;

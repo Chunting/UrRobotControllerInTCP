@@ -14,6 +14,9 @@ BinpickingView::BinpickingView(QWidget *parent) :
     _logger_widget = nullptr;
     _easy_gui_show_client = nullptr;
 
+    _is_driver_connected = false;
+    _cur_ui_status = RunningStatus::WaitDriver;
+
     // Init timer
     _time_start_count = QDateTime::currentMSecsSinceEpoch();
     _time_enabled = false;
@@ -29,8 +32,10 @@ BinpickingView::BinpickingView(QWidget *parent) :
     connect(_task_binpicking, &cobotsys::BackgroundTask::taskFinished, this, &BinpickingView::onTaskFinish);
     connect(_task_calibration, &cobotsys::BackgroundTask::taskFinished, this, &BinpickingView::onTaskFinish);
 
-    _master = new cobotsys::BackgroundProcessServer(this);
-    _master->getMaster().lanuchMaster();
+    _server = new cobotsys::BackgroundProcessServer(this);
+    connect(_server->getServerPtr(), &cobotsys::BackgroundServer::clientConnected,
+            this, &BinpickingView::onClientConnect);
+    _server->getServer().lanuchMaster();
 
 
     ui.setupUi(this);
@@ -49,6 +54,7 @@ BinpickingView::BinpickingView(QWidget *parent) :
     loadRunScript();
 
     genViewMatMenu();
+    updateUiStatus(RunningStatus::Idle);
 }
 
 BinpickingView::~BinpickingView(){
@@ -105,12 +111,8 @@ void BinpickingView::clearLoggerWindowText(){
 
 void BinpickingView::actionStart(){
     if (_task_binpicking->run(_settings_binpicking)) {
-        ui.btnViewMat->setEnabled(true);
-
         timerStart();
-
-        ui.btnStart->setEnabled(false);
-        ui.btnCalibration->setEnabled(false);
+        updateUiStatus(RunningStatus::Binpicking);
     }
 }
 
@@ -123,8 +125,7 @@ void BinpickingView::actionCalibration(){
     if (_task_calibration->run(_settings_calibration)) {
         timerStart();
 
-        ui.btnStart->setEnabled(false);
-        ui.btnCalibration->setEnabled(false);
+        updateUiStatus(RunningStatus::Calibration);
     }
 }
 
@@ -151,8 +152,7 @@ void BinpickingView::loadRunScript(){
 }
 
 void BinpickingView::onTaskFinish(){
-    ui.btnStart->setEnabled(true);
-    ui.btnCalibration->setEnabled(true);
+    updateUiStatus(RunningStatus::Idle);
     timerStop();
 }
 
@@ -235,5 +235,41 @@ void BinpickingView::timerInfoUpdate(){
 
 void BinpickingView::showDebugUi(){
     ui.debugUI->show();
+}
+
+void BinpickingView::onClientConnect(const QString &client_name){
+    if (client_name == "Driver") {
+        _is_driver_connected = true;
+    }
+}
+
+void BinpickingView::updateUiStatus(RunningStatus new_status){
+    auto setup = [=](bool a, bool b, bool c){
+        ui.btnStart->setEnabled(a);
+        ui.btnStop->setEnabled(b);
+        ui.btnCalibration->setEnabled(c);
+    };
+
+
+    if (_is_driver_connected) {
+        _cur_ui_status = new_status;
+    } else {
+        _cur_ui_status = RunningStatus::WaitDriver;
+    }
+
+    switch (_cur_ui_status) {
+        case RunningStatus::Idle:
+            setup(true, false, true);
+            break;
+        case RunningStatus::WaitDriver:
+            setup(false, false, false);
+            break;
+        case RunningStatus::Binpicking:
+            setup(false, true, false);
+            break;
+        case RunningStatus::Calibration:
+            setup(false, true, false);
+            break;
+    }
 }
 

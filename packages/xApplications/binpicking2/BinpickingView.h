@@ -62,9 +62,12 @@ protected:
     void timerStop();
     void timerInfoUpdate();
 
+
+
 protected:
     void setupLoggerUi();
     void onTaskFinish();
+    void onClientConnect(const QString &client_name);
 protected:
     virtual void paintEvent(QPaintEvent *event);
 protected:
@@ -87,7 +90,19 @@ protected:
     QStringList _view_mat_names_old;
     QPixmap _logo;
 
-    cobotsys::BackgroundProcessServer *_master;
+    cobotsys::BackgroundProcessServer *_server;
+
+    bool _is_driver_connected;
+
+    enum class RunningStatus {
+        Idle,
+        WaitDriver,
+        Binpicking,
+        Calibration,
+    };
+
+    RunningStatus _cur_ui_status;
+    void updateUiStatus(RunningStatus new_status);
 };
 
 
