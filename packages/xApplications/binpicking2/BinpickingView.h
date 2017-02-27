@@ -44,10 +44,6 @@ public:
 
     void showDebugUi();
 
-Q_SIGNALS:
-
-    void commandTriggered(const QString &command);
-
 protected:
     void loadConfig();
     void loadRunScript();

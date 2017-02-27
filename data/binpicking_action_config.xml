@@ -16,8 +16,8 @@
                 <!--<command_line>"sdfdf  sdfsd"</command_line>-->
             <!--</_>-->
             <_>
-                <path>cobot_binpicking_alpha_detect_xj</path>
-                <task_process_type>2</task_process_type>
+                <path>test_cobotsys_init_library</path>
+                <task_process_type>0</task_process_type>
                 <show_console_print>1</show_console_print>
                 <ENV>
                     <_>
@@ -36,22 +36,22 @@
                     </_>
                 </ROS_PARAM>
             </_>
-            <_>
-                <path>run_kinect2.sh</path>
-                <task_process_type>1</task_process_type>
-                <show_console_print>1</show_console_print>
-                <ENV>
-                    <_>
-                        <key>ROS_MASTER_URI</key>
-                        <value>http://192.168.10.189:11311</value>
-                    </_>
-                    <_>
-                        <key>ROS_IP</key>
-                        <value>"192.168.10.102"</value><!--如果是IP地址，这里西药加上引号，这个是OpenCV带来的限制-->
-                    </_>
-                </ENV>
-                <ROS_PARAM></ROS_PARAM>
-            </_>
+            <!--<_>-->
+                <!--<path>run_kinect2.sh</path>-->
+                <!--<task_process_type>1</task_process_type>-->
+                <!--<show_console_print>1</show_console_print>-->
+                <!--<ENV>-->
+                    <!--<_>-->
+                        <!--<key>ROS_MASTER_URI</key>-->
+                        <!--<value>http://192.168.10.189:11311</value>-->
+                    <!--</_>-->
+                    <!--<_>-->
+                        <!--<key>ROS_IP</key>-->
+                        <!--<value>"192.168.10.102"</value>&lt;!&ndash;如果是IP地址，这里西药加上引号，这个是OpenCV带来的限制&ndash;&gt;-->
+                    <!--</_>-->
+                <!--</ENV>-->
+                <!--<ROS_PARAM></ROS_PARAM>-->
+            <!--</_>-->
         </Task>
     </action_binpicking>
     <action_calibration>
@@ -74,4 +74,15 @@
             </_>
         </Task>
     </action_calibration>
+    <action_ur3_driver>
+        <Task>
+            <_>
+                <path>test_cobotsys_init_library</path>
+                <task_process_type>0</task_process_type>
+                <show_console_print>1</show_console_print>
+                <ENV></ENV>
+                <ROS_PARAM></ROS_PARAM>
+            </_>
+        </Task>
+    </action_ur3_driver>
 </opencv_storage>

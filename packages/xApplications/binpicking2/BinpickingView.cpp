@@ -115,6 +115,14 @@ void BinpickingView::actionStart(){
     if (_task_binpicking->run(_settings_binpicking)) {
         timerStart();
         updateUiStatus(RunningStatus::Binpicking);
+
+        _server->runScript("action_ur3_driver", [=](bool ok){
+            if (ok) {
+                COBOT_LOG.notice() << "Remote run success!";
+            } else {
+                actionStop();
+            }
+        });
     }
 }
 

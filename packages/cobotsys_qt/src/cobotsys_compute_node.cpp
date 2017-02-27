@@ -50,7 +50,7 @@ void ComputeNode::onMasterDisconnect(){
 }
 
 void ComputeNode::onMasterFound(){
-    COBOT_LOG.notice() << "ComputeNode: " << "Found: " << _client->peerName();
+    COBOT_LOG.notice() << "ComputeNode: " << "Found Server: " << _client->peerName();
 }
 
 void ComputeNode::onError(QAbstractSocket::SocketError error){
