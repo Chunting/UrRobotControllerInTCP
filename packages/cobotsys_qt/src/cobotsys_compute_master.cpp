@@ -50,7 +50,8 @@ ComputeMaster::~ComputeMaster(){
 
 bool ComputeMaster::lanuchMaster(const server::CONFIG &config){
     if (_server->listen(config.address, config.port)) {
-        COBOT_LOG.notice() << "ComputeMaster, Lanuch Success.";
+        COBOT_LOG.notice() << "ComputeMaster, Lanuch Success. [" << config.address.toString()
+                           << ":" << config.port << "]";
         return true;
     }
     return false;

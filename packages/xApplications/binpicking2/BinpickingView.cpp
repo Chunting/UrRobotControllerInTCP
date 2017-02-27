@@ -29,6 +29,10 @@ BinpickingView::BinpickingView(QWidget *parent) :
     connect(_task_binpicking, &cobotsys::BackgroundTask::taskFinished, this, &BinpickingView::onTaskFinish);
     connect(_task_calibration, &cobotsys::BackgroundTask::taskFinished, this, &BinpickingView::onTaskFinish);
 
+    _master = new cobotsys::BackgroundProcessMaster(this);
+    _master->getMaster().lanuchMaster();
+
+
     ui.setupUi(this);
     ui.debugUI->hide();
 

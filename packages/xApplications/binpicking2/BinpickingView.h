@@ -22,6 +22,7 @@
 #include "easy_cv_mat_reader.h"
 #include "MatMerger.h"
 #include "EasyGuiShowClient.h"
+#include <cobotsys_background_process_master.h>
 
 class BinpickingView : public QWidget {
 Q_OBJECT
@@ -85,6 +86,8 @@ protected:
     QMenu *_view_mat_menu;
     QStringList _view_mat_names_old;
     QPixmap _logo;
+
+    cobotsys::BackgroundProcessMaster *_master;
 };
 
 

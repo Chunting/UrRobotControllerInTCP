@@ -10,7 +10,7 @@ namespace cobotsys {
 Logger::Logger(){
     _current_entry = "INFO";
     _log_to_cout = false;
-    _cache_log_message = false;
+    _cache_log_message = true;
     _prefix_width = 12;
 }
 
@@ -70,7 +70,7 @@ Logger &Logger::instance(){
         first_init = false;
         logger.logToCout(true);
         logger._prefix_width = 12;
-        logger._cache_log_message = false;
+        logger._cache_log_message = true;
     }
     return logger;
 }
