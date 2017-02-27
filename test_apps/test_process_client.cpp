@@ -19,7 +19,7 @@ int main(int argc, char **argv){
     cobotsys::BackgroundProcessClient client;
     client.setScriptConfigFile("/home/itolfo/svn/vision/trunk/data/binpicking_action_config.xml");
 
-    client.getSlave().setNodeName("DriverMonitor");
+    client.getSlave().setNodeName("Driver");
     client.getSlave().connectMaster();
 
     return a.exec();

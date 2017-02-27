@@ -9,6 +9,8 @@
 #define LAYOUT_XML_FILE "binpicking_image_layout.xml"
 #define BINPICKING_FILE "binpicking_action_config.xml"
 
+using namespace cobotsys;
+
 BinpickingView::BinpickingView(QWidget *parent) :
         QWidget(parent){
     _logger_widget = nullptr;
@@ -33,8 +35,8 @@ BinpickingView::BinpickingView(QWidget *parent) :
     connect(_task_calibration, &cobotsys::BackgroundTask::taskFinished, this, &BinpickingView::onTaskFinish);
 
     _server = new cobotsys::BackgroundProcessServer(this);
-    connect(_server->getServerPtr(), &cobotsys::BackgroundServer::clientConnected,
-            this, &BinpickingView::onClientConnect);
+    connect(_server->getServerPtr(), &BackgroundServer::clientConnected, this, &BinpickingView::onClientConnect);
+    connect(_server->getServerPtr(), &BackgroundServer::clientDisconnected, this, &BinpickingView::onClientDisconnect);
     _server->getServer().lanuchMaster();
 
 
@@ -240,6 +242,15 @@ void BinpickingView::showDebugUi(){
 void BinpickingView::onClientConnect(const QString &client_name){
     if (client_name == "Driver") {
         _is_driver_connected = true;
+        updateUiStatus(RunningStatus::Idle);
+    }
+}
+
+void BinpickingView::onClientDisconnect(const QString &client_name){
+    if (client_name == "Driver") {
+        _is_driver_connected = false;
+        actionStop();
+        updateUiStatus(RunningStatus::Idle);
     }
 }
 
@@ -272,4 +283,5 @@ void BinpickingView::updateUiStatus(RunningStatus new_status){
             break;
     }
 }
+
 

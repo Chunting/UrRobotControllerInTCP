@@ -135,7 +135,7 @@ void BackgroundServer::cmdGetName(QTcpSocket *clientLink){
             auto pView = _slaves[clientLink];
             pView->slave_instance_id = rjs.json_object[BACK_KEY_SLAVE_INSTANCE_ID].toString();
             pView->slave_name = rjs.json_object[BACK_KEY_SLAVE_NAME].toString();
-            COBOT_LOG.info() << "Slave Arrival: " << pView->slave_instance_id << ", " << pView->slave_name;
+            COBOT_LOG.info() << "Client Arrival: " << pView->slave_instance_id << ", " << pView->slave_name;
 
             Q_EMIT clientConnected(pView->getName());
         }

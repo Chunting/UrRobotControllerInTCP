@@ -63,11 +63,11 @@ protected:
     void timerInfoUpdate();
 
 
-
 protected:
     void setupLoggerUi();
     void onTaskFinish();
     void onClientConnect(const QString &client_name);
+    void onClientDisconnect(const QString &client_name);
 protected:
     virtual void paintEvent(QPaintEvent *event);
 protected:

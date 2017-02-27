@@ -60,14 +60,14 @@ bool ComputeNodeServer::lanuchMaster(const server::CONFIG &config){
 void ComputeNodeServer::onClientConnect(){
     auto pLink = getLink();
     if (pLink) {
-        COBOT_LOG.notice() << "Master: " << "Client Connect.";
+        COBOT_LOG.notice() << "Server: " << "Client Connect.";
     }
 }
 
 void ComputeNodeServer::onClientDisconnect(){
     auto pLink = getLink();
     if (pLink) {
-        COBOT_LOG.notice() << "Master: " << "Client Disconnect.";
+        COBOT_LOG.notice() << "Server: " << "Client Disconnect.";
 
         deleteTCPLink(pLink);
         processClientDisconnect(pLink->tcp_socket);
@@ -77,14 +77,14 @@ void ComputeNodeServer::onClientDisconnect(){
 void ComputeNodeServer::onClientFound(){
     auto pLink = getLink();
     if (pLink) {
-        COBOT_LOG.notice() << "Master: " << "Client Found.";
+        COBOT_LOG.notice() << "Server: " << "Client Found.";
     }
 }
 
 void ComputeNodeServer::onClientError(QAbstractSocket::SocketError error){
     auto pLink = getLink();
     if (pLink) {
-        COBOT_LOG.notice() << "Master: " << "Client, " << pLink->tcp_socket->errorString();
+        COBOT_LOG.notice() << "Server: " << "Error: " << pLink->tcp_socket->errorString();
     }
 }
 

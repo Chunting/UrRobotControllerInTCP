@@ -56,7 +56,7 @@ void BackgroundProcessServer::onClientConnect(const QString &slave_name){
 }
 
 void BackgroundProcessServer::onClientDisconnect(const QString &client_name){
-    COBOT_LOG.warning() << "Client Exit: " << client_name;
+    COBOT_LOG.warning() << "Client: " << "Exit [" << client_name << "]";
     _views.erase(client_name);
 }
 
