@@ -96,5 +96,9 @@ void ComputeNode::processConnect(){
 void ComputeNode::processDisconnect(){
 }
 
+void ComputeNode::setNodeName(const QString &name){
+    _node_name = name;
+}
+
 //
 }

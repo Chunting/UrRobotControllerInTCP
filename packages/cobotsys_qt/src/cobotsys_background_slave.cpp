@@ -17,8 +17,7 @@ BackgroundSlave::BackgroundSlave(QObject *parent) : ComputeNode(parent){
     _json_callback_manager = std::make_shared<JsonCallbackManager>(
             [=](const QJsonObject &j){ writeJson(j); }, _instance_id);
 
-    _json_callback_manager->addJsonCommandListener(
-            BACK_GET_SLAVE_NAME, BACK_GET_SLAVE_NAME, [=](const QJsonObject &j){ cmdGetSlaveName(j); });
+    registerCommandHandler(BACK_GET_SLAVE_NAME, [=](const QJsonObject &j){ cmdGetSlaveName(j); });
 }
 
 void BackgroundSlave::processData(const QByteArray &ba){
@@ -57,7 +56,9 @@ void BackgroundSlave::writeJson(const QJsonObject &json){
 void BackgroundSlave::cmdGetSlaveName(const QJsonObject &json){
     auto rcmd = json;
 
-    rcmd[BACK_KEY_SLAVE_NAME] = _instance_id;
+    rcmd[BACK_KEY_SLAVE_NAME] = _node_name;
+    rcmd[BACK_KEY_SLAVE_INSTANCE_ID] = _instance_id;
+    rcmd[JSON_REPLY] = "";
     replyJson(rcmd);
 }
 
@@ -66,6 +67,10 @@ void BackgroundSlave::replyJson(const QJsonObject &json){
     rejs.remove(JSON_SENDER);
     rejs.remove(JSON_COMMAND_KEY);
     writeJson(rejs);
+}
+
+void BackgroundSlave::registerCommandHandler(const QString &command, std::function<void(const QJsonObject &)> handler){
+    _json_callback_manager->addJsonCommandListener(command, command, handler);
 }
 
 //

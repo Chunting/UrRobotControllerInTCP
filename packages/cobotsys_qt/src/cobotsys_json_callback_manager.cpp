@@ -29,7 +29,7 @@ void JsonCallbackManager::processJson(const QJsonObject &jsonObject){
                 if (iter->second.callback) {
                     auto end = std::chrono::high_resolution_clock::now();
                     std::chrono::duration<double> diff = end - iter->second.start;
-                    iter->second.callback({JsonReplyStatus::Success, jsonObject, diff});
+                    iter->second.callback({JsonReplyStatus::Success, jsonObject, diff.count()});
                 }
                 _json_write_callbacks.erase(seqNum);
             } else {
@@ -37,7 +37,7 @@ void JsonCallbackManager::processJson(const QJsonObject &jsonObject){
             }
         } else {
             // ignore json message if receiver is not same.
-            //COBOT_LOG.info() << jsonObject;
+            //COBOT_LOG.info() << json_object;
         }
     } else if (jsonObject.contains(JSON_COMMAND_KEY)) {
         auto command = jsonObject[JSON_COMMAND_KEY].toString();
@@ -101,7 +101,7 @@ void JsonCallbackManager::checkTimeout(){
             if (pair.second.callback) {
                 auto end = std::chrono::high_resolution_clock::now();
                 std::chrono::duration<double> diff = end - pair.second.start;
-                pair.second.callback({JsonReplyStatus::Timeout, pair.second.sendData, diff});
+                pair.second.callback({JsonReplyStatus::Timeout, pair.second.sendData, diff.count()});
             } else {
                 COBOT_LOG.notice() << "Timeout: " << pair.second.sendData << ", Diff: " << diff_time;
             }

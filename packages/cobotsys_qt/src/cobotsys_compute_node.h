@@ -28,6 +28,7 @@ public:
 
     void connectMaster(const server::CONFIG &config = server::CONFIG());
     void writeData(const QByteArray &ba);
+    void setNodeName(const QString &name);
 
 Q_SIGNALS:
     void masterConnected();
@@ -51,6 +52,7 @@ protected:
     server::CONFIG _config;
     bool _is_connected;
     int _re_connect_delay;
+    QString _node_name;
 };
 
 

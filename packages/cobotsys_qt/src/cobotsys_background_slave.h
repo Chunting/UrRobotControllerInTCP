@@ -20,6 +20,8 @@ Q_OBJECT
 public:
     BackgroundSlave(QObject *parent = nullptr);
 
+
+    void registerCommandHandler(const QString &command, std::function<void(const QJsonObject &)> handler);
 protected:
     virtual void processData(const QByteArray &ba);
     virtual void processConnect();
@@ -31,7 +33,8 @@ protected:
     void writeJson(const QJsonObject &json);
     void replyJson(const QJsonObject &json);
 protected:
-    void cmdGetSlaveName(const QJsonObject& json);
+    void cmdGetSlaveName(const QJsonObject &json);
+
 protected:
     uint32_t _num_debug_inc;
     QString _instance_id;

@@ -23,6 +23,7 @@ int main(int argc, char **argv){
     if (master.lanuchMaster()){
 
     } else {
+        slave.setNodeName("Driver");
         slave.connectMaster();
     }
 

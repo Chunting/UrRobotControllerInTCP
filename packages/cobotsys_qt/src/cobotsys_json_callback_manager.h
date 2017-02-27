@@ -29,9 +29,9 @@ enum class JsonReplyStatus {
 };
 
 struct JsonReply {
-    JsonReplyStatus replyStatus;
-    const QJsonObject &jsonObject;
-    std::chrono::duration<double> timeUsed; // Second
+    JsonReplyStatus reply_status;
+    const QJsonObject &json_object;
+    double time_used; // Second
 };
 
 
