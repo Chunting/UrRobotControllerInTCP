@@ -21,7 +21,7 @@ BackgroundProcessClient::~BackgroundProcessClient(){
 }
 
 
-BackgroundSlave &BackgroundProcessClient::getSlave(){
+BackgroundClient &BackgroundProcessClient::getSlave(){
     return _slave;
 }
 

@@ -4,13 +4,13 @@
 //
 
 #include <QtCore/QUuid>
-#include "cobotsys_background_slave.h"
+#include "cobotsys_background_client.h"
 
 
 namespace cobotsys {
 using namespace distributed_system;
 
-BackgroundSlave::BackgroundSlave(QObject *parent) : ComputeNode(parent){
+BackgroundClient::BackgroundClient(QObject *parent) : ComputeNode(parent){
     _num_debug_inc = 0;
     _instance_id = QUuid::createUuid().toString();
     _decoder = std::make_shared<MessageDecoder>([=](const Message &m){ processMessage(m); });
@@ -20,18 +20,18 @@ BackgroundSlave::BackgroundSlave(QObject *parent) : ComputeNode(parent){
     registerCommandHandler(BACK_GET_SLAVE_NAME, [=](const QJsonObject &j){ cmdGetSlaveName(j); });
 }
 
-void BackgroundSlave::processData(const QByteArray &ba){
+void BackgroundClient::processData(const QByteArray &ba){
     _decoder->decode(ba);
 }
 
-void BackgroundSlave::processConnect(){
+void BackgroundClient::processConnect(){
     writeData("Hello World!");
 }
 
-void BackgroundSlave::processDisconnect(){
+void BackgroundClient::processDisconnect(){
 }
 
-void BackgroundSlave::processMessage(const Message &m){
+void BackgroundClient::processMessage(const Message &m){
     if (m.getType() == MessageType::Utf8BasedJSON) {
         QJsonParseError jsonParseError;
         QByteArray json(m.getContent(), m.getContentLength());
@@ -45,15 +45,15 @@ void BackgroundSlave::processMessage(const Message &m){
     }
 }
 
-void BackgroundSlave::processJson(const QJsonObject &json){
+void BackgroundClient::processJson(const QJsonObject &json){
     _json_callback_manager->processJson(json);
 }
 
-void BackgroundSlave::writeJson(const QJsonObject &json){
+void BackgroundClient::writeJson(const QJsonObject &json){
     _client->write(MessageEncoder::genJsonMessage(json).getData());
 }
 
-void BackgroundSlave::cmdGetSlaveName(const QJsonObject &json){
+void BackgroundClient::cmdGetSlaveName(const QJsonObject &json){
     auto rcmd = json;
 
     rcmd[BACK_KEY_SLAVE_NAME] = _node_name;
@@ -62,14 +62,14 @@ void BackgroundSlave::cmdGetSlaveName(const QJsonObject &json){
     replyJson(rcmd);
 }
 
-void BackgroundSlave::replyJson(const QJsonObject &json){
+void BackgroundClient::replyJson(const QJsonObject &json){
     auto rejs = json;
     rejs.remove(JSON_SENDER);
     rejs.remove(JSON_COMMAND_KEY);
     writeJson(rejs);
 }
 
-void BackgroundSlave::registerCommandHandler(const QString &command, std::function<void(const QJsonObject &)> handler){
+void BackgroundClient::registerCommandHandler(const QString &command, std::function<void(const QJsonObject &)> handler){
     _json_callback_manager->addJsonCommandListener(command, command, handler);
 }
 

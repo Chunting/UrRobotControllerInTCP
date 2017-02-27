@@ -14,11 +14,11 @@
 namespace cobotsys {
 using namespace distributed_system;
 
-class BackgroundSlave : public ComputeNode {
+class BackgroundClient : public ComputeNode {
 Q_OBJECT
 
 public:
-    BackgroundSlave(QObject *parent = nullptr);
+    BackgroundClient(QObject *parent = nullptr);
 
 
     void registerCommandHandler(const QString &command, std::function<void(const QJsonObject &)> handler);

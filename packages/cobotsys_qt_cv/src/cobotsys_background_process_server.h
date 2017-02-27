@@ -7,21 +7,19 @@
 #define PROJECT_COBOTSYS_BACKGROUND_PROCESS_MASTER_H
 
 #include <QObject>
-#include <cobotsys_background_master.h>
+#include <cobotsys_background_server.h>
 
 namespace cobotsys {
 
-class BackgroundProcessMaster : public QObject {
+class BackgroundProcessServer : public QObject {
 Q_OBJECT
 public:
-    BackgroundProcessMaster(QObject *parent = nullptr);
-    ~BackgroundProcessMaster();
+    BackgroundProcessServer(QObject *parent = nullptr);
+    ~BackgroundProcessServer();
 
     void runScript(const QString &script_name, std::function<void(bool)> on_slave_reply = nullptr);
 
-    BackgroundMaster &getMaster();
-Q_SIGNALS:
-
+    BackgroundServer &getMaster();
 
 protected:
     void onScriptFinish();
@@ -30,7 +28,7 @@ protected:
     void onSlaveDisconnect(const QString &slave_name);
 
 protected:
-    BackgroundMaster *_master;
+    BackgroundServer *_master;
 
     struct SlaveTaskView {
         bool is_running;

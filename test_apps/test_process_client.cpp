@@ -5,10 +5,10 @@
 
 #include <cobotsys.h>
 #include <QtCore/QCoreApplication>
-#include <cobotsys_compute_master.h>
+#include <cobotsys_compute_node_server.h>
 #include <cobotsys_compute_node.h>
-#include <cobotsys_background_slave.h>
-#include <cobotsys_background_master.h>
+#include <cobotsys_background_client.h>
+#include <cobotsys_background_server.h>
 #include <cobotsys_background_process_client.h>
 
 

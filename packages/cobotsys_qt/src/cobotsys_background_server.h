@@ -7,7 +7,7 @@
 #define PROJECT_COBOTSYS_BACKGROUND_MASTER_H
 
 #include <cobotsys_json_callback_manager.h>
-#include <cobotsys_compute_master.h>
+#include <cobotsys_compute_node_server.h>
 #include <cobotsys_message.h>
 #include <chrono>
 #include <functional>
@@ -16,7 +16,7 @@
 namespace cobotsys {
 using namespace distributed_system;
 
-class BackgroundMaster : public ComputeMaster {
+class BackgroundServer : public ComputeNodeServer {
 Q_OBJECT
 
 
@@ -32,7 +32,7 @@ public:
 
         const QString &getName() const{ return slave_name; }
 
-        friend class BackgroundMaster;
+        friend class BackgroundServer;
     protected:
         void processData(const QByteArray &ba);
         void processMessage(const Message &m);
@@ -43,8 +43,8 @@ public:
     };
 
 public:
-    BackgroundMaster(QObject *parent = nullptr);
-    ~BackgroundMaster();
+    BackgroundServer(QObject *parent = nullptr);
+    ~BackgroundServer();
 
 
     void writeJson(const QJsonObject &json, std::function<void(const cobotsys::JsonReply &)> on_slave_reply);

@@ -18,11 +18,11 @@
 namespace cobotsys {
 
 
-class ComputeMaster : public QObject {
+class ComputeNodeServer : public QObject {
 Q_OBJECT
 public:
-    ComputeMaster(QObject *parent = nullptr);
-    ~ComputeMaster();
+    ComputeNodeServer(QObject *parent = nullptr);
+    ~ComputeNodeServer();
 
 
     bool lanuchMaster(const server::CONFIG &config = server::CONFIG());

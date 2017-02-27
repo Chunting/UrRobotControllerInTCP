@@ -4,22 +4,22 @@
 //
 
 #include <QUuid>
-#include "cobotsys_background_master.h"
+#include "cobotsys_background_server.h"
 
 namespace cobotsys {
 
-BackgroundMaster::BackgroundSlaveView::BackgroundSlaveView(
+BackgroundServer::BackgroundSlaveView::BackgroundSlaveView(
         std::function<void(const QJsonObject &, BackgroundSlaveView &)> jsonHandler){
     _decoder = std::make_shared<MessageDecoder>([=](const Message &m){ processMessage(m); });
     _json_handler = jsonHandler;
 }
 
 
-void BackgroundMaster::BackgroundSlaveView::processData(const QByteArray &ba){
+void BackgroundServer::BackgroundSlaveView::processData(const QByteArray &ba){
     _decoder->decode(ba);
 }
 
-void BackgroundMaster::BackgroundSlaveView::processMessage(const distributed_system::Message &m){
+void BackgroundServer::BackgroundSlaveView::processMessage(const distributed_system::Message &m){
     if (m.getType() == MessageType::Utf8BasedJSON) {
         QJsonParseError jsonParseError;
         QByteArray json(m.getContent(), m.getContentLength());
@@ -36,7 +36,7 @@ void BackgroundMaster::BackgroundSlaveView::processMessage(const distributed_sys
 }
 
 
-double BackgroundMaster::CallbackTracker::calcTimeElapsed() const{
+double BackgroundServer::CallbackTracker::calcTimeElapsed() const{
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> diff = end - send_time;
     return diff.count();
@@ -49,21 +49,21 @@ double BackgroundMaster::CallbackTracker::calcTimeElapsed() const{
 namespace cobotsys {
 
 
-BackgroundMaster::BackgroundMaster(QObject *parent) : ComputeMaster(parent){
+BackgroundServer::BackgroundServer(QObject *parent) : ComputeNodeServer(parent){
     _instance_id = QUuid::createUuid().toString();
     _json_handler = [=](const QJsonObject &j){ COBOT_LOG.warning() << "Unhandled: " << j; };
 
     _chk_timer = new QTimer(this);
     _chk_timer->setInterval(100);
-    connect(_chk_timer, &QTimer::timeout, this, &BackgroundMaster::timeoutChecker);
+    connect(_chk_timer, &QTimer::timeout, this, &BackgroundServer::timeoutChecker);
     _chk_timer->start();
 }
 
 
-BackgroundMaster::~BackgroundMaster(){
+BackgroundServer::~BackgroundServer(){
 }
 
-void BackgroundMaster::processClientData(QTcpSocket *clientLink, const QByteArray &ba){
+void BackgroundServer::processClientData(QTcpSocket *clientLink, const QByteArray &ba){
 
     // 处理数据
     auto viewIter = _slaves.find(clientLink);
@@ -73,7 +73,7 @@ void BackgroundMaster::processClientData(QTcpSocket *clientLink, const QByteArra
 }
 
 
-void BackgroundMaster::createClientView(QTcpSocket *clientLink){
+void BackgroundServer::createClientView(QTcpSocket *clientLink){
     auto iter = _slaves.find(clientLink);
     if (iter == _slaves.end()) {
         auto view = std::make_shared<BackgroundSlaveView>([=](const QJsonObject &j, BackgroundSlaveView &v){
@@ -84,9 +84,9 @@ void BackgroundMaster::createClientView(QTcpSocket *clientLink){
     }
 }
 
-void BackgroundMaster::processJson(const QJsonObject &json,
+void BackgroundServer::processJson(const QJsonObject &json,
                                    QTcpSocket *link,
-                                   BackgroundMaster::BackgroundSlaveView &view){
+                                   BackgroundServer::BackgroundSlaveView &view){
 
     if (json.contains(JSON_REPLY) && json.contains(JSON_COMMAND_SEQ)) {
         auto seqn = json[JSON_COMMAND_SEQ].toString();
@@ -106,14 +106,14 @@ void BackgroundMaster::processJson(const QJsonObject &json,
 }
 
 
-void BackgroundMaster::processClientConnect(QTcpSocket *tcpSocket){
+void BackgroundServer::processClientConnect(QTcpSocket *tcpSocket){
     createClientView(tcpSocket);
 
     cmdGetName(tcpSocket);
 }
 
 
-void BackgroundMaster::processClientDisconnect(QTcpSocket *tcpSocket){
+void BackgroundServer::processClientDisconnect(QTcpSocket *tcpSocket){
     auto iter = _slaves.find(tcpSocket);
     if (iter != _slaves.end()) {
         Q_EMIT clientDisconnected(iter->second->getName());
@@ -121,12 +121,12 @@ void BackgroundMaster::processClientDisconnect(QTcpSocket *tcpSocket){
     }
 }
 
-void BackgroundMaster::directWriteJson(QTcpSocket *clientLink, const QJsonObject &json){
+void BackgroundServer::directWriteJson(QTcpSocket *clientLink, const QJsonObject &json){
     clientLink->write(MessageEncoder::genJsonMessage(json).getData());
 }
 
 
-void BackgroundMaster::cmdGetName(QTcpSocket *clientLink){
+void BackgroundServer::cmdGetName(QTcpSocket *clientLink){
     QJsonObject json;
     json[JSON_COMMAND_KEY] = "GetSlaveName";
 
@@ -142,7 +142,7 @@ void BackgroundMaster::cmdGetName(QTcpSocket *clientLink){
     });
 }
 
-void BackgroundMaster::writeJson(const QJsonObject &json,
+void BackgroundServer::writeJson(const QJsonObject &json,
                                  std::function<void(const cobotsys::JsonReply &)> on_slave_reply){
     if (json.contains(JSON_RECEIVER)) {
         auto receiver = json[JSON_RECEIVER].toString();
@@ -160,7 +160,7 @@ void BackgroundMaster::writeJson(const QJsonObject &json,
     }
 }
 
-void BackgroundMaster::writeJson(QTcpSocket *clientLink,
+void BackgroundServer::writeJson(QTcpSocket *clientLink,
                                  const QJsonObject &json,
                                  std::function<void(const cobotsys::JsonReply &)> on_slave_reply){
     auto localJson = json;
@@ -176,11 +176,11 @@ void BackgroundMaster::writeJson(QTcpSocket *clientLink,
     directWriteJson(clientLink, localJson);
 }
 
-void BackgroundMaster::setJsonHandler(std::function<void(const QJsonObject &)> general_handler){
+void BackgroundServer::setJsonHandler(std::function<void(const QJsonObject &)> general_handler){
     _json_handler = general_handler;
 }
 
-void BackgroundMaster::callJsonHandler(const QJsonObject &json){
+void BackgroundServer::callJsonHandler(const QJsonObject &json){
     if (_json_handler) {
         _json_handler(json);
     } else {
@@ -188,7 +188,7 @@ void BackgroundMaster::callJsonHandler(const QJsonObject &json){
     }
 }
 
-void BackgroundMaster::timeoutChecker(){
+void BackgroundServer::timeoutChecker(){
 
     auto cur = std::chrono::high_resolution_clock::now();
     std::vector<QString> keys;
