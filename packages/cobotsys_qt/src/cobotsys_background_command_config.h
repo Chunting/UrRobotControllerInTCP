@@ -10,5 +10,11 @@
 #define BACK_KEY_SLAVE_NAME         "SlaveName"
 #define BACK_KEY_SLAVE_INSTANCE_ID  "InstanceId"
 
+#define BACK_CMD_RUN_SCRIPT         "RunScript"
+#define BACK_KEY_SCRIPT_NAME        "ScriptName"
+#define BACK_KEY_RESULT             "RESULT"
+
+#define BACK_CMD_STATUS             "Status"
+#define BACK_KEY_TASK_STATUS        "TaskStatus"
 
 #endif //PROJECT_COBOTSYS_BACKGROUND_COMMAND_CONFIG_H

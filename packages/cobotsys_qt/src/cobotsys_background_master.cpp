@@ -51,6 +51,12 @@ namespace cobotsys {
 
 BackgroundMaster::BackgroundMaster(QObject *parent) : ComputeMaster(parent){
     _instance_id = QUuid::createUuid().toString();
+    _json_handler = [=](const QJsonObject &j){ COBOT_LOG.warning() << "Unhandled: " << j; };
+
+    _chk_timer = new QTimer(this);
+    _chk_timer->setInterval(100);
+    connect(_chk_timer, &QTimer::timeout, this, &BackgroundMaster::timeoutChecker);
+    _chk_timer->start();
 }
 
 
@@ -88,13 +94,15 @@ void BackgroundMaster::processJson(const QJsonObject &json,
         auto iter = _jcmd_history.find(seqn);
         if (iter != _jcmd_history.end()) {
             JsonReply jrpy = {JsonReplyStatus::Success, json, iter->second.calcTimeElapsed()};
-            if (iter->second.callback)
+            if (iter->second.callback) {
                 iter->second.callback(jrpy);
-            else
-                COBOT_LOG.warning() << "No Handle for: " << json;
+            }
+
+            _jcmd_history.erase(iter);
         }
-    } else
-        COBOT_LOG.warning() << "Unexpected JSON Message: " << json;
+    } else {
+        callJsonHandler(json);
+    }
 }
 
 
@@ -102,6 +110,15 @@ void BackgroundMaster::processClientConnect(QTcpSocket *tcpSocket){
     createClientView(tcpSocket);
 
     cmdGetName(tcpSocket);
+}
+
+
+void BackgroundMaster::processClientDisconnect(QTcpSocket *tcpSocket){
+    auto iter = _slaves.find(tcpSocket);
+    if (iter != _slaves.end()) {
+        Q_EMIT clientDisconnected(iter->second->getName());
+        _slaves.erase(tcpSocket);
+    }
 }
 
 void BackgroundMaster::directWriteJson(QTcpSocket *clientLink, const QJsonObject &json){
@@ -119,6 +136,8 @@ void BackgroundMaster::cmdGetName(QTcpSocket *clientLink){
             pView->slave_instance_id = rjs.json_object[BACK_KEY_SLAVE_INSTANCE_ID].toString();
             pView->slave_name = rjs.json_object[BACK_KEY_SLAVE_NAME].toString();
             COBOT_LOG.info() << "Slave Arrival: " << pView->slave_instance_id << ", " << pView->slave_name;
+
+            Q_EMIT clientConnected(pView->getName());
         }
     });
 }
@@ -128,7 +147,7 @@ void BackgroundMaster::writeJson(const QJsonObject &json,
     if (json.contains(JSON_RECEIVER)) {
         auto receiver = json[JSON_RECEIVER].toString();
         for (auto &iter : _slaves) {
-            if (iter.second->slave_name == receiver) {
+            if (iter.second->getName() == receiver) {
                 writeJson(iter.first, json, on_slave_reply);
                 return;
             }
@@ -156,6 +175,38 @@ void BackgroundMaster::writeJson(QTcpSocket *clientLink,
     _jcmd_history.insert({seqNum, ctrack});
     directWriteJson(clientLink, localJson);
 }
+
+void BackgroundMaster::setJsonHandler(std::function<void(const QJsonObject &)> general_handler){
+    _json_handler = general_handler;
+}
+
+void BackgroundMaster::callJsonHandler(const QJsonObject &json){
+    if (_json_handler) {
+        _json_handler(json);
+    } else {
+        COBOT_LOG.warning() << "Unhandled: " << json;
+    }
+}
+
+void BackgroundMaster::timeoutChecker(){
+
+    auto cur = std::chrono::high_resolution_clock::now();
+    std::vector<QString> keys;
+    for (auto &pair : _jcmd_history) {
+        auto time_elapsed = pair.second.calcTimeElapsed();
+        if (time_elapsed > 0.5) {
+            if (pair.second.callback) {
+                pair.second.callback({JsonReplyStatus::Success, pair.second.send_data, time_elapsed});
+            }
+            keys.push_back(pair.first);
+        }
+    }
+
+    for (auto key : keys) {
+        _jcmd_history.erase(key);
+    }
+}
+
 
 
 

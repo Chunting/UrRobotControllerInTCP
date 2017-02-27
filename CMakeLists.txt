@@ -63,5 +63,6 @@ endfunction()
 
 build_package(${CMAKE_SOURCE_DIR}/packages/cobotsys)
 build_package(${CMAKE_SOURCE_DIR}/packages/cobotsys_qt)
+build_package(${CMAKE_SOURCE_DIR}/packages/cobotsys_qt_cv)
 
 build_package(${CMAKE_SOURCE_DIR}/test_apps)

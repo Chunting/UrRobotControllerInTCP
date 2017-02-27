@@ -69,6 +69,7 @@ void ComputeMaster::onClientDisconnect(){
         COBOT_LOG.notice() << "Master: " << "Client Disconnect.";
 
         deleteTCPLink(pLink);
+        processClientDisconnect(pLink->tcp_socket);
     }
 }
 
@@ -111,6 +112,9 @@ void ComputeMaster::processClientData(QTcpSocket *clientLink, const QByteArray &
 }
 
 void ComputeMaster::processClientConnect(QTcpSocket *tcpSocket){
+}
+
+void ComputeMaster::processClientDisconnect(QTcpSocket *tcpSocket){
 }
 
 
