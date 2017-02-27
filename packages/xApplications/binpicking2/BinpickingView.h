@@ -40,6 +40,9 @@ public:
 
     void actionCloseAllViewMatWindow();
 
+
+    void showDebugUi();
+
 Q_SIGNALS:
 
     void commandTriggered(const QString &command);

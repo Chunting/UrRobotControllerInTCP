@@ -6,6 +6,7 @@
 #include <QApplication>
 #include <cobotsys.h>
 #include <cobotsys_file_finder.h>
+#include <QtCore/QCommandLineParser>
 #include "BinpickingView.h"
 
 namespace linux_only {
@@ -21,7 +22,18 @@ int main(int argc, char **argv){
     QApplication::setOrganizationName("COBOT");
     QApplication::setApplicationName("binpicking2");
 
+
+    QCommandLineParser parser;
+    QCommandLineOption debug_model(QStringList() << "d" << "debug", "Show debug buttons");
+
+    parser.addOption(debug_model);
+    parser.process(a);
+
     BinpickingView bpv;
+
+    if (parser.isSet(debug_model))
+        bpv.showDebugUi();
+
     bpv.show();
 
     return a.exec();

@@ -30,6 +30,7 @@ BinpickingView::BinpickingView(QWidget *parent) :
     connect(_task_calibration, &cobotsys::BackgroundTask::taskFinished, this, &BinpickingView::onTaskFinish);
 
     ui.setupUi(this);
+    ui.debugUI->hide();
 
     _logo = QPixmap::fromImage(QImage(":/icons/resources/cobot_logo_icon.png"));
 
@@ -226,5 +227,9 @@ void BinpickingView::timerInfoUpdate(){
 
         updateViewMatMenu();
     }
+}
+
+void BinpickingView::showDebugUi(){
+    ui.debugUI->show();
 }
 
