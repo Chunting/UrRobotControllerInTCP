@@ -42,6 +42,7 @@ void parser_app_name(const char *arg){
 
 
 void init_library(int argc, char **argv){
+    FileFinder::loadDataPaths();
     internal_info::parser_app_name(argv[0]);
 }
 }

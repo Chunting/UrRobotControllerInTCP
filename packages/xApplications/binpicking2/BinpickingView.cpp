@@ -80,6 +80,8 @@ void BinpickingView::stopAll(){
     if (_task_binpicking) _task_binpicking->stop();
     if (_task_calibration) _task_calibration->stop();
     _easy_gui_show_client->clearClientMat();
+
+    _server->stopScript();
 }
 
 void BinpickingView::setupLoggerUi(){

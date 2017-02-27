@@ -10,14 +10,16 @@
 #include <cobotsys_background_client.h>
 #include <cobotsys_background_server.h>
 #include <cobotsys_background_process_client.h>
+#include <cobotsys_file_finder.h>
 
 
 int main(int argc, char **argv){
     QCoreApplication a(argc, argv);
     cobotsys::init_library(argc, argv);
 
+    auto file = cobotsys::FileFinder::find("binpicking_action_config.xml");
     cobotsys::BackgroundProcessClient client;
-    client.setScriptConfigFile("/home/itolfo/svn/vision/trunk/data/binpicking_action_config.xml");
+    client.setScriptConfigFile(file.c_str());
 
     client.getSlave().setNodeName("Driver");
     client.getSlave().connectMaster();

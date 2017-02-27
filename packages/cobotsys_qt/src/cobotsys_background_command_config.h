@@ -11,8 +11,10 @@
 #define BACK_KEY_SLAVE_INSTANCE_ID  "InstanceId"
 
 #define BACK_CMD_RUN_SCRIPT         "RunScript"
+#define BACK_CMD_STOP_SCRIPT        "StopScript"
 #define BACK_KEY_SCRIPT_NAME        "ScriptName"
 #define BACK_KEY_RESULT             "RESULT"
+
 
 #define BACK_CMD_STATUS             "Status"
 #define BACK_KEY_TASK_STATUS        "TaskStatus"

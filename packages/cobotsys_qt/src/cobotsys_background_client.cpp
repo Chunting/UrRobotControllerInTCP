@@ -51,6 +51,7 @@ void BackgroundClient::processJson(const QJsonObject &json){
 
 void BackgroundClient::writeJson(const QJsonObject &json){
     _client->write(MessageEncoder::genJsonMessage(json).getData());
+    COBOT_LOG.info() << "Client JSON: " << json;
 }
 
 void BackgroundClient::cmdGetSlaveName(const QJsonObject &json){
@@ -66,6 +67,7 @@ void BackgroundClient::replyJson(const QJsonObject &json){
     auto rejs = json;
     rejs.remove(JSON_SENDER);
     rejs.remove(JSON_COMMAND_KEY);
+    rejs[JSON_REPLY] = "";
     writeJson(rejs);
 }
 

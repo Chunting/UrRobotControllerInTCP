@@ -17,14 +17,19 @@ public:
     BackgroundProcessServer(QObject *parent = nullptr);
     ~BackgroundProcessServer();
 
-    void runScript(const QString &script_name, std::function<void(bool)> on_slave_reply = nullptr);
+    void runScript(const QString &script_name, std::function<void(bool)> on_client_reply = nullptr);
+    void stopScript(std::function<void(bool)> on_client_reply = nullptr);
 
     BackgroundServer &getServer();
     BackgroundServer *getServerPtr();
+
+Q_SIGNALS:
+    void clientTaskChanged(const QString& client, bool is_task_running);
+
 protected:
     void onScriptFinish();
     void onClientJson(const QJsonObject &json);
-    void onClientConnect(const QString &slave_name);
+    void onClientConnect(const QString &client_name);
     void onClientDisconnect(const QString &client_name);
 
 protected:

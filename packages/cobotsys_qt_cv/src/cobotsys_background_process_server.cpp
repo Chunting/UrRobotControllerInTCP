@@ -25,14 +25,25 @@ BackgroundProcessServer::BackgroundProcessServer(QObject *parent) : QObject(pare
 BackgroundProcessServer::~BackgroundProcessServer(){
 }
 
-void BackgroundProcessServer::runScript(const QString &script_name, std::function<void(bool)> on_slave_reply){
+void BackgroundProcessServer::runScript(const QString &script_name, std::function<void(bool)> on_client_reply){
     QJsonObject json;
     json[JSON_COMMAND_KEY] = BACK_CMD_RUN_SCRIPT;
     json[BACK_KEY_SCRIPT_NAME] = script_name;
     _server->writeJson(json, [=](const cobotsys::JsonReply &reply){
-        if (on_slave_reply) {
-            on_slave_reply(reply.reply_status == JsonReplyStatus::Success);
+        if (on_client_reply) {
+            on_client_reply(reply.reply_status == JsonReplyStatus::Success);
         }
+    });
+}
+
+void BackgroundProcessServer::stopScript(std::function<void(bool)> on_client_reply){
+    QJsonObject json;
+    json[JSON_COMMAND_KEY] = BACK_CMD_STOP_SCRIPT;
+    _server->writeJson(json, [=](const cobotsys::JsonReply &reply){
+        if (on_client_reply) {
+            on_client_reply(reply.reply_status == JsonReplyStatus::Success);
+        }
+        COBOT_LOG.info() << "StopScript: " << reply.json_object << ", " << reply.time_used;
     });
 }
 
@@ -44,15 +55,16 @@ BackgroundServer &BackgroundProcessServer::getServer(){
 }
 
 void BackgroundProcessServer::onClientJson(const QJsonObject &json){
-    QString slave_name = json[JSON_SENDER].toString();
-    auto iter = _views.find(slave_name);
+    QString client_name = json[JSON_SENDER].toString();
+    auto iter = _views.find(client_name);
     if (iter != _views.end()) {
         iter->second.is_running = json[BACK_KEY_TASK_STATUS].toBool();
+        Q_EMIT clientTaskChanged(client_name, iter->second.is_running);
     }
 }
 
-void BackgroundProcessServer::onClientConnect(const QString &slave_name){
-    _views[slave_name] = SlaveTaskView();
+void BackgroundProcessServer::onClientConnect(const QString &client_name){
+    _views[client_name] = SlaveTaskView();
 }
 
 void BackgroundProcessServer::onClientDisconnect(const QString &client_name){
@@ -63,6 +75,8 @@ void BackgroundProcessServer::onClientDisconnect(const QString &client_name){
 BackgroundServer *BackgroundProcessServer::getServerPtr(){
     return _server;
 }
+
+
 
 
 

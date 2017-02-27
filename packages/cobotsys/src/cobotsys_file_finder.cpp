@@ -70,7 +70,7 @@ std::string FileFinder::realPathOf(const std::string &path){
 void FileFinder::addSearchPath(const std::string &path_to_find){
     bool is_found;
     auto rpath = realPathOf(path_to_find);
-    if (path_to_find.size()) {
+    if (rpath.size()) {
         base_paths.push_back(rpath);
         COBOT_LOG.message("File Finder") << "Add Path: " << rpath;
     }

@@ -29,7 +29,7 @@ public:
 protected:
 
     void onRunScript(const QJsonObject &json);
-    void onKillScript(const QJsonObject &json);
+    void onStopScript(const QJsonObject &json);
 
     bool loadScriptSetting(const QString &settingName);
 

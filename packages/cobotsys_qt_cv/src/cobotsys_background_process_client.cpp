@@ -12,6 +12,7 @@ namespace cobotsys {
 BackgroundProcessClient::BackgroundProcessClient(QObject *parent) : QObject(parent){
 
     getSlave().registerCommandHandler(BACK_CMD_RUN_SCRIPT, this, &BackgroundProcessClient::onRunScript);
+    getSlave().registerCommandHandler(BACK_CMD_STOP_SCRIPT, this, &BackgroundProcessClient::onStopScript);
     _task = new BackgroundTask(this);
     connect(_task, &BackgroundTask::taskFinished, this, &BackgroundProcessClient::onTaskFinish);
 }
@@ -32,14 +33,16 @@ void BackgroundProcessClient::onRunScript(const QJsonObject &json){
         reply_json[BACK_KEY_RESULT] = false;
     } else {
         auto result = loadScriptSetting(script_name);
+        _task->stop();
         _task->run(_task_setting);
         reply_json[BACK_KEY_RESULT] = result;
     }
     _slave.replyJson(reply_json);
 }
 
-void BackgroundProcessClient::onKillScript(const QJsonObject &json){
+void BackgroundProcessClient::onStopScript(const QJsonObject &json){
     auto reply_json = json;
+    reply_json[BACK_KEY_RESULT] = true;
     _task->stop();
     _slave.replyJson(reply_json);
 }
