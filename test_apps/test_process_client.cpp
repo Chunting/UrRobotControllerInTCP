@@ -7,8 +7,8 @@
 #include <QtCore/QCoreApplication>
 #include <cobotsys_compute_node_server.h>
 #include <cobotsys_compute_node.h>
-#include <cobotsys_background_client.h>
-#include <cobotsys_background_server.h>
+#include <cobotsys_background_json_client.h>
+#include <cobotsys_background_json_server.h>
 #include <cobotsys_background_process_client.h>
 #include <cobotsys_file_finder.h>
 

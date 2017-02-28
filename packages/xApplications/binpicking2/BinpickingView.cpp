@@ -35,8 +35,8 @@ BinpickingView::BinpickingView(QWidget *parent) :
     connect(_task_calibration, &cobotsys::BackgroundTask::taskFinished, this, &BinpickingView::onTaskFinish);
 
     _server = new cobotsys::BackgroundProcessServer(this);
-    connect(_server->getServerPtr(), &BackgroundServer::clientConnected, this, &BinpickingView::onClientConnect);
-    connect(_server->getServerPtr(), &BackgroundServer::clientDisconnected, this, &BinpickingView::onClientDisconnect);
+    connect(_server->getServerPtr(), &BackgroundJsonServer::clientConnected, this, &BinpickingView::onClientConnect);
+    connect(_server->getServerPtr(), &BackgroundJsonServer::clientDisconnected, this, &BinpickingView::onClientDisconnect);
     _server->getServer().lanuchMaster();
 
 

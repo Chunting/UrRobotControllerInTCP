@@ -15,10 +15,10 @@ BackgroundProcessServer::SlaveTaskView::SlaveTaskView(){
 
 
 BackgroundProcessServer::BackgroundProcessServer(QObject *parent) : QObject(parent){
-    _server = new BackgroundServer(this);
+    _server = new BackgroundJsonServer(this);
     _server->setJsonHandler(this, &BackgroundProcessServer::onClientJson);
-    connect(_server, &BackgroundServer::clientConnected, this, &BackgroundProcessServer::onClientConnect);
-    connect(_server, &BackgroundServer::clientDisconnected, this, &BackgroundProcessServer::onClientDisconnect);
+    connect(_server, &BackgroundJsonServer::clientConnected, this, &BackgroundProcessServer::onClientConnect);
+    connect(_server, &BackgroundJsonServer::clientDisconnected, this, &BackgroundProcessServer::onClientDisconnect);
 }
 
 
@@ -50,7 +50,7 @@ void BackgroundProcessServer::stopScript(std::function<void(bool)> on_client_rep
 void BackgroundProcessServer::onScriptFinish(){
 }
 
-BackgroundServer &BackgroundProcessServer::getServer(){
+BackgroundJsonServer &BackgroundProcessServer::getServer(){
     return *_server;
 }
 
@@ -72,7 +72,7 @@ void BackgroundProcessServer::onClientDisconnect(const QString &client_name){
     _views.erase(client_name);
 }
 
-BackgroundServer *BackgroundProcessServer::getServerPtr(){
+BackgroundJsonServer *BackgroundProcessServer::getServerPtr(){
     return _server;
 }
 

@@ -7,7 +7,7 @@
 #define PROJECT_COBOTSYS_BACKGROUND_PROCESS_MASTER_H
 
 #include <QObject>
-#include <cobotsys_background_server.h>
+#include <cobotsys_background_json_server.h>
 
 namespace cobotsys {
 
@@ -20,8 +20,8 @@ public:
     void runScript(const QString &script_name, std::function<void(bool)> on_client_reply = nullptr);
     void stopScript(std::function<void(bool)> on_client_reply = nullptr);
 
-    BackgroundServer &getServer();
-    BackgroundServer *getServerPtr();
+    BackgroundJsonServer &getServer();
+    BackgroundJsonServer *getServerPtr();
 
 Q_SIGNALS:
     void clientTaskChanged(const QString& client, bool is_task_running);
@@ -33,7 +33,7 @@ protected:
     void onClientDisconnect(const QString &client_name);
 
 protected:
-    BackgroundServer *_server;
+    BackgroundJsonServer *_server;
 
     struct SlaveTaskView {
         bool is_running;

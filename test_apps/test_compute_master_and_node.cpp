@@ -7,8 +7,8 @@
 #include <QtCore/QCoreApplication>
 #include <cobotsys_compute_node_server.h>
 #include <cobotsys_compute_node.h>
-#include <cobotsys_background_client.h>
-#include <cobotsys_background_server.h>
+#include <cobotsys_background_json_client.h>
+#include <cobotsys_background_json_server.h>
 
 
 
@@ -17,8 +17,8 @@ int main(int argc, char **argv){
     cobotsys::init_library(argc, argv);
 
 
-    cobotsys::BackgroundServer master;
-    cobotsys::BackgroundClient slave;
+    cobotsys::BackgroundJsonServer master;
+    cobotsys::BackgroundJsonClient slave;
 
     if (master.lanuchMaster()){
 

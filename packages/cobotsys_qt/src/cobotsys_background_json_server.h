@@ -16,7 +16,7 @@
 namespace cobotsys {
 using namespace distributed_system;
 
-class BackgroundServer : public ComputeNodeServer {
+class BackgroundJsonServer : public ComputeNodeServer {
 Q_OBJECT
 
 
@@ -32,7 +32,7 @@ public:
 
         const QString &getName() const{ return slave_name; }
 
-        friend class BackgroundServer;
+        friend class BackgroundJsonServer;
     protected:
         void processData(const QByteArray &ba);
         void processMessage(const Message &m);
@@ -43,8 +43,8 @@ public:
     };
 
 public:
-    BackgroundServer(QObject *parent = nullptr);
-    ~BackgroundServer();
+    BackgroundJsonServer(QObject *parent = nullptr);
+    ~BackgroundJsonServer();
 
 
     void writeJson(const QJsonObject &json, std::function<void(const cobotsys::JsonReply &)> on_slave_reply);

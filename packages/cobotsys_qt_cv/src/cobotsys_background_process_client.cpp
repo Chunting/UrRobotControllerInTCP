@@ -22,7 +22,7 @@ BackgroundProcessClient::~BackgroundProcessClient(){
 }
 
 
-BackgroundClient &BackgroundProcessClient::getSlave(){
+BackgroundJsonClient &BackgroundProcessClient::getSlave(){
     return _slave;
 }
 

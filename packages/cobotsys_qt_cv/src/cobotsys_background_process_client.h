@@ -8,7 +8,7 @@
 
 
 #include <QObject>
-#include <cobotsys_background_client.h>
+#include <cobotsys_background_json_client.h>
 #include "cobotsys_background_task.h"
 
 
@@ -22,7 +22,7 @@ public:
     ~BackgroundProcessClient();
 
 
-    BackgroundClient &getSlave();
+    BackgroundJsonClient &getSlave();
 
 
     void setScriptConfigFile(const QString &filename);
@@ -36,7 +36,7 @@ protected:
     void onTaskFinish();
 protected:
     QString _script_file_name;
-    BackgroundClient _slave;
+    BackgroundJsonClient _slave;
     BackgroundTask *_task;
 
     BackgroundTaskSettings _task_setting;
