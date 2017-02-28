@@ -7,7 +7,7 @@
 #define PROJECT_COBOTSYS_BACKGROUND_MASTER_H
 
 #include <cobotsys_json_callback_manager.h>
-#include <cobotsys_compute_node_server.h>
+#include <cobotsys_simple_network_server.h>
 #include <cobotsys_message.h>
 #include <chrono>
 #include <functional>
@@ -16,7 +16,7 @@
 namespace cobotsys {
 using namespace distributed_system;
 
-class BackgroundJsonServer : public ComputeNodeServer {
+class BackgroundJsonServer : public SimpleNetworkServer {
 Q_OBJECT
 
 

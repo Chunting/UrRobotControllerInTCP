@@ -10,7 +10,7 @@
 namespace cobotsys {
 using namespace distributed_system;
 
-BackgroundJsonClient::BackgroundJsonClient(QObject *parent) : ComputeNode(parent){
+BackgroundJsonClient::BackgroundJsonClient(QObject *parent) : SimpleNetworkClient(parent){
     _num_debug_inc = 0;
     _instance_id = QUuid::createUuid().toString();
     _decoder = std::make_shared<MessageDecoder>([=](const Message &m){ processMessage(m); });

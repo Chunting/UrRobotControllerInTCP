@@ -5,8 +5,8 @@
 
 #include <cobotsys.h>
 #include <QtCore/QCoreApplication>
-#include <cobotsys_compute_node_server.h>
-#include <cobotsys_compute_node.h>
+#include <cobotsys_simple_network_server.h>
+#include <cobotsys_simple_network_client.h>
 #include <cobotsys_background_json_client.h>
 #include <cobotsys_background_json_server.h>
 #include <cobotsys_background_process_client.h>
@@ -28,7 +28,7 @@ int main(int argc, char **argv){
         client.setScriptConfigFile("/home/itolfo/svn/vision/trunk/data/binpicking_action_config.xml");
 
         client.getSlave().setNodeName("DriverMonitor");
-        client.getSlave().connectMaster();
+        client.getSlave().connectHost();
     }
 
     return a.exec();

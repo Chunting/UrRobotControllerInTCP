@@ -49,7 +49,7 @@ double BackgroundJsonServer::CallbackTracker::calcTimeElapsed() const{
 namespace cobotsys {
 
 
-BackgroundJsonServer::BackgroundJsonServer(QObject *parent) : ComputeNodeServer(parent){
+BackgroundJsonServer::BackgroundJsonServer(QObject *parent) : SimpleNetworkServer(parent){
     _instance_id = QUuid::createUuid().toString();
     _json_handler = [=](const QJsonObject &j){ COBOT_LOG.warning() << "Unhandled: " << j; };
 

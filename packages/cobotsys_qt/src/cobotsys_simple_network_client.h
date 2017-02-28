@@ -18,15 +18,15 @@
 namespace cobotsys {
 
 
-class ComputeNode : public QObject {
+class SimpleNetworkClient : public QObject {
 Q_OBJECT
 public:
 
 public:
-    ComputeNode(QObject *parent = nullptr);
-    ~ComputeNode();
+    SimpleNetworkClient(QObject *parent = nullptr);
+    ~SimpleNetworkClient();
 
-    void connectMaster(const server::CONFIG &config = server::CONFIG());
+    void connectHost(const server::CONFIG &config = server::CONFIG());
     void writeData(const QByteArray &ba);
     void setNodeName(const QString &name);
 
@@ -37,10 +37,11 @@ protected:
     void onError(QAbstractSocket::SocketError error);
 
     void onDataReady();
+
+    void doConnectHost(int delayMSec = 0);
+
 protected:
     virtual void processData(const QByteArray &ba);
-    virtual void connectHost(int delayMSec = 0);
-
     virtual void processConnect();
     virtual void processDisconnect();
 

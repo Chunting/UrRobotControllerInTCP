@@ -6,7 +6,7 @@
 #ifndef PROJECT_COBOTSYS_BACKGROUND_WORKER_H
 #define PROJECT_COBOTSYS_BACKGROUND_WORKER_H
 
-#include <cobotsys_compute_node.h>
+#include <cobotsys_simple_network_client.h>
 #include <cobotsys_message.h>
 #include <cobotsys_json_callback_manager.h>
 #include <cobotsys_background_command_config.h>
@@ -14,7 +14,7 @@
 namespace cobotsys {
 using namespace distributed_system;
 
-class BackgroundJsonClient : public ComputeNode {
+class BackgroundJsonClient : public SimpleNetworkClient {
 Q_OBJECT
 
 public:
