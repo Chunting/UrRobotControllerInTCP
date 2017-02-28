@@ -30,14 +30,10 @@ public:
     void writeData(const QByteArray &ba);
     void setNodeName(const QString &name);
 
-Q_SIGNALS:
-    void masterConnected();
-    void masterDisconnected();
-
 protected:
-    void onMasterConnect();
-    void onMasterDisconnect();
-    void onMasterFound();
+    void onConnect();
+    void onDisconnect();
+    void onHostFound();
     void onError(QAbstractSocket::SocketError error);
 
     void onDataReady();
@@ -47,8 +43,10 @@ protected:
 
     virtual void processConnect();
     virtual void processDisconnect();
+
+
 protected:
-    QTcpSocket *_client;
+    QTcpSocket *_socket;
     server::CONFIG _config;
     bool _is_connected;
     int _re_connect_delay;

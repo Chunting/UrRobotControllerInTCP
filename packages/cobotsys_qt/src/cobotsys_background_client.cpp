@@ -50,7 +50,7 @@ void BackgroundClient::processJson(const QJsonObject &json){
 }
 
 void BackgroundClient::writeJson(const QJsonObject &json){
-    _client->write(MessageEncoder::genJsonMessage(json).getData());
+    _socket->write(MessageEncoder::genJsonMessage(json).getData());
     COBOT_LOG.info() << "Client JSON: " << json;
 }
 

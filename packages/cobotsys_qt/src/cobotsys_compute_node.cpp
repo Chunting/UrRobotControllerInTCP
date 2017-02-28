@@ -9,16 +9,16 @@
 namespace cobotsys {
 
 ComputeNode::ComputeNode(QObject *parent) : QObject(parent){
-    _client = new QTcpSocket(this);
+    _socket = new QTcpSocket(this);
     _is_connected = false;
     _re_connect_delay = 100;
 
-    connect(_client, &QTcpSocket::connected, this, &ComputeNode::onMasterConnect);
-    connect(_client, &QTcpSocket::disconnected, this, &ComputeNode::onMasterDisconnect);
-    connect(_client, &QTcpSocket::hostFound, this, &ComputeNode::onMasterFound);
-    connect(_client, static_cast<void (QTcpSocket::*)(QAbstractSocket::SocketError)>(&QTcpSocket::error), this,
+    connect(_socket, &QTcpSocket::connected, this, &ComputeNode::onConnect);
+    connect(_socket, &QTcpSocket::disconnected, this, &ComputeNode::onDisconnect);
+    connect(_socket, &QTcpSocket::hostFound, this, &ComputeNode::onHostFound);
+    connect(_socket, static_cast<void (QTcpSocket::*)(QAbstractSocket::SocketError)>(&QTcpSocket::error), this,
             &ComputeNode::onError);
-    connect(_client, &QTcpSocket::readyRead, this, &ComputeNode::onDataReady);
+    connect(_socket, &QTcpSocket::readyRead, this, &ComputeNode::onDataReady);
 }
 
 ComputeNode::~ComputeNode(){
@@ -29,19 +29,17 @@ void ComputeNode::connectMaster(const server::CONFIG &config){
     connectHost();
 }
 
-void ComputeNode::onMasterConnect(){
+void ComputeNode::onConnect(){
     _is_connected = true;
     COBOT_LOG.notice() << "ComputeNode: " << "Connected";
-    Q_EMIT masterConnected();
 
     processConnect();
 }
 
-void ComputeNode::onMasterDisconnect(){
+void ComputeNode::onDisconnect(){
     auto last_connection_status = _is_connected;
     _is_connected = false;
     COBOT_LOG.notice() << "ComputeNode: " << "Disconnected";
-    Q_EMIT masterDisconnected();
 
     if (last_connection_status)
         processDisconnect();
@@ -49,18 +47,18 @@ void ComputeNode::onMasterDisconnect(){
     connectHost(_re_connect_delay);
 }
 
-void ComputeNode::onMasterFound(){
-    COBOT_LOG.notice() << "ComputeNode: " << "Found Server: " << _client->peerName();
+void ComputeNode::onHostFound(){
+    COBOT_LOG.notice() << "ComputeNode: " << "Found Server: " << _socket->peerName();
 }
 
 void ComputeNode::onError(QAbstractSocket::SocketError error){
-    COBOT_LOG.notice() << "ComputeNode: " << _client->errorString();
+    COBOT_LOG.notice() << "ComputeNode: " << _socket->errorString();
 
     connectHost(_re_connect_delay);
 }
 
 void ComputeNode::onDataReady(){
-    auto ba = _client->readAll();
+    auto ba = _socket->readAll();
     if (ba.size()) {
         processData(ba);
     }
@@ -71,8 +69,8 @@ void ComputeNode::processData(const QByteArray &ba){
 }
 
 void ComputeNode::writeData(const QByteArray &ba){
-    if (_client) {
-        _client->write(ba);
+    if (_socket) {
+        _socket->write(ba);
     }
 }
 
@@ -81,7 +79,7 @@ void ComputeNode::connectHost(int delayMSec){
         return;
 
     auto doCONNECT = [=](){
-        _client->connectToHost(_config.address, _config.port, QIODevice::ReadWrite);
+        _socket->connectToHost(_config.address, _config.port, QIODevice::ReadWrite);
     };
 
     if (delayMSec > 0)
