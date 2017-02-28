@@ -50,6 +50,7 @@ SimpleNetworkServer::~SimpleNetworkServer(){
 
 bool SimpleNetworkServer::lanuchMaster(const server::CONFIG &config){
     if (_server->listen(config.address, config.port)) {
+        _config = config;
         COBOT_LOG.notice() << "SimpleNetworkServer, Lanuch Success. [" << config.address.toString()
                            << ":" << config.port << "]";
         return true;

@@ -47,11 +47,11 @@ protected:
     std::shared_ptr<TCPLink> getLink();
     void deleteTCPLink(std::shared_ptr<TCPLink> link);
 
-
 protected:
     virtual void processClientData(QTcpSocket *clientLink, const QByteArray &ba);
     virtual void processClientConnect(QTcpSocket *tcpSocket);
     virtual void processClientDisconnect(QTcpSocket *tcpSocket);
+
 protected:
     QTcpServer *_server;
     server::CONFIG _config;
