@@ -4,6 +4,7 @@
 //
 
 #include <cobotsys_file_finder.h>
+#include <QtWidgets/QVBoxLayout>
 #include "BinpickingView.h"
 
 #define LAYOUT_XML_FILE "binpicking_image_layout.xml"
@@ -16,6 +17,7 @@ BinpickingView::BinpickingView(QWidget *parent) :
     _logger_widget = nullptr;
     _easy_gui_show_client = nullptr;
 
+    _is_debug_mode = false;
     _is_driver_connected = false;
     _cur_ui_status = RunningStatus::WaitDriver;
 
@@ -36,20 +38,25 @@ BinpickingView::BinpickingView(QWidget *parent) :
 
     _server = new cobotsys::BackgroundProcessServer(this);
     connect(_server->getServerPtr(), &BackgroundJsonServer::clientConnected, this, &BinpickingView::onClientConnect);
-    connect(_server->getServerPtr(), &BackgroundJsonServer::clientDisconnected, this, &BinpickingView::onClientDisconnect);
+    connect(_server->getServerPtr(), &BackgroundJsonServer::clientDisconnected, this,
+            &BinpickingView::onClientDisconnect);
     _server->getServer().lanuchMaster();
 
 
     ui.setupUi(this);
     ui.debugUI->hide();
+    initUtilityUi();
 
     _logo = QPixmap::fromImage(QImage(":/icons/resources/cobot_logo_icon.png"));
 
     connect(ui.btnStart, &QPushButton::released, this, &BinpickingView::actionStart);
     connect(ui.btnStop, &QPushButton::released, this, &BinpickingView::actionStop);
-    connect(ui.btnCalibration, &QPushButton::released, this, &BinpickingView::actionCalibration);
     connect(ui.btnClear, &QPushButton::released, this, &BinpickingView::actionClear);
     connect(ui.btnViewMatClear, &QPushButton::released, this, &BinpickingView::actionCloseAllViewMatWindow);
+
+    _easy_gui_show_client = new EasyGuiShowClient(this);
+    _easy_gui_show_client->initShowClient();
+    connect(_easy_gui_show_client, &EasyGuiShowClient::clientDataUpdated, [=](){ this->update(); });
 
     setupLoggerUi();
     loadConfig();
@@ -85,20 +92,18 @@ void BinpickingView::stopAll(){
 }
 
 void BinpickingView::setupLoggerUi(){
-    auto loggerlayout = new QVBoxLayout;
-    auto loggerWidget = new LoggerViewWidget(this);
+    if (_is_debug_mode){
+        auto loggerlayout = new QVBoxLayout;
+        auto loggerWidget = new LoggerViewWidget(this);
 
-    loggerlayout->setContentsMargins(0, 0, 0, 0);
-    loggerlayout->addWidget(loggerWidget);
-    ui.loggerFrame->setLayout(loggerlayout);
-    loggerWidget->setOpacity();
-    loggerWidget->bindCurrentProcessLogger();
+        loggerlayout->setContentsMargins(0, 0, 0, 0);
+        loggerlayout->addWidget(loggerWidget);
+        ui.loggerFrame->setLayout(loggerlayout);
+        loggerWidget->setOpacity();
+        loggerWidget->bindCurrentProcessLogger();
+        _logger_widget = loggerWidget;
+    }
 
-    _logger_widget = loggerWidget;
-
-    _easy_gui_show_client = new EasyGuiShowClient(this);
-    _easy_gui_show_client->initShowClient();
-    connect(_easy_gui_show_client, &EasyGuiShowClient::clientDataUpdated, [=](){ this->update(); });
 }
 
 void BinpickingView::reloadLayoutConfig(){
@@ -246,6 +251,7 @@ void BinpickingView::timerInfoUpdate(){
 }
 
 void BinpickingView::showDebugUi(){
+    _is_debug_mode = true;
     ui.debugUI->show();
 }
 
@@ -268,7 +274,7 @@ void BinpickingView::updateUiStatus(RunningStatus new_status){
     auto setup = [=](bool a, bool b, bool c){
         ui.btnStart->setEnabled(a);
         ui.btnStop->setEnabled(b);
-        ui.btnCalibration->setEnabled(c);
+        _utility_ui.action_calibration->setEnabled(c);
     };
 
 
@@ -292,6 +298,15 @@ void BinpickingView::updateUiStatus(RunningStatus new_status){
             setup(false, true, false);
             break;
     }
+}
+
+void BinpickingView::initUtilityUi(){
+    _utility_ui.menu = new QMenu(this);
+    _utility_ui.action_calibration = _utility_ui.menu->addAction(tr("Calibration"));
+
+    connect(_utility_ui.action_calibration, &QAction::triggered, this, &BinpickingView::actionCalibration);
+
+    ui.btnUtility->setMenu(_utility_ui.menu);
 }
 
 

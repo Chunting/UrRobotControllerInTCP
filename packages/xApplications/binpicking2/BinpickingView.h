@@ -58,6 +58,7 @@ protected:
     void timerStop();
     void timerInfoUpdate();
 
+    void initUtilityUi();
 
 protected:
     void setupLoggerUi();
@@ -78,6 +79,11 @@ protected:
     cobotsys::BackgroundTask *_task_binpicking;
     cobotsys::BackgroundTask *_task_calibration;
 
+    struct {
+        QAction *action_calibration;
+        QMenu *menu;
+    } _utility_ui;
+
     qint64 _time_start_count;
     bool _time_enabled;
     QTimer *_time_updater;
@@ -89,6 +95,7 @@ protected:
     cobotsys::BackgroundProcessServer *_server;
 
     bool _is_driver_connected;
+    bool _is_debug_mode;
 
     enum class RunningStatus {
         Idle,
