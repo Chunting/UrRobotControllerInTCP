@@ -13,6 +13,7 @@
 #include <string>
 #include <functional>
 #include <deque>
+#include <mutex>
 
 namespace cobotsys {
 
@@ -77,13 +78,13 @@ public:
 
     static Logger &instance();
 
-    int prefixWidth() const{ return _prefix_width; }
+    int prefixWidth() const{ return m_prefix_width; }
 
-    bool logToCout() const{ return _log_to_cout; }
+    bool logToCout() const{ return m_log_to_cout; }
 
     bool logToCout(bool enabled){
-        _log_to_cout = enabled;
-        return _log_to_cout;
+        m_log_to_cout = enabled;
+        return m_log_to_cout;
     }
 
     void setCurrentInstanceName(const std::string &s);
@@ -92,13 +93,14 @@ protected:
         std::string entry;
         std::string message;
     };
-    std::deque<LogMessage> logs_;
-    std::string _current_entry;
-    std::function<void(const std::string &, const std::string &)> _append_filter;
-    bool _log_to_cout;
-    bool _cache_log_message;
-    int _prefix_width;
-    std::string _current_instance_name;
+    std::deque<LogMessage> m_logs;
+    std::string m_current_entry;
+    std::function<void(const std::string &, const std::string &)> m_append_filter;
+    bool m_log_to_cout;
+    bool m_cache_log_message;
+    int m_prefix_width;
+    std::string m_current_instance_name;
+    std::mutex m_res_mutex;
 };
 }
 #define COBOT_LOG    cobotsys::Logger::instance()
