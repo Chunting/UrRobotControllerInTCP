@@ -19,6 +19,7 @@ BinpickingView::BinpickingView(QWidget* parent)
 
     m_ros_ur3_init_success = false;
 
+
     _is_debug_mode = false;
     m_cur_ui_status = RunningStatus::WaitSubSystem;
 
@@ -59,12 +60,18 @@ BinpickingView::BinpickingView(QWidget* parent)
     _easy_gui_show_client->initShowClient();
     connect(_easy_gui_show_client, &EasyGuiShowClient::clientDataUpdated, [=](){ this->update(); });
 
+    m_is_kinect2_camera_connected = false;
+    m_kinect2_camera_detector = new KinectCameraDetector(this);
+    connect(m_kinect2_camera_detector, &KinectCameraDetector::cameraFound, this,
+            &BinpickingView::onKinect2CameraConnectionChange);
+
     setupLoggerUi();
     loadConfig();
     loadRunScript();
 
     genViewMatMenu();
     updateUiStatus(RunningStatus::Idle);
+    m_kinect2_camera_detector->startCheck();
 }
 
 BinpickingView::~BinpickingView(){
@@ -339,8 +346,18 @@ bool BinpickingView::checkIfAllSubSystemReady(){
 #define CONTINUE_IF_OK(_condition) if (!(_condition)) return false;
 
     CONTINUE_IF_OK(m_ros_ur3_init_success);
+    CONTINUE_IF_OK(m_is_kinect2_camera_connected);
 
     return true;
+}
+
+void BinpickingView::onKinect2CameraConnectionChange(bool is_connected){
+    m_is_kinect2_camera_connected = is_connected;
+
+    if (m_is_kinect2_camera_connected)
+        ui.labelCameraStatus->setText(tr("Camera Connected"));
+    else
+        ui.labelCameraStatus->setText(tr("Camera not found"));
 }
 
 

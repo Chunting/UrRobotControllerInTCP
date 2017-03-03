@@ -22,6 +22,7 @@
 #include "easy_cv_mat_reader.h"
 #include "MatMerger.h"
 #include "EasyGuiShowClient.h"
+#include "KinectCameraDetector.h"
 #include <cobotsys_background_process_server.h>
 #include <Ur3DriverStatusReporter.h>
 
@@ -128,6 +129,13 @@ protected:
 
     bool checkIfAllSubSystemReady();
 
+
+    /**
+     * @note Kinect2 camera detector
+     */
+    KinectCameraDetector* m_kinect2_camera_detector;
+    bool m_is_kinect2_camera_connected;
+    void onKinect2CameraConnectionChange(bool is_connected);
 };
 
 
