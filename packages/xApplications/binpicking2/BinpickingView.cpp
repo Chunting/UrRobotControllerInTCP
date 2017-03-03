@@ -12,8 +12,8 @@
 
 using namespace cobotsys;
 
-BinpickingView::BinpickingView(QWidget* parent) :
-        QWidget(parent){
+BinpickingView::BinpickingView(QWidget* parent)
+        : QWidget(parent){
     _logger_widget = nullptr;
     _easy_gui_show_client = nullptr;
 
