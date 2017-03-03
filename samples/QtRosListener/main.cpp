@@ -6,6 +6,7 @@
 #include <QtGui>
 #include <QApplication>
 #include <DriverStatusListener.h>
+#include <QtWidgets/QWidget>
 
 /*****************************************************************************
 ** Main
@@ -13,18 +14,21 @@
 
 int main(int argc, char** argv){
 
-//    /*********************
-//    ** Qt
-//    **********************/
-//    QApplication app(argc, argv);
-//
-//    DriverStatusPublisher publisher(argc, argv);
-//
-//    if (publisher.on_init()) {
-//        app.connect(&app, &QCoreApplication::aboutToQuit, &publisher, &DriverStatusPublisher::shutdown);
-//
-//        return app.exec();
-//    }
-    
+    /*********************
+    ** Qt
+    **********************/
+    QApplication app(argc, argv);
+
+    DriverStatusListener listener(argc, argv);
+
+    if (listener.on_init()) {
+        app.connect(&app, &QCoreApplication::aboutToQuit, &listener, &DriverStatusListener::shutdown);
+
+        QWidget w;
+        w.show();
+
+        return app.exec();
+    }
+
     return 1;
 }

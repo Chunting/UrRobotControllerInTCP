@@ -17,7 +17,7 @@ DriverStatusListener::~DriverStatusListener(){
 
 void DriverStatusListener::ros_comms_init(){
     ros::NodeHandle n;
-    robot_status_subscriber = n.subscribe("/robot_status", 20, &DriverStatusListener::robotStatusUpdateCallback, this);
+    robot_status_subscriber = n.subscribe("/driver_status", 20, &DriverStatusListener::robotStatusUpdateCallback, this);
 }
 
 void DriverStatusListener::robotStatusUpdateCallback(const std_msgs::String::ConstPtr& msg){

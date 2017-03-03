@@ -15,7 +15,7 @@ DriverStatusPublisher::~DriverStatusPublisher(){
 
 void DriverStatusPublisher::ros_comms_init(){
     ros::NodeHandle n;
-    robot_status_publisher = n.advertise<std_msgs::String>("chatter", 5);
+    robot_status_publisher = n.advertise<std_msgs::String>("driver_status", 5);
 }
 
 void DriverStatusPublisher::run(){
