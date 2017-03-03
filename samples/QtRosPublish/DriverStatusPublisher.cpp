@@ -4,13 +4,14 @@
 //
 
 #include "DriverStatusPublisher.h"
-
+#include <cobotsys_logger.h>
 
 DriverStatusPublisher::DriverStatusPublisher(int argc, char** argv)
         : QtRosNode(argc, argv, "DriverStatusPublisher"){
 }
 
 DriverStatusPublisher::~DriverStatusPublisher(){
+    COBOT_LOG.info() << "DriverStatusPublisher released";
 }
 
 void DriverStatusPublisher::ros_comms_init(){

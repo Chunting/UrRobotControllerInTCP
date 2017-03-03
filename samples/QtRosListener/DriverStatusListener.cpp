@@ -3,6 +3,7 @@
 // Copyright (c) 2017 Wuhan Collaborative Robot Technology Co.,Ltd. All rights reserved.
 //
 
+#include <cobotsys_logger.h>
 #include "DriverStatusListener.h"
 
 
@@ -12,6 +13,7 @@ DriverStatusListener::DriverStatusListener(int argc, char** argv)
 
 
 DriverStatusListener::~DriverStatusListener(){
+    COBOT_LOG.info() << "DriverStatusListener released";
 }
 
 
