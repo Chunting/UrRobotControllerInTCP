@@ -9,9 +9,11 @@
 #include <QtCore/QCommandLineParser>
 #include "BinpickingView.h"
 #include <Ur3DriverStatusReporter.h>
+#include <easy_gui.h>
 
 namespace linux_only {
 void remove_shm_obj(){
+    cobotsys::easy_gui_reset();
     system("rm -f /dev/shm/*");
 }
 }
