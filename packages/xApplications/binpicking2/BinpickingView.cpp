@@ -68,6 +68,7 @@ BinpickingView::BinpickingView(QWidget* parent) :
 }
 
 BinpickingView::~BinpickingView(){
+    actionStop();
 }
 
 
