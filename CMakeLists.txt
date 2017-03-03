@@ -21,16 +21,18 @@ message(STATUS "DEBUG   Flags: ${CMAKE_CXX_FLAGS_DEBUG} ")
 message(STATUS "RELEASE Flags: ${CMAKE_CXX_FLAGS_RELEASE} ")
 
 # 辅助宏，用于搜索对应目录所有子目录项
-#MACRO(sub_dir_list result curdir)
-#    FILE(GLOB children RELATIVE ${curdir} ${curdir}/*)
-#    SET(dirlist "")
-#    FOREACH (child ${children})
-#        IF (IS_DIRECTORY ${curdir}/${child})
-#            LIST(APPEND dirlist ${child})
-#        ENDIF ()
-#    ENDFOREACH ()
-#    SET(${result} ${dirlist})
-#ENDMACRO()
+MACRO(sub_dir_list result curdir)
+    FILE(GLOB children RELATIVE ${curdir} ${curdir}/*)
+    SET(dirlist "")
+    FOREACH (child ${children})
+        IF (IS_DIRECTORY ${curdir}/${child})
+            LIST(APPEND dirlist ${child})
+        ENDIF ()
+    ENDFOREACH ()
+    SET(${result} ${dirlist})
+ENDMACRO()
+
+
 #
 #message(STATUS "Current Source Path: ${CMAKE_CURRENT_SOURCE_DIR}")
 #
@@ -62,11 +64,20 @@ function(build_package path_to_package)
     endif ()
 endfunction()
 
+function(build_sample path_to_package)
+    if (EXISTS "${path_to_package}/CMakeLists.txt")
+        add_subdirectory(${path_to_package})
+    endif ()
+endfunction()
+
 build_package(${CMAKE_SOURCE_DIR}/packages/cobotsys)
 build_package(${CMAKE_SOURCE_DIR}/packages/cobotsys_qt)
 build_package(${CMAKE_SOURCE_DIR}/packages/cobotsys_qt_cv)
 build_package(${CMAKE_SOURCE_DIR}/packages/cobotsys_common)
+build_package(${CMAKE_SOURCE_DIR}/packages/cobotsys_ros_wrapper)
 
 build_package(${CMAKE_SOURCE_DIR}/test_apps)
 
 build_package(${CMAKE_SOURCE_DIR}/packages/xApplications/binpicking2)
+
+add_subdirectory(${CMAKE_SOURCE_DIR}/samples)
