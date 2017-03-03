@@ -25,7 +25,17 @@ void Ur3DriverStatusReporter::robotControlStatusCallback(const std_msgs::String:
 }
 
 void Ur3DriverStatusReporter::run(){
-    ros::spin();
+    ros::Rate loop_rate(1000);
+    bool ros_master_online = true;
+    while (ros::ok()) {
+
+        /**
+         *
+         */
+
+        ros::spinOnce();
+        loop_rate.sleep();
+    }
     std::cout << "Ros shutdown, proceeding to close the gui." << std::endl;
     Q_EMIT rosShutdown(); // used to signal the gui for a shutdown (useful to roslaunch)
 }

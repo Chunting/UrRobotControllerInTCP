@@ -123,9 +123,8 @@ protected:
     Ur3DriverStatusReporter* m_ur3_reporter;
     std::string m_ros_master_url;
     std::string m_ros_gui_ip;
-    bool m_ros_master_connected;
+    bool m_ros_ur3_init_success;
     void runUr3DriverStatusReporter();
-
 
     bool checkIfAllSubSystemReady();
 

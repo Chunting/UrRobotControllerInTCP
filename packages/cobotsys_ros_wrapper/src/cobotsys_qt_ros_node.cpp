@@ -29,6 +29,7 @@ QtRosNode::~QtRosNode(){
  */
 void QtRosNode::shutdown(){
     if (ros::isStarted()) {
+        COBOT_LOG.notice() << "QtRosNode shutdown";
         ros::shutdown(); // explicitly needed since we use ros::start();
         ros::waitForShutdown();
     }

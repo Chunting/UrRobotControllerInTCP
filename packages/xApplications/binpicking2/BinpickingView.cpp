@@ -17,7 +17,7 @@ BinpickingView::BinpickingView(QWidget* parent) :
     _logger_widget = nullptr;
     _easy_gui_show_client = nullptr;
 
-    m_ros_master_connected = false;
+    m_ros_ur3_init_success = false;
 
     _is_debug_mode = false;
     m_cur_ui_status = RunningStatus::WaitSubSystem;
@@ -260,18 +260,9 @@ void BinpickingView::showDebugUi(){
 }
 
 void BinpickingView::onClientConnect(const QString& client_name){
-    if (client_name == "Driver") {
-//        m_is_driver_connected = true;
-//        updateUiStatus(RunningStatus::Idle);
-    }
 }
 
 void BinpickingView::onClientDisconnect(const QString& client_name){
-    if (client_name == "Driver") {
-//        m_is_driver_connected = false;
-//        actionStop();
-//        updateUiStatus(RunningStatus::Idle);
-    }
 }
 
 void BinpickingView::updateUiStatus(RunningStatus new_status){
@@ -280,8 +271,8 @@ void BinpickingView::updateUiStatus(RunningStatus new_status){
         ui.btnStop->setEnabled(b);
         _utility_ui.action_calibration->setEnabled(c);
 
-        if (m_ros_master_connected) {
-            ui.labelDriverConnection->setText(tr("Ros Master Connected"));
+        if (m_ros_ur3_init_success) {
+            ui.labelDriverConnection->setText(tr("Ros Master online"));
         } else {
             ui.labelDriverConnection->setText(tr("Ros Master Offline"));
         }
@@ -323,7 +314,6 @@ void BinpickingView::cheat_SetDriverStatusReporter(Ur3DriverStatusReporter* repo
 
     connect(m_ur3_reporter, &Ur3DriverStatusReporter::robotControlStatusUpdated, this,
             &BinpickingView::onRobotDriverStatus);
-
     runUr3DriverStatusReporter();
 }
 
@@ -333,9 +323,9 @@ void BinpickingView::onRobotDriverStatus(const QString& msg){
 
 void BinpickingView::runUr3DriverStatusReporter(){
     if (m_ur3_reporter->on_init(m_ros_master_url, m_ros_gui_ip)) {
-        m_ros_master_connected = true;
+        m_ros_ur3_init_success = true;
 
-        COBOT_LOG.info() << "Master Connected";
+        COBOT_LOG.info() << "Ur3 Driver Status Listener Connected";
 
         updateUiStatus(RunningStatus::Idle);
     } else {
@@ -348,9 +338,7 @@ void BinpickingView::runUr3DriverStatusReporter(){
 bool BinpickingView::checkIfAllSubSystemReady(){
 #define CONTINUE_IF_OK(_condition) if (!(_condition)) return false;
 
-    CONTINUE_IF_OK(m_ros_master_connected);
-    CONTINUE_IF_OK(ros::master::check());
-
+    CONTINUE_IF_OK(m_ros_ur3_init_success);
 
     return true;
 }
