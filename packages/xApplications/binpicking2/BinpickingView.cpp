@@ -12,14 +12,15 @@
 
 using namespace cobotsys;
 
-BinpickingView::BinpickingView(QWidget *parent) :
+BinpickingView::BinpickingView(QWidget* parent) :
         QWidget(parent){
     _logger_widget = nullptr;
     _easy_gui_show_client = nullptr;
 
+    m_ros_master_connected = false;
+
     _is_debug_mode = false;
-    _is_driver_connected = false;
-    _cur_ui_status = RunningStatus::WaitDriver;
+    m_cur_ui_status = RunningStatus::WaitSubSystem;
 
     // Init timer
     _time_start_count = QDateTime::currentMSecsSinceEpoch();
@@ -70,7 +71,7 @@ BinpickingView::~BinpickingView(){
 }
 
 
-void BinpickingView::paintEvent(QPaintEvent *event){
+void BinpickingView::paintEvent(QPaintEvent* event){
     QPainter painter(this);
 
     if (_easy_gui_show_client) {
@@ -92,7 +93,7 @@ void BinpickingView::stopAll(){
 }
 
 void BinpickingView::setupLoggerUi(){
-    if (_is_debug_mode){
+    if (_is_debug_mode) {
         auto loggerlayout = new QVBoxLayout;
         auto loggerWidget = new LoggerViewWidget(this);
 
@@ -103,7 +104,6 @@ void BinpickingView::setupLoggerUi(){
         loggerWidget->bindCurrentProcessLogger();
         _logger_widget = loggerWidget;
     }
-
 }
 
 void BinpickingView::reloadLayoutConfig(){
@@ -160,6 +160,9 @@ void BinpickingView::loadRunScript(){
     COBOT_LOG.notice() << "Binpicking Layout: " << run_script_path;
     cv::FileStorage fs(run_script_path, cv::FileStorage::READ);
     if (fs.isOpened()) {
+
+        fs["RosMasterUrl"] >> m_ros_master_url;
+
         fs["action_binpicking"] >> _settings_binpicking;
         fs["action_calibration"] >> _settings_calibration;
 
@@ -187,14 +190,14 @@ void BinpickingView::genViewMatMenu(){
 }
 
 void BinpickingView::enableMatView(){
-    auto action = dynamic_cast<QAction *>(sender());
+    auto action = dynamic_cast<QAction*>(sender());
     if (action) {
         auto im_name = action->text();
         _easy_gui_show_client->showWithOpenCvApi(im_name);
     }
 }
 
-bool __list_name_equal(const QStringList &a, const QStringList &b){
+bool __list_name_equal(const QStringList& a, const QStringList& b){
     if (a.size() == b.size()) {
         for (int i = 0; i < a.size(); i++) {
             if (a.at(i) != b.at(i))
@@ -215,7 +218,7 @@ void BinpickingView::updateViewMatMenu(){
     _view_mat_names_old = names;
 
     _view_mat_menu->clear();
-    for (auto &name : names) {
+    for (auto& name : names) {
         auto action = new QAction;
         action->setText(name);
         action->setCheckable(true);
@@ -255,18 +258,18 @@ void BinpickingView::showDebugUi(){
     ui.debugUI->show();
 }
 
-void BinpickingView::onClientConnect(const QString &client_name){
+void BinpickingView::onClientConnect(const QString& client_name){
     if (client_name == "Driver") {
-        _is_driver_connected = true;
-        updateUiStatus(RunningStatus::Idle);
+//        m_is_driver_connected = true;
+//        updateUiStatus(RunningStatus::Idle);
     }
 }
 
-void BinpickingView::onClientDisconnect(const QString &client_name){
+void BinpickingView::onClientDisconnect(const QString& client_name){
     if (client_name == "Driver") {
-        _is_driver_connected = false;
-        actionStop();
-        updateUiStatus(RunningStatus::Idle);
+//        m_is_driver_connected = false;
+//        actionStop();
+//        updateUiStatus(RunningStatus::Idle);
     }
 }
 
@@ -275,20 +278,25 @@ void BinpickingView::updateUiStatus(RunningStatus new_status){
         ui.btnStart->setEnabled(a);
         ui.btnStop->setEnabled(b);
         _utility_ui.action_calibration->setEnabled(c);
+
+        if (m_ros_master_connected) {
+            ui.labelDriverConnection->setText(tr("Ros Master Connected"));
+        } else {
+            ui.labelDriverConnection->setText(tr("Ros Master Offline"));
+        }
     };
 
-
-    if (_is_driver_connected) {
-        _cur_ui_status = new_status;
+    if (checkIfAllSubSystemReady()) {
+        m_cur_ui_status = new_status;
     } else {
-        _cur_ui_status = RunningStatus::WaitDriver;
+        m_cur_ui_status = RunningStatus::WaitSubSystem;
     }
 
-    switch (_cur_ui_status) {
+    switch (m_cur_ui_status) {
         case RunningStatus::Idle:
             setup(true, false, true);
             break;
-        case RunningStatus::WaitDriver:
+        case RunningStatus::WaitSubSystem:
             setup(false, false, false);
             break;
         case RunningStatus::Binpicking:
@@ -307,6 +315,43 @@ void BinpickingView::initUtilityUi(){
     connect(_utility_ui.action_calibration, &QAction::triggered, this, &BinpickingView::actionCalibration);
 
     ui.btnUtility->setMenu(_utility_ui.menu);
+}
+
+void BinpickingView::cheat_SetDriverStatusReporter(Ur3DriverStatusReporter* reporter){
+    m_ur3_reporter = reporter;
+
+    connect(m_ur3_reporter, &Ur3DriverStatusReporter::robotControlStatusUpdated, this,
+            &BinpickingView::onRobotDriverStatus);
+
+    runUr3DriverStatusReporter();
+}
+
+void BinpickingView::onRobotDriverStatus(const QString& msg){
+    ui.labelDriverStatus->setText(msg);
+}
+
+void BinpickingView::runUr3DriverStatusReporter(){
+    if (m_ur3_reporter->on_init(m_ros_master_url, m_ros_gui_ip)) {
+        m_ros_master_connected = true;
+
+        COBOT_LOG.info() << "Master Connected";
+
+        updateUiStatus(RunningStatus::Idle);
+    } else {
+        QTimer::singleShot(500, [=](){
+            runUr3DriverStatusReporter();
+        });
+    }
+}
+
+bool BinpickingView::checkIfAllSubSystemReady(){
+#define CONTINUE_IF_OK(_condition) if (!(_condition)) return false;
+
+    CONTINUE_IF_OK(m_ros_master_connected);
+    CONTINUE_IF_OK(ros::master::check());
+
+
+    return true;
 }
 
 

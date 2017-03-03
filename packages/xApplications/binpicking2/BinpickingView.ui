@@ -50,10 +50,10 @@
   <property name="windowTitle">
    <string>Binpicking GUI</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_2">
-   <item row="0" column="0">
-    <layout class="QVBoxLayout" name="verticalLayout">
-     <item>
+  <layout class="QGridLayout" name="gridLayout_4">
+   <item row="0" column="0" rowspan="4">
+    <layout class="QGridLayout" name="gridLayout_3">
+     <item row="0" column="0">
       <spacer name="horizontalSpacer">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -66,7 +66,7 @@
        </property>
       </spacer>
      </item>
-     <item>
+     <item row="1" column="0">
       <spacer name="verticalSpacer_2">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
@@ -79,7 +79,7 @@
        </property>
       </spacer>
      </item>
-     <item>
+     <item row="2" column="0">
       <widget class="QWidget" name="loggerFrame" native="true">
        <property name="maximumSize">
         <size>
@@ -92,86 +92,118 @@
     </layout>
    </item>
    <item row="0" column="1">
-    <layout class="QVBoxLayout" name="verticalLayout_2">
-     <item>
-      <widget class="QWidget" name="debugUI" native="true">
-       <layout class="QGridLayout" name="gridLayout">
-        <property name="leftMargin">
-         <number>0</number>
+    <widget class="QWidget" name="debugUI" native="true">
+     <layout class="QGridLayout" name="gridLayout">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item row="0" column="0">
+       <widget class="QPushButton" name="btnFull">
+        <property name="text">
+         <string>FullScreen</string>
         </property>
-        <property name="topMargin">
-         <number>0</number>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QPushButton" name="btnRestore">
+        <property name="text">
+         <string>Restore</string>
         </property>
-        <property name="rightMargin">
-         <number>0</number>
-        </property>
-        <property name="bottomMargin">
-         <number>0</number>
-        </property>
-        <item row="0" column="0">
-         <widget class="QPushButton" name="btnFull">
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QPushButton" name="btnViewMat">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="text">
-           <string>FullScreen</string>
+           <string>View Mat</string>
           </property>
          </widget>
         </item>
-        <item row="1" column="0">
-         <widget class="QPushButton" name="btnRestore">
+        <item>
+         <widget class="QPushButton" name="btnViewMatClear">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="text">
-           <string>Restore</string>
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="res.qrc">
+            <normaloff>:/icons/resources/close_all.png</normaloff>:/icons/resources/close_all.png</iconset>
           </property>
          </widget>
-        </item>
-        <item row="2" column="0">
-         <layout class="QHBoxLayout" name="horizontalLayout_2">
-          <item>
-           <widget class="QPushButton" name="btnViewMat">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>View Mat</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="btnViewMatClear">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-            <property name="icon">
-             <iconset resource="res.qrc">
-              <normaloff>:/icons/resources/close_all.png</normaloff>:/icons/resources/close_all.png</iconset>
-            </property>
-           </widget>
-          </item>
-         </layout>
         </item>
        </layout>
-      </widget>
-     </item>
-     <item>
-      <spacer name="verticalSpacer">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>110</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QWidget" name="wStatus" native="true">
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="0">
+       <widget class="QLabel" name="labelDriverConnection">
+        <property name="font">
+         <font>
+          <family>Monospace</family>
+          <pointsize>16</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="labelDriverStatus">
+        <property name="font">
+         <font>
+          <family>Monospace</family>
+          <pointsize>16</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>7</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="3" column="1">
+    <layout class="QVBoxLayout" name="verticalLayout_2">
      <item>
       <widget class="QLabel" name="labelRunTime">
        <property name="palette">
@@ -285,20 +317,20 @@
      <item>
       <widget class="QPushButton" name="btnStart">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
        <property name="minimumSize">
         <size>
-         <width>160</width>
-         <height>80</height>
+         <width>240</width>
+         <height>100</height>
         </size>
        </property>
        <property name="font">
         <font>
-         <pointsize>39</pointsize>
+         <pointsize>52</pointsize>
         </font>
        </property>
        <property name="text">
@@ -310,13 +342,13 @@
       <widget class="QPushButton" name="btnStop">
        <property name="minimumSize">
         <size>
-         <width>0</width>
-         <height>80</height>
+         <width>240</width>
+         <height>100</height>
         </size>
        </property>
        <property name="font">
         <font>
-         <pointsize>39</pointsize>
+         <pointsize>52</pointsize>
         </font>
        </property>
        <property name="text">

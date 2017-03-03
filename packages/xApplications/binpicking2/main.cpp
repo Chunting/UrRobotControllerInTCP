@@ -8,6 +8,7 @@
 #include <cobotsys_file_finder.h>
 #include <QtCore/QCommandLineParser>
 #include "BinpickingView.h"
+#include <Ur3DriverStatusReporter.h>
 
 namespace linux_only {
 void remove_shm_obj(){
@@ -15,26 +16,30 @@ void remove_shm_obj(){
 }
 }
 
-int main(int argc, char **argv){
+int main(int argc, char** argv){
     linux_only::remove_shm_obj();
     cobotsys::FileFinder::loadDataPaths();
     QApplication a(argc, argv);
     QApplication::setOrganizationName("COBOT");
     QApplication::setApplicationName("binpicking2");
 
+    Ur3DriverStatusReporter reporter(argc, argv, "binpicking2_driver_status_listener");
 
     QCommandLineParser parser;
-    QCommandLineOption debug_model(QStringList() << "d" << "debug", "Show debug buttons");
+    QCommandLineOption debug_model(QStringList() << "d" << "debug", "Show Debug Buttons");
 
     parser.addOption(debug_model);
     parser.process(a);
 
-    BinpickingView bpv;
+    BinpickingView binpickingView;
+
+    reporter.bingGuiApp(a);
+    binpickingView.cheat_SetDriverStatusReporter(&reporter);
 
     if (parser.isSet(debug_model))
-        bpv.showDebugUi();
+        binpickingView.showDebugUi();
 
-    bpv.show();
+    binpickingView.show();
 
     return a.exec();
 }

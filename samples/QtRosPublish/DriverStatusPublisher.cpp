@@ -22,11 +22,17 @@ void DriverStatusPublisher::ros_comms_init(){
 void DriverStatusPublisher::run(){
     ros::Rate loop_rate(1);
     int count = 0;
+
+    std::vector<std::string> robot_status_array;
+
+    robot_status_array.push_back("grab_image");
+    robot_status_array.push_back("error");
+
     while (ros::ok()) {
         std_msgs::String msg;
-        std::stringstream ss;
-        ss << "hello world " << std::setw(5) << count << ", " << ros::master::check();
-        msg.data = ss.str();
+
+        msg.data = robot_status_array[count % robot_status_array.size()];
+
         ROS_INFO("%s", msg.data.c_str());
 
         robot_status_publisher.publish(msg);
