@@ -24,7 +24,8 @@ MACRO(sub_dir_list result curdir)
     SET(${result} ${dirlist})
 ENDMACRO()
 
-
+message("")
+message("----------Test Apps   ---------------------------------------")
 file(GLOB children RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/*)
 set(cpplist "")
 foreach (file ${children})
@@ -34,7 +35,7 @@ foreach (file ${children})
     get_filename_component(f_base ${file_path_full} NAME_WE)
 
     if (${f_extf} STREQUAL ".cpp")
-        message(STATUS "TEST APP: " ${f_base})
+        message(STATUS "TEST APP   : " ${f_base})
         add_executable(${f_base} ${file_path_full})
         target_link_libraries(${f_base} cobotsys cobotsys_qt cobotsys_qt_cv)
     endif ()

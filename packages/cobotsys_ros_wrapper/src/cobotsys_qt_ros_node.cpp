@@ -19,6 +19,7 @@ QtRosNode::QtRosNode(int argc, char** argv, const std::string& name) :
 
 QtRosNode::~QtRosNode(){
     shutdown();
+    COBOT_LOG.info() << "QtRosNode Released";
 }
 
 /**

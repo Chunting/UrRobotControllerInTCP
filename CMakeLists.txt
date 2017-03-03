@@ -78,6 +78,7 @@ build_package(${CMAKE_SOURCE_DIR}/packages/cobotsys_ros_wrapper)
 
 build_package(${CMAKE_SOURCE_DIR}/test_apps)
 
-build_package(${CMAKE_SOURCE_DIR}/packages/xApplications/binpicking2)
-
+add_subdirectory(${CMAKE_SOURCE_DIR}/packages/xApplications)
 add_subdirectory(${CMAKE_SOURCE_DIR}/samples)
+
+message("")
