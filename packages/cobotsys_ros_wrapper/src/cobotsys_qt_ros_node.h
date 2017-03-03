@@ -8,7 +8,8 @@
 
 #include <QThread>
 #include <QStringListModel>
-
+#include <QCoreApplication>
+#include <QApplication>
 /**
  * @file /eros_qtalker/include/eros_qtalker/qnode.hpp
  *
@@ -26,15 +27,17 @@ namespace cobotsys {
 class QtRosNode : public QThread {
 Q_OBJECT
 public:
-    QtRosNode(int argc, char** argv, const std::string &name );
+    QtRosNode(int argc, char** argv, const std::string& name);
     virtual ~QtRosNode();
 
     bool on_init();
-    bool on_init(const std::string &master_url, const std::string &host_url);
+    bool on_init(const std::string& master_url, const std::string& host_url);
     void shutdown();
     virtual void run() = 0;
 
-    const std::string& nodeName() { return node_name; }
+    const std::string& nodeName() const;
+    void bindApp(QCoreApplication& app);
+    void bingGuiApp(QApplication& app);
 
 Q_SIGNALS:
     void rosShutdown();
@@ -44,10 +47,7 @@ protected:
     int init_argc;
     char** init_argv;
     const std::string node_name;
-
 };
-
-
 }
 
 #endif //PROJECT_COBOTSYS_QT_ROS_NODE_H

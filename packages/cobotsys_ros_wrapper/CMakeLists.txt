@@ -23,6 +23,8 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 find_package(Qt5Core REQUIRED)
+find_package(Qt5Gui REQUIRED)
+find_package(Qt5Widgets REQUIRED)
 
 #add_message_files(FILES algorithm_result.msg)
 
@@ -43,6 +45,6 @@ add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_files})
 
 add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
-target_link_libraries(${PROJECT_NAME} Qt5::Core ${catkin_LIBRARIES} cobotsys)
+target_link_libraries(${PROJECT_NAME} Qt5::Core Qt5::Widgets ${catkin_LIBRARIES} cobotsys)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)

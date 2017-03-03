@@ -9,6 +9,7 @@
 #include <string>
 #include <cobotsys_logger.h>
 
+
 namespace cobotsys {
 
 
@@ -37,8 +38,8 @@ void QtRosNode::shutdown(){
 bool QtRosNode::on_init(){
     ros::init(init_argc, init_argv, node_name);
     if (!ros::master::check()) {
-        COBOT_LOG.warning() << "No master";
-//        return false;
+        COBOT_LOG.warning() << "No Master";
+        return false;
     }
     ros::start(); // our node handles go out of scope, so we want to control shutdown explicitly.
     ros_comms_init();
@@ -58,6 +59,20 @@ bool QtRosNode::on_init(const std::string& master_url, const std::string& host_u
     ros_comms_init();
     start();
     return true;
+}
+
+void QtRosNode::bindApp(QCoreApplication& app){
+    COBOT_LOG.notice() << "bindApp: QCoreApplication";
+    app.connect(&app, &QCoreApplication::aboutToQuit, this, &QtRosNode::shutdown);
+}
+
+void QtRosNode::bingGuiApp(QApplication& app){
+    COBOT_LOG.notice() << "bindApp: QApplication";
+    app.connect(&app, &QApplication::lastWindowClosed, this, &QtRosNode::shutdown);
+}
+
+const std::string& QtRosNode::nodeName() const{
+    return node_name;
 }
 
 
