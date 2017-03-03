@@ -10,7 +10,7 @@ namespace common {
 
 const std::string EasySharedNames::managed_shared_memory_name = "api_easy_shared_names";
 
-EasySharedNames::EasySharedNames(const std::string &share_names_id){
+EasySharedNames::EasySharedNames(const std::string& share_names_id){
     local_name_id = share_names_id;
     local_name_root = managed_shared_memory_name + "_" + local_name_id;
     local_name_obj = managed_shared_memory_name + "_" + local_name_id + "_obj";
@@ -34,7 +34,7 @@ bool EasySharedNames::tryOpenSharedNames(){
 
         addRef();
         bresult = true;
-    } catch (boost::interprocess::interprocess_exception &ex) {
+    } catch (boost::interprocess::interprocess_exception& ex) {
         bresult = false;
     }
     return bresult;
@@ -54,7 +54,7 @@ bool EasySharedNames::createSharedNames(){
 
         addRef();
         bresult = true;
-    } catch (boost::interprocess::interprocess_exception &ex) {
+    } catch (boost::interprocess::interprocess_exception& ex) {
         std::cerr << ex.what() << std::endl;
     }
     return bresult;
@@ -92,11 +92,11 @@ void EasySharedNames::decRef(){
     }
 }
 
-bool EasySharedNames::hasName(const std::string &sh_name){
+bool EasySharedNames::hasName(const std::string& sh_name){
     if (ptr_shared) {
         bool name_exist = false;
         ptr_shared->mutex.lock();
-        for (const auto &name : ptr_shared->names) {
+        for (const auto& name : ptr_shared->names) {
             if (name.c_str() == sh_name) {
                 name_exist = true;
                 break;
@@ -108,13 +108,13 @@ bool EasySharedNames::hasName(const std::string &sh_name){
     return false;
 }
 
-bool EasySharedNames::removeName(const std::string &sh_name){
+bool EasySharedNames::removeName(const std::string& sh_name){
     if (ptr_shared) {
         ptr_shared->mutex.lock();
         ptr_shared->names.erase(std::remove_if(
                 ptr_shared->names.begin(),
                 ptr_shared->names.end(),
-                [=](const ShmString &s){ return s.c_str() == sh_name; }
+                [=](const ShmString& s){ return s.c_str() == sh_name; }
         ), ptr_shared->names.end());
         ptr_shared->mutex.unlock();
         std::cout << "EasySharedNames::removeName : " << sh_name << std::endl;
@@ -123,7 +123,7 @@ bool EasySharedNames::removeName(const std::string &sh_name){
     return false;
 }
 
-bool EasySharedNames::pushName(const std::string &sh_name){
+bool EasySharedNames::pushName(const std::string& sh_name){
     if (hasName(sh_name))
         return false;
 
@@ -136,7 +136,7 @@ bool EasySharedNames::pushName(const std::string &sh_name){
     return false;
 }
 
-EasySharedNames::ShmString EasySharedNames::toShared(const std::string &s){
+EasySharedNames::ShmString EasySharedNames::toShared(const std::string& s){
     ShmString name_to_push(managed_memory->get_segment_manager());
     name_to_push = s.c_str();
     return name_to_push;
@@ -146,7 +146,7 @@ std::vector<std::string> EasySharedNames::getNames(){
     std::vector<std::string> names;
     if (ptr_shared) {
         ptr_shared->mutex.lock();
-        for (const auto &name : ptr_shared->names) {
+        for (const auto& name : ptr_shared->names) {
             names.push_back(name.c_str());
         }
         ptr_shared->mutex.unlock();
@@ -154,32 +154,32 @@ std::vector<std::string> EasySharedNames::getNames(){
     return names;
 }
 
-void EasySharedNames::remove(const std::string &share_names_id){
+void EasySharedNames::remove(const std::string& share_names_id){
     auto name_id = managed_shared_memory_name + "_" + share_names_id;
     boost::interprocess::shared_memory_object::remove(name_id.c_str());
 }
 
-void EasySharedNames::dumpAllNames(std::ostream &oss, const std::string &share_names_id){
+void EasySharedNames::dumpAllNames(std::ostream& oss, const std::string& share_names_id){
     EasySharedNames sharedNames(share_names_id);
     auto names = sharedNames.getNames();
     oss << "TOTAL REF OBJECT COUNT: " << sharedNames.refCount() << std::endl;
-    for (const auto &name : names) {
+    for (const auto& name : names) {
         oss << name << std::endl;
     }
 }
 
-const char *EasySharedNames::localNameRoot() const{
+const char* EasySharedNames::localNameRoot() const{
 
     return local_name_root.c_str();
 }
 
-const char *EasySharedNames::localNameObj() const{
+const char* EasySharedNames::localNameObj() const{
 
     return local_name_obj.c_str();
 }
 
 
-EasySharedNames::SharedNames::SharedNames(const EasySharedNames::StringAllocator &a) :
+EasySharedNames::SharedNames::SharedNames(const EasySharedNames::StringAllocator& a) :
         names(a){
     refCount = 0;
 }
