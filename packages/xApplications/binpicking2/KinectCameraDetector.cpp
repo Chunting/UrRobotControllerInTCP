@@ -37,7 +37,6 @@ void KinectCameraDetector::checkCameraDeviceNum(){
     if (num_dev > 0) {
 
         if (m_dev_num != num_dev) {
-            m_timer->setInterval(1000);
             Q_EMIT cameraFound(true);
         }
     } else {

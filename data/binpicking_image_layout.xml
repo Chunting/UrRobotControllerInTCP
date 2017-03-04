@@ -3,6 +3,13 @@
     <MatMerger>
         <layouts>
             <_>
+                <name>preview</name>
+                <x>0</x>
+                <y>0</y>
+                <width>960</width>
+                <height>540</height>
+            </_>
+            <_>
                 <name>grab_object</name>
                 <x>0</x>
                 <y>0</y>

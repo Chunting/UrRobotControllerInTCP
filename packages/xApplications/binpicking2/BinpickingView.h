@@ -23,6 +23,7 @@
 #include "MatMerger.h"
 #include "EasyGuiShowClient.h"
 #include "KinectCameraDetector.h"
+#include "Kinect2CameraWrap.h"
 #include <cobotsys_background_process_server.h>
 #include <Ur3DriverStatusReporter.h>
 
@@ -79,7 +80,7 @@ protected:
     Ui::BinpickingView ui;
 
     LoggerViewWidget* _logger_widget;
-    EasyGuiShowClient* _easy_gui_show_client;
+    EasyGuiShowClient* m_easy_gui_show_client;
 
     cobotsys::BackgroundTaskSettings _settings_binpicking;
     cobotsys::BackgroundTaskSettings _settings_calibration;
@@ -136,6 +137,16 @@ protected:
     KinectCameraDetector* m_kinect2_camera_detector;
     bool m_is_kinect2_camera_connected;
     void onKinect2CameraConnectionChange(bool is_connected);
+
+    /**
+     * @note Kinect2 Camera Preview
+     */
+    CameraKinect2* m_kinect2_camera;
+    QTimer* m_kinect2_camera_preview_timer;
+    void onPreviewKinect2Camera();
+    void cameraPreviewStart();
+    void cameraPreviewStop();
+    void setupCameraPreview();
 };
 
 

@@ -7,7 +7,7 @@
 
 #define BINPICKING_EASY_GUI_LAYOUT "MatMerger"
 
-EasyGuiShowClient::EasyGuiShowClient(QObject *parent)
+EasyGuiShowClient::EasyGuiShowClient(QObject* parent)
         : QObject(parent), _client_ready(new bool(true)), _mat_merger(new MatMerger){
 
     _reload_timer = nullptr;
@@ -20,7 +20,7 @@ EasyGuiShowClient::~EasyGuiShowClient(){
     if (_reload_timer) {
         _reload_timer->stop();
 
-        for (auto &iter : _mat_status) {
+        for (auto& iter : _mat_status) {
             if (iter.second.holder) {
                 iter.second.holder->stopReader();
             }
@@ -28,11 +28,11 @@ EasyGuiShowClient::~EasyGuiShowClient(){
     }
 }
 
-void EasyGuiShowClient::draw(QPainter &painter){
+void EasyGuiShowClient::draw(QPainter& painter){
     _mat_merger->draw(painter);
 }
 
-bool EasyGuiShowClient::loadLayoutConfig(const cv::FileStorage &fs){
+bool EasyGuiShowClient::loadLayoutConfig(const cv::FileStorage& fs){
     auto fn = fs[BINPICKING_EASY_GUI_LAYOUT];
     if (fn.empty())
         return false;
@@ -70,7 +70,7 @@ void EasyGuiShowClient::reloadImageTargets(){
                                                                   emit matReaderStatus(name, (int) status);
                                                               });
 
-        _mat_status[name].holder->setUpdateCallback([=](const std::string &n, const cv::Mat &mat){
+        _mat_status[name].holder->setUpdateCallback([=](const std::string& n, const cv::Mat& mat){
             if (*_client_ready)
                 _mat_merger->updateMat(n, mat);
             return *_client_ready;
@@ -79,10 +79,10 @@ void EasyGuiShowClient::reloadImageTargets(){
     _old_mat_names = qnames;
 }
 
-void EasyGuiShowClient::dumpAndCompareNames(const std::vector<QString> &new_names){
+void EasyGuiShowClient::dumpAndCompareNames(const std::vector<QString>& new_names){
     auto dump_change = [=](){
         COBOT_LOG.notice() << "cv Mat name changed!";
-        for (const auto &name : new_names) {
+        for (const auto& name : new_names) {
             COBOT_LOG.message() << "MAT name: " << name.toLocal8Bit().constData();
         }
     };
@@ -108,7 +108,7 @@ void EasyGuiShowClient::initShowClient(){
     }
 }
 
-void EasyGuiShowClient::processMatReaderStatus(const QString &readerMat, int status){
+void EasyGuiShowClient::processMatReaderStatus(const QString& readerMat, int status){
     if (status == (int) cobotsys::common::EasyCvMatReaderStatus::TargetImageDoesNotExist) {
     }
     if (status == (int) cobotsys::common::EasyCvMatReaderStatus::ImageWriterAlreadyReleased) {
@@ -137,7 +137,7 @@ void EasyGuiShowClient::clearClientMat(){
 QStringList EasyGuiShowClient::getConnectedMatNames() const{
     QStringList nameList;
 
-    for (const auto &iter : _mat_status) {
+    for (const auto& iter : _mat_status) {
         if (iter.second.isConnected) {
             nameList << iter.first;
         }
@@ -146,7 +146,7 @@ QStringList EasyGuiShowClient::getConnectedMatNames() const{
     return nameList;
 }
 
-void EasyGuiShowClient::showWithOpenCvApi(const QString &s){
+void EasyGuiShowClient::showWithOpenCvApi(const QString& s){
     auto iter = _mat_status.find(s);
     if (iter != _mat_status.end()) {
         bool old_status = iter->second.isCvShowEnabled;
@@ -158,7 +158,7 @@ void EasyGuiShowClient::showWithOpenCvApi(const QString &s){
     }
 }
 
-bool EasyGuiShowClient::getCvMatViewStatus(const QString &s) const{
+bool EasyGuiShowClient::getCvMatViewStatus(const QString& s) const{
     auto iter = _mat_status.find(s);
     if (iter != _mat_status.end()) {
         return iter->second.isCvShowEnabled;
@@ -167,10 +167,14 @@ bool EasyGuiShowClient::getCvMatViewStatus(const QString &s) const{
 }
 
 void EasyGuiShowClient::destoryAllCvShowWindow(){
-    for (auto &iter : _mat_status) {
+    for (auto& iter : _mat_status) {
         iter.second.isCvShowEnabled = false;
         cv::destroyWindow(iter.first.toLocal8Bit().constData());
     }
+}
+
+MatMerger& EasyGuiShowClient::getInternalMatMerger(){
+    return *_mat_merger.get();
 }
 
 

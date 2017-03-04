@@ -32,6 +32,10 @@ public:
 
     QStringList getConnectedMatNames() const;
     bool getCvMatViewStatus(const QString &s) const;
+
+    MatMerger& getInternalMatMerger();
+
+
 Q_SIGNALS:
     void matReaderStatus(const QString &readerMat, int status);
     void clientDataUpdated();

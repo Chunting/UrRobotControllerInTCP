@@ -15,7 +15,7 @@ using namespace cobotsys;
 BinpickingView::BinpickingView(QWidget* parent)
         : QWidget(parent){
     _logger_widget = nullptr;
-    _easy_gui_show_client = nullptr;
+    m_easy_gui_show_client = nullptr;
 
     m_ros_ur3_init_success = false;
 
@@ -56,14 +56,18 @@ BinpickingView::BinpickingView(QWidget* parent)
     connect(ui.btnClear, &QPushButton::released, this, &BinpickingView::actionClear);
     connect(ui.btnViewMatClear, &QPushButton::released, this, &BinpickingView::actionCloseAllViewMatWindow);
 
-    _easy_gui_show_client = new EasyGuiShowClient(this);
-    _easy_gui_show_client->initShowClient();
-    connect(_easy_gui_show_client, &EasyGuiShowClient::clientDataUpdated, [=](){ this->update(); });
+    m_easy_gui_show_client = new EasyGuiShowClient(this);
+    m_easy_gui_show_client->initShowClient();
+    connect(m_easy_gui_show_client, &EasyGuiShowClient::clientDataUpdated, [=](){ this->update(); });
 
     m_is_kinect2_camera_connected = false;
     m_kinect2_camera_detector = new KinectCameraDetector(this);
     connect(m_kinect2_camera_detector, &KinectCameraDetector::cameraFound, this,
             &BinpickingView::onKinect2CameraConnectionChange);
+
+    /// @note creation for kinect2 camera view
+    setupCameraPreview();
+
 
     setupLoggerUi();
     loadConfig();
@@ -82,8 +86,8 @@ BinpickingView::~BinpickingView(){
 void BinpickingView::paintEvent(QPaintEvent* event){
     QPainter painter(this);
 
-    if (_easy_gui_show_client) {
-        _easy_gui_show_client->draw(painter);
+    if (m_easy_gui_show_client) {
+        m_easy_gui_show_client->draw(painter);
     }
 
     painter.drawPixmap(6, 6, _logo);
@@ -95,7 +99,7 @@ void BinpickingView::paintEvent(QPaintEvent* event){
 void BinpickingView::stopAll(){
     if (_task_binpicking) _task_binpicking->stop();
     if (_task_calibration) _task_calibration->stop();
-    _easy_gui_show_client->clearClientMat();
+    m_easy_gui_show_client->clearClientMat();
 
     _server->stopScript();
 }
@@ -127,6 +131,8 @@ void BinpickingView::clearLoggerWindowText(){
 }
 
 void BinpickingView::actionStart(){
+    cameraPreviewStop();
+
     if (_task_binpicking->run(_settings_binpicking)) {
         timerStart();
         updateUiStatus(RunningStatus::Binpicking);
@@ -138,19 +144,25 @@ void BinpickingView::actionStart(){
                 actionStop();
             }
         });
+    } else {
+        cameraPreviewStart();
     }
 }
 
 void BinpickingView::actionStop(){
     stopAll();
     update();
+    cameraPreviewStart();
 }
 
 void BinpickingView::actionCalibration(){
+    cameraPreviewStop();
     if (_task_calibration->run(_settings_calibration)) {
         timerStart();
 
         updateUiStatus(RunningStatus::Calibration);
+    } else {
+        cameraPreviewStart();
     }
 }
 
@@ -159,7 +171,7 @@ void BinpickingView::loadConfig(){
     COBOT_LOG.notice() << "Binpicking Layout: " << layout_xml_config;
     cv::FileStorage fs(layout_xml_config, cv::FileStorage::READ);
     if (fs.isOpened()) {
-        _easy_gui_show_client->loadLayoutConfig(fs);
+        m_easy_gui_show_client->loadLayoutConfig(fs);
     }
 }
 
@@ -182,6 +194,7 @@ void BinpickingView::loadRunScript(){
 void BinpickingView::onTaskFinish(){
     updateUiStatus(RunningStatus::Idle);
     timerStop();
+    cameraPreviewStart();
 }
 
 void BinpickingView::actionClear(){
@@ -201,7 +214,7 @@ void BinpickingView::enableMatView(){
     auto action = dynamic_cast<QAction*>(sender());
     if (action) {
         auto im_name = action->text();
-        _easy_gui_show_client->showWithOpenCvApi(im_name);
+        m_easy_gui_show_client->showWithOpenCvApi(im_name);
     }
 }
 
@@ -217,7 +230,7 @@ bool __list_name_equal(const QStringList& a, const QStringList& b){
 }
 
 void BinpickingView::updateViewMatMenu(){
-    auto names = _easy_gui_show_client->getConnectedMatNames();
+    auto names = m_easy_gui_show_client->getConnectedMatNames();
     names.sort();
     _view_mat_names_old.sort();
     if (__list_name_equal(names, _view_mat_names_old)) {
@@ -230,14 +243,14 @@ void BinpickingView::updateViewMatMenu(){
         auto action = new QAction;
         action->setText(name);
         action->setCheckable(true);
-        action->setChecked(_easy_gui_show_client->getCvMatViewStatus(name));
+        action->setChecked(m_easy_gui_show_client->getCvMatViewStatus(name));
         connect(action, &QAction::triggered, this, &BinpickingView::enableMatView);
         _view_mat_menu->addAction(action);
     }
 }
 
 void BinpickingView::actionCloseAllViewMatWindow(){
-    _easy_gui_show_client->destoryAllCvShowWindow();
+    m_easy_gui_show_client->destoryAllCvShowWindow();
     _view_mat_names_old.clear();
     updateViewMatMenu();
 }
@@ -294,6 +307,7 @@ void BinpickingView::updateUiStatus(RunningStatus new_status){
     switch (m_cur_ui_status) {
         case RunningStatus::Idle:
             setup(true, false, true);
+            cameraPreviewStart();
             break;
         case RunningStatus::WaitSubSystem:
             setup(false, false, false);
@@ -354,10 +368,39 @@ bool BinpickingView::checkIfAllSubSystemReady(){
 void BinpickingView::onKinect2CameraConnectionChange(bool is_connected){
     m_is_kinect2_camera_connected = is_connected;
 
-    if (m_is_kinect2_camera_connected)
+    if (m_is_kinect2_camera_connected) {
         ui.labelCameraStatus->setText(tr("Camera Connected"));
-    else
+    } else {
         ui.labelCameraStatus->setText(tr("Camera not found"));
+    }
+    updateUiStatus(RunningStatus::Idle);
 }
 
 
+void BinpickingView::onPreviewKinect2Camera(){
+    m_kinect2_camera->loopCameraOnce();
+}
+
+void BinpickingView::cameraPreviewStart(){
+    if (m_kinect2_camera->initCamera()) {
+        m_kinect2_camera_preview_timer->start();
+    }
+}
+
+void BinpickingView::cameraPreviewStop(){
+    m_kinect2_camera_preview_timer->stop();
+    m_kinect2_camera->closeCamera();
+    m_easy_gui_show_client->getInternalMatMerger().clear();
+}
+
+void BinpickingView::setupCameraPreview(){
+    m_kinect2_camera = new CameraKinect2();
+    m_kinect2_camera_preview_timer = new QTimer(this);
+    m_kinect2_camera_preview_timer->setInterval(17);
+    connect(m_kinect2_camera_preview_timer, &QTimer::timeout, this, &BinpickingView::onPreviewKinect2Camera);
+
+    m_kinect2_camera->regisiterImageCallback([=](const CameraKinect2::IMAGE& img){
+        m_easy_gui_show_client->getInternalMatMerger().updateMat("preview", img.raw_color);
+        update();
+    });
+}
