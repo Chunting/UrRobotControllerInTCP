@@ -62,3 +62,4 @@ if (BuildTestSample)
     endif ()
 endif ()
 
+install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION lib)

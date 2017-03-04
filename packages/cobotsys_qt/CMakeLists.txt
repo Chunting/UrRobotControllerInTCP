@@ -37,3 +37,5 @@ target_link_libraries(${PROJECT_NAME}
         Qt5::Widgets
         Qt5::OpenGL
         Qt5::Network)
+
+install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION lib)

@@ -41,3 +41,5 @@ target_link_libraries(${PROJECT_NAME}
         Qt5::OpenGL
         Qt5::Network
         ${OpenCV_LIBRARIES})
+
+install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION lib)

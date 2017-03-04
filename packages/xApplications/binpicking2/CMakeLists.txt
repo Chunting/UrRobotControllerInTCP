@@ -31,3 +31,7 @@ target_link_libraries(${PROJECT_NAME}
         cobotsys_ros_wrapper
         ${freenect2_LIBRARY}
         ${OpenCL_LIBRARY})
+
+install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)
+
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/data DESTINATION ${CMAKE_INSTALL_PREFIX})
