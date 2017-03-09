@@ -62,6 +62,7 @@ function(build_package path_to_package)
     if (EXISTS "${path_to_package}/CMakeLists.txt")
         include_directories(${path_to_package}/src)
         include_directories(${path_to_package}/include)
+        include_directories(${path_to_package}/framework)
         add_subdirectory(${path_to_package})
     endif ()
 endfunction()
@@ -79,8 +80,13 @@ build_package(${CMAKE_SOURCE_DIR}/packages/cobotsys_qt_cv)
 build_package(${CMAKE_SOURCE_DIR}/packages/cobotsys_common)
 build_package(${CMAKE_SOURCE_DIR}/packages/cobotsys_ros_wrapper)
 
+# Plugin
+add_subdirectory(${CMAKE_SOURCE_DIR}/packages/plugin_library)
+
+# Test
 build_package(${CMAKE_SOURCE_DIR}/test_apps)
 
+# App & Sample
 add_subdirectory(${CMAKE_SOURCE_DIR}/packages/xApplications)
 add_subdirectory(${CMAKE_SOURCE_DIR}/samples)
 

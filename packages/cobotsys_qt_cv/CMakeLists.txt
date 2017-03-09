@@ -25,9 +25,10 @@ find_package(OpenCV REQUIRED)
 # 头文件引用
 include_directories(src)
 include_directories(${OpenCV_INCLUDE_DIRS})
+include_directories(framework)
 
 # 源代码
-file(GLOB ${PROJECT_NAME}_files src/*.cpp)
+file(GLOB ${PROJECT_NAME}_files src/*.cpp framework/*)
 
 # 主要的代码库部分
 add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_files})
