@@ -73,6 +73,20 @@ CameraFrameType CameraInformation::getFrameType(int frameId) const{
 int CameraInformation::getFrameCount() const{
     return (int) (m_impl->frameInfos.size());
 }
+
+std::string CameraFrame::typeName() const{
+    switch (type) {
+        case CameraFrameType::Color:
+            return "Color";
+        case CameraFrameType::Depth:
+            return "Depth";
+        case CameraFrameType::Gray:
+            return "Gray";
+        case CameraFrameType::Ir:
+            return "Ir";
+    }
+    return "";
+}
 }
 
 

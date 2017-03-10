@@ -16,6 +16,9 @@ find_package(Qt5Widgets REQUIRED) # Fuck, 如果要使用autouic那么必须引�
 find_package(freenect2 REQUIRED)
 include_directories(${freenect2_INCLUDE_DIRS})
 
+find_package(OpenCV REQUIRED)
+include_directories(${OpenCV_INCLUDE_DIRS})
+
 FILE(GLOB ${PROJECT_NAME}_files src/*)
 
 add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_files})
@@ -25,4 +28,5 @@ target_link_libraries(${PROJECT_NAME}
         cobotsys_qt
         cobotsys_qt_cv
         ${freenect2_LIBRARY}
-        ${OpenCL_LIBRARY})
+        ${OpenCL_LIBRARY}
+        ${OpenCV_LIBRARIES})

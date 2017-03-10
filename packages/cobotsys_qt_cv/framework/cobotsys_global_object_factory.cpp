@@ -46,7 +46,7 @@ public:
                 oss << "{";
                 for (size_t i = 0; i < tlist.size(); i++) {
                     oss << tlist[i];
-                    if (i + 1 < tlist.size()) oss << ",";
+                    if (i + 1 < tlist.size()) oss << ", ";
                 }
                 oss << "}";
 
@@ -62,7 +62,11 @@ public:
     std::shared_ptr<AbstractObject> createObject(const std::string& factory, const std::string& type){
         auto iter = objectFactoryMap.find(factory);
         if (iter != objectFactoryMap.end()) {
-            return iter->second->createObject(type);
+            auto result = iter->second->createObject(type);
+            if (result) {
+                COBOT_LOG.message("Cr-Object") << factory << ", " << type;
+            }
+            return result;
         }
         return nullptr;
     }

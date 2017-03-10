@@ -24,14 +24,14 @@ public:
 
     const cobotsys::CameraInformation& getCameraInformation() const;
 
-    bool open(int deviceId = 0);
-    void close();
-    void attach(std::shared_ptr<cobotsys::CameraStreamObserver> observer);
+    virtual bool open(int deviceId = 0);
+    virtual void close();
+    virtual void attach(std::shared_ptr<cobotsys::CameraStreamObserver> observer);
 
-    void capture(); /// @note 控制相机进行一次图像捕获
+    virtual bool capture(int waitMs); /// @note 控制相机进行一次图像捕获
 
 protected:
-    void createPipeline(int deviceId);
+    libfreenect2::PacketPipeline* createPipeline(int deviceId);
     void notify(const std::vector<cobotsys::CameraStreamObserver::StreamFrame>& frames);
 
 protected:
@@ -41,7 +41,6 @@ protected:
 
     libfreenect2::Freenect2* m_freenect2;
     libfreenect2::Freenect2Device* m_freenectDev;
-    libfreenect2::PacketPipeline* m_pipeline;
     int m_devicdId;
 
     std::string m_deviceSerialNumber;

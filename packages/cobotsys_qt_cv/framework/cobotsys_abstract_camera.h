@@ -30,6 +30,8 @@ enum class CameraFrameType {
 struct CameraFrame {
     CameraFrameType type;
     cv::Mat image;
+
+    std::string typeName() const;
 };
 
 class CameraInformation {
@@ -77,7 +79,7 @@ public:
     virtual bool open(int deviceId = 0) = 0;
     virtual void close() = 0;
     virtual void attach(std::shared_ptr<CameraStreamObserver> observer) = 0;
-    virtual void capture() = 0; /// @note 控制相机进行一次图像捕获
+    virtual bool capture(int waitMs = -1) = 0; /// @note 控制相机进行一次图像捕获
 };
 
 
