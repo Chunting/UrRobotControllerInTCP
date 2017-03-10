@@ -10,6 +10,7 @@
 typedef void* (* getAbstractObjectFactoryInstance)();
 
 namespace cobotsys {
+static GlobalObjectFactory* g_defaultObjectFactory = nullptr;
 
 class GlobalObjectFactory::GlobalObjectFactoryImpl {
 public:
@@ -78,6 +79,7 @@ namespace cobotsys {
 
 GlobalObjectFactory::GlobalObjectFactory()
         : m_impl(new GlobalObjectFactoryImpl){
+    g_defaultObjectFactory = this;
 }
 
 GlobalObjectFactory::~GlobalObjectFactory(){
@@ -98,6 +100,10 @@ void GlobalObjectFactory::loadLibrarys(const QString& path){
             }
         }
     }
+}
+
+GlobalObjectFactory* GlobalObjectFactory::instance(){
+    return g_defaultObjectFactory;
 }
 
 

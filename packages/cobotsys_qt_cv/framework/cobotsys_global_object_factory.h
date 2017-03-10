@@ -29,6 +29,7 @@ public:
     void loadLibrarys(const QString& path);
 
 
+    static GlobalObjectFactory* instance();
 private:
     class GlobalObjectFactoryImpl;
     std::shared_ptr<GlobalObjectFactoryImpl> m_impl;
