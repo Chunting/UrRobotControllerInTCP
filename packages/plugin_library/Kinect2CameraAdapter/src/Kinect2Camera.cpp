@@ -11,6 +11,9 @@ Kinect2Camera::Kinect2Camera(){
     m_freenect2 = new libfreenect2::Freenect2;
     m_freenectDev = nullptr;
     m_devicdId = -1;
+
+    m_isNotifyCalling = false;
+    m_isCloseCallInNotify = false;
 }
 
 Kinect2Camera::~Kinect2Camera(){
@@ -68,6 +71,11 @@ bool Kinect2Camera::open(int deviceId){
 void Kinect2Camera::close(){
     std::lock_guard<std::mutex> lock(m_ioMutex);
 
+    if (m_isNotifyCalling) {
+        m_isCloseCallInNotify = true;
+        return;
+    }
+
     if (m_freenectDev) {
         m_freenectDev->stop();
         m_freenectDev->close();
@@ -117,9 +125,11 @@ bool Kinect2Camera::capture(int waitMs){
                 streamFrames.push_back({0, timeAfterWait, c_color});
                 streamFrames.push_back({1, timeAfterWait, c_depth});
                 streamFrames.push_back({2, timeAfterWait, c_ir});
+
                 notify(streamFrames);
 
                 m_listener->release(frames);
+                delayClose();
                 return true;
             }
         }
@@ -128,10 +138,20 @@ bool Kinect2Camera::capture(int waitMs){
 }
 
 
+void Kinect2Camera::delayClose(){
+    if (m_isCloseCallInNotify) {
+        close();
+    }
+    m_isCloseCallInNotify = false;
+}
+
+
 void Kinect2Camera::notify(const std::vector<cobotsys::CameraStreamObserver::StreamFrame>& frames){
+    m_isNotifyCalling = true;
     for (auto& observer : m_observers) {
         observer->onCameraStreamUpdate(frames);
     }
+    m_isNotifyCalling = false;
 }
 
 libfreenect2::PacketPipeline* Kinect2Camera::createPipeline(int deviceId){
@@ -156,5 +176,6 @@ libfreenect2::PacketPipeline* Kinect2Camera::createPipeline(int deviceId){
 
     return pipeline;
 }
+
 
 

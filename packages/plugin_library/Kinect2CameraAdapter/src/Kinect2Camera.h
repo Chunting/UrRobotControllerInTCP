@@ -25,7 +25,7 @@ public:
     const cobotsys::CameraInformation& getCameraInformation() const;
 
     virtual bool open(int deviceId = 0);
-    virtual void close();
+    virtual void close(); ///  @note 最好不要在回调函数里调用close函数。
     virtual void attach(std::shared_ptr<cobotsys::CameraStreamObserver> observer);
 
     virtual bool capture(int waitMs); /// @note 控制相机进行一次图像捕获
@@ -34,6 +34,7 @@ protected:
     libfreenect2::PacketPipeline* createPipeline(int deviceId);
     void notify(const std::vector<cobotsys::CameraStreamObserver::StreamFrame>& frames);
 
+    void delayClose();
 protected:
     cobotsys::CameraInformation m_cameraInfo;
 
@@ -48,6 +49,9 @@ protected:
     std::shared_ptr<libfreenect2::SyncMultiFrameListener> m_listener;
 
     std::mutex m_ioMutex;
+
+    bool m_isNotifyCalling;
+    bool m_isCloseCallInNotify;
 };
 
 

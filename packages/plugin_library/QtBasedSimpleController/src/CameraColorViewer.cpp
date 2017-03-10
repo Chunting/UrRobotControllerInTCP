@@ -17,6 +17,7 @@ CameraColorViewer::CameraColorViewer()
 }
 
 CameraColorViewer::~CameraColorViewer(){
+    COBOT_LOG.info() << "free: " << "CameraColorViewer";
     stop();
 }
 
@@ -46,13 +47,15 @@ bool CameraColorViewer::setup(const std::string& xmlConfigFilePath){
     auto pFactory = cobotsys::GlobalObjectFactory::instance();
     if (pFactory) {
         auto pObject = pFactory->createObject("Kinect2CameraFactory, Ver 1.0", "Kinect2");
-        m_camera = std::dynamic_pointer_cast<cobotsys::AbstractCamera>(pObject);
-        if (m_camera) {
-            auto shObj = shared_from_this();
-            auto shObs = std::dynamic_pointer_cast<cobotsys::CameraStreamObserver>(shObj);
-            m_camera->attach(shObs);
+        if (pObject) {
+            m_camera = std::dynamic_pointer_cast<cobotsys::AbstractCamera>(pObject);
+            if (m_camera) {
+                auto shObj = shared_from_this();
+                auto shObs = std::dynamic_pointer_cast<cobotsys::CameraStreamObserver>(shObj);
+                m_camera->attach(shObs);
+                return true;
+            }
         }
-        return true;
     }
     return false;
 }
@@ -66,6 +69,7 @@ void CameraColorViewer::onCameraStreamUpdate(const std::vector<cobotsys::CameraS
 
             char key = (char) cv::waitKey(5);
             if (key == 27) {
+                m_camera->close();
                 QCoreApplication::quit();
             }
         }
