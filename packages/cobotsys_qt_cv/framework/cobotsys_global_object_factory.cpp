@@ -3,6 +3,7 @@
 // Copyright (c) 2017 Wuhan Collaborative Robot Technology Co.,Ltd. All rights reserved.
 //
 
+#include <QtCore/QJsonArray>
 #include "cobotsys_global_object_factory.h"
 
 #define OBJECT_FACTORY_SYMBOL "getAbstractObjectFactoryInstance"
@@ -105,9 +106,79 @@ void GlobalObjectFactory::loadLibrarys(const QString& path){
 GlobalObjectFactory* GlobalObjectFactory::instance(){
     return g_defaultObjectFactory;
 }
+}
 
+namespace cobotsys {
+ObjectGroup::ObjectGroup(){
+}
 
+ObjectGroup::~ObjectGroup(){
+}
 
+bool ObjectGroup::init(const QJsonObject& jsonConfig){
+    m_idKeys.clear();
+    m_objs.clear();
 
-//
+    if (_initImpl(jsonConfig))
+        return true;
+
+    m_idKeys.clear();
+    m_objs.clear();
+    return false;
+}
+
+bool ObjectGroup::_initImpl(const QJsonObject& jsonConfig){
+    if (GlobalObjectFactory::instance() == nullptr)
+        return false;
+
+    auto groupObjs = jsonConfig["objectGroup"].toArray();
+    for (const auto& obj : groupObjs) {
+        auto objConfig = obj.toObject();
+
+        std::string objectId = objConfig["objectId"].toString().toLocal8Bit().constData();
+        std::string objectKey = objConfig["objectKey"].toString().toLocal8Bit().constData();
+        if (objectId.empty() || objectKey.empty()) {// 对象的ID与Key为空，不合法
+            return false;
+        }
+
+        if (m_idKeys.find(objectId) != m_idKeys.end()) { // 有相同ID的对象，不合法
+            return false;
+        }
+        m_idKeys[objectId] = objectKey;
+
+        auto iter = m_objs.find(objectKey);
+        if (iter != m_objs.end()) { // 目标对象已经存在
+            continue;
+        }
+
+        std::string factory = objConfig["factory"].toString().toLocal8Bit().constData();
+        std::string type = objConfig["type"].toString().toLocal8Bit().constData();
+
+        auto pObject = GlobalObjectFactory::instance()->createObject(factory, type);
+        if (pObject == nullptr) {
+            COBOT_LOG.warning() << "Fail to create: " << factory << ", " << type;
+            return false;
+        }
+
+        auto srcInfo = std::make_shared<ObjectSourceInfo>();
+        srcInfo->factory = factory;
+        srcInfo->type = type;
+        auto objInfo = std::make_shared<ObjectInfo>();
+        objInfo->pInfo = srcInfo;
+        objInfo->pObject = pObject;
+        m_objs[objectKey] = objInfo;
+    }
+    return true;
+}
+
+std::shared_ptr<AbstractObject> ObjectGroup::getObject(const std::string& objectId){
+    auto kIter = m_idKeys.find(objectId);
+    if (kIter != m_idKeys.end()) {
+        auto oIter = m_objs.find(kIter->second);
+        if (oIter != m_objs.end()) {
+            return oIter->second->pObject;
+        }
+    }
+    return nullptr;
+}
 }

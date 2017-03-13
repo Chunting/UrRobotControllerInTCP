@@ -7,6 +7,7 @@
 #define PROJECT_COBOTSYS_ABSTRACT_ROBOT_DRIVER_H
 
 #include "cobotsys_abstract_object.h"
+#include "cobotsys_abstract_digit_io_driver.h"
 #include <opencv/cv.h>
 #include <QtCore/QIODevice>
 
@@ -28,23 +29,6 @@ public:
 
 namespace cobotsys {
 
-enum class RobotIoStatus {
-    On,
-    Off,
-};
-
-enum class RobotIoPort {
-    Port_1 = 1UL << 1,
-    Port_2 = 1UL << 2,
-    Port_3 = 1UL << 3,
-    Port_4 = 1UL << 4,
-    Port_5 = 1UL << 5,
-    Port_6 = 1UL << 6,
-    Port_7 = 1UL << 7,
-    Port_8 = 1UL << 8,
-};
-
-Q_DECLARE_FLAGS(RobotIoPorts, RobotIoPort);
 
 class AbstractRobotDriver : public AbstractObject {
 public:
@@ -52,12 +36,12 @@ public:
     virtual ~AbstractRobotDriver();
 
     virtual void move(uint32_t moveId, const cv::Point3d& pos, const cv::Vec3d& normal) = 0;
-    virtual void digitIoControl(RobotIoPorts ioPorts, RobotIoStatus ioStatus) = 0;
 
     virtual void attach(std::shared_ptr<RobotStatusObserver> observer) = 0;
     virtual void directControl(const std::string& command) = 0;
 
-    virtual QIODevice* getExtraIoDevice(int devicdId) = 0;
+    virtual std::shared_ptr<QIODevice> getSerialIoDevice(int devicdId = 0) = 0;
+    virtual std::shared_ptr<AbstractDigitIoDriver> getDigitIoDriver(int deviceId = 0) = 0;
 
     virtual bool getMoveData(uint32_t moveId, cv::Point3d& pos, cv::Vec3d& normal) = 0;
     virtual void clearMoveDataHistory() = 0;

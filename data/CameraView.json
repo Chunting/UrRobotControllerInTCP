@@ -1,0 +1,16 @@
+{
+  "objectGroup": [
+    {
+      "objectId": "camera",
+      "objectKey": "camera",
+      "factory": "Kinect2CameraFactory, Ver 1.0",
+      "type": "Kinect2"
+    },
+    {
+      "objectId": "view",
+      "objectKey": "view",
+      "factory": "Kinect2CameraFactory, Ver 1.0",
+      "type": "CameraPreview"
+    }
+  ]
+}

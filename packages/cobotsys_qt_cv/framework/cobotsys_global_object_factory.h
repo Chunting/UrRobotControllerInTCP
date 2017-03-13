@@ -18,6 +18,34 @@
 
 namespace cobotsys {
 
+class ObjectGroup {
+public:
+    ObjectGroup();
+    ~ObjectGroup();
+
+
+    bool init(const QJsonObject& jsonConfig);
+
+
+    std::shared_ptr<AbstractObject> getObject(const std::string& objectId);
+protected:
+    bool _initImpl(const QJsonObject& jsonConfig);
+protected:
+    struct ObjectSourceInfo {
+        std::string factory;
+        std::string type;
+    };
+
+    struct ObjectInfo {
+        std::shared_ptr<ObjectSourceInfo> pInfo;
+        std::shared_ptr<AbstractObject> pObject;
+    };
+
+    std::map<std::string, std::string> m_idKeys;
+    std::map<std::string, std::shared_ptr<ObjectInfo> > m_objs;
+};
+
+
 class GlobalObjectFactory {
 public:
     GlobalObjectFactory();
@@ -26,8 +54,8 @@ public:
 
     std::shared_ptr<AbstractObject> createObject(const std::string& factory, const std::string& type);
 
-    void loadLibrarys(const QString& path);
 
+    void loadLibrarys(const QString& path);
 
     static GlobalObjectFactory* instance();
 private:
