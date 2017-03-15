@@ -31,7 +31,7 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 include_directories(${Boost_INCLUDE_DIRS})
 
 # 源代码
-file(GLOB ${PROJECT_NAME}_files src/*.cpp framework/* common/* include/*)
+file(GLOB ${PROJECT_NAME}_files src/* framework/* include/*)
 
 # 主要的代码库部分
 add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_files})

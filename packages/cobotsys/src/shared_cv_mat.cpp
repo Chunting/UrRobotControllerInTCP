@@ -3,7 +3,7 @@
 // Copyright (c) 2017 Wuhan Collaborative Robot Technology Co.,Ltd. All rights reserved.
 //
 
-#include "shared_cv_mat.h"
+#include "include/shared_cv_mat.h"
 
 namespace cobotsys {
 namespace common {

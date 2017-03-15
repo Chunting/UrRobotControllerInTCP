@@ -3,7 +3,7 @@
 // Copyright (c) 2017 Wuhan Collaborative Robot Technology Co.,Ltd. All rights reserved.
 //
 
-#include "easy_shared_names.h"
+#include "include/easy_shared_names.h"
 
 namespace cobotsys {
 namespace common {

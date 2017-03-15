@@ -9,7 +9,7 @@
 #include <cobotsys_file_finder.h>
 #include <QtCore/QFile>
 #include <QtCore/QTextStream>
-#include "extra2.h"
+#include "include/extra2.h"
 #include <QDebug>
 
 void qt_ba_to_cobot_log(QByteArray& ba){
