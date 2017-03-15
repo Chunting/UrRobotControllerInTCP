@@ -28,8 +28,6 @@ public:
 
 
 namespace cobotsys {
-
-
 class AbstractRobotDriver : public AbstractObject {
 public:
     AbstractRobotDriver();
@@ -46,9 +44,7 @@ public:
     virtual bool getMoveData(uint32_t moveId, cv::Point3d& pos, cv::Vec3d& normal) = 0;
     virtual void clearMoveDataHistory() = 0;
 
-    virtual void connect(const std::string& addrConfig) = 0;
     virtual bool setup(const QString& configFilePath);
-
     virtual void start() = 0;
     virtual void pause() = 0;
 

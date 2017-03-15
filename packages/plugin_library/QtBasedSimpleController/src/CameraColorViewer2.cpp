@@ -56,7 +56,6 @@ void CameraColorViewer2::stop(){
 void CameraColorViewer2::onCameraStreamUpdate(const std::vector<cobotsys::CameraStreamObserver::StreamFrame>& frames){
     for (const auto& frame : frames) {
         if (frame.frame.type == cobotsys::CameraFrameType::Color) {
-
             cv::Mat mat;
             cv::pyrDown(frame.frame.image, mat);
             auto image = matToQImage(mat);

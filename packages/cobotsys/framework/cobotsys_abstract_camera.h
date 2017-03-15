@@ -54,7 +54,6 @@ protected:
     std::shared_ptr<CameraInformationImpl> m_impl;
 };
 
-
 class CameraStreamObserver {
 public:
     struct StreamFrame {
@@ -67,7 +66,6 @@ public:
     virtual ~CameraStreamObserver();
     virtual void onCameraStreamUpdate(const std::vector<StreamFrame>& frames) = 0;
 };
-
 
 class AbstractCamera : public AbstractObject {
 public:

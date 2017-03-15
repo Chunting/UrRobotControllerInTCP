@@ -14,6 +14,9 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 
+# Install depend
+set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib;$ENV{QT5_INSTALL_PATH}/lib")
+
 # 依赖Qt的库
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Gui REQUIRED)
@@ -47,3 +50,5 @@ target_link_libraries(${PROJECT_NAME}
         ${Boost_LIBRARIES})
 
 install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION lib)
+install(DIRECTORY include/ DESTINATION include/cobotsys FILES_MATCHING PATTERN "*.h")
+install(DIRECTORY framework/ DESTINATION include/cobotsys FILES_MATCHING PATTERN "*.h")

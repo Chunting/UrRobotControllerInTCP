@@ -5,6 +5,15 @@
 
 #include "cobotsys_abstract_robot_driver.h"
 
+
+namespace cobotsys {
+RobotStatusObserver::RobotStatusObserver(){
+}
+
+RobotStatusObserver::~RobotStatusObserver(){
+}
+}
+
 namespace cobotsys {
 AbstractRobotDriver::AbstractRobotDriver(){
 }
