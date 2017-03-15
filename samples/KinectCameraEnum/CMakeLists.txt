@@ -23,8 +23,6 @@ add_executable(${PROJECT_NAME} ${${PROJECT_NAME}_files})
 
 target_link_libraries(${PROJECT_NAME}
         cobotsys
-        cobotsys_qt
-        cobotsys_qt_cv
         cobotsys_ros_wrapper
         ${freenect2_LIBRARY}
         ${OpenCL_LIBRARY})

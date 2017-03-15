@@ -25,8 +25,6 @@ add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_files})
 
 target_link_libraries(${PROJECT_NAME}
         cobotsys
-        cobotsys_qt
-        cobotsys_qt_cv
         ${freenect2_LIBRARY}
         ${OpenCL_LIBRARY}
         ${OpenCV_LIBRARIES})

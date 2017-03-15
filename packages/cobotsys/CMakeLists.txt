@@ -9,17 +9,41 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")  #
 # 工程名
 project(cobotsys)
 
+# Qt编译扩展
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOUIC ON)
+
+# 依赖Qt的库
+find_package(Qt5Core REQUIRED)
+find_package(Qt5Gui REQUIRED)
+find_package(Qt5Widgets REQUIRED)
+find_package(Qt5OpenGL REQUIRED)
+find_package(Qt5Network REQUIRED)
+find_package(OpenCV REQUIRED)
+find_package(Boost REQUIRED COMPONENTS system program_options filesystem)
+
 # 头文件引用
 include_directories(src)
+include_directories(framework)
+include_directories(include)
+include_directories(${OpenCV_INCLUDE_DIRS})
+include_directories(${Boost_INCLUDE_DIRS})
 
 # 源代码
-file(GLOB ${PROJECT_NAME}_files src/*.cpp src/include/*.h)
+file(GLOB ${PROJECT_NAME}_files src/*.cpp framework/* common/* include/*)
 
 # 主要的代码库部分
 add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_files})
 
 # 依赖链接库
-target_link_libraries(${PROJECT_NAME})
+target_link_libraries(${PROJECT_NAME}
+        rt
+        Qt5::Core
+        Qt5::Widgets
+        Qt5::OpenGL
+        Qt5::Network
+        ${OpenCV_LIBRARIES}
+        ${Boost_LIBRARIES})
 
-#
 install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION lib)

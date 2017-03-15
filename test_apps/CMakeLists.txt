@@ -37,7 +37,7 @@ foreach (file ${children})
     if (${f_extf} STREQUAL ".cpp")
         message(STATUS "TEST APP   : " ${f_base})
         add_executable(${f_base} ${file_path_full})
-        target_link_libraries(${f_base} cobotsys cobotsys_qt cobotsys_qt_cv)
+        target_link_libraries(${f_base} cobotsys)
     endif ()
 endforeach ()
 

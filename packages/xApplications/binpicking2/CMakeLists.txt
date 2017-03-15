@@ -25,9 +25,6 @@ FILE(GLOB binpicking2_files *.cpp *.h res.qrc)
 add_executable(${PROJECT_NAME} ${binpicking2_files})
 target_link_libraries(${PROJECT_NAME}
         cobotsys
-        cobotsys_common
-        cobotsys_qt
-        cobotsys_qt_cv
         cobotsys_ros_wrapper
         ${freenect2_LIBRARY}
         ${OpenCL_LIBRARY})

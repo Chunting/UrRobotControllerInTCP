@@ -16,4 +16,4 @@ FILE(GLOB ${PROJECT_NAME}_files *.cpp *.h res.qrc)
 
 add_executable(${PROJECT_NAME} ${${PROJECT_NAME}_files})
 
-target_link_libraries(${PROJECT_NAME} cobotsys cobotsys_qt cobotsys_qt_cv cobotsys_ros_wrapper)
+target_link_libraries(${PROJECT_NAME} cobotsys cobotsys_ros_wrapper)
