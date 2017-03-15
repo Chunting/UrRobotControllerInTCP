@@ -3,12 +3,14 @@
 // Copyright (c) 2017 Wuhan Collaborative Robot Technology Co.,Ltd. All rights reserved.
 //
 
+#include <extra2.h>
 #include "cobotsys_abstract_controller.h"
 
 cobotsys::AbstractController::AbstractController(){
 }
 
 cobotsys::AbstractController::~AbstractController(){
+    INFO_DESTRUCTOR(this);
 }
 
 bool cobotsys::AbstractController::setup(const QString& configFilePath){
@@ -21,6 +23,7 @@ AbstractControllerWidget::AbstractControllerWidget()
 }
 
 AbstractControllerWidget::~AbstractControllerWidget(){
+    INFO_DESTRUCTOR(this);
 }
 
 bool AbstractControllerWidget::setup(const QString& configFilePath){

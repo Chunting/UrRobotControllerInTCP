@@ -5,6 +5,7 @@
 
 #include <cobotsys_logger.h>
 #include <cobotsys_qt.h>
+#include <extra2.h>
 #include "cobotsys_abstract_object.h"
 
 
@@ -13,6 +14,7 @@ AbstractObject::AbstractObject(){
 }
 
 AbstractObject::~AbstractObject(){
+    INFO_DESTRUCTOR(this);
 }
 
 bool AbstractObject::setup(const QString& configFilePath){

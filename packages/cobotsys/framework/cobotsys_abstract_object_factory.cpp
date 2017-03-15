@@ -3,6 +3,7 @@
 // Copyright (c) 2017 Wuhan Collaborative Robot Technology Co.,Ltd. All rights reserved.
 //
 
+#include <extra2.h>
 #include "cobotsys_abstract_object_factory.h"
 
 
@@ -11,5 +12,6 @@ AbstractObjectFactory::AbstractObjectFactory(){
 }
 
 AbstractObjectFactory::~AbstractObjectFactory(){
+    INFO_DESTRUCTOR(this);
 }
 }

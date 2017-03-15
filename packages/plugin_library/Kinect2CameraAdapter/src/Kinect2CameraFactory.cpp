@@ -4,6 +4,7 @@
 //
 
 #include <libfreenect2/logger.h>
+#include <extra2.h>
 #include "Kinect2CameraFactory.h"
 #include "Kinect2Camera.h"
 #include "CameraPreview.h"
@@ -13,6 +14,7 @@ Kinect2CameraFactory::Kinect2CameraFactory(){
 }
 
 Kinect2CameraFactory::~Kinect2CameraFactory(){
+    INFO_DESTRUCTOR(this);
 }
 
 std::vector<std::string> Kinect2CameraFactory::getSupportTypes(){

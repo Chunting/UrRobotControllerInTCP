@@ -3,9 +3,11 @@
 // Copyright (c) 2017 Wuhan Collaborative Robot Technology Co.,Ltd. All rights reserved.
 //
 
+#include <extra2.h>
 #include "SimpleControllerFactory.h"
 #include "CameraColorViewer.h"
 #include "CameraColorViewer2.h"
+#include "EmptyWidget.h"
 
 std::shared_ptr<SimpleControllerFactory> localFactory;
 
@@ -21,10 +23,11 @@ SimpleControllerFactory::SimpleControllerFactory(){
 }
 
 SimpleControllerFactory::~SimpleControllerFactory(){
+    INFO_DESTRUCTOR(this);
 }
 
 std::vector<std::string> SimpleControllerFactory::getSupportTypes(){
-    return {"SimpleCameraView", "CameraViewWidget"};
+    return {"SimpleCameraView", "CameraViewWidget", "EmptyWidget"};
 }
 
 std::string SimpleControllerFactory::getFactoryType(){
@@ -36,5 +39,7 @@ std::shared_ptr<cobotsys::AbstractObject> SimpleControllerFactory::createObject(
         return std::make_shared<CameraColorViewer>();
     if (type == "CameraViewWidget")
         return std::make_shared<CameraColorViewer2>();
+    if (type == "EmptyWidget")
+        return std::make_shared<EmptyWidget>();
     return std::shared_ptr<cobotsys::AbstractObject>();
 }

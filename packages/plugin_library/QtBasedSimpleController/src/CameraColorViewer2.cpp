@@ -10,6 +10,7 @@
 
 CameraColorViewer2::CameraColorViewer2(){
     ui.setupUi(this);
+
     connect(ui.button_LoadJSON, &QPushButton::released, this, &CameraColorViewer2::loadJSON);
     connect(ui.button_Start, &QPushButton::released, this, &CameraColorViewer2::start);
     connect(ui.button_Stop, &QPushButton::released, this, &CameraColorViewer2::stop);
@@ -18,9 +19,13 @@ CameraColorViewer2::CameraColorViewer2(){
     m_captureTimer = new QTimer(this);
     m_captureTimer->setInterval(10);
     connect(m_captureTimer, &QTimer::timeout, this, &CameraColorViewer2::captureNew);
+
+    m_camera = nullptr;
 }
 
 CameraColorViewer2::~CameraColorViewer2(){
+    stop();
+    INFO_DESTRUCTOR(this);
 }
 
 bool CameraColorViewer2::setup(const QString& configFilePath){
@@ -62,7 +67,6 @@ void CameraColorViewer2::onCameraStreamUpdate(const std::vector<cobotsys::Camera
 }
 
 void CameraColorViewer2::loadJSON(){
-
     QString filename = QFileDialog::getOpenFileName(this, "", "../../data");
     if (filename.isEmpty())
         return;;
