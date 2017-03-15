@@ -7,6 +7,8 @@
 #define PROJECT_COBOTSYS_ABSTRACT_CONTROLLER_H
 
 #include "cobotsys_abstract_object.h"
+#include "cobotsys_global_object_factory.h"
+#include <QWidget>
 
 namespace cobotsys {
 class AbstractController : public AbstractObject {
@@ -18,7 +20,19 @@ public:
     virtual void pause() = 0;
     virtual void stop() = 0;
 
-    virtual bool setup(const std::string& xmlConfigFilePath) = 0;
+    virtual bool setup(const QString& configFilePath);
+};
+}
+
+
+namespace cobotsys {
+class AbstractControllerWidget : public QWidget, public AbstractController {
+Q_OBJECT
+public:
+    AbstractControllerWidget();
+    virtual ~AbstractControllerWidget();
+
+    virtual bool setup(const QString& configFilePath);
 };
 }
 

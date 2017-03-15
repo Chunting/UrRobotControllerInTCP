@@ -47,7 +47,7 @@ public:
     virtual void clearMoveDataHistory() = 0;
 
     virtual void connect(const std::string& addrConfig) = 0;
-    virtual void setup(const std::string& config) = 0;
+    virtual bool setup(const QString& configFilePath);
 
     virtual void start() = 0;
     virtual void pause() = 0;

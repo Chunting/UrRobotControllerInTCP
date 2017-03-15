@@ -14,6 +14,7 @@ Kinect2Camera::Kinect2Camera(){
 
     m_isNotifyCalling = false;
     m_isCloseCallInNotify = false;
+    m_isOpened = false;
 }
 
 Kinect2Camera::~Kinect2Camera(){
@@ -26,7 +27,8 @@ const cobotsys::CameraInformation& Kinect2Camera::getCameraInformation() const{
 }
 
 bool Kinect2Camera::open(int deviceId){
-    close();
+    if (m_isOpened)
+        return true;
 
     std::lock_guard<std::mutex> lock(m_ioMutex);
 
@@ -63,6 +65,7 @@ bool Kinect2Camera::open(int deviceId){
     if (m_freenectDev->start()) {
         COBOT_LOG.info() << "device serial  : " << m_freenectDev->getSerialNumber() << endl;
         COBOT_LOG.info() << "device firmware: " << m_freenectDev->getFirmwareVersion() << endl;
+        m_isOpened = true;
         return true;
     }
     return false;
@@ -86,15 +89,18 @@ void Kinect2Camera::close(){
 
     m_deviceSerialNumber.clear();
     m_devicdId = -1;
+    m_isOpened = false;
 }
 
 void Kinect2Camera::attach(std::shared_ptr<cobotsys::CameraStreamObserver> observer){
     for (auto& o : m_observers) {
         if (o == observer)
-            return;;
+            return;
     }
 
-    m_observers.push_back(observer);
+    if (observer) {
+        m_observers.push_back(observer);
+    }
 }
 
 bool Kinect2Camera::capture(int waitMs){
@@ -155,24 +161,32 @@ void Kinect2Camera::notify(const std::vector<cobotsys::CameraStreamObserver::Str
 }
 
 libfreenect2::PacketPipeline* Kinect2Camera::createPipeline(int deviceId){
-    libfreenect2::PacketPipeline* pipeline;
+    libfreenect2::PacketPipeline* pipeline = nullptr;
 #ifdef LIBFREENECT2_WITH_CUDA_SUPPORT
-    if (pipeline == nullptr)
+    if (pipeline == nullptr) {
         pipeline = new libfreenect2::CudaPacketPipeline(deviceId);
+        COBOT_LOG.info() << "CudaPacketPipeline created: " << pipeline;
+    }
 #endif
 
 #ifdef LIBFREENECT2_WITH_OPENCL_SUPPORT
-    if (pipeline == nullptr)
+    if (pipeline == nullptr) {
         pipeline = new libfreenect2::OpenCLPacketPipeline(deviceId);
+        COBOT_LOG.info() << "OpenCLPacketPipeline created: " << pipeline;
+    }
 #endif
 
 #ifdef LIBFREENECT2_WITH_OPENGL_SUPPORT
-    if (pipeline == nullptr)
+    if (pipeline == nullptr) {
         pipeline = new libfreenect2::OpenGLPacketPipeline();
+        COBOT_LOG.info() << "OpenGLPacketPipeline created: " << pipeline;
+    }
 #endif
 
-    if (pipeline == nullptr)
+    if (pipeline == nullptr) {
         pipeline = new libfreenect2::CpuPacketPipeline();
+        COBOT_LOG.info() << "CpuPacketPipeline created: " << pipeline;
+    }
 
     return pipeline;
 }

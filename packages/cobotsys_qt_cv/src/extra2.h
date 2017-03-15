@@ -15,7 +15,8 @@
 #include <QProcess>
 #include <QStringList>
 #include <QJsonObject>
-
+#include <QImage>
+#include <opencv/cv.h>
 
 void qt_ba_to_cobot_log(QByteArray& ba);
 void kill_process_childs(int pid, int ppid, std::function<void(int, int)> killMethod);
@@ -23,6 +24,7 @@ QStringList gen_ros_internal_args(const std::map<QString, QString>& arg_map);
 
 
 bool loadJson(QJsonObject& obj, const std::string& baseName);
+QImage matToQImage(const cv::Mat& mat);
 
 
 #endif //PROJECT_EXTRA_H

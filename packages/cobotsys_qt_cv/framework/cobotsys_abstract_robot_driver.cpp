@@ -17,4 +17,8 @@ uint32_t AbstractRobotDriver::generateMoveId(){
     moveId++;
     return moveId;
 }
+
+bool AbstractRobotDriver::setup(const QString& configFilePath){
+    return false;
+}
 }

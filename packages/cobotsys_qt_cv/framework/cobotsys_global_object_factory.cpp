@@ -160,6 +160,15 @@ bool ObjectGroup::_initImpl(const QJsonObject& jsonConfig){
             return false;
         }
 
+        /// @note 设置目标对象的基本参数数据。从文件配置来设置。
+        if (objConfig.contains("config")) {
+            if (!pObject->setup(objConfig["config"].toString())) {
+                COBOT_LOG.warning() << "Fail to setup: " << factory << ", " << type;
+                return false;
+            }
+        }
+
+        /// @note 保存对象到map里。
         auto srcInfo = std::make_shared<ObjectSourceInfo>();
         srcInfo->factory = factory;
         srcInfo->type = type;

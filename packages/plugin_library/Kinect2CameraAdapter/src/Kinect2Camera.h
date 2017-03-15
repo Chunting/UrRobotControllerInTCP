@@ -52,6 +52,8 @@ protected:
 
     bool m_isNotifyCalling;
     bool m_isCloseCallInNotify;
+
+    bool m_isOpened;
 };
 
 

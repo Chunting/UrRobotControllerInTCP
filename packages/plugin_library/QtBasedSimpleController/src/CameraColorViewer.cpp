@@ -43,23 +43,6 @@ void CameraColorViewer::stop(){
     }
 }
 
-bool CameraColorViewer::setup(const std::string& xmlConfigFilePath){
-    auto pFactory = cobotsys::GlobalObjectFactory::instance();
-    if (pFactory) {
-        auto pObject = pFactory->createObject("Kinect2CameraFactory, Ver 1.0", "Kinect2");
-        if (pObject) {
-            m_camera = std::dynamic_pointer_cast<cobotsys::AbstractCamera>(pObject);
-            if (m_camera) {
-                auto shObj = shared_from_this();
-                auto shObs = std::dynamic_pointer_cast<cobotsys::CameraStreamObserver>(shObj);
-                m_camera->attach(shObs);
-                return true;
-            }
-        }
-    }
-    return false;
-}
-
 void CameraColorViewer::onCameraStreamUpdate(const std::vector<cobotsys::CameraStreamObserver::StreamFrame>& frames){
     for (const auto& frame: frames) {
         if (frame.frame.type == cobotsys::CameraFrameType::Color) {
@@ -80,4 +63,21 @@ void CameraColorViewer::updateCamera(){
     if (m_camera) {
         m_camera->capture();
     }
+}
+
+bool CameraColorViewer::setup(const QString& configFilePath){
+    auto pFactory = cobotsys::GlobalObjectFactory::instance();
+    if (pFactory) {
+        auto pObject = pFactory->createObject("Kinect2CameraFactory, Ver 1.0", "Kinect2");
+        if (pObject) {
+            m_camera = std::dynamic_pointer_cast<cobotsys::AbstractCamera>(pObject);
+            if (m_camera) {
+                auto shObj = shared_from_this();
+                auto shObs = std::dynamic_pointer_cast<cobotsys::CameraStreamObserver>(shObj);
+                m_camera->attach(shObs);
+                return true;
+            }
+        }
+    }
+    return false;
 }

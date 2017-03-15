@@ -10,6 +10,7 @@
 #include <QString>
 #include <QJsonObject>
 #include <QJsonDocument>
+#include <QImage>
 #include <cobotsys_logger.h>
 
 std::ostream &operator<<(std::ostream &oss, const QString &str);

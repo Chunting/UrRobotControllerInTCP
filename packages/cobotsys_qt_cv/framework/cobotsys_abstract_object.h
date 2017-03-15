@@ -7,6 +7,7 @@
 #define PROJECT_COBOTSYS_ABSTRACT_OBJECT_H
 
 #include <memory>
+#include <QString>
 
 namespace cobotsys {
 
@@ -15,6 +16,8 @@ class AbstractObject : public std::enable_shared_from_this<AbstractObject> {
 public:
     AbstractObject();
     virtual ~ AbstractObject();
+
+    virtual bool setup(const QString& configFilePath);
 };
 
 

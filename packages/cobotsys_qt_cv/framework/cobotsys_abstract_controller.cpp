@@ -10,3 +10,20 @@ cobotsys::AbstractController::AbstractController(){
 
 cobotsys::AbstractController::~AbstractController(){
 }
+
+bool cobotsys::AbstractController::setup(const QString& configFilePath){
+    return false;
+}
+
+namespace cobotsys {
+AbstractControllerWidget::AbstractControllerWidget()
+        : QWidget(nullptr){
+}
+
+AbstractControllerWidget::~AbstractControllerWidget(){
+}
+
+bool AbstractControllerWidget::setup(const QString& configFilePath){
+    return false;
+}
+}

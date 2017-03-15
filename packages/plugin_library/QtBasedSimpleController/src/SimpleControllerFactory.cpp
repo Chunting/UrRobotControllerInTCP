@@ -5,6 +5,7 @@
 
 #include "SimpleControllerFactory.h"
 #include "CameraColorViewer.h"
+#include "CameraColorViewer2.h"
 
 std::shared_ptr<SimpleControllerFactory> localFactory;
 
@@ -23,7 +24,7 @@ SimpleControllerFactory::~SimpleControllerFactory(){
 }
 
 std::vector<std::string> SimpleControllerFactory::getSupportTypes(){
-    return {"SimpleCameraView"};
+    return {"SimpleCameraView", "CameraViewWidget"};
 }
 
 std::string SimpleControllerFactory::getFactoryType(){
@@ -33,5 +34,7 @@ std::string SimpleControllerFactory::getFactoryType(){
 std::shared_ptr<cobotsys::AbstractObject> SimpleControllerFactory::createObject(const std::string& type){
     if (type == "SimpleCameraView")
         return std::make_shared<CameraColorViewer>();
+    if (type == "CameraViewWidget")
+        return std::make_shared<CameraColorViewer2>();
     return std::shared_ptr<cobotsys::AbstractObject>();
 }

@@ -23,7 +23,7 @@ public:
     virtual void pause();
     virtual void stop();
 
-    virtual bool setup(const std::string& xmlConfigFilePath);
+    virtual bool setup(const QString& configFilePath);
 
 public:
     virtual void onCameraStreamUpdate(const std::vector<StreamFrame>& frames);
