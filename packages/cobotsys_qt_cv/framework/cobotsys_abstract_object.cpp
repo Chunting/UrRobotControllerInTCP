@@ -16,7 +16,7 @@ AbstractObject::~AbstractObject(){
 }
 
 bool AbstractObject::setup(const QString& configFilePath){
-    COBOT_LOG.info() << "Empty Config: " << configFilePath;
+    COBOT_LOG.warning() << "Empty Config: " << configFilePath;
     return true;
 }
 }
