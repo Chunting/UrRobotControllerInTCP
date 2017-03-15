@@ -1,5 +1,5 @@
 //
-// Created by 潘绪洋 on 17-3-14.
+// Created by 潘绪洋 on 17-3-15.
 // Copyright (c) 2017 Wuhan Collaborative Robot Technology Co.,Ltd. All rights reserved.
 //
 
@@ -23,7 +23,7 @@ int main(int argc, char** argv){
 
     globalObjectFactory.loadLibrarys("../lib");
 
-    pObject = globalObjectFactory.createObject("SimpleControllerFactory, Ver 1.0", "CameraViewWidget");
+    pObject = globalObjectFactory.createObject("SimpleControllerFactory, Ver 1.0", "EmptyWidget");
 
     auto pController = std::dynamic_pointer_cast<cobotsys::AbstractControllerWidget>(pObject);
 
