@@ -16,6 +16,8 @@ CameraColorViewer2::CameraColorViewer2(){
     connect(ui.button_Stop, &QPushButton::released, this, &CameraColorViewer2::stop);
     connect(ui.button_Pause, &QPushButton::released, this, &CameraColorViewer2::pause);
 
+    connect(this, &CameraColorViewer2::imageUpdated, this, &CameraColorViewer2::updateLabelImage);
+
     m_captureTimer = new QTimer(this);
     m_captureTimer->setInterval(10);
     connect(m_captureTimer, &QTimer::timeout, this, &CameraColorViewer2::captureNew);
@@ -53,14 +55,16 @@ void CameraColorViewer2::stop(){
     }
 }
 
-void CameraColorViewer2::onCameraStreamUpdate(const std::vector<cobotsys::CameraStreamObserver::StreamFrame>& frames){
+void CameraColorViewer2::onCameraStreamUpdate(
+        const std::vector<cobotsys::CameraStreamObserver::StreamFrame>& frames){
     for (const auto& frame : frames) {
         if (frame.frame.type == cobotsys::CameraFrameType::Color) {
             cv::Mat mat;
             cv::pyrDown(frame.frame.image, mat);
-            auto image = matToQImage(mat);
 
-            ui.label_Color->setPixmap(QPixmap::fromImage(image));
+            m_imageCache.updateImage(mat);
+
+            Q_EMIT imageUpdated();
         }
     }
 }
@@ -95,4 +99,20 @@ void CameraColorViewer2::captureNew(){
     if (m_camera) {
         m_camera->capture();
     }
+}
+
+void CameraColorViewer2::updateLabelImage(){
+    ui.label_Color->setPixmap(m_imageCache.getPixmap());
+}
+
+
+void ImageCache::updateImage(const cv::Mat& image){
+    std::lock_guard<std::mutex> lock_guard(m_mutex);
+
+    m_image = matToQImage(image);
+}
+
+QPixmap ImageCache::getPixmap(){
+    std::lock_guard<std::mutex> lock_guard(m_mutex);
+    return QPixmap::fromImage(m_image);
 }

@@ -12,6 +12,18 @@
 #include <QPushButton>
 #include <QTimer>
 
+
+class ImageCache {
+public:
+    void updateImage(const cv::Mat& image);
+
+    QPixmap getPixmap();
+protected:
+    std::mutex m_mutex;
+    QImage m_image;
+};
+
+
 class CameraColorViewer2
         : public cobotsys::AbstractControllerWidget, public cobotsys::CameraStreamObserver {
 Q_OBJECT
@@ -25,9 +37,14 @@ public:
     virtual void pause();
     virtual void stop();
 
+
+Q_SIGNALS:
+    void imageUpdated();
+
 public:
     void loadJSON();
     void captureNew();
+    void updateLabelImage();
 
 public:
     virtual void onCameraStreamUpdate(const std::vector<StreamFrame>& frames);
@@ -40,6 +57,7 @@ protected:
     cobotsys::ObjectGroup m_objectGroup;
     std::shared_ptr<cobotsys::AbstractCamera> m_camera;
     QTimer* m_captureTimer;
+    ImageCache m_imageCache;
 };
 
 
