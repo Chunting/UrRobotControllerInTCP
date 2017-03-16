@@ -18,8 +18,18 @@ UrStatusWatcher::~UrStatusWatcher(){
 void UrStatusWatcher::run(){
     std::mutex m;
     std::unique_lock<std::mutex> lck(m);
-    while (1) {
+
+    m_time_last_status = std::chrono::high_resolution_clock::now();
+    while (true) {
         m_msg_cond.wait(lck);
-        COBOT_LOG.info() << "Status updated, " << m_status_type;
+
+        auto cur_time_point = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double> time_diff = cur_time_point - m_time_last_status;
+        COBOT_LOG.info() << "Status updated, " << m_status_type
+                         << ", time: " << time_diff.count() * 1000 << "ms, "
+                         << 1 / time_diff.count() << "hz";
+
+
+        m_time_last_status = cur_time_point;
     }
 }

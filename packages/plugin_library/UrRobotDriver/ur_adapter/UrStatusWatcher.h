@@ -8,6 +8,7 @@
 
 #include <QThread>
 #include <condition_variable>
+#include <chrono>
 
 class UrStatusWatcher : public QThread {
 Q_OBJECT
@@ -21,6 +22,7 @@ protected:
 protected:
     std::condition_variable& m_msg_cond;
     std::string m_status_type;
+    std::chrono::high_resolution_clock::time_point m_time_last_status;
 };
 
 
