@@ -30,6 +30,7 @@ int main(int argc, char** argv){
 
     if (pController) {
         pController->setup("");
+        pController->start();
     }
 
     return a.exec();

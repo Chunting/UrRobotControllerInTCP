@@ -10,6 +10,7 @@
 #include <cobotsys_abstract_robot_driver.h>
 #include <cobotsys_observer_template.h>
 #include "ur_driver.h"
+#include <UrStatusWatcher.h>
 
 using namespace cobotsys;
 
@@ -40,6 +41,8 @@ protected:
 
     std::condition_variable m_rt_msg_cond;
     std::condition_variable m_msg_cond;
+
+    std::shared_ptr<UrStatusWatcher> m_urWatcher;
 };
 
 

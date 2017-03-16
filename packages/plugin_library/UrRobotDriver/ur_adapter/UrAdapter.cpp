@@ -37,8 +37,10 @@ bool UrAdapter::setup(const QString& configFilePath){
         m_urDriver->halt();
     }
 
-    std::string robot_ip;
+    std::string robot_ip = "localhost";
     m_urDriver = std::make_shared<UrDriver>(m_rt_msg_cond, m_msg_cond, robot_ip);
+    m_urWatcher = std::make_shared<UrStatusWatcher>("rt", m_rt_msg_cond);
+    m_urWatcher->start();
     return true;
 }
 
