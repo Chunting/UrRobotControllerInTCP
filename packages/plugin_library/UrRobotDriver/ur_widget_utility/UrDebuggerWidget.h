@@ -31,6 +31,8 @@ public:
 
 protected:
     std::shared_ptr<AbstractRobotDriver> m_robotDriver;
+    bool m_reverseMove;
+    double m_incBase;
 };
 
 

@@ -58,6 +58,7 @@ bool UrAdapter::setup(const QString& configFilePath){
         m_urDriver = std::make_shared<UrDriver>(m_rt_msg_cond, m_msg_cond, robot_ip);
         m_urDriver->setServojTime(jsonObject["servoj_time"].toDouble(0.08));
         m_urDriver->setServojLookahead(jsonObject["servoj_lookahead"].toDouble(0.05));
+        m_urDriver->setServojGain(jsonObject["servoj_gain"].toDouble(300));
         m_urWatcher = std::make_shared<UrStatusWatcher>(*this, "rt", m_rt_msg_cond);
         m_urWatcher->start();
         return true;
@@ -101,7 +102,7 @@ void UrAdapter::attach(std::shared_ptr<RobotStatusObserver> observer){
 }
 
 void UrAdapter::notify(std::function<void(std::shared_ptr<RobotStatusObserver>&)> applyFunc){
-    if (applyFunc) {
+    if (applyFunc && m_isStarted) {
         for (auto& o : m_observerArray) {
             applyFunc(o);
         }
