@@ -75,9 +75,6 @@ endfunction()
 
 # 这里，后面的package是依赖前面的package的。
 build_package(${CMAKE_SOURCE_DIR}/packages/cobotsys)
-build_package(${CMAKE_SOURCE_DIR}/packages/cobotsys_qt)
-build_package(${CMAKE_SOURCE_DIR}/packages/cobotsys_qt_cv)
-build_package(${CMAKE_SOURCE_DIR}/packages/cobotsys_common)
 build_package(${CMAKE_SOURCE_DIR}/packages/cobotsys_ros_wrapper)
 
 # Plugin
