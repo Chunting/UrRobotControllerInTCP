@@ -75,7 +75,7 @@ void CameraColorViewer2::loadJSON(){
         return;;
 
     QJsonObject jsonObject;
-    if (loadJson(jsonObject, filename.toLocal8Bit().constData())) {
+    if (loadJson(jsonObject, filename)) {
         cobotsys::ObjectGroup objectGroup;
         if (objectGroup.init(jsonObject)) {
             initWidgetView(objectGroup);

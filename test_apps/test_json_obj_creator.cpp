@@ -34,7 +34,7 @@ int main(int argc, char** argv){
     globalObjectFactory.loadLibrarys("../lib");
 
     QJsonObject jsonObject;
-    if (loadJson(jsonObject, "CameraView.json")) {
+    if (loadJson(jsonObject, std::string("CameraView.json"))) {
         cobotsys::ObjectGroup objectGroup;
         if (objectGroup.init(jsonObject)) {
             loop(objectGroup);

@@ -20,7 +20,7 @@ public:
     virtual ~RobotStatusObserver();
 
     virtual void onMoveFinish(uint32_t moveId) = 0;
-    virtual void onJointStatusUpdate() = 0;
+    virtual void onJointStatusUpdate(const std::vector<double>& jointPose) = 0;
     virtual void onRobotConnected(std::shared_ptr<AbstractRobotDriver> pRobot) = 0;
     virtual void onRobotDisconnected(std::shared_ptr<AbstractRobotDriver> pRobot) = 0;
 };
@@ -33,7 +33,8 @@ public:
     AbstractRobotDriver();
     virtual ~AbstractRobotDriver();
 
-    virtual void move(uint32_t moveId, const cv::Point3d& pos, const cv::Vec3d& normal) = 0;
+    virtual bool move(uint32_t moveId, const cv::Point3d& pos, const cv::Vec3d& normal) = 0;
+    virtual void move(uint32_t moveId, const std::vector<double>& jointPos) = 0;
 
     virtual void attach(std::shared_ptr<RobotStatusObserver> observer) = 0;
     virtual void directControl(const std::string& command) = 0;
@@ -41,11 +42,11 @@ public:
     virtual std::shared_ptr<QIODevice> getSerialIoDevice(int devicdId = 0) = 0;
     virtual std::shared_ptr<AbstractDigitIoDriver> getDigitIoDriver(int deviceId = 0) = 0;
 
-    virtual bool getMoveData(uint32_t moveId, cv::Point3d& pos, cv::Vec3d& normal) = 0;
+    virtual bool getMoveData(uint32_t moveId, std::vector<double>& moveData, int& moveDataType) = 0;
     virtual void clearMoveDataHistory() = 0;
 
     virtual bool setup(const QString& configFilePath);
-    virtual void start() = 0;
+    virtual bool start() = 0;
     virtual void pause() = 0;
 
 public:

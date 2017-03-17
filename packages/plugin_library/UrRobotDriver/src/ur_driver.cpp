@@ -219,6 +219,8 @@ bool UrDriver::uploadProg(){
     cmd_str += "end\n";
 
     rt_interface_->addCommandToQueue(cmd_str);
+
+    printf("\n%s\n", cmd_str.c_str());
     return UrDriver::openServo();
 }
 

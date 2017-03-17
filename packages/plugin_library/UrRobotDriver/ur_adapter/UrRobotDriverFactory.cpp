@@ -6,6 +6,8 @@
 #include <extra2.h>
 #include "UrRobotDriverFactory.h"
 #include "UrAdapter.h"
+#include "UrRobotStatusDebugger.h"
+#include "../ur_widget_utility/UrDebuggerWidget.h"
 
 std::shared_ptr<UrRobotDriverFactory> localFactory;
 
@@ -25,7 +27,7 @@ UrRobotDriverFactory::~UrRobotDriverFactory(){
 }
 
 std::vector<std::string> UrRobotDriverFactory::getSupportTypes(){
-    return {"UrAdapter"};
+    return {"UrAdapter", "UrStatusDebugger", "UrDebuggerWidget"};
 }
 
 std::string UrRobotDriverFactory::getFactoryType(){
@@ -35,5 +37,9 @@ std::string UrRobotDriverFactory::getFactoryType(){
 std::shared_ptr<cobotsys::AbstractObject> UrRobotDriverFactory::createObject(const std::string& type){
     if (type == "UrAdapter")
         return std::make_shared<UrAdapter>();
+    if (type == "UrStatusDebugger")
+        return std::make_shared<UrRobotStatusDebugger>();
+    if (type == "UrDebuggerWidget")
+        return std::make_shared<UrDebuggerWidget>();
     return std::shared_ptr<cobotsys::AbstractObject>();
 }

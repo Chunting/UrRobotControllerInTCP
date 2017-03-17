@@ -142,3 +142,7 @@ QImage matToQImage(const cv::Mat& mat){
     }
 }
 
+bool loadJson(QJsonObject& obj, const QString& baseName){
+    return loadJson(obj, std::string(baseName.toLocal8Bit().constData()));
+}
+

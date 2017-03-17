@@ -25,6 +25,7 @@ QStringList gen_ros_internal_args(const std::map<QString, QString>& arg_map);
 
 
 bool loadJson(QJsonObject& obj, const std::string& baseName);
+bool loadJson(QJsonObject& obj, const QString& baseName);
 QImage matToQImage(const cv::Mat& mat);
 
 #define INFO_DESTRUCTOR(_this) COBOT_LOG.info() << "Destructor: " << typeid(_this).name()
