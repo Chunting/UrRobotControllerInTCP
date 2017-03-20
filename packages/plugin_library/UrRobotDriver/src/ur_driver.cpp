@@ -192,8 +192,8 @@ bool UrDriver::uploadProg(){
     cmd_str += "\t\t\telse:\n";
     cmd_str += "\t\t\t\tsync()\n";
     cmd_str += "\t\t\tend\n";
-    cmd_str += "\t\tstopj(10.0)\n";
     cmd_str += "\t\tend\n";
+    cmd_str += "\t\tstopj(10.0)\n";
     cmd_str += "\tend\n";
 
     sprintf(buf, "\tsocket_open(\"%s\", %i)\n", ip_addr_.c_str(),
