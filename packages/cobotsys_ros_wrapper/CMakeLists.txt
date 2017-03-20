@@ -14,7 +14,12 @@ find_package(catkin REQUIRED COMPONENTS
         sensor_msgs
         tf
         trac_ik_lib
-        trajectory_msgs)
+        trajectory_msgs
+        moveit_core
+        moveit_ros_planning
+        moveit_ros_planning_interface
+        pluginlib
+        )
 
 # Qt
 set(CMAKE_AUTOMOC ON)
@@ -25,17 +30,11 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Gui REQUIRED)
 find_package(Qt5Widgets REQUIRED)
-
-#add_message_files(FILES algorithm_result.msg)
-
-#generate_messages(DEPENDENCIES std_msgs)
-
-#catkin_package(
-#        INCLUDE_DIRS include
-#        LIBRARIES cobot_ros_wrapper
-#          CATKIN_DEPENDS other_catkin_pkg
-#          DEPENDS system_lib
-#)
+find_package(Eigen3 REQUIRED)
+if (NOT DEFINED EIGEN3_INCLUDE_DIR)
+    set(EIGEN3_INCLUDE_DIR /usr/include/eigen3)
+endif (NOT DEFINED EIGEN3_INCLUDE_DIR)
+include_directories(${EIGEN3_INCLUDE_DIR})
 
 include_directories(src)
 
