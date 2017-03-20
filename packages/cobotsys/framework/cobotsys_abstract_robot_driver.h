@@ -36,6 +36,11 @@ public:
     virtual bool move(uint32_t moveId, const cv::Point3d& pos, const cv::Vec3d& normal) = 0;
     virtual void move(uint32_t moveId, const std::vector<double>& jointPos) = 0;
 
+    /**
+     * 向驱动注测观察者，一般是在setup阶段就完成的应用。
+     * @note attach方法不可以在运行过程中动态添加，因为不是所有的实现都实现了这种机制。
+     * @param observer
+     */
     virtual void attach(std::shared_ptr<RobotStatusObserver> observer) = 0;
     virtual void directControl(const std::string& command) = 0;
 
@@ -48,6 +53,8 @@ public:
     virtual bool setup(const QString& configFilePath);
     virtual bool start() = 0;
     virtual void pause() = 0;
+
+    virtual bool isReady() const = 0;
 
 public:
     static uint32_t generateMoveId();

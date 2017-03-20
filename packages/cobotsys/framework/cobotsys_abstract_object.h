@@ -17,6 +17,12 @@ public:
     AbstractObject();
     virtual ~ AbstractObject();
 
+    /**
+     * 如果对象有初始化的配置文件，那么在通过创建配置文件的时候，文件的路径地址会通过setup参数传入。
+     * 同时，正常情况下。如果配置文件不对，无法满足设置要求，直接返回false就好。
+     * @param configFilePath 当前对象所需要的配置文件的路径
+     * @return
+     */
     virtual bool setup(const QString& configFilePath);
 };
 

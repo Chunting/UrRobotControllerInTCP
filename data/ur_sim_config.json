@@ -1,7 +1,9 @@
 {
   "robot_ip": "localhost",
   "servoj_time": 0.008,
-  "servoj_lookahead": 0.05,
-  "servoj_gain": 1500,
-  "step_angle": 5
+  "servoj_lookahead": 0.01,
+  "servoj_gain": 1200,
+  "step_angle": 5,
+  "range_low": -30,
+  "range_high": 30
 }

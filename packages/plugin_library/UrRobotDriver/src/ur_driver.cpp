@@ -153,6 +153,7 @@ bool UrDriver::uploadProg(){
     sprintf(buf, "\tMULT_jointstate = %i\n", MULT_JOINTSTATE_);
     cmd_str += buf;
 
+    cmd_str += "\tkeepalive = 1\n";
     cmd_str += "\tSERVO_IDLE = 0\n";
     cmd_str += "\tSERVO_RUNNING = 1\n";
     cmd_str += "\tcmd_servo_state = SERVO_IDLE\n";
@@ -165,7 +166,7 @@ bool UrDriver::uploadProg(){
     cmd_str += "\tend\n";
     cmd_str += "\tthread servoThread():\n";
     cmd_str += "\t\tstate = SERVO_IDLE\n";
-    cmd_str += "\t\twhile True:\n";
+    cmd_str += "\t\twhile keepalive > 0:\n";
     cmd_str += "\t\t\tenter_critical\n";
     cmd_str += "\t\t\tq = cmd_servo_q\n";
     cmd_str += "\t\t\tdo_brake = False\n";
@@ -191,6 +192,7 @@ bool UrDriver::uploadProg(){
     cmd_str += "\t\t\telse:\n";
     cmd_str += "\t\t\t\tsync()\n";
     cmd_str += "\t\t\tend\n";
+    cmd_str += "\t\tstopj(10.0)\n";
     cmd_str += "\t\tend\n";
     cmd_str += "\tend\n";
 
@@ -199,7 +201,7 @@ bool UrDriver::uploadProg(){
     cmd_str += buf;
 
     cmd_str += "\tthread_servo = run servoThread()\n";
-    cmd_str += "\tkeepalive = 1\n";
+
     cmd_str += "\twhile keepalive > 0:\n";
     cmd_str += "\t\tparams_mult = socket_read_binary_integer(6+1)\n";
     cmd_str += "\t\tif params_mult[0] > 0:\n";

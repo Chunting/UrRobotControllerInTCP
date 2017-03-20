@@ -11,10 +11,12 @@
 #include <cobotsys_observer_template.h>
 #include "ur_driver.h"
 #include <UrStatusWatcher.h>
+#include <QTimer>
 
 using namespace cobotsys;
 
-class UrAdapter : public cobotsys::AbstractRobotDriver {
+class UrAdapter : public QObject, public cobotsys::AbstractRobotDriver {
+Q_OBJECT
 public:
     UrAdapter();
     virtual ~UrAdapter();
@@ -36,10 +38,15 @@ public:
     virtual bool start();
     virtual void pause();
 
+    virtual bool isReady() const;
 
     std::shared_ptr<UrDriver>& getDriver(){ return m_urDriver; }
 
     void notify(std::function<void(std::shared_ptr<RobotStatusObserver>&)> applyFunc);
+
+    void tickCheckService();
+
+    bool connectedOnceSetup();
 protected:
     std::vector<std::shared_ptr<RobotStatusObserver> > m_observerArray;
     std::shared_ptr<UrDriver> m_urDriver;
@@ -52,6 +59,12 @@ protected:
     std::mutex m_resMutex;
 
     bool m_isStarted;
+
+    QTimer* m_pConnectionCheckTimer;
+    bool m_connectionNotifyStatus;
+    bool m_disconnectNotifyStatus;
+
+    bool m_onceStartCall;
 };
 
 

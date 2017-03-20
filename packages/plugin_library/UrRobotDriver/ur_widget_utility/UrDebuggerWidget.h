@@ -10,6 +10,7 @@
 #include <cobotsys_abstract_controller.h>
 #include <QCloseEvent>
 #include "ui_UrDebuggerWidget.h"
+#include <chrono>
 
 
 using namespace cobotsys;
@@ -42,6 +43,13 @@ public:
     virtual void onRobotConnected(std::shared_ptr<AbstractRobotDriver> pRobot);
     virtual void onRobotDisconnected(std::shared_ptr<AbstractRobotDriver> pRobot);
 
+
+protected:
+    void setMoveTarget(int);
+    void debugMove(int jointId);
+    void curAsTarget();
+
+    bool moveTarget();
 protected:
     std::shared_ptr<AbstractRobotDriver> m_robotDriver;
     bool m_reverseMove;
@@ -50,6 +58,17 @@ protected:
 
     std::vector<double> m_jointStatus;
     std::mutex m_mutex;
+
+    double m_singleMoveRangeLow;
+    double m_singleMoveRangeHigh;
+    bool m_doAction;
+
+    std::chrono::high_resolution_clock::time_point m_timeLastJU;
+
+    std::deque<double> m_timeArray;
+
+    std::vector<double> m_jointTarget;
+    bool m_doSliderMove;
 };
 
 

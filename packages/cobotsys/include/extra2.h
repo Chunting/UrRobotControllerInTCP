@@ -31,4 +31,14 @@ QImage matToQImage(const cv::Mat& mat);
 #define INFO_DESTRUCTOR(_this) COBOT_LOG.info() << "Destructor: " << typeid(_this).name()
 
 
+template<class T, class N, class M>
+void range_limit(T& v, const N& min_, const M& max_){
+    if ((T) min_ < (T) max_) {
+        if (v < (T) min_)
+            v = (T) min_;
+        if (v > (T) max_)
+            v = (T) max_;
+    }
+}
+
 #endif //PROJECT_EXTRA_H

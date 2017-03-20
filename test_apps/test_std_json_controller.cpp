@@ -19,7 +19,6 @@ bool loop(cobotsys::ObjectGroup& objectGroup){
     auto pWidget = std::dynamic_pointer_cast<cobotsys::AbstractControllerWidget>(objectGroup.getObject("Widget"));
     if (pWidget) {
         pWidget->show();
-        pWidget->start();
         return true;
     }
 
