@@ -12,7 +12,8 @@ UrDebuggerWidget::UrDebuggerWidget(){
 }
 
 UrDebuggerWidget::~UrDebuggerWidget(){
-
+    INFO_DESTRUCTOR(this);
+    stop();
 }
 
 bool UrDebuggerWidget::start(){
@@ -73,4 +74,9 @@ void UrDebuggerWidget::onRobotConnected(std::shared_ptr<AbstractRobotDriver> pRo
 }
 
 void UrDebuggerWidget::onRobotDisconnected(std::shared_ptr<AbstractRobotDriver> pRobot){
+}
+
+void UrDebuggerWidget::closeEvent(QCloseEvent* event){
+    stop();
+    QWidget::closeEvent(event);
 }

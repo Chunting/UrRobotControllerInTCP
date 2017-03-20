@@ -8,6 +8,9 @@
 
 #include <cobotsys_abstract_robot_driver.h>
 #include <cobotsys_abstract_controller.h>
+#include <QCloseEvent>
+
+
 
 using namespace cobotsys;
 class UrDebuggerWidget : public cobotsys::AbstractControllerWidget,
@@ -22,6 +25,9 @@ public:
     virtual void stop();
 
     virtual bool setup(const QString& configFilePath);
+
+protected:
+    virtual void closeEvent(QCloseEvent* event);
 
 public:
     virtual void onMoveFinish(uint32_t moveId);
