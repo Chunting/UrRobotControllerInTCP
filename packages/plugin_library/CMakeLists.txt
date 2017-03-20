@@ -2,8 +2,7 @@
 
 
 MESSAGE("")
-#MESSAGE("----------Applications---------------------------------------")
-MESSAGE("----------Plugin      ---------------------------------------")
+MESSAGE("----------插件     ---------------------------------------")
 FILE(GLOB children *)
 FOREACH (child ${children})
     IF (IS_DIRECTORY ${child})

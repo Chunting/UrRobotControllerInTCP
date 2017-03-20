@@ -25,7 +25,7 @@ MACRO(sub_dir_list result curdir)
 ENDMACRO()
 
 message("")
-message("----------Test Apps   ---------------------------------------")
+message("----------测试小程序---------------------------------------")
 file(GLOB children RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/*)
 set(cpplist "")
 foreach (file ${children})
@@ -40,33 +40,3 @@ foreach (file ${children})
         target_link_libraries(${f_base} cobotsys)
     endif ()
 endforeach ()
-
-
-#message(STATUS "Current Source Path: ${CMAKE_CURRENT_SOURCE_DIR}")
-
-#function(scan_simple_app path_to_scan)
-#    message("")
-#    message("Test App Dir: " ${path_to_scan})
-#    sub_dir_list(FileList ${path_to_scan})
-#
-#    foreach (PackagePath ${FileList})
-#        if (EXISTS "${path_to_scan}/${PackagePath}/CMakeLists.txt")
-#            message(STATUS "PACKAGE: ${path_to_scan}/${PackagePath}")
-#        endif ()
-#    endforeach ()
-#
-##    foreach (PackagePath ${FileList})
-##        if (EXISTS "${path_to_scan}/${PackagePath}/CMakeLists.txt")
-##            message(STATUS "PACKAGE: ${path_to_scan}/${PackagePath}")
-##        endif ()
-##    endforeach ()
-##
-##    foreach (PackagePath ${FileList})
-##        if (EXISTS "${path_to_scan}/${PackagePath}/CMakeLists.txt")
-##            add_subdirectory(${path_to_scan}/${PackagePath})
-##        endif ()
-##    endforeach ()
-#endfunction()
-#
-#scan_simple_app(${CMAKE_CURRENT_SOURCE_DIR}/test_apps)
-
