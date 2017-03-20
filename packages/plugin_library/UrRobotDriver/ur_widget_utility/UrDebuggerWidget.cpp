@@ -7,8 +7,11 @@
 #include "UrDebuggerWidget.h"
 
 UrDebuggerWidget::UrDebuggerWidget(){
+    ui.setupUi(this);
     m_reverseMove = false;
     m_incBase = 1;
+
+    connect(this, &UrDebuggerWidget::jointUpdated, this, &UrDebuggerWidget::updateJointValue);
 }
 
 UrDebuggerWidget::~UrDebuggerWidget(){
@@ -49,6 +52,11 @@ void UrDebuggerWidget::onMoveFinish(uint32_t moveId){
 }
 
 void UrDebuggerWidget::onJointStatusUpdate(const std::vector<double>& jointPose){
+    m_mutex.lock();
+    m_jointStatus = jointPose;
+    m_mutex.unlock();
+    Q_EMIT jointUpdated();
+
     if (m_robotDriver) {
         auto new_joint = jointPose;
 
@@ -66,7 +74,7 @@ void UrDebuggerWidget::onJointStatusUpdate(const std::vector<double>& jointPose)
         }
 
         m_robotDriver->move(0, new_joint);
-        COBOT_LOG.info() << "Cur: " << jointPose[1] * 180 / CV_PI << ", Target: " << new_joint[1] * 180 / CV_PI;
+//        COBOT_LOG.info() << "Cur: " << jointPose[1] * 180 / CV_PI << ", Target: " << new_joint[1] * 180 / CV_PI;
     }
 }
 
@@ -79,4 +87,18 @@ void UrDebuggerWidget::onRobotDisconnected(std::shared_ptr<AbstractRobotDriver> 
 void UrDebuggerWidget::closeEvent(QCloseEvent* event){
     stop();
     QWidget::closeEvent(event);
+}
+
+void UrDebuggerWidget::updateJointValue(){
+    std::vector<double> jtmp;
+    m_mutex.lock();
+    jtmp = m_jointStatus;
+    m_mutex.unlock();
+
+    if (jtmp.size() > 0) ui.dsb_1->setValue(jtmp[0] * 180 / CV_PI);
+    if (jtmp.size() > 1) ui.dsb_2->setValue(jtmp[1] * 180 / CV_PI);
+    if (jtmp.size() > 2) ui.dsb_3->setValue(jtmp[2] * 180 / CV_PI);
+    if (jtmp.size() > 3) ui.dsb_4->setValue(jtmp[3] * 180 / CV_PI);
+    if (jtmp.size() > 4) ui.dsb_5->setValue(jtmp[4] * 180 / CV_PI);
+    if (jtmp.size() > 5) ui.dsb_6->setValue(jtmp[5] * 180 / CV_PI);
 }

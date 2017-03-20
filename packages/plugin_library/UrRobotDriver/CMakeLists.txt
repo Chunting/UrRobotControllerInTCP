@@ -27,4 +27,4 @@ set(${PROJECT_NAME}_files
 
 add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_files} ${adapter})
 
-target_link_libraries(${PROJECT_NAME} cobotsys)
+target_link_libraries(${PROJECT_NAME} cobotsys Qt5::Widgets)

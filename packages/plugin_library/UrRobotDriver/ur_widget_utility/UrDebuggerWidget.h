@@ -9,7 +9,7 @@
 #include <cobotsys_abstract_robot_driver.h>
 #include <cobotsys_abstract_controller.h>
 #include <QCloseEvent>
-
+#include "ui_UrDebuggerWidget.h"
 
 
 using namespace cobotsys;
@@ -26,6 +26,13 @@ public:
 
     virtual bool setup(const QString& configFilePath);
 
+
+Q_SIGNALS:
+    void jointUpdated();
+
+
+public:
+    void updateJointValue();
 protected:
     virtual void closeEvent(QCloseEvent* event);
 
@@ -39,6 +46,10 @@ protected:
     std::shared_ptr<AbstractRobotDriver> m_robotDriver;
     bool m_reverseMove;
     double m_incBase;
+    Ui::RobotDebugger ui;
+
+    std::vector<double> m_jointStatus;
+    std::mutex m_mutex;
 };
 
 
