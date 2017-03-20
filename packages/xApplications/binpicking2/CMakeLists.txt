@@ -13,22 +13,24 @@ find_package(Qt5Gui REQUIRED)
 find_package(Qt5Widgets REQUIRED) # Fuck, 如果要使用autouic那么必须引用这个Qt5Widgets.
 
 # freenect
-find_package(freenect2 REQUIRED)
-include_directories(${freenect2_INCLUDE_DIRS})
+find_package(freenect2)
+if (freenect2_FOUND)
+    include_directories(${freenect2_INCLUDE_DIRS})
 
-# OpenCV
-find_package(OpenCV REQUIRED)
-include_directories(${OpenCV_INCLUDE_DIRS})
+    # OpenCV
+    find_package(OpenCV REQUIRED)
+    include_directories(${OpenCV_INCLUDE_DIRS})
 
-FILE(GLOB binpicking2_files *.cpp *.h res.qrc)
+    FILE(GLOB binpicking2_files *.cpp *.h res.qrc)
 
-add_executable(${PROJECT_NAME} ${binpicking2_files})
-target_link_libraries(${PROJECT_NAME}
-        cobotsys
-        cobotsys_ros_wrapper
-        ${freenect2_LIBRARY}
-        ${OpenCL_LIBRARY})
+    add_executable(${PROJECT_NAME} ${binpicking2_files})
+    target_link_libraries(${PROJECT_NAME}
+            cobotsys
+            cobotsys_ros_wrapper
+            ${freenect2_LIBRARY}
+            ${OpenCL_LIBRARY})
 
-install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)
+    install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)
 
-install(DIRECTORY ${CMAKE_SOURCE_DIR}/data DESTINATION ${CMAKE_INSTALL_PREFIX})
+    install(DIRECTORY ${CMAKE_SOURCE_DIR}/data DESTINATION ${CMAKE_INSTALL_PREFIX})
+endif ()
