@@ -35,7 +35,7 @@ int main(int argc, char** argv){
 
     BinpickingView binpickingView;
 
-    reporter.bingGuiApp(a);
+    reporter.bindGuiApp(a);
     binpickingView.cheat_SetDriverStatusReporter(&reporter);
 
     if (parser.isSet(debug_model))

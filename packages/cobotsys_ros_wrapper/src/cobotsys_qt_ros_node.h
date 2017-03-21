@@ -37,7 +37,7 @@ public:
 
     const std::string& nodeName() const;
     void bindApp(QCoreApplication& app);
-    void bingGuiApp(QApplication& app);
+    void bindGuiApp(QApplication& app);
 
 Q_SIGNALS:
     void rosShutdown();

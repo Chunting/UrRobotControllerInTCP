@@ -67,7 +67,7 @@ void QtRosNode::bindApp(QCoreApplication& app){
     app.connect(&app, &QCoreApplication::aboutToQuit, this, &QtRosNode::shutdown);
 }
 
-void QtRosNode::bingGuiApp(QApplication& app){
+void QtRosNode::bindGuiApp(QApplication& app){
     COBOT_LOG.notice() << "bindApp: QApplication";
     app.connect(&app, &QApplication::lastWindowClosed, this, &QtRosNode::shutdown);
 }
