@@ -7,6 +7,7 @@
 #define PROJECT_ROS_MOVEIT_WRAPPER_H
 
 #include <memory>
+#include <string>
 #include <QString>
 #include <opencv/cv.h>
 

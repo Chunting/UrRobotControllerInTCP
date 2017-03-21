@@ -25,6 +25,12 @@ bool loop(cobotsys::ObjectGroup& objectGroup){
 
 
 int main(int argc, char** argv){
+
+    ros::init(argc, argv, "arm_kinematics");
+    ros::AsyncSpinner spinner(1);
+    spinner.start();
+
+
     QApplication a(argc, argv);
     cobotsys::init_library(argc, argv);
 
@@ -38,14 +44,17 @@ int main(int argc, char** argv){
 
     QJsonObject jsonObject;
 
+    int r = 0;
     if (loadJson(jsonObject, std::string(argv[1]))) {
         cobotsys::ObjectGroup objectGroup;
         if (objectGroup.init(jsonObject)) {
             if (loop(objectGroup)) {
-                auto r = a.exec();
-                return r;
+                r = a.exec();
             }
         }
     }
-    return 0;
+
+    ros::shutdown();
+    exit(r);
+    return r;
 }

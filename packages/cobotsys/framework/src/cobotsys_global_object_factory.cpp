@@ -4,6 +4,7 @@
 //
 
 #include <QtCore/QJsonArray>
+#include <include/extra2.h>
 #include "cobotsys_global_object_factory.h"
 
 #define OBJECT_FACTORY_SYMBOL "getAbstractObjectFactoryInstance"
@@ -84,6 +85,7 @@ GlobalObjectFactory::GlobalObjectFactory()
 }
 
 GlobalObjectFactory::~GlobalObjectFactory(){
+    INFO_DESTRUCTOR(this);
 }
 
 std::shared_ptr<AbstractObject> GlobalObjectFactory::createObject(const std::string& factory, const std::string& type){
