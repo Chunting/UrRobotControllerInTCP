@@ -3,7 +3,7 @@
 // Copyright (c) 2017 Wuhan Collaborative Robot Technology Co.,Ltd. All rights reserved.
 //
 
-#include "../packages/cobotsys_ros_wrapper/include/ros_moveit_wrapper.h"
+#include "ros_moveit_wrapper.h"
 #include <ros/spinner.h>
 #include <ros/ros.h>
 
