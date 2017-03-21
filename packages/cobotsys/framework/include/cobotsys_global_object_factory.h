@@ -53,7 +53,8 @@ public:
 
 
     std::shared_ptr<AbstractObject> createObject(const std::string& factory, const std::string& type);
-
+    std::shared_ptr<AbstractObject> createObject(const QString& factory, const QString& type);
+    std::shared_ptr<AbstractObject> createObject(const char* factory, const char* type);
 
     void loadLibrarys(const QString& path);
 

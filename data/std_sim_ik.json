@@ -1,0 +1,11 @@
+{
+  "objectGroup": [
+    {
+      "objectId": "Widget",
+      "objectKey": "Widget",
+      "factory": "UrRobotDriverFactory, Ver 1.0",
+      "type": "UrDebuggerWidget",
+      "config": "ur_sim_config.json"
+    }
+  ]
+}

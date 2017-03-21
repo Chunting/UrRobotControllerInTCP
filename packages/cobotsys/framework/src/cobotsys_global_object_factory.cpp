@@ -92,6 +92,10 @@ std::shared_ptr<AbstractObject> GlobalObjectFactory::createObject(const std::str
     return m_impl->createObject(factory, type);
 }
 
+std::shared_ptr<AbstractObject> GlobalObjectFactory::createObject(const QString& factory, const QString& type){
+    return createObject((std::string) factory.toLocal8Bit().constData(), (std::string) type.toLocal8Bit().constData());
+}
+
 void GlobalObjectFactory::loadLibrarys(const QString& path){
     QDir dirPath(path);
     if (dirPath.exists()) {
@@ -107,6 +111,10 @@ void GlobalObjectFactory::loadLibrarys(const QString& path){
 
 GlobalObjectFactory* GlobalObjectFactory::instance(){
     return g_defaultObjectFactory;
+}
+
+std::shared_ptr<AbstractObject> GlobalObjectFactory::createObject(const char* factory, const char* type){
+    return createObject(std::string(factory), std::string(type));
 }
 }
 

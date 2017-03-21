@@ -25,7 +25,6 @@ bool loop(cobotsys::ObjectGroup& objectGroup){
 
 
 int main(int argc, char** argv){
-
     ros::init(argc, argv, "arm_kinematics");
     ros::AsyncSpinner spinner(1);
     spinner.start();

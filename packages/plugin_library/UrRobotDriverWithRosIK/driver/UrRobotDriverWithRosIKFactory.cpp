@@ -6,6 +6,7 @@
 #include <cobotsys_abstract_object_factory.h>
 #include <extra2.h>
 #include <ros/ros.h>
+#include "UrAdapterWithIK.h"
 
 class UrRobotDriverWithRosIKFactory : public cobotsys::AbstractObjectFactory {
 public:
@@ -17,7 +18,7 @@ public:
     }
 
     virtual std::vector<std::string> getSupportTypes(){
-        return {};
+        return {"UrIK"};
     }
 
     virtual std::string getFactoryType(){
@@ -25,6 +26,8 @@ public:
     }
 
     virtual std::shared_ptr<cobotsys::AbstractObject> createObject(const std::string& type){
+        if (type == "UrIK")
+            return std::make_shared<UrAdapterWithIK>();
         return std::shared_ptr<cobotsys::AbstractObject>();
     }
 };
