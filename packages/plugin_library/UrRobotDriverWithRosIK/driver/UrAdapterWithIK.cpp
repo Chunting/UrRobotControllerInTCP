@@ -77,7 +77,7 @@ bool UrAdapterWithIK::setup(const QString& configFilePath){
         m_urDriver->setServojLookahead(jsonObject["servoj_lookahead"].toDouble(0.05));
         m_urDriver->setServojGain(jsonObject["servoj_gain"].toDouble(300));
 
-        m_urWatcher = std::make_shared<UrStatusWatcher>(*this, "rt", m_rt_msg_cond);
+        m_urWatcher = std::make_shared<UrStatusWatcher2>(*this, "rt", m_rt_msg_cond);
         m_urWatcher->start();
         return true;
     }

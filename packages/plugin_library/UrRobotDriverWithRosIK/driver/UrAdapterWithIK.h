@@ -10,7 +10,7 @@
 #include <cobotsys_abstract_robot_driver.h>
 #include <cobotsys_observer_template.h>
 #include "ur_driver.h"
-#include <UrStatusWatcher.h>
+#include <UrStatusWatcher2.h>
 #include <QTimer>
 #include <ros_moveit_wrapper.h>
 
@@ -55,7 +55,7 @@ protected:
     std::condition_variable m_rt_msg_cond;
     std::condition_variable m_msg_cond;
 
-    std::shared_ptr<UrStatusWatcher> m_urWatcher;
+    std::shared_ptr<UrStatusWatcher2> m_urWatcher;
 
     std::mutex m_resMutex;
 
@@ -66,8 +66,6 @@ protected:
     bool m_disconnectNotifyStatus;
 
     bool m_onceStartCall;
-
-    ros_moveit_wrapper m_moveitWrapper;
 };
 
 #endif //PROJECT_URADAPTERWITHIK_H

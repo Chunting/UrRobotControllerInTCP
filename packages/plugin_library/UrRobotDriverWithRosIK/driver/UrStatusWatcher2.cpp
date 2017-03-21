@@ -4,19 +4,19 @@
 //
 
 #include <cobotsys_logger.h>
-#include "UrStatusWatcher.h"
+#include "UrStatusWatcher2.h"
 #include <UrAdapterWithIK.h>
 
-UrStatusWatcher::UrStatusWatcher(UrAdapterWithIK& adpater, const std::string& status_type,
-                                 std::condition_variable& msg_cond)
+UrStatusWatcher2::UrStatusWatcher2(UrAdapterWithIK& adpater, const std::string& status_type,
+                                   std::condition_variable& msg_cond)
         : QThread(nullptr), m_msg_cond(msg_cond), m_adapter(adpater){
     m_status_type = status_type;
 }
 
-UrStatusWatcher::~UrStatusWatcher(){
+UrStatusWatcher2::~UrStatusWatcher2(){
 }
 
-void UrStatusWatcher::run(){
+void UrStatusWatcher2::run(){
     std::mutex m;
     std::unique_lock<std::mutex> lck(m);
 

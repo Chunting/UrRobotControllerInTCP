@@ -9,13 +9,14 @@
 #include <QThread>
 #include <condition_variable>
 #include <chrono>
+#include <ros_moveit_wrapper.h>
 
 class UrAdapterWithIK;
-class UrStatusWatcher : public QThread {
+class UrStatusWatcher2 : public QThread {
 Q_OBJECT
 public:
-    UrStatusWatcher(UrAdapterWithIK& adpater, const std::string& status_type, std::condition_variable& msg_cond);
-    virtual ~UrStatusWatcher();
+    UrStatusWatcher2(UrAdapterWithIK& adpater, const std::string& status_type, std::condition_variable& msg_cond);
+    virtual ~UrStatusWatcher2();
 
 protected:
     virtual void run();
@@ -26,6 +27,7 @@ protected:
     std::string m_status_type;
     std::chrono::high_resolution_clock::time_point m_time_last_status;
     UrAdapterWithIK& m_adapter;
+    ros_moveit_wrapper m_moveitWrapper;
 };
 
 
