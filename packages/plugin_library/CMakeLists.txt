@@ -1,6 +1,6 @@
 
 
-
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/plugins)
 MESSAGE("")
 MESSAGE("----------插件     ---------------------------------------")
 FILE(GLOB children *)

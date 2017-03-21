@@ -6,7 +6,7 @@
 #ifndef PROJECT_DRIVERSTATUSLISTENER_H
 #define PROJECT_DRIVERSTATUSLISTENER_H
 
-#include <cobotsys_qt_ros_node.h>
+#include "../../packages/cobotsys_ros_wrapper/include/cobotsys_qt_ros_node.h"
 #include <ros/ros.h>
 #include <std_msgs/String.h>
 

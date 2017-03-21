@@ -16,7 +16,7 @@ int main(int argc, char** argv){
     cobotsys::init_library(argc, argv);
 
     cobotsys::GlobalObjectFactory globalObjectFactory;
-    globalObjectFactory.loadLibrarys("../lib");
+    globalObjectFactory.loadLibrarys("../lib/plugins");
 
     std::shared_ptr<cobotsys::AbstractObject> pObject;
 

@@ -6,7 +6,7 @@
 #ifndef PROJECT_UR3DRIVERSTATUSREPORTER_H
 #define PROJECT_UR3DRIVERSTATUSREPORTER_H
 
-#include <cobotsys_qt_ros_node.h>
+#include "../../cobotsys_ros_wrapper/include/cobotsys_qt_ros_node.h"
 #include <ros/ros.h>
 #include <std_msgs/String.h>
 

@@ -36,17 +36,17 @@ if (NOT DEFINED EIGEN3_INCLUDE_DIR)
 endif (NOT DEFINED EIGEN3_INCLUDE_DIR)
 include_directories(${EIGEN3_INCLUDE_DIR})
 
-include_directories(src)
+include_directories(include)
 
-FILE(GLOB ${PROJECT_NAME}_files src/* include/*.h src/*.h)
+FILE(GLOB ${PROJECT_NAME}_files src/* include/*)
 
 add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_files})
 
 add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
-target_link_libraries(${PROJECT_NAME} Qt5::Core Qt5::Widgets ${catkin_LIBRARIES} cobotsys)
+target_link_libraries(${PROJECT_NAME} cobotsys Qt5::Core Qt5::Widgets ${catkin_LIBRARIES})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
-
+##
 install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION lib)

@@ -24,7 +24,6 @@ if (freenect2_FOUND)
 
     target_link_libraries(${PROJECT_NAME}
             cobotsys
-            cobotsys_ros_wrapper
             ${freenect2_LIBRARY}
             ${OpenCL_LIBRARY})
 endif ()

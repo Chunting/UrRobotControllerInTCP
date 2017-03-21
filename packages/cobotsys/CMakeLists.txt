@@ -27,14 +27,13 @@ find_package(OpenCV REQUIRED)
 find_package(Boost REQUIRED COMPONENTS system program_options filesystem)
 
 # 头文件引用
-include_directories(src)
-include_directories(framework)
+include_directories(framework/include)
 include_directories(include)
 include_directories(${OpenCV_INCLUDE_DIRS})
 include_directories(${Boost_INCLUDE_DIRS})
 
 # 源代码
-file(GLOB ${PROJECT_NAME}_files src/* framework/* include/*)
+file(GLOB ${PROJECT_NAME}_files src/* include/* framework/src/* framework/include/*)
 
 # 主要的代码库部分
 add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_files})

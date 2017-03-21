@@ -5,15 +5,12 @@
 
 
 #include <cobotsys.h>
-#include <cobotsys_global_object_factory.h>
-#include <QApplication>
-#include <cobotsys_abstract_camera.h>
-#include <opencv/cv.h>
-#include <opencv/highgui.h>
-#include <cobotsys_file_finder.h>
 #include <extra2.h>
+#include <cobotsys_global_object_factory.h>
+#include <cobotsys_abstract_camera.h>
+#include <cobotsys_file_finder.h>
 #include <cobotsys_abstract_controller.h>
-
+#include <QApplication>
 
 bool loop(cobotsys::ObjectGroup& objectGroup){
     auto pWidget = std::dynamic_pointer_cast<cobotsys::AbstractControllerWidget>(objectGroup.getObject("Widget"));
@@ -35,7 +32,7 @@ int main(int argc, char** argv){
     }
 
     cobotsys::GlobalObjectFactory globalObjectFactory;
-    globalObjectFactory.loadLibrarys("../lib");
+    globalObjectFactory.loadLibrarys("../lib/plugins");
 
     QJsonObject jsonObject;
 
@@ -43,7 +40,8 @@ int main(int argc, char** argv){
         cobotsys::ObjectGroup objectGroup;
         if (objectGroup.init(jsonObject)) {
             if (loop(objectGroup)) {
-                return a.exec();
+                auto r = a.exec();
+                return r;
             }
         }
     }

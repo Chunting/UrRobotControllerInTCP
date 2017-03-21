@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <QString>
+#include <opencv/cv.h>
 
 class ros_moveit_wrapper {
 
@@ -16,7 +17,11 @@ public:
     ~ros_moveit_wrapper();
 
 
-    bool loadRobotModel(const std::string& robot_description);
+    bool loadRobotModel(const std::string& robot_description = "robot_description");
+
+    bool getIK(const cv::Point3d& pos, const cv::Vec3d& normal, std::vector<double>& jointValue);
+
+    void forwardKinematics(const std::vector<double>& jointValue);
 
 protected:
     class MoveItWrapperImpl;

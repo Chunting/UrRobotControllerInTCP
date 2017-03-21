@@ -24,7 +24,7 @@ int main(int argc, char** argv){
 
     cobotsys::init_library(argc, argv);
 
-    globalObjectFactory.loadLibrarys("../lib");
+    globalObjectFactory.loadLibrarys("../lib/plugins");
 
     pObject = globalObjectFactory.createObject("UrRobotDriverFactory, Ver 1.0", "UrAdapter");
     auto pController = std::dynamic_pointer_cast<cobotsys::AbstractRobotDriver>(pObject);
