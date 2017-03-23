@@ -24,6 +24,9 @@ UrAdapterWithIK::UrAdapterWithIK() : QObject(nullptr){
 }
 
 UrAdapterWithIK::~UrAdapterWithIK(){
+    m_urWatcher->m_loop = false;
+    m_urWatcher->m_msg_cond.notify_all();
+    INFO_DESTRUCTOR(this);
 }
 
 bool UrAdapterWithIK::move(uint32_t moveId, const cv::Point3d& pos, const cv::Vec3d& normal){

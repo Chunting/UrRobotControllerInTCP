@@ -18,8 +18,7 @@ bool cobotsys::AbstractController::setup(const QString& configFilePath){
 }
 
 namespace cobotsys {
-AbstractControllerWidget::AbstractControllerWidget()
-        : QWidget(nullptr){
+AbstractControllerWidget::AbstractControllerWidget() : QWidget(nullptr){
 }
 
 AbstractControllerWidget::~AbstractControllerWidget(){

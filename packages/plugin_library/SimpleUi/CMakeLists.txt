@@ -1,6 +1,6 @@
 
 
-project(UrRobotDriverWithRosIK)
+project(SimpleUi)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
@@ -12,11 +12,8 @@ find_package(Qt5Core REQUIRED)
 find_package(Qt5Gui REQUIRED)
 find_package(Qt5Widgets REQUIRED) # Fuck, 如果要使用autouic那么必须引用这个Qt5Widgets.
 
-include_directories(src)
-include_directories(driver)
-
-file(GLOB ${PROJECT_NAME}_files driver/*)
+file(GLOB ${PROJECT_NAME}_files RobotXyz/* Factory/*)
 
 add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_files})
 
-target_link_libraries(${PROJECT_NAME} cobotsys cobotsys_ros_wrapper UrRobotDriver)
+target_link_libraries(${PROJECT_NAME} cobotsys)

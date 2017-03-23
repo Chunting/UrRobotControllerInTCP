@@ -59,6 +59,12 @@ UrCommunication::UrCommunication(std::condition_variable& msg_cond,
     keepalive_ = false;
 }
 
+UrCommunication::~UrCommunication(){
+    halt();
+    close(sec_sockfd_);
+    close(pri_sockfd_);
+}
+
 bool UrCommunication::start(){
     keepalive_ = true;
     uint8_t buf[512];
@@ -180,4 +186,6 @@ void UrCommunication::run(){
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
     close(sec_sockfd_);
 }
+
+
 

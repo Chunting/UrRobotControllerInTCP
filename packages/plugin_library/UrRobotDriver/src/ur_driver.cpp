@@ -58,6 +58,15 @@ UrDriver::UrDriver(std::condition_variable& rt_msg_cond,
     listen(incoming_sockfd_, 5);
 }
 
+UrDriver::~UrDriver(){
+    stopTraj();
+    halt();
+
+    close(incoming_sockfd_);
+    delete sec_interface_;
+    delete rt_interface_;
+}
+
 std::vector<double> UrDriver::interp_cubic(double t, double T,
                                            std::vector<double> p0_pos, std::vector<double> p1_pos,
                                            std::vector<double> p0_vel, std::vector<double> p1_vel){

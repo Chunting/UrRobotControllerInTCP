@@ -6,11 +6,17 @@
 #include <cobotsys_logger.h>
 #include "UrStatusWatcher2.h"
 #include <UrAdapterWithIK.h>
+#include <eigen3/Eigen/Geometry>
 
 UrStatusWatcher2::UrStatusWatcher2(UrAdapterWithIK& adpater, const std::string& status_type,
                                    std::condition_variable& msg_cond)
         : QThread(nullptr), m_msg_cond(msg_cond), m_adapter(adpater){
     m_status_type = status_type;
+    m_moveitWrapper.loadRobotModel();
+
+    m_obj = std::make_shared<simple_debug_gl_object>();
+    m_easyRender.AddRenderer(m_obj);
+    m_easyRender.show();
 }
 
 UrStatusWatcher2::~UrStatusWatcher2(){
@@ -37,6 +43,13 @@ void UrStatusWatcher2::run(){
             m_adapter.notify([=](std::shared_ptr<RobotStatusObserver>& observer){
                 observer->onJointStatusUpdate(q_actual);
             });
+
+            Eigen::Affine3d end_effector_state;
+            m_moveitWrapper.forwardKinematics(q_actual, end_effector_state);
+            auto transform = end_effector_state.rotation();
+            Matrix4 tr(end_effector_state.data());
+
+            m_obj->m_transform = tr;
         }
 
         m_time_last_status = cur_time_point;

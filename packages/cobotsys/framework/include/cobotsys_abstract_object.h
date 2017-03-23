@@ -30,5 +30,6 @@ public:
 //
 }
 
+typedef std::shared_ptr<cobotsys::AbstractObject> AbstractObjectPtr;
 
 #endif //PROJECT_COBOTSYS_ABSTRACT_OBJECT_H

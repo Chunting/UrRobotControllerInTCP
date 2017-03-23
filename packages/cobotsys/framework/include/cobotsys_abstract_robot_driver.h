@@ -61,4 +61,6 @@ public:
 };
 }
 
+typedef std::shared_ptr<cobotsys::AbstractRobotDriver> AbstractRobotDriverPtr;
+
 #endif //PROJECT_COBOTSYS_ABSTRACT_ROBOT_DRIVER_H

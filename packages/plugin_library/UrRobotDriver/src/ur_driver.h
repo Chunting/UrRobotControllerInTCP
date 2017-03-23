@@ -67,6 +67,7 @@ public:
              double max_payload = 1.,
              double servoj_lookahead_time = 0.03,
              double servoj_gain = 300.);
+    ~UrDriver();
     bool start();
     void halt();
 

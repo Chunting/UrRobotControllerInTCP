@@ -45,6 +45,12 @@ UrRealtimeCommunication::UrRealtimeCommunication(
     safety_count_max_ = safety_count_max;
 }
 
+UrRealtimeCommunication::~UrRealtimeCommunication(){
+    halt();
+
+    close(sockfd_);
+}
+
 bool UrRealtimeCommunication::start(){
     fd_set writefds;
     struct timeval timeout;

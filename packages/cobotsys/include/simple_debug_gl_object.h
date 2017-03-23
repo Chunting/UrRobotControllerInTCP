@@ -15,6 +15,7 @@ public:
 
     GL3DObject m_object;
 
+    MathLib::Matrix4 m_transform;
 public:
     simple_debug_gl_object();
     virtual ~simple_debug_gl_object();

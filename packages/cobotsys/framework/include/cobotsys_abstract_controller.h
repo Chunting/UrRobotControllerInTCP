@@ -8,6 +8,7 @@
 
 #include "cobotsys_abstract_object.h"
 #include "cobotsys_global_object_factory.h"
+#include "cobotsys_abstract_widget.h"
 #include <QWidget>
 
 namespace cobotsys {

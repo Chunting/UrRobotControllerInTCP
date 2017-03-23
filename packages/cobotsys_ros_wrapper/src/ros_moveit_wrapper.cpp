@@ -130,15 +130,15 @@ bool ros_moveit_wrapper::getIK(const cv::Point3d& pos, const cv::Vec3d& normal, 
     return false;
 }
 
-void ros_moveit_wrapper::forwardKinematics(const std::vector<double>& jointValue){
+void ros_moveit_wrapper::forwardKinematics(const std::vector<double>& jointValue, Eigen::Affine3d& endEffectorState){
     m_impl->kinematic_state->setJointGroupPositions(m_impl->joint_model_group, jointValue);
 
     /* Check whether any joint is outside its joint limits */
-    ROS_INFO_STREAM("Current state is " << (m_impl->kinematic_state->satisfiesBounds() ? "valid" : "not valid"));
+//    ROS_INFO_STREAM("Current state is " << (m_impl->kinematic_state->satisfiesBounds() ? "valid" : "not valid"));
 
     /* Enforce the joint limits for this state and check again*/
     m_impl->kinematic_state->enforceBounds();
-    ROS_INFO_STREAM("Current state is " << (m_impl->kinematic_state->satisfiesBounds() ? "valid" : "not valid"));
+//    ROS_INFO_STREAM("Current state is " << (m_impl->kinematic_state->satisfiesBounds() ? "valid" : "not valid"));
 
     // Forward Kinematics
     // ^^^^^^^^^^^^^^^^^^
@@ -148,8 +148,29 @@ void ros_moveit_wrapper::forwardKinematics(const std::vector<double>& jointValue
     // "right_arm" of the robot.
 //    m_impl->kinematic_state->setToRandomPositions(m_impl->joint_model_group);
 
-    const Eigen::Affine3d& end_effector_state = m_impl->kinematic_state->getGlobalLinkTransform(m_impl->tcp_link);
-
-    auto r = end_effector_state.rotation();
-    auto t = end_effector_state.translation();
+    endEffectorState = m_impl->kinematic_state->getGlobalLinkTransform(m_impl->tcp_link);
 }
+
+//void ros_moveit_wrapper::forwardKinematics(const std::vector<double>& jointValue){
+//    m_impl->kinematic_state->setJointGroupPositions(m_impl->joint_model_group, jointValue);
+//
+//    /* Check whether any joint is outside its joint limits */
+////    ROS_INFO_STREAM("Current state is " << (m_impl->kinematic_state->satisfiesBounds() ? "valid" : "not valid"));
+//
+//    /* Enforce the joint limits for this state and check again*/
+//    m_impl->kinematic_state->enforceBounds();
+////    ROS_INFO_STREAM("Current state is " << (m_impl->kinematic_state->satisfiesBounds() ? "valid" : "not valid"));
+//
+//    // Forward Kinematics
+//    // ^^^^^^^^^^^^^^^^^^
+//    // Now, we can compute forward kinematics for a set of random joint
+//    // values. Note that we would like to find the pose of the
+//    // "r_wrist_roll_link" which is the most distal link in the
+//    // "right_arm" of the robot.
+////    m_impl->kinematic_state->setToRandomPositions(m_impl->joint_model_group);
+//
+//    const Eigen::Affine3d& end_effector_state = m_impl->kinematic_state->getGlobalLinkTransform(m_impl->tcp_link);
+//
+//    auto r = end_effector_state.rotation();
+//    auto t = end_effector_state.translation();
+//}

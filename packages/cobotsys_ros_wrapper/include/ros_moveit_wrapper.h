@@ -10,6 +10,7 @@
 #include <string>
 #include <QString>
 #include <opencv/cv.h>
+#include <eigen3/Eigen/Geometry>
 
 class ros_moveit_wrapper {
 
@@ -22,7 +23,7 @@ public:
 
     bool getIK(const cv::Point3d& pos, const cv::Vec3d& normal, std::vector<double>& jointValue);
 
-    void forwardKinematics(const std::vector<double>& jointValue);
+    void forwardKinematics(const std::vector<double>& jointValue, Eigen::Affine3d& endEffectorState);
 
 protected:
     class MoveItWrapperImpl;

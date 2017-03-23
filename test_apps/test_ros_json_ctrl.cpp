@@ -12,14 +12,15 @@
 #include <cobotsys_abstract_controller.h>
 #include <QApplication>
 #include <ros/ros.h>
+#include <QtWidgets/QFileDialog>
+#include <cobotsys_abstract_widget.h>
 
 bool loop(cobotsys::ObjectGroup& objectGroup){
-    auto pWidget = std::dynamic_pointer_cast<cobotsys::AbstractControllerWidget>(objectGroup.getObject("Widget"));
+    auto pWidget = std::dynamic_pointer_cast<QWidget>(objectGroup.getObject("Widget"));
     if (pWidget) {
         pWidget->show();
         return true;
     }
-
     return false;
 }
 
@@ -33,18 +34,24 @@ int main(int argc, char** argv){
     QApplication a(argc, argv);
     cobotsys::init_library(argc, argv);
 
-    if (argc <= 1) {
-        COBOT_LOG.info() << "No json file name!";
-        return 1;
-    }
-
     cobotsys::GlobalObjectFactory globalObjectFactory;
     globalObjectFactory.loadLibrarys("../lib/plugins");
+
+    QString json_path;
+
+    if (argc <= 1) {
+        json_path = QFileDialog::getOpenFileName(nullptr, QString(), "../../data");
+        if (json_path.isEmpty())
+        return 1;
+    } else {
+        json_path = argv[1];
+    }
+
 
     QJsonObject jsonObject;
 
     int r = 0;
-    if (loadJson(jsonObject, std::string(argv[1]))) {
+    if (loadJson(jsonObject, json_path)) {
         cobotsys::ObjectGroup objectGroup;
         if (objectGroup.init(jsonObject)) {
             if (loop(objectGroup)) {
