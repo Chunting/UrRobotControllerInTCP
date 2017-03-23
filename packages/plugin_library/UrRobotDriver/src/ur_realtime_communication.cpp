@@ -87,7 +87,8 @@ bool UrRealtimeCommunication::start(){
 
 void UrRealtimeCommunication::halt(){
     keepalive_ = false;
-    comThread_.join();
+    if (comThread_.joinable())
+        comThread_.join();
 }
 
 void UrRealtimeCommunication::addCommandToQueue(std::string inp){

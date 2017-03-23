@@ -24,6 +24,18 @@ public:
      * @return
      */
     virtual bool setup(const QString& configFilePath);
+    /**
+     * 创建这个函数是因为
+     * A - shared
+     * B - shared
+     * A has B(shared)
+     * B.attach(A)
+     *
+     * C has A and B
+     * C freed
+     * A and B 仍然拥有彼此。无法释放。
+     */
+    virtual void resetAllSharedObject();
 };
 
 

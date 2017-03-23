@@ -123,6 +123,8 @@ ObjectGroup::ObjectGroup(){
 }
 
 ObjectGroup::~ObjectGroup(){
+    m_idKeys.clear();
+    m_objs.clear();
 }
 
 bool ObjectGroup::init(const QJsonObject& jsonConfig){

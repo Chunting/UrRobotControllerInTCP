@@ -81,7 +81,6 @@ bool UrDebuggerWidget::setup(const QString& configFilePath){
     auto pObject = GlobalObjectFactory::instance()->createObject(robot_factory, robot_type);
     m_robotDriver = std::dynamic_pointer_cast<cobotsys::AbstractRobotDriver>(pObject);
 
-
     m_incBase = json["step_angle"].toDouble(1);
     m_singleMoveRangeLow = json["range_low"].toDouble(-180) / 180 * CV_PI;
     m_singleMoveRangeHigh = json["range_high"].toDouble(180) / 180 * CV_PI;
@@ -226,4 +225,9 @@ bool UrDebuggerWidget::moveTarget(){
         }
     }
     return false;
+}
+
+void UrDebuggerWidget::resetAllSharedObject(){
+    m_robotDriver.reset();
+    AbstractObject::resetAllSharedObject();
 }

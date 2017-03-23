@@ -1,0 +1,11 @@
+{
+  "objectGroup": [
+    {
+      "objectId": "Robot",
+      "objectKey": "Robot",
+      "factory": "UrRobotDriverWithRosIKFactory, Ver 1.0",
+      "type": "UrIK",
+      "config": "ur_sim_config.json"
+    }
+  ]
+}

@@ -39,6 +39,13 @@ protected:
     struct ObjectInfo {
         std::shared_ptr<ObjectSourceInfo> pInfo;
         std::shared_ptr<AbstractObject> pObject;
+
+        ~ObjectInfo(){
+            if (pObject)
+                pObject->resetAllSharedObject();
+            pInfo = nullptr;
+            pObject = nullptr;
+        }
     };
 
     std::map<std::string, std::string> m_idKeys;

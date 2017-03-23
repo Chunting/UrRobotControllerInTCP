@@ -27,7 +27,7 @@ public:
 
     virtual bool setup(const QString& configFilePath);
 
-
+    virtual void resetAllSharedObject();
 Q_SIGNALS:
     void jointUpdated();
 

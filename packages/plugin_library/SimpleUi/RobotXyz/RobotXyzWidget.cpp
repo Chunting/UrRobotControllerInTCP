@@ -26,6 +26,7 @@ void RobotXyzWidget::loadRobotDriver(){
     if (filename.size()) {
         QJsonObject json;
         if (loadJson(json, filename)){
+            m_robotDriver.reset();
             ObjectGroup objectGroup;
             if (objectGroup.init(json)) {
                 setupRobotDriver(objectGroup);

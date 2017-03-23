@@ -115,7 +115,8 @@ bool UrCommunication::start(){
 
 void UrCommunication::halt(){
     keepalive_ = false;
-    comThread_.join();
+    if (comThread_.joinable())
+        comThread_.join();
 }
 
 void UrCommunication::run(){
