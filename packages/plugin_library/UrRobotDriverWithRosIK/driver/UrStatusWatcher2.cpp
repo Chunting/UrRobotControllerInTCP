@@ -29,18 +29,13 @@ void UrStatusWatcher2::run(){
 
         auto cur_time_point = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double> time_diff = cur_time_point - m_time_last_status;
-//        COBOT_LOG.info() << "Status updated, " << m_status_type
-//                         << ", time: " << time_diff.count() * 1000 << "ms, "
-//                         << 1 / time_diff.count() << "hz";
-
 
         auto& driver = m_adapter.getDriver();
-//        driver->rt_interface_->robot_state_->
 
         if (driver) {
             auto q_actual = driver->rt_interface_->robot_state_->getQActual();
-            m_adapter.notify([=](std::shared_ptr<RobotStatusObserver>& o){
-                o->onJointStatusUpdate(q_actual);
+            m_adapter.notify([=](std::shared_ptr<RobotStatusObserver>& observer){
+                observer->onJointStatusUpdate(q_actual);
             });
         }
 

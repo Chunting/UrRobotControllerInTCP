@@ -32,6 +32,40 @@ include_directories(include)
 include_directories(${OpenCV_INCLUDE_DIRS})
 include_directories(${Boost_INCLUDE_DIRS})
 
+# 内部扩展的代码，从其他地方集成过来的代码
+set(extend_library_list "")
+set(inc_list "")
+function(add_extend_library path_to_package)
+    if (EXISTS ${path_to_package}/CMakeLists.txt)
+        include_directories(${path_to_package}/include)
+        get_filename_component(f_base ${path_to_package} NAME_WE)
+        MESSAGE(STATUS "ExtendLib   : " ${f_base})
+        set(extend_library_list ${extend_library_list} ${f_base} PARENT_SCOPE)
+        set(inc_list ${inc_list} ${path_to_package}/include PARENT_SCOPE)
+        add_subdirectory(${path_to_package})
+    endif ()
+endfunction()
+add_extend_library(${CMAKE_CURRENT_SOURCE_DIR}/extend/mathlib)
+add_extend_library(${CMAKE_CURRENT_SOURCE_DIR}/extend/std_tools)
+add_extend_library(${CMAKE_CURRENT_SOURCE_DIR}/extend/gl_tools)
+add_extend_library(${CMAKE_CURRENT_SOURCE_DIR}/extend/udp_network)
+#add_extend_library(${CMAKE_CURRENT_SOURCE_DIR}/extend/simulator_dynamics)
+add_extend_library(${CMAKE_CURRENT_SOURCE_DIR}/extend/robotlib)
+#add_extend_library(${CMAKE_CURRENT_SOURCE_DIR}/extend/robot_gui)
+message("")
+#message("${inc_list}")
+#message("")
+#set(ext_inc ${ext_inc} ${inc_list} PARENT_SCOPE)
+
+#foreach (inc ${INCLUDE_DIRECTORIES})
+#    message(STATUS "Include: " ${inc})
+#endforeach ()
+#get_property(dirs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
+#foreach(dir ${dirs})
+#    message(STATUS "dir='${dir}'")
+#endforeach()
+#message("")
+
 # 源代码
 file(GLOB ${PROJECT_NAME}_files src/* include/* framework/src/* framework/include/*)
 
@@ -46,7 +80,9 @@ target_link_libraries(${PROJECT_NAME}
         Qt5::OpenGL
         Qt5::Network
         ${OpenCV_LIBRARIES}
-        ${Boost_LIBRARIES})
+        ${Boost_LIBRARIES}
+        ${extend_library_list})
+#message("${OpenCV_LIBRARIES}")
 
 install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION lib)
 install(DIRECTORY include/ DESTINATION include/cobotsys FILES_MATCHING PATTERN "*.h")
