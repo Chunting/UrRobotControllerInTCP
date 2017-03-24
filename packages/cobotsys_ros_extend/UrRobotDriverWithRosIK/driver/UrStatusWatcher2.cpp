@@ -18,12 +18,10 @@ UrStatusWatcher2::UrStatusWatcher2(UrAdapterWithIK& adpater, const std::string& 
     m_obj = std::make_shared<simple_debug_gl_object>();
     m_easyRender.AddRenderer(m_obj);
     m_easyRender.show();
+    connect(this, &QThread::finished, this, &UrStatusWatcher2::onFinished);
 }
 
 UrStatusWatcher2::~UrStatusWatcher2(){
-    m_loop = false;
-    if (isRunning())
-        wait();
     INFO_DESTRUCTOR(this);
 }
 
@@ -37,6 +35,8 @@ void UrStatusWatcher2::run(){
     m_time_last_status = std::chrono::high_resolution_clock::now();
     while (m_loop) {
         m_msg_cond.wait(lck);
+        if (!m_loop)
+            break;
 
         auto cur_time_point = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double> time_diff = cur_time_point - m_time_last_status;
@@ -58,5 +58,17 @@ void UrStatusWatcher2::run(){
         }
 
         m_time_last_status = cur_time_point;
+    }
+}
+
+void UrStatusWatcher2::onFinished(){
+    m_quitSignal.release();
+}
+
+void UrStatusWatcher2::quitThread(){
+    if (isRunning()){
+        m_loop = false;
+        m_msg_cond.notify_all();
+        wait();
     }
 }

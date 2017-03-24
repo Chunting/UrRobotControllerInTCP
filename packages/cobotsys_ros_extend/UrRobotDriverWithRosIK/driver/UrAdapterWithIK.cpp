@@ -26,6 +26,7 @@ UrAdapterWithIK::UrAdapterWithIK() : QObject(nullptr){
 UrAdapterWithIK::~UrAdapterWithIK(){
     m_urWatcher->m_loop = false;
     m_urWatcher->m_msg_cond.notify_all();
+    m_urWatcher->quitThread();
     INFO_DESTRUCTOR(this);
 }
 

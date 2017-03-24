@@ -12,6 +12,7 @@
 #include <ros_moveit_wrapper.h>
 #include <cobotsys_simple_world_renderer_widget.h>
 #include <simple_debug_gl_object.h>
+#include <QtCore/QSemaphore>
 
 class UrAdapterWithIK;
 class UrStatusWatcher2 : public QThread {
@@ -20,9 +21,11 @@ public:
     UrStatusWatcher2(UrAdapterWithIK& adpater, const std::string& status_type, std::condition_variable& msg_cond);
     virtual ~UrStatusWatcher2();
 
+    void quitThread();
 protected:
     virtual void run();
 
+    void onFinished();
 public:
     bool m_loop;
     std::condition_variable& m_msg_cond;
@@ -32,6 +35,7 @@ public:
     ros_moveit_wrapper m_moveitWrapper;
     cobotsys::SimpleWorldRendererWidget m_easyRender;
     std::shared_ptr<simple_debug_gl_object> m_obj;
+    QSemaphore m_quitSignal;
 };
 
 
