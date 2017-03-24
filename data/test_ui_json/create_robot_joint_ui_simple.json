@@ -1,10 +1,10 @@
 {
   "objectGroup": [
     {
-      "objectId": "Robot",
-      "objectKey": "Robot",
+      "objectId": "Widget",
+      "objectKey": "Widget",
       "factory": "UrRobotDriverFactory, Ver 1.0",
-      "type": "UrAdapter",
+      "type": "UrDebuggerWidget",
       "config": "ur_sim_config_old.json"
     }
   ]

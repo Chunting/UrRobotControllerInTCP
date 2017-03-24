@@ -226,8 +226,3 @@ bool UrDebuggerWidget::moveTarget(){
     }
     return false;
 }
-
-void UrDebuggerWidget::resetAllSharedObject(){
-    m_robotDriver.reset();
-    AbstractObject::resetAllSharedObject();
-}

@@ -21,21 +21,18 @@ void UrStatusWatcher::run(){
 
     m_loop = true;
 
-
-
     m_time_last_status = std::chrono::high_resolution_clock::now();
     while (m_loop) {
         m_msg_cond.wait(lck);
 
         auto cur_time_point = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double> time_diff = cur_time_point - m_time_last_status;
-//        COBOT_LOG.info() << "Status updated, " << m_status_type
-//                         << ", time: " << time_diff.count() * 1000 << "ms, "
-//                         << 1 / time_diff.count() << "hz";
+        COBOT_LOG.info() << "Status updated, " << m_status_type
+                         << ", time: " << time_diff.count() * 1000 << "ms, "
+                         << 1 / time_diff.count() << "hz";
 
 
         auto& driver = m_adapter.getDriver();
-//        driver->rt_interface_->robot_state_->
 
         if (driver) {
             auto q_actual = driver->rt_interface_->robot_state_->getQActual();
@@ -45,5 +42,13 @@ void UrStatusWatcher::run(){
         }
 
         m_time_last_status = cur_time_point;
+    }
+}
+
+void UrStatusWatcher::stopWatcher(){
+    m_loop = false;
+    m_msg_cond.notify_all();
+    if (isRunning()) {
+        wait();
     }
 }

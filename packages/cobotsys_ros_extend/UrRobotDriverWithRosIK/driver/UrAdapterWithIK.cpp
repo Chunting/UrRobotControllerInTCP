@@ -18,7 +18,6 @@ UrAdapterWithIK::UrAdapterWithIK() : QObject(nullptr){
     m_connectionNotifyStatus = true;
     m_disconnectNotifyStatus = false;
 
-
     m_pConnectionCheckTimer->start();
     m_onceStartCall = true;
 }

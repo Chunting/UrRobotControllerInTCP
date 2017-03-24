@@ -41,8 +41,8 @@ protected:
         std::shared_ptr<AbstractObject> pObject;
 
         ~ObjectInfo(){
-            if (pObject)
-                pObject->resetAllSharedObject();
+//            if (pObject)
+//                pObject->resetAllSharedObject();
             pInfo = nullptr;
             pObject = nullptr;
         }

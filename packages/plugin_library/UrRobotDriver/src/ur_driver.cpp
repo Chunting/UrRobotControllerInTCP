@@ -30,6 +30,8 @@ UrDriver::UrDriver(std::condition_variable& rt_msg_cond,
     struct sockaddr_in serv_addr;
     int n, flag;
 
+    started_ = false;
+
     firmware_version_ = 0;
     reverse_connected_ = false;
     executing_traj_ = false;
@@ -59,8 +61,11 @@ UrDriver::UrDriver(std::condition_variable& rt_msg_cond,
 }
 
 UrDriver::~UrDriver(){
-    stopTraj();
-    halt();
+    if (started_) {
+        stopTraj();
+        halt();
+    }
+
 
     close(incoming_sockfd_);
     delete sec_interface_;
@@ -231,7 +236,7 @@ bool UrDriver::uploadProg(){
 
     rt_interface_->addCommandToQueue(cmd_str);
 
-    printf("\n%s\n", cmd_str.c_str());
+//    printf("\n%s\n", cmd_str.c_str());
     return UrDriver::openServo();
 }
 
@@ -270,6 +275,7 @@ bool UrDriver::start(){
     print_debug(
             "Listening on " + ip_addr_ + ":" + std::to_string(REVERSE_PORT_)
             + "\n");
+    started_ = true;
     return true;
 }
 
@@ -280,6 +286,7 @@ void UrDriver::halt(){
     sec_interface_->halt();
     rt_interface_->halt();
     close(incoming_sockfd_);
+    started_ = false;
 }
 
 void UrDriver::setSpeed(double q0, double q1, double q2, double q3, double q4,

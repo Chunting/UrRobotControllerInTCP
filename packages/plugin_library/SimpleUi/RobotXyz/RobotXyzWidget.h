@@ -10,6 +10,7 @@
 #include <extra2.h>
 #include <cobotsys_global_object_factory.h>
 #include "ui_RobotXyzWidget.h"
+#include "RobotJointRTController.h"
 #include <QFileDialog>
 #include <cobotsys_abstract_robot_driver.h>
 
@@ -25,13 +26,21 @@ public:
     void stop();
     void loadRobotDriver();
 
+protected:
+    virtual void closeEvent(QCloseEvent* event);
 public:
     virtual bool setup(const QString& configFilePath);
 protected:
     void setupRobotDriver(ObjectGroup& objectGroup);
+
+protected:
+    void updateUiJointValue();
+
 protected:
     Ui::RobotXyzWidget ui;
     AbstractRobotDriverPtr m_robotDriver;
+    std::shared_ptr<RobotJointRTController> m_jrtController;
+    std::vector<QDoubleSpinBox*> m_dsbJointVals;
 };
 
 

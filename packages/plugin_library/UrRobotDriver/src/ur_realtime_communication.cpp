@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+#include <printf.h>
 #include "ur_realtime_communication.h"
 
 UrRealtimeCommunication::UrRealtimeCommunication(
@@ -140,7 +141,7 @@ void UrRealtimeCommunication::run(){
             if (bytes_read > 0) {
                 setsockopt(sockfd_, IPPROTO_TCP, TCP_QUICKACK, (char*) &flag_,
                            sizeof(int));
-                robot_state_->unpack(buf);
+                robot_state_->unpack(buf); // This will notify
                 if (safety_count_ == safety_count_max_) {
                     setSpeed(0., 0., 0., 0., 0., 0.);
                 }
@@ -190,6 +191,7 @@ void UrRealtimeCommunication::run(){
     }
     setSpeed(0., 0., 0., 0., 0., 0.);
     close(sockfd_);
+    print_info("UrRealtimeCommunication finished");
 }
 
 void UrRealtimeCommunication::setSafetyCountMax(uint inp){

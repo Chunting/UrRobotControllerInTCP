@@ -52,6 +52,8 @@ private:
     double firmware_version_;
     double servoj_lookahead_time_;
     double servoj_gain_;
+
+    bool started_;
 public:
     UrRealtimeCommunication* rt_interface_;
     UrCommunication* sec_interface_;

@@ -21,7 +21,4 @@ bool AbstractObject::setup(const QString& configFilePath){
     COBOT_LOG.warning() << "Use config in base class: " << configFilePath;
     return true;
 }
-
-void AbstractObject::resetAllSharedObject(){
-}
 }

@@ -17,6 +17,7 @@ public:
     UrStatusWatcher(UrAdapter& adpater, const std::string& status_type, std::condition_variable& msg_cond);
     virtual ~UrStatusWatcher();
 
+    void stopWatcher();
 protected:
     virtual void run();
 

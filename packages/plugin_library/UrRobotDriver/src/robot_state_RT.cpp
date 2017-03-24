@@ -17,6 +17,7 @@
  */
 
 #include "robot_state_RT.h"
+#include "do_output.h"
 
 RobotStateRT::RobotStateRT(std::condition_variable& msg_cond){
     version_ = 0.0;

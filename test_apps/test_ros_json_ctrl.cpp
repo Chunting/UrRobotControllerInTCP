@@ -49,6 +49,8 @@ int main(int argc, char** argv){
         json_path = argv[1];
     }
 
+    QDir::setCurrent("../../data");
+
 
     QJsonObject jsonObject;
 
