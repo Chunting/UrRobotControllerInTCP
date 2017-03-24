@@ -15,8 +15,10 @@ find_package(Qt5Widgets REQUIRED) # Fuck, 如果要使用autouic那么必须引�
 include_directories(src)
 include_directories(driver)
 
-file(GLOB ${PROJECT_NAME}_files driver/*)
+file(GLOB ${PROJECT_NAME}_files driver/* include/*)
 
 add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_files})
 
 target_link_libraries(${PROJECT_NAME} cobotsys cobotsys_ros_wrapper UrRobotDriver)
+
+set_property(GLOBAL PROPERTY ROS_EXTEND "${PROJECT_NAME}" APPEND)

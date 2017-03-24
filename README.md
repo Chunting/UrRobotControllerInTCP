@@ -23,6 +23,7 @@
         + src                       实现文件
           CMakeLists.txt            cobotsys工程CMake文件
     + cobotsys_ros_wrapper          对ROS的一个简易封装。如果有依赖ROS的部分，依赖这个库就好。
+    + cobotsys_ros_extend           基于ROS的应用动态库。ROS有个BUG，不支持dlopen dlclose.程序退出的时候会崩溃
     + plugin_library                扩展支持插件，对cobotsys里各种抽象对象的具体实现
         + Kinect2CameraAdapter      Kinect2相机的适配驱动
         + QtBasedSimpleController   Kinect2相机的简易UI

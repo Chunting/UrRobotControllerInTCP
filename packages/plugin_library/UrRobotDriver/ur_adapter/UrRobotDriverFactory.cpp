@@ -9,7 +9,7 @@
 #include "UrRobotStatusDebugger.h"
 #include "../ur_widget_utility/UrDebuggerWidget.h"
 
-std::shared_ptr<UrRobotDriverFactory> localFactory;
+static std::shared_ptr<UrRobotDriverFactory> localFactory;
 
 extern "C" void* getAbstractObjectFactoryInstance(){
     if (localFactory == nullptr) {

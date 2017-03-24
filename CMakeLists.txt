@@ -96,6 +96,18 @@ build_package(${CMAKE_SOURCE_DIR}/packages/cobotsys_ros_wrapper)
 # Plugin
 add_subdirectory(${CMAKE_SOURCE_DIR}/packages/plugin_library)
 
+# ROS extend
+#set_property(GLOBAL PROPERTY ROS_EXTEND "")
+add_subdirectory(${CMAKE_SOURCE_DIR}/packages/cobotsys_ros_extend)
+get_property(ros_ext_lib GLOBAL PROPERTY ROS_EXTEND)
+#message(STATUS "extlibs: ${ros_ext_lib}")
+
+get_property(inc_dirs GLOBAL PROPERTY ROS_INCLUDE)
+foreach (inc ${inc_dirs})
+    message(STATUS "Include: " ${inc})
+    include_directories(${inc})
+endforeach ()
+
 # Test
 build_package(${CMAKE_SOURCE_DIR}/test_apps)
 

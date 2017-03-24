@@ -64,6 +64,7 @@ public:
     std::shared_ptr<AbstractObject> createObject(const char* factory, const char* type);
 
     void loadLibrarys(const QString& path);
+    void addExtendLibrary(std::shared_ptr<AbstractObjectFactory> factory);
 
     static GlobalObjectFactory* instance();
 private:

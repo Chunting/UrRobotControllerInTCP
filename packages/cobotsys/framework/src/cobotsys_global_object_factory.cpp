@@ -30,6 +30,29 @@ public:
         objectFactoryMap[factory->getFactoryType()] = factory;
     }
 
+    void dumpLibraryInfo(std::shared_ptr<AbstractObjectFactory>& shrFactory, const QFileInfo& fileInfo){
+        auto tlist = shrFactory->getSupportTypes();
+
+        std::stringstream oss;
+        oss << "{";
+        for (size_t i = 0; i < tlist.size(); i++) {
+            oss << tlist[i];
+            if (i + 1 < tlist.size()) oss << ", ";
+        }
+        oss << "}";
+
+        if (fileInfo.fileName().isEmpty()) {
+            COBOT_LOG.message("Extend")
+                    << std::setw(32) << "ROS Extend" << ": "
+                    << shrFactory->getFactoryType()
+                    << ", " << oss.str();
+        } else {
+            COBOT_LOG.message("Plugin")
+                    << std::setw(32) << fileInfo.fileName() << ": "
+                    << shrFactory->getFactoryType()
+                    << ", " << oss.str();
+        }
+    }
 
     void loadLibrary(const QFileInfo& fileInfo){
         auto fAddr = QLibrary::resolve(fileInfo.absoluteFilePath(), OBJECT_FACTORY_SYMBOL);
@@ -37,27 +60,14 @@ public:
 
         if (qFunc) {
             auto rawFactory = static_cast<AbstractObjectFactory*>(qFunc());
+            auto fftype = rawFactory->getFactoryType();
             auto shrFactory = rawFactory->shared_from_this();
             auto factoryType = shrFactory->getFactoryType();
 
             if (hasFactory(shrFactory)) {
             } else {
                 appendFactory(shrFactory);
-                auto tlist = shrFactory->getSupportTypes();
-
-                std::stringstream oss;
-                oss << "{";
-                for (size_t i = 0; i < tlist.size(); i++) {
-                    oss << tlist[i];
-                    if (i + 1 < tlist.size()) oss << ", ";
-                }
-                oss << "}";
-
-
-                COBOT_LOG.message("Plugin")
-                        << std::setw(32) << fileInfo.fileName() << ": "
-                        << shrFactory->getFactoryType()
-                        << ", " << oss.str();
+                dumpLibraryInfo(shrFactory, fileInfo);
             }
         }
     }
@@ -102,6 +112,7 @@ void GlobalObjectFactory::loadLibrarys(const QString& path){
         auto fileInfoList = dirPath.entryInfoList(QDir::Files);
 
         for (auto fileInfo : fileInfoList) {
+//            COBOT_LOG.info() << "Text: " << fileInfo.fileName();
             if (QLibrary::isLibrary(fileInfo.absoluteFilePath())) {
                 m_impl->loadLibrary(fileInfo);
             }
@@ -115,6 +126,14 @@ GlobalObjectFactory* GlobalObjectFactory::instance(){
 
 std::shared_ptr<AbstractObject> GlobalObjectFactory::createObject(const char* factory, const char* type){
     return createObject(std::string(factory), std::string(type));
+}
+
+void GlobalObjectFactory::addExtendLibrary(std::shared_ptr<AbstractObjectFactory> factory){
+    if (m_impl->hasFactory(factory)) {
+    } else {
+        m_impl->appendFactory(factory);
+        m_impl->dumpLibraryInfo(factory, QFileInfo());
+    }
 }
 }
 

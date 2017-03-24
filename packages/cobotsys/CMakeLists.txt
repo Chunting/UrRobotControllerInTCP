@@ -82,8 +82,14 @@ target_link_libraries(${PROJECT_NAME}
         ${OpenCV_LIBRARIES}
         ${Boost_LIBRARIES}
         ${extend_library_list})
-#message("${OpenCV_LIBRARIES}")
 
+#get_property(ros_ext_lib GLOBAL PROPERTY ROS_EXTEND)
+#add_custom_command(TARGET ${PROJECT_NAME}
+#        PRE_BUILD
+#        COMMAND python ../../data/scripts/gen_ros_extend.py "${ros_ext_lib}"
+#        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+
+# 安装
 install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION lib)
 install(DIRECTORY include/ DESTINATION include/cobotsys FILES_MATCHING PATTERN "*.h")
 install(DIRECTORY framework/ DESTINATION include/cobotsys FILES_MATCHING PATTERN "*.h")

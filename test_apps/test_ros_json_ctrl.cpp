@@ -14,6 +14,7 @@
 #include <ros/ros.h>
 #include <QtWidgets/QFileDialog>
 #include <cobotsys_abstract_widget.h>
+#include <UrRobotDriverWithRosIkFactory.h>
 
 bool loop(cobotsys::ObjectGroup& objectGroup){
     auto pWidget = std::dynamic_pointer_cast<QWidget>(objectGroup.getObject("Widget"));
@@ -36,6 +37,7 @@ int main(int argc, char** argv){
 
     cobotsys::GlobalObjectFactory globalObjectFactory;
     globalObjectFactory.loadLibrarys("../lib/plugins");
+    initUrRobotDriverWithRosIkFactory();
 
     QString json_path;
 

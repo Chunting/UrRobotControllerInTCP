@@ -6,6 +6,7 @@
 #include <cobotsys_abstract_object_factory.h>
 #include <extra2.h>
 #include <ros/ros.h>
+#include <cobotsys_global_object_factory.h>
 #include "UrAdapterWithIK.h"
 
 class UrRobotDriverWithRosIKFactory : public cobotsys::AbstractObjectFactory {
@@ -32,12 +33,19 @@ public:
     }
 };
 
-std::shared_ptr<UrRobotDriverWithRosIKFactory> localFactory;
+static std::shared_ptr<UrRobotDriverWithRosIKFactory> localFactory;
 
-extern "C" void* getAbstractObjectFactoryInstance(){
+void* getAbstractObjectFactoryInstance(){
     if (localFactory == nullptr) {
         localFactory = std::make_shared<UrRobotDriverWithRosIKFactory>();
     }
 
     return localFactory.get();
 };
+
+void initUrRobotDriverWithRosIkFactory(){
+    getAbstractObjectFactoryInstance();
+    if (cobotsys::GlobalObjectFactory::instance()){
+        cobotsys::GlobalObjectFactory::instance()->addExtendLibrary(localFactory);
+    }
+}

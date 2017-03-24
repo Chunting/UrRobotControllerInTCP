@@ -44,7 +44,7 @@ public:
     }
 };
 
-std::shared_ptr<SimpleUiFactory> localFactory;
+static std::shared_ptr<SimpleUiFactory> localFactory;
 
 extern "C" void* getAbstractObjectFactoryInstance(){
     if (localFactory == nullptr) {
