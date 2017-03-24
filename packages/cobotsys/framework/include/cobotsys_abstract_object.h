@@ -10,8 +10,6 @@
 #include <QString>
 
 namespace cobotsys {
-
-
 class AbstractObject : public std::enable_shared_from_this<AbstractObject> {
 public:
     AbstractObject();
@@ -25,9 +23,6 @@ public:
      */
     virtual bool setup(const QString& configFilePath);
 };
-
-
-//
 }
 
 typedef std::shared_ptr<cobotsys::AbstractObject> AbstractObjectPtr;
