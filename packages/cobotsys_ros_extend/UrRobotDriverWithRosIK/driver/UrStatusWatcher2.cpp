@@ -7,6 +7,7 @@
 #include "UrStatusWatcher2.h"
 #include <UrAdapterWithIK.h>
 #include <eigen3/Eigen/Geometry>
+#include <extra2.h>
 
 UrStatusWatcher2::UrStatusWatcher2(UrAdapterWithIK& adpater, const std::string& status_type,
                                    std::condition_variable& msg_cond)
@@ -20,6 +21,10 @@ UrStatusWatcher2::UrStatusWatcher2(UrAdapterWithIK& adpater, const std::string& 
 }
 
 UrStatusWatcher2::~UrStatusWatcher2(){
+    m_loop = false;
+    if (isRunning())
+        wait();
+    INFO_DESTRUCTOR(this);
 }
 
 void UrStatusWatcher2::run(){

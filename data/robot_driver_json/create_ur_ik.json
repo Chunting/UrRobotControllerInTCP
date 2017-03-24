@@ -1,7 +1,7 @@
 {
   "objectGroup": [
     {
-      "objectId": "Robot",
+      "objectId": "Robot2",
       "objectKey": "Robot",
       "factory": "UrRobotDriverWithRosIKFactory, Ver 1.0",
       "type": "UrIK",

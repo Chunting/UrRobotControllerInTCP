@@ -112,7 +112,6 @@ void GlobalObjectFactory::loadLibrarys(const QString& path){
         auto fileInfoList = dirPath.entryInfoList(QDir::Files);
 
         for (auto fileInfo : fileInfoList) {
-//            COBOT_LOG.info() << "Text: " << fileInfo.fileName();
             if (QLibrary::isLibrary(fileInfo.absoluteFilePath())) {
                 m_impl->loadLibrary(fileInfo);
             }
