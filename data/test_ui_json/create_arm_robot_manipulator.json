@@ -5,7 +5,7 @@
       "objectKey": "Widget",
       "factory": "SimpleUiFactory, Ver 1.0",
       "type": "ArmRobotManipulator",
-      "config": "ur_sim_config.json"
+      "config": "CONFIG/arm_robot_manipulator_config.json"
     }
   ]
 }
