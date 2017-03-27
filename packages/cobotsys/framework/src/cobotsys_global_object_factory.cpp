@@ -14,9 +14,13 @@ typedef void* (* getAbstractObjectFactoryInstance)();
 namespace cobotsys {
 static GlobalObjectFactory* g_defaultObjectFactory = nullptr;
 
+
 class GlobalObjectFactory::GlobalObjectFactoryImpl {
 public:
     std::map<std::string, std::shared_ptr<AbstractObjectFactory> > objectFactoryMap;
+
+    std::map<std::string, std::vector<std::string> > factorySupportTypes;
+
 
     bool hasFactory(const std::string& factoryType) const{
         return (objectFactoryMap.find(factoryType) != objectFactoryMap.end());
@@ -32,6 +36,8 @@ public:
 
     void dumpLibraryInfo(std::shared_ptr<AbstractObjectFactory>& shrFactory, const QFileInfo& fileInfo){
         auto tlist = shrFactory->getSupportTypes();
+
+        factorySupportTypes[shrFactory->getFactoryType()] = tlist;
 
         std::stringstream oss;
         oss << "{";
@@ -133,6 +139,22 @@ void GlobalObjectFactory::addExtendLibrary(std::shared_ptr<AbstractObjectFactory
         m_impl->appendFactory(factory);
         m_impl->dumpLibraryInfo(factory, QFileInfo());
     }
+}
+
+std::vector<std::string> GlobalObjectFactory::getFactoryNames() const{
+    std::vector<std::string> rNames;
+    for (const auto& iter : m_impl->factorySupportTypes) {
+        rNames.push_back(iter.first);
+    }
+    return rNames;
+}
+
+std::vector<std::string> GlobalObjectFactory::getFactorySupportedNames(const std::string& factoryName) const{
+    const auto iter = m_impl->factorySupportTypes.find(factoryName);
+    if (iter != m_impl->factorySupportTypes.end()) {
+        return iter->second;
+    }
+    return std::vector<std::string>();
 }
 }
 

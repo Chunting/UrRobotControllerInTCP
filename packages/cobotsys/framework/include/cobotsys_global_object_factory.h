@@ -41,8 +41,6 @@ protected:
         std::shared_ptr<AbstractObject> pObject;
 
         ~ObjectInfo(){
-//            if (pObject)
-//                pObject->resetAllSharedObject();
             pInfo = nullptr;
             pObject = nullptr;
         }
@@ -65,6 +63,9 @@ public:
 
     void loadLibrarys(const QString& path);
     void addExtendLibrary(std::shared_ptr<AbstractObjectFactory> factory);
+
+    std::vector<std::string> getFactoryNames() const;
+    std::vector<std::string> getFactorySupportedNames(const std::string& factoryName) const;
 
     static GlobalObjectFactory* instance();
 private:
