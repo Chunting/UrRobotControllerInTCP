@@ -191,5 +191,10 @@ libfreenect2::PacketPipeline* Kinect2Camera::createPipeline(int deviceId){
     return pipeline;
 }
 
+bool Kinect2Camera::setup(const QString& configFilePath){
+    COBOT_LOG.info() << "This Camera Driver is not finish yet.";
+    return false;
+}
+
 
 

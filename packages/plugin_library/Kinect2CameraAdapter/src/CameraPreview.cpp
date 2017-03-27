@@ -27,3 +27,7 @@ void CameraPreview::onCameraStreamUpdate(const std::vector<cobotsys::CameraStrea
         cv::imshow(frame.frame.typeName(), pdmat);
     }
 }
+
+bool CameraPreview::setup(const QString& configFilePath){
+    return false;
+}

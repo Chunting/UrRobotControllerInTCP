@@ -21,6 +21,7 @@ public:
     AbstractRenderer();
     virtual ~AbstractRenderer();
 
+    virtual bool setup(const QString& configFilePath);
 public:
     virtual void Free();
     virtual void Render();

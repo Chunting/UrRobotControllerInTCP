@@ -44,4 +44,8 @@ void AbstractRenderer::RenderBoundingBox(){
 void AbstractRenderer::AddRenderer(AbstractRendererPtr renderer){
     mSubRenderers.push_back(renderer);
 }
+
+bool AbstractRenderer::setup(const QString& configFilePath){
+    return true;
+}
 }

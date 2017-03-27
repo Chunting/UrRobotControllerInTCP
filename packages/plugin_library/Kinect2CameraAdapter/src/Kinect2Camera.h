@@ -30,6 +30,7 @@ public:
 
     virtual bool capture(int waitMs); /// @note 控制相机进行一次图像捕获
 
+    virtual bool setup(const QString& configFilePath);
 protected:
     libfreenect2::PacketPipeline* createPipeline(int deviceId);
     void notify(const std::vector<cobotsys::CameraStreamObserver::StreamFrame>& frames);

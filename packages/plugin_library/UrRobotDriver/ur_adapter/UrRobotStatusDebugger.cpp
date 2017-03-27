@@ -46,3 +46,7 @@ void UrRobotStatusDebugger::onRobotConnected(std::shared_ptr<AbstractRobotDriver
 
 void UrRobotStatusDebugger::onRobotDisconnected(std::shared_ptr<AbstractRobotDriver> pRobot){
 }
+
+bool UrRobotStatusDebugger::setup(const QString& configFilePath){
+    return false;
+}

@@ -10,7 +10,7 @@
 #include <string>
 #include <QString>
 #include <opencv/cv.h>
-#include <eigen3/Eigen/Geometry>
+#include <Eigen/Geometry>
 
 class ros_moveit_wrapper {
 

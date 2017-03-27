@@ -34,9 +34,11 @@ find_package(Eigen3 REQUIRED)
 if (NOT DEFINED EIGEN3_INCLUDE_DIR)
     set(EIGEN3_INCLUDE_DIR /usr/include/eigen3)
 endif (NOT DEFINED EIGEN3_INCLUDE_DIR)
-include_directories(${EIGEN3_INCLUDE_DIR})
 
+include_directories(${EIGEN3_INCLUDE_DIR})
 include_directories(include)
+
+set_property(GLOBAL PROPERTY CORE_INC ${EIGEN3_INCLUDE_DIR} APPEND)
 
 FILE(GLOB ${PROJECT_NAME}_files src/* include/*)
 

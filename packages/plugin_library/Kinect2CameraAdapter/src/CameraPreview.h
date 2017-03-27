@@ -16,6 +16,8 @@ public:
     virtual ~CameraPreview();
 
     virtual void onCameraStreamUpdate(const std::vector<StreamFrame>& frames);
+
+    virtual bool setup(const QString& configFilePath);
 };
 
 

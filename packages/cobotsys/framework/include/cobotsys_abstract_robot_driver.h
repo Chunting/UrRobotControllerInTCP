@@ -12,6 +12,11 @@
 #include <QtCore/QIODevice>
 
 
+/**
+ * 这个颉颃接口设计得不怎么好，仅仅还只是实验目的，先放在这里，只是保持代码可以编译完成。
+ * TODO: 删除基本这个文件接口的驱动
+ */
+
 namespace cobotsys {
 class AbstractRobotDriver;
 class RobotStatusObserver {

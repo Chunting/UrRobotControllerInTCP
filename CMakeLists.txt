@@ -61,6 +61,11 @@ ENDMACRO()
 #
 #scan_package_path(${CMAKE_CURRENT_SOURCE_DIR}/packages)
 
+function(global_include_append include_path)
+    include_directories(${include_path})
+    set_property(GLOBAL PROPERTY CORE_INC ${include_path} APPEND)
+endfunction()
+
 function(search_inc path_dir)
     file(GLOB children ${path_dir}/*)
     foreach (child ${children})
@@ -69,6 +74,7 @@ function(search_inc path_dir)
             if (${f_base} STREQUAL "include")
                 include_directories(${child})
                 message(STATUS "Include: " ${child})
+                global_include_append(${child})
             else ()
                 search_inc(${child})
             endif ()
@@ -92,6 +98,17 @@ endfunction()
 # 这里，后面的package是依赖前面的package的。
 build_package(${CMAKE_SOURCE_DIR}/packages/cobotsys)
 build_package(${CMAKE_SOURCE_DIR}/packages/cobotsys_ros_wrapper)
+
+# include core，有些头文件是在sub_directory里直接include_directories
+# 这样，后面的其他工程如果引用了头文件，会导致不能编译通过。
+# 所以，这里再次把那些头文件再次的引用
+message("")
+message("----------头文件   ---------------------------------------")
+get_property(core_inc_dirs GLOBAL PROPERTY CORE_INC)
+foreach (inc ${core_inc_dirs})
+    message(STATUS "Include: " ${inc})
+    include_directories(${inc})
+endforeach ()
 
 # Plugin
 add_subdirectory(${CMAKE_SOURCE_DIR}/packages/plugin_library)

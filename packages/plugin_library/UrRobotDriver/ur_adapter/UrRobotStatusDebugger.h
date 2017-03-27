@@ -20,7 +20,7 @@ public:
     virtual void onJointStatusUpdate(const std::vector<double>& jointPose);
     virtual void onRobotConnected(std::shared_ptr<AbstractRobotDriver> pRobot);
     virtual void onRobotDisconnected(std::shared_ptr<AbstractRobotDriver> pRobot);
-
+    virtual bool setup(const QString& configFilePath);
 protected:
 
     std::vector<double> m_oldJonitQ;

@@ -29,8 +29,10 @@ find_package(Boost REQUIRED COMPONENTS system program_options filesystem)
 # 头文件引用
 include_directories(framework/include)
 include_directories(include)
-include_directories(${OpenCV_INCLUDE_DIRS})
-include_directories(${Boost_INCLUDE_DIRS})
+
+# 用于外部扩展头文件引用#include <xxx>
+global_include_append(${OpenCV_INCLUDE_DIRS})
+global_include_append(${Boost_INCLUDE_DIRS})
 
 # 内部扩展的代码，从其他地方集成过来的代码
 set(extend_library_list "")

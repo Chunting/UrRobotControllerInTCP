@@ -21,7 +21,7 @@ public:
      * @param configFilePath 当前对象所需要的配置文件的路径
      * @return
      */
-    virtual bool setup(const QString& configFilePath);
+    virtual bool setup(const QString& configFilePath) = 0;
 };
 }
 
