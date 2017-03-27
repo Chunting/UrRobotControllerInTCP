@@ -15,12 +15,12 @@
 #include <QtWidgets/QFileDialog>
 
 bool loop(cobotsys::ObjectGroup& objectGroup){
-    auto pWidget = std::dynamic_pointer_cast<cobotsys::AbstractControllerWidget>(objectGroup.getObject("Widget"));
+    auto pWidget = std::dynamic_pointer_cast<QWidget>(objectGroup.getObject("Widget"));
     if (pWidget) {
         pWidget->show();
         return true;
     }
-
+    COBOT_LOG.info() << "No Widget Found in JSON config.";
     return false;
 }
 
