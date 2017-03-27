@@ -32,6 +32,12 @@ public:
 
     void createRobot();
 
+    void startRobot();
+    void stopRobot();
+
+protected:
+    void setupCreationList();
+
 protected:
     int m_joint_num;
     bool m_noHandleChange;
@@ -41,6 +47,8 @@ protected:
     std::vector<QSlider*> m_sliders;
     std::vector<QDoubleSpinBox*> m_target;
     std::vector<QDoubleSpinBox*> m_actual;
+
+    QStringList m_defaultRobotInfo;
 
     std::shared_ptr<AbstractArmRobotRealTimeDriver> m_ptrRobot;
 };

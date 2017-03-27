@@ -13,6 +13,11 @@ URRealTimeDriver::URRealTimeDriver(){
 }
 
 URRealTimeDriver::~URRealTimeDriver(){
+    if (m_isWatcherRunning){
+        m_isWatcherRunning = false;
+        m_rt_msg_cond.notify_all();
+        m_thread.join();
+    }
 }
 
 void URRealTimeDriver::move(const std::vector<double>& q){
@@ -54,6 +59,7 @@ bool URRealTimeDriver::setup(const QString& configFilePath){
 
             m_isWatcherRunning = true;
             m_thread = std::thread(&URRealTimeDriver::robotStatusWatcher, this);
+            ur_create_success = true;
         } catch (std::exception& e) {
         }
         return ur_create_success;

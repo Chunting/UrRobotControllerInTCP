@@ -12,21 +12,36 @@
 #include <iostream>
 #include <iomanip>
 #include <vector>
+#include <unordered_map>
+#include <map>
 
 #include <cobotsys_logger.h>
 
 namespace cobotsys {
 
+
 class FileFinder {
+
 public:
-    static bool isFileExist(const std::string &filePath);
-    static std::string find(const std::string &base_name);
-    static void addSearchPath(const std::string &path_to_find);
-    static std::string realPathOf(const std::string &path);
+    enum PreDefPath {
+        Bin,
+        Data,
+        Config,
+        Script,
+        AppRuntimeDir
+    };
+public:
+    static bool isFileExist(const std::string& filePath);
+    static std::string find(const std::string& base_name);
+    static void addSearchPath(const std::string& path_to_find, PreDefPath pathType = AppRuntimeDir);
+    static std::string realPathOf(const std::string& path);
 
     static void loadDataPaths();
+
+    static std::string getPreDefPath(PreDefPath pathType = Data);
 protected:
     static std::vector<std::string> base_paths;
+    static std::map<PreDefPath, std::string> pre_def_path;
 };
 }
 

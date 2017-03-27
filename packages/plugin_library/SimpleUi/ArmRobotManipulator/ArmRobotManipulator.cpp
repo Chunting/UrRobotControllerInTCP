@@ -5,7 +5,11 @@
 
 
 #include <extra2.h>
+#include <cobotsys_global_object_factory.h>
 #include "ArmRobotManipulator.h"
+#include <QDebug>
+#include <QtWidgets/QFileDialog>
+#include <cobotsys_file_finder.h>
 
 class AutoCtx {
 protected:
@@ -52,6 +56,7 @@ ArmRobotManipulator::ArmRobotManipulator(){
         connect(iter, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
                 [=](double){ handleTargetChange(); });
     }
+    connect(ui.btnCreate, &QPushButton::released, this, &ArmRobotManipulator::createRobot);
 }
 
 ArmRobotManipulator::~ArmRobotManipulator(){
@@ -61,6 +66,12 @@ bool ArmRobotManipulator::setup(const QString& configFilePath){
     QJsonObject json;
     if (loadJson(json, configFilePath)) {
         m_joint_num = json["joint_num"].toDouble(6);
+        m_defaultRobotInfo.clear();
+        m_defaultRobotInfo << json["default_robot"].toObject()["factory"].toString();
+        m_defaultRobotInfo << json["default_robot"].toObject()["type"].toString();
+        qDebug() << m_defaultRobotInfo;
+
+        setupCreationList();
         return true;
     }
     return false;
@@ -97,4 +108,61 @@ void ArmRobotManipulator::handleTargetChange(){
 }
 
 void ArmRobotManipulator::createRobot(){
+    if (!GlobalObjectFactory::instance()) return;
+    if (ui.cboRobotType->count() == 0)
+        return;
+
+    QStringList obj_info = ui.cboRobotType->currentData().toStringList();
+    QString factory = obj_info.front();
+    QString typen = obj_info.back();
+
+    auto obj = GlobalObjectFactory::instance()->createObject(factory, typen);
+    m_ptrRobot = std::dynamic_pointer_cast<AbstractArmRobotRealTimeDriver>(obj);
+    if (m_ptrRobot) {
+        QString robotConfig = QFileDialog::getOpenFileName(this,
+                                                           tr("Get Robot Config JSON file ..."),
+                                                           QString(FileFinder::getPreDefPath().c_str()),
+                                                           tr("JSON files (*.JSON *.json)"));
+        if (robotConfig.size() && m_ptrRobot->setup(robotConfig)) {
+            COBOT_LOG.notice() << "Create and setup success";
+        } else {
+            m_ptrRobot.reset();
+        }
+    }
+}
+
+void ArmRobotManipulator::setupCreationList(){
+    if (!GlobalObjectFactory::instance()) return;
+
+    bool foundDefault = false;
+    QString defIdxText;
+
+    ui.cboRobotType->clear();
+    auto factory_names = GlobalObjectFactory::instance()->getFactoryNames();
+    for (auto& name : factory_names) {
+        auto types = GlobalObjectFactory::instance()->getFactorySupportedNames(name);
+
+        for (auto& type : types) {
+            auto obj = GlobalObjectFactory::instance()->createObject(name, type);
+            auto robot = std::dynamic_pointer_cast<AbstractArmRobotRealTimeDriver>(obj);
+            if (robot) {
+                QStringList data;
+                QString text;
+                text = QString("%1 - %2").arg(name.c_str()).arg(type.c_str());
+                data << name.c_str();
+                data << type.c_str();
+                ui.cboRobotType->addItem(text, data);
+                if (data == m_defaultRobotInfo) {
+                    foundDefault = true;
+                    defIdxText = text;
+                }
+            }
+        }
+    }
+
+    if (foundDefault) {
+        auto defaultIndex = ui.cboRobotType->findText(defIdxText);
+        ui.cboRobotType->setCurrentIndex(defaultIndex);
+        COBOT_LOG.info() << "Default ROBOT: " << defaultIndex;
+    }
 }

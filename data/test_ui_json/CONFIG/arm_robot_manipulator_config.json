@@ -1,3 +1,7 @@
 {
-  "joint_num": 6
+  "joint_num": 6,
+  "default_robot": {
+    "factory": "URRealTimeDriverFactory, Ver 1.0",
+    "type": "URRealTimeDriver"
+  }
 }
