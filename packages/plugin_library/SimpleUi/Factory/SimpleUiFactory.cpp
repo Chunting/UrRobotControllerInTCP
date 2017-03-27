@@ -7,6 +7,7 @@
 #include <cobotsys_abstract_object_factory.h>
 #include <extra2.h>
 #include <RobotXyz/RobotXyzWidget.h>
+#include <ArmRobotManipulator/ArmRobotManipulator.h>
 
 #define DECL_ITEM(_type) { m_creator[( #_type )] = [](){ return std::make_shared<_type>(); }; }
 
@@ -16,6 +17,7 @@ public:
 
     SimpleUiFactory(){
         DECL_ITEM(RobotXyzWidget)
+        DECL_ITEM(ArmRobotManipulator)
     }
 
     virtual ~SimpleUiFactory(){

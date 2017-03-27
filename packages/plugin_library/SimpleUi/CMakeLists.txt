@@ -12,7 +12,7 @@ find_package(Qt5Core REQUIRED)
 find_package(Qt5Gui REQUIRED)
 find_package(Qt5Widgets REQUIRED) # Fuck, 如果要使用autouic那么必须引用这个Qt5Widgets.
 
-file(GLOB ${PROJECT_NAME}_files RobotXyz/* Factory/*)
+file(GLOB ${PROJECT_NAME}_files RobotXyz/* Factory/* ArmRobotManipulator/*)
 
 add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_files})
 

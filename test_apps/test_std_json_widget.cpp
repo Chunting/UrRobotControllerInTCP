@@ -28,6 +28,7 @@ bool loop(cobotsys::ObjectGroup& objectGroup){
 int main(int argc, char** argv){
     QApplication a(argc, argv);
     cobotsys::init_library(argc, argv);
+    cobotsys::FileFinder::addSearchPath("test_ui_json");
 
     QString json_path;
 

@@ -8,20 +8,20 @@
 
 namespace cobotsys {
 
+#ifdef WIN32
+std::string path_slash = "\\";
+#else
+std::string path_slash = "/";
+#endif
+
 std::vector<std::string> FileFinder::base_paths;
 
-std::string FileFinder::find(const std::string &base_name){
+std::string FileFinder::find(const std::string& base_name){
     if (isFileExist(base_name))
         return realPathOf(base_name);
 
-#ifdef WIN32
-    std::string path_slash = "\\";
-#else
-    std::string path_slash = "/";
-#endif
-
     std::string path;
-    for (const auto &base : base_paths) {
+    for (const auto& base : base_paths) {
         if (base[0] == '.')
             path = "." + path_slash + base + path_slash + base_name;
         else
@@ -41,7 +41,7 @@ void FileFinder::loadDataPaths(){
     COBOT_LOG.message("File Finder") << "Current Path: " << realPathOf(".");
 }
 
-bool FileFinder::isFileExist(const std::string &filePath){
+bool FileFinder::isFileExist(const std::string& filePath){
     struct stat stFileInfo;
     int intStat;
 
@@ -54,7 +54,7 @@ bool FileFinder::isFileExist(const std::string &filePath){
     }
 }
 
-std::string FileFinder::realPathOf(const std::string &path){
+std::string FileFinder::realPathOf(const std::string& path){
     std::vector<char> ch_buf(1024);
 #ifdef WIN32
     auto pfull = _fullpath(&ch_buf[0], path.c_str(), ch_buf.size());
@@ -67,12 +67,22 @@ std::string FileFinder::realPathOf(const std::string &path){
     return std::string();
 }
 
-void FileFinder::addSearchPath(const std::string &path_to_find){
+void FileFinder::addSearchPath(const std::string& path_to_find){
     bool is_found;
     auto rpath = realPathOf(path_to_find);
     if (rpath.size()) {
         base_paths.push_back(rpath);
         COBOT_LOG.message("File Finder") << "Add Path: " << rpath;
+    } else {
+        for (const auto& path : base_paths) {
+            auto tmp_path = path + path_slash + path_to_find;
+            rpath = realPathOf(tmp_path);
+            if (rpath.size()){
+                base_paths.push_back(rpath);
+                COBOT_LOG.message("File Finder") << "Add Path: " << rpath;
+                break;
+            }
+        }
     }
 }
 }

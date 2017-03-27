@@ -8,6 +8,8 @@
 
 #include <mutex>
 #include <cobotsys_abstract_arm_robot_realtime_driver.h>
+#include <thread>
+#include <URDriver/ur_driver.h>
 
 using namespace cobotsys;
 
@@ -25,7 +27,21 @@ public:
     virtual bool setup(const QString& configFilePath);
 
 protected:
+    void robotStatusWatcher();
+
+protected:
     std::mutex m_mutex;
+    std::thread m_thread;
+    bool m_isWatcherRunning;
+
+    std::shared_ptr<UrDriver> m_urDriver;
+    std::condition_variable m_rt_msg_cond;
+    std::condition_variable m_msg_cond;
+
+    std::string m_attr_robot_ip;
+    double m_attr_servoj_time;
+    double m_attr_servoj_lookahead;
+    double m_attr_servoj_gain;
 };
 
 

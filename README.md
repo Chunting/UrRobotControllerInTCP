@@ -38,4 +38,16 @@
 ```
 
 
+# 运行测试程序
 
+在代码库时里， 已经默认提供了一些框架运行程序的默认方法
+
+其中比较有效的一个是`test_std_json_widget`这个程序
+
+对于CLion的IDE，在Build ALL里配置启动程序为
+
+`test_std_json_widget` 程序参数可以是
+
+`data/test_ui_json`目录下的任意一下JSON文件。
+
+程序会根据JSON的描述，来创建共享库里的Widget应用。
