@@ -27,6 +27,9 @@ RobotState::RobotState(std::condition_variable& msg_cond){
     robot_mode_running_ = robotStateTypeV30::ROBOT_MODE_RUNNING;
 }
 
+RobotState::~RobotState(){
+}
+
 double RobotState::ntohd(uint64_t nf){
     double x;
     nf = be64toh(nf);

@@ -92,7 +92,8 @@ void ArmRobotManipulator::handleSliderChange(){
             dsbTgt->setValue(slider->value());
         }
     }
-    m_noHandleChange = false;
+
+    updateTargetQ();
 }
 
 void ArmRobotManipulator::handleTargetChange(){
@@ -212,6 +213,9 @@ void ArmRobotManipulator::onArmRobotStatusUpdate(const ArmRobotStatusPtr& ptrRob
 }
 
 void ArmRobotManipulator::closeEvent(QCloseEvent* event){
+    if (m_ptrRobot) {
+        m_ptrRobot->stop();
+    }
     QWidget::closeEvent(event);
 }
 
@@ -224,4 +228,14 @@ void ArmRobotManipulator::onActualQUpdate(){
     for (size_t i = 0; i < tmpq.size(); i++) {
         m_actual[i]->setValue(tmpq[i] / CV_PI * 180);
     }
+}
+
+void ArmRobotManipulator::updateTargetQ(){
+    std::vector<double> target_q;
+
+    target_q.resize(m_target.size());
+    for (int i = 0; i < (int) m_target.size(); i++) {
+        target_q[i] = m_target[i]->value();
+    }
+    m_ptrRobot->move(target_q);
 }

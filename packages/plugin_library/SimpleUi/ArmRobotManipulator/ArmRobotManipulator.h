@@ -51,6 +51,7 @@ public:
 protected:
     void setupCreationList();
     void onActualQUpdate();
+    void updateTargetQ();
 protected:
     int m_joint_num;
     bool m_noHandleChange;

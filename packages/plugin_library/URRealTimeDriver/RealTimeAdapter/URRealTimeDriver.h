@@ -10,6 +10,9 @@
 #include <cobotsys_abstract_arm_robot_realtime_driver.h>
 #include <thread>
 #include <URDriver/ur_driver.h>
+#include "CobotUrComm.h"
+#include "CobotUrCommCtrl.h"
+#include "CobotUrRealTimeCommCtrl.h"
 
 using namespace cobotsys;
 
@@ -31,13 +34,12 @@ protected:
 
     bool _setup(const QString& configFilePath);
 
-
 protected:
     std::mutex m_mutex;
     std::thread m_thread;
     bool m_isWatcherRunning;
+    bool m_isStarted;
 
-    std::shared_ptr<UrDriver> m_urDriver;
     std::condition_variable m_rt_msg_cond;
     std::condition_variable m_msg_cond;
 
@@ -47,6 +49,11 @@ protected:
     double m_attr_servoj_gain;
 
     std::vector<std::shared_ptr<ArmRobotRealTimeStatusObserver> > m_observers;
+
+    std::vector<double> m_curReqQ;
+
+    CobotUrCommCtrl* m_ctrl;
+    CobotUrRealTimeCommCtrl* m_rt_ctrl;
 };
 
 
