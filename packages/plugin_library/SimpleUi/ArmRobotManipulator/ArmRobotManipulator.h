@@ -6,8 +6,10 @@
 #ifndef PROJECT_ARMROBOTMANIPULATOR_H
 #define PROJECT_ARMROBOTMANIPULATOR_H
 
+#include <mutex>
 #include <QObject>
 #include <cobotsys_abstract_widget.h>
+#include <QCloseEvent>
 #include <QPushButton>
 #include <QDoubleSpinBox>
 #include <QSlider>
@@ -18,8 +20,8 @@
 
 using namespace cobotsys;
 
-class ArmRobotManipulator : public AbstractWidget {
-    Q_OBJECT
+class ArmRobotManipulator : public AbstractWidget, public ArmRobotRealTimeStatusObserver {
+Q_OBJECT
 public:
     ArmRobotManipulator();
     virtual ~ArmRobotManipulator();
@@ -35,9 +37,20 @@ public:
     void startRobot();
     void stopRobot();
 
+
+Q_SIGNALS:
+    void updateActualQ();
+protected:
+    virtual void closeEvent(QCloseEvent* event);
+
+public:
+    virtual void onArmRobotConnect();
+    virtual void onArmRobotDisconnect();
+    virtual void onArmRobotStatusUpdate(const ArmRobotStatusPtr& ptrRobotStatus);
+
 protected:
     void setupCreationList();
-
+    void onActualQUpdate();
 protected:
     int m_joint_num;
     bool m_noHandleChange;
@@ -51,6 +64,9 @@ protected:
     QStringList m_defaultRobotInfo;
 
     std::shared_ptr<AbstractArmRobotRealTimeDriver> m_ptrRobot;
+
+    std::vector<double> m_actualValue;
+    std::mutex m_mutex;
 };
 
 

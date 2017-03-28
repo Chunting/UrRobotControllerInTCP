@@ -56,7 +56,11 @@ ArmRobotManipulator::ArmRobotManipulator(){
         connect(iter, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
                 [=](double){ handleTargetChange(); });
     }
+
     connect(ui.btnCreate, &QPushButton::released, this, &ArmRobotManipulator::createRobot);
+    connect(ui.btnStart, &QPushButton::released, this, &ArmRobotManipulator::startRobot);
+    connect(ui.btnStop, &QPushButton::released, this, &ArmRobotManipulator::stopRobot);
+    connect(this, &ArmRobotManipulator::updateActualQ, this, &ArmRobotManipulator::onActualQUpdate);
 }
 
 ArmRobotManipulator::~ArmRobotManipulator(){
@@ -112,6 +116,13 @@ void ArmRobotManipulator::createRobot(){
     if (ui.cboRobotType->count() == 0)
         return;
 
+    QString robotConfig = QFileDialog::getOpenFileName(this,
+                                                       tr("Get Robot Config JSON file ..."),
+                                                       QString(FileFinder::getPreDefPath().c_str()),
+                                                       tr("JSON files (*.JSON *.json)"));
+    if (robotConfig.isEmpty())
+        return;
+
     QStringList obj_info = ui.cboRobotType->currentData().toStringList();
     QString factory = obj_info.front();
     QString typen = obj_info.back();
@@ -119,11 +130,9 @@ void ArmRobotManipulator::createRobot(){
     auto obj = GlobalObjectFactory::instance()->createObject(factory, typen);
     m_ptrRobot = std::dynamic_pointer_cast<AbstractArmRobotRealTimeDriver>(obj);
     if (m_ptrRobot) {
-        QString robotConfig = QFileDialog::getOpenFileName(this,
-                                                           tr("Get Robot Config JSON file ..."),
-                                                           QString(FileFinder::getPreDefPath().c_str()),
-                                                           tr("JSON files (*.JSON *.json)"));
-        if (robotConfig.size() && m_ptrRobot->setup(robotConfig)) {
+        auto ob = std::dynamic_pointer_cast<ArmRobotRealTimeStatusObserver>(shared_from_this());
+        m_ptrRobot->attach(ob);
+        if (m_ptrRobot->setup(robotConfig)) {
             COBOT_LOG.notice() << "Create and setup success";
         } else {
             m_ptrRobot.reset();
@@ -164,5 +173,55 @@ void ArmRobotManipulator::setupCreationList(){
         auto defaultIndex = ui.cboRobotType->findText(defIdxText);
         ui.cboRobotType->setCurrentIndex(defaultIndex);
         COBOT_LOG.info() << "Default ROBOT: " << defaultIndex;
+    }
+}
+
+void ArmRobotManipulator::startRobot(){
+    if (m_ptrRobot) {
+        if (m_ptrRobot->start()) {
+            COBOT_LOG.info() << "Robot Start Success";
+        }
+    }
+}
+
+void ArmRobotManipulator::stopRobot(){
+    if (m_ptrRobot) {
+        m_ptrRobot->stop();
+    }
+}
+
+void ArmRobotManipulator::onArmRobotConnect(){
+}
+
+void ArmRobotManipulator::onArmRobotDisconnect(){
+}
+
+void ArmRobotManipulator::onArmRobotStatusUpdate(const ArmRobotStatusPtr& ptrRobotStatus){
+    auto q_actual_size = ptrRobotStatus->q_actual.size();
+    if (q_actual_size > 6)
+        q_actual_size = 6;
+
+    m_mutex.lock();
+    m_actualValue.resize(q_actual_size);
+    for (size_t i = 0; i < q_actual_size; i++) {
+        m_actualValue[i] = ptrRobotStatus->q_actual[i];
+    }
+    m_mutex.unlock();
+
+    Q_EMIT updateActualQ();
+}
+
+void ArmRobotManipulator::closeEvent(QCloseEvent* event){
+    QWidget::closeEvent(event);
+}
+
+void ArmRobotManipulator::onActualQUpdate(){
+    std::vector<double> tmpq;
+    m_mutex.lock();
+    tmpq = m_actualValue;
+    m_mutex.unlock();
+
+    for (size_t i = 0; i < tmpq.size(); i++) {
+        m_actual[i]->setValue(tmpq[i] / CV_PI * 180);
     }
 }

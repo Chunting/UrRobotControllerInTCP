@@ -29,6 +29,9 @@ public:
 protected:
     void robotStatusWatcher();
 
+    bool _setup(const QString& configFilePath);
+
+
 protected:
     std::mutex m_mutex;
     std::thread m_thread;
@@ -42,6 +45,8 @@ protected:
     double m_attr_servoj_time;
     double m_attr_servoj_lookahead;
     double m_attr_servoj_gain;
+
+    std::vector<std::shared_ptr<ArmRobotRealTimeStatusObserver> > m_observers;
 };
 
 

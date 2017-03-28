@@ -13,7 +13,7 @@ URRealTimeDriver::URRealTimeDriver(){
 }
 
 URRealTimeDriver::~URRealTimeDriver(){
-    if (m_isWatcherRunning){
+    if (m_isWatcherRunning) {
         m_isWatcherRunning = false;
         m_rt_msg_cond.notify_all();
         m_thread.join();
@@ -28,9 +28,23 @@ std::shared_ptr<AbstractDigitIoDriver> URRealTimeDriver::getDigitIoDriver(int de
 }
 
 void URRealTimeDriver::attach(std::shared_ptr<ArmRobotRealTimeStatusObserver> observer){
+    std::lock_guard<std::mutex> lock_guard(m_mutex);
+
+    for (auto& iter : m_observers) {
+        if (iter.get() == observer.get()) {
+            return; // Already have attached
+        }
+    }
+
+    if (observer) {
+        m_observers.push_back(observer);
+    }
 }
 
 bool URRealTimeDriver::start(){
+    if (m_urDriver) {
+        return m_urDriver->start();
+    }
     return false;
 }
 
@@ -39,7 +53,46 @@ void URRealTimeDriver::stop(){
 
 bool URRealTimeDriver::setup(const QString& configFilePath){
     std::lock_guard<std::mutex> lock_guard(m_mutex);
+    auto success = _setup(configFilePath);
 
+    if (!success) {
+        m_observers.clear(); // detach all observer
+    }
+    return success;
+}
+
+void URRealTimeDriver::robotStatusWatcher(){
+    std::mutex m;
+    std::unique_lock<std::mutex> lck(m);
+
+    auto time_cur = std::chrono::high_resolution_clock::now();
+
+    auto pStatus = std::make_shared<ArmRobotStatus>();
+    std::vector<std::shared_ptr<ArmRobotRealTimeStatusObserver> > observer_tmp;
+    while (m_isWatcherRunning) {
+        m_rt_msg_cond.wait(lck);
+
+        auto time_rdy = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double> time_diff = time_rdy - time_cur;
+        time_cur = time_rdy;
+
+        pStatus->q_actual = m_urDriver->rt_interface_->robot_state_->getQActual();
+
+//        COBOT_LOG.info() << "Status Updated: " << time_diff.count();
+
+
+        // Notify all attached observer
+        if (m_mutex.try_lock()) {
+            observer_tmp = m_observers;
+            m_mutex.unlock();
+        }
+        for (auto& ob : observer_tmp) {
+            ob->onArmRobotStatusUpdate(pStatus);
+        }
+    }
+}
+
+bool URRealTimeDriver::_setup(const QString& configFilePath){
     if (m_urDriver)
         return false;
 
@@ -65,16 +118,4 @@ bool URRealTimeDriver::setup(const QString& configFilePath){
         return ur_create_success;
     }
     return false;
-}
-
-void URRealTimeDriver::robotStatusWatcher(){
-    std::mutex m;
-    std::unique_lock<std::mutex> lck(m);
-
-    auto time_cur = std::chrono::high_resolution_clock::now();
-    while (m_isWatcherRunning) {
-        m_rt_msg_cond.wait(lck);
-
-        auto time_rdy = std::chrono::high_resolution_clock::now();
-    }
 }
