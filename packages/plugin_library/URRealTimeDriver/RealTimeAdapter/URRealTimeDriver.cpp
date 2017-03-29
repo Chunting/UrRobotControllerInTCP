@@ -157,3 +157,7 @@ bool URRealTimeDriver::_setup(const QString& configFilePath){
 void URRealTimeDriver::driverReady(){
     m_isStarted = true;
 }
+
+QString URRealTimeDriver::getRobotUrl(){
+    return m_attr_robot_ip.c_str();
+}

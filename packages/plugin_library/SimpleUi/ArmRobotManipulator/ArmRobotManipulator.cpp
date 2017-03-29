@@ -68,6 +68,8 @@ ArmRobotManipulator::ArmRobotManipulator(){
 
     ui.btnStart->setEnabled(false);
     ui.btnStop->setEnabled(false);
+
+    m_groupBoxDefTitle = ui.groupBox->title();
 }
 
 ArmRobotManipulator::~ArmRobotManipulator(){
@@ -86,9 +88,6 @@ bool ArmRobotManipulator::setup(const QString& configFilePath){
         for (int i = 0; i < (int) m_sliders.size(); i++) {
             m_sliders[i]->setRange(jmin, jmax);
         }
-
-
-        qDebug() << m_defaultRobotInfo;
 
         setupCreationList();
         return true;
@@ -150,6 +149,9 @@ void ArmRobotManipulator::createRobot(){
         m_ptrRobot->attach(ob);
         if (m_ptrRobot->setup(robotConfig)) {
             COBOT_LOG.notice() << "Create and setup success";
+
+
+            ui.groupBox->setTitle(m_groupBoxDefTitle + " - " + m_ptrRobot->getRobotUrl());
         } else {
             m_ptrRobot.reset();
         }

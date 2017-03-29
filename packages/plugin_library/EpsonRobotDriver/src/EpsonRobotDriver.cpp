@@ -32,3 +32,7 @@ void EpsonRobotDriver::stop(){
 bool EpsonRobotDriver::setup(const QString& configFilePath){
     return false;
 }
+
+QString EpsonRobotDriver::getRobotUrl(){
+    return QString();
+}

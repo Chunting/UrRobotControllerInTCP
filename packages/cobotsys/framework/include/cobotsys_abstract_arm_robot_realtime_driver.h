@@ -68,6 +68,12 @@ public:
      * 停止实时机器人控制
      */
     virtual void stop() = 0;
+
+    /**
+     * 返回机器人的实际IP，即Setup里设置的IP，可以从这个读取
+     * @return
+     */
+    virtual QString getRobotUrl() = 0;
 };
 }
 

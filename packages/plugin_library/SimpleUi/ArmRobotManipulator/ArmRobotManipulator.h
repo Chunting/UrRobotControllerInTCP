@@ -74,6 +74,8 @@ protected:
     std::mutex m_mutex;
 
     std::vector<double> m_recTarget;
+
+    QString m_groupBoxDefTitle;
 };
 
 

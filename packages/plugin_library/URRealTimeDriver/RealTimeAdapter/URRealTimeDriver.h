@@ -28,7 +28,7 @@ public:
     virtual bool start();
     virtual void stop();
     virtual bool setup(const QString& configFilePath);
-
+    virtual QString getRobotUrl();
 protected:
     void robotStatusWatcher();
 
