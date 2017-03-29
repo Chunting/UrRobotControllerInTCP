@@ -3,8 +3,12 @@ cmake_minimum_required(VERSION 3.6)
 set(CMAKE_CXX_STANDARD 11)
 
 # 编译器命令行参数
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")      # 为了生成可重定位的代码
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")  #
+if (WIN32)
+else ()
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")      # 为了生成可重定位的代码
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")  #
+endif ()
+
 
 # 工程名
 project(cobotsys)
