@@ -103,7 +103,7 @@ build_package(${CMAKE_SOURCE_DIR}/packages/cobotsys_ros_wrapper)
 # 这样，后面的其他工程如果引用了头文件，会导致不能编译通过。
 # 所以，这里再次把那些头文件再次的引用
 message("")
-message("----------头文件   ---------------------------------------")
+message("----------COBOTSYS Include--------------------------------------------")
 get_property(core_inc_dirs GLOBAL PROPERTY CORE_INC)
 foreach (inc ${core_inc_dirs})
     message(STATUS "Include: " ${inc})

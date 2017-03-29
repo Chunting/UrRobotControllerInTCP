@@ -2,8 +2,7 @@
 
 
 MESSAGE("")
-#MESSAGE("----------Applications---------------------------------------")
-MESSAGE("----------示例程序  ---------------------------------------")
+MESSAGE("----------Example-----------------------------------------------------")
 FILE(GLOB children *)
 FOREACH (child ${children})
     IF (IS_DIRECTORY ${child})

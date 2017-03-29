@@ -1,7 +1,7 @@
 
 
 MESSAGE("")
-MESSAGE("----------扩展     ---------------------------------------")
+MESSAGE("----------ROS EXTEND--------------------------------------------------")
 FILE(GLOB children *)
 FOREACH (child ${children})
     IF (IS_DIRECTORY ${child})

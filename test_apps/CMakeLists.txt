@@ -28,7 +28,7 @@ ENDMACRO()
 get_property(ros_ext_lib GLOBAL PROPERTY ROS_EXTEND)
 
 message("")
-message("----------测试小程序---------------------------------------")
+message("----------TEST--------------------------------------------------------")
 file(GLOB children RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/*)
 set(cpplist "")
 foreach (file ${children})

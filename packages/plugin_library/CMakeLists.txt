@@ -2,7 +2,7 @@
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib/plugins)
 MESSAGE("")
-MESSAGE("----------插件     ---------------------------------------")
+MESSAGE("----------Shared Plugins----------------------------------------------")
 FILE(GLOB children *)
 FOREACH (child ${children})
     IF (IS_DIRECTORY ${child})

@@ -1,7 +1,7 @@
 
 
 MESSAGE("")
-MESSAGE("----------应用程序  ---------------------------------------")
+MESSAGE("----------Applications------------------------------------------------")
 FILE(GLOB children *)
 FOREACH (child ${children})
     IF (IS_DIRECTORY ${child})
