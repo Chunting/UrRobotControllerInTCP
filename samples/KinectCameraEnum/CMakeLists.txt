@@ -11,10 +11,11 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Gui REQUIRED)
 find_package(Qt5Widgets REQUIRED) # Fuck, 如果要使用autouic那么必须引用这个Qt5Widgets.
-find_package(OpenCL REQUIRED)
 
-find_package(freenect2)
+
+find_package(freenect2 QUIET)
 if (freenect2_FOUND)
+    find_package(OpenCL REQUIRED)
     include_directories(${freenect2_INCLUDE_DIRS})
 
 

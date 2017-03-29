@@ -10,8 +10,7 @@
 #include <condition_variable>
 #include <chrono>
 #include <ros_moveit_wrapper.h>
-#include <cobotsys_simple_world_renderer_widget.h>
-#include <simple_debug_gl_object.h>
+
 #include <QtCore/QSemaphore>
 
 class UrAdapterWithIK;
@@ -33,8 +32,6 @@ public:
     std::chrono::high_resolution_clock::time_point m_time_last_status;
     UrAdapterWithIK& m_adapter;
     ros_moveit_wrapper m_moveitWrapper;
-    cobotsys::SimpleWorldRendererWidget m_easyRender;
-    std::shared_ptr<simple_debug_gl_object> m_obj;
     QSemaphore m_quitSignal;
 };
 

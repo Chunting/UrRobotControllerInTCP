@@ -15,9 +15,7 @@ UrStatusWatcher2::UrStatusWatcher2(UrAdapterWithIK& adpater, const std::string& 
     m_status_type = status_type;
     m_moveitWrapper.loadRobotModel();
 
-    m_obj = std::make_shared<simple_debug_gl_object>();
-    m_easyRender.AddRenderer(m_obj);
-    m_easyRender.show();
+
     connect(this, &QThread::finished, this, &UrStatusWatcher2::onFinished);
 }
 
@@ -52,9 +50,6 @@ void UrStatusWatcher2::run(){
             Eigen::Affine3d end_effector_state;
             m_moveitWrapper.forwardKinematics(q_actual, end_effector_state);
             auto transform = end_effector_state.rotation();
-            Matrix4 tr(end_effector_state.data());
-
-            m_obj->m_transform = tr;
         }
 
         m_time_last_status = cur_time_point;
