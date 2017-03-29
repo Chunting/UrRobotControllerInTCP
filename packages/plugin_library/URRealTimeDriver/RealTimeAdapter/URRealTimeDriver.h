@@ -9,7 +9,6 @@
 #include <mutex>
 #include <cobotsys_abstract_arm_robot_realtime_driver.h>
 #include <thread>
-#include <URDriver/ur_driver.h>
 #include "CobotUrComm.h"
 #include "CobotUrCommCtrl.h"
 #include "CobotUrRealTimeCommCtrl.h"
@@ -22,7 +21,6 @@ Q_OBJECT
 public:
     URRealTimeDriver();
     virtual ~URRealTimeDriver();
-
 
     virtual void move(const std::vector<double>& q);
     virtual std::shared_ptr<AbstractDigitIoDriver> getDigitIoDriver(int deviceId = 0);
