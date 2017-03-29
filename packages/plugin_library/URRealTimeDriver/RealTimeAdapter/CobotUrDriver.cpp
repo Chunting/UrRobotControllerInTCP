@@ -18,6 +18,8 @@ CobotUrDriver::CobotUrDriver(std::condition_variable& rt_msg_cond,
     connect(m_urRealTimeCommCtrl->ur, &CobotUrRealTimeComm::disconnected, this, &CobotUrDriver::handleDisconnected);
     connect(m_urRealTimeCommCtrl->ur, &CobotUrRealTimeComm::realTimeProgConnected,
             this, &CobotUrDriver::handleRTProgConnect);
+    connect(m_urRealTimeCommCtrl->ur, &CobotUrRealTimeComm::realTimeProgDisconnect,
+            this, &CobotUrDriver::handleRTProgDisconnect);
 
 
     m_noDisconnectedAccept = false;
@@ -34,11 +36,9 @@ CobotUrDriver::~CobotUrDriver(){
     stopDriver();
 }
 
-
 void CobotUrDriver::handleCommConnected(){
     m_connectTime++;
     if (m_connectTime >= 2) {
-        m_isConnected = true;
         onConnectSuccess();
     }
 }
@@ -46,7 +46,6 @@ void CobotUrDriver::handleCommConnected(){
 void CobotUrDriver::handleRTCommConnected(){
     m_connectTime++;
     if (m_connectTime >= 2) {
-        m_isConnected = true;
         onConnectSuccess();
     }
 }
@@ -60,6 +59,9 @@ void CobotUrDriver::startDriver(){
 }
 
 void CobotUrDriver::handleDisconnected(){
+    m_connectTime = 0;
+    m_isConnected = false;
+
     if (m_noDisconnectedAccept) {
         Q_EMIT driverStartFailed();
     }
@@ -67,6 +69,7 @@ void CobotUrDriver::handleDisconnected(){
 
 void CobotUrDriver::stopDriver(){
     m_noDisconnectedAccept = false;
+    m_urRealTimeCommCtrl->requireStopServoj();
 }
 
 bool CobotUrDriver::uploadProg(){
@@ -141,9 +144,10 @@ bool CobotUrDriver::uploadProg(){
     cmd_str += "\tsleep(.1)\n";
     cmd_str += "\tsocket_close()\n";
     cmd_str += "\tkill thread_servo\n";
+    cmd_str += "\tstopj(10)\n";
     cmd_str += "end\n";
 
-    m_urRealTimeCommCtrl->writeLine(cmd_str.c_str());
+    m_urRealTimeCommCtrl->addCommandToQueue(cmd_str.c_str());
     return true;
 }
 
@@ -180,11 +184,25 @@ void CobotUrDriver::setServojGain(double g){
 }
 
 void CobotUrDriver::onConnectSuccess(){
+    m_isConnected = true;
     ip_addr_ = m_urCommCtrl->ur->getLocalIp();
     COBOT_LOG.info() << "Local Ip: " << ip_addr_;
     uploadProg();
+    Q_EMIT driverStartSuccess();
 }
 
 void CobotUrDriver::handleRTProgConnect(){
     COBOT_LOG.info() << "Prog Upload Success";
+}
+
+void CobotUrDriver::handleRTProgDisconnect(){
+    if (m_isConnected) {
+        // TODO: handle if need to re-upload ur script
+    }
+}
+
+void CobotUrDriver::servoj(const std::vector<double>& positions){
+    if (m_urRealTimeCommCtrl) {
+        m_urRealTimeCommCtrl->ur->asyncServoj(positions);
+    }
 }

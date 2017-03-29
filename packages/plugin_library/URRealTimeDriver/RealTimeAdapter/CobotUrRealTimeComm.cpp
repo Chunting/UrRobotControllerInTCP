@@ -19,7 +19,12 @@ CobotUrRealTimeComm::CobotUrRealTimeComm(std::condition_variable& cond_msg, cons
     connect(m_SOCKET, &QTcpSocket::readyRead, this, &CobotUrRealTimeComm::readData);
 
     connect(m_tcpServer, &QTcpServer::newConnection, this, &CobotUrRealTimeComm::urProgConnect);
+
+    connect(this, &CobotUrRealTimeComm::asyncServojFlushRequired,
+            this, &CobotUrRealTimeComm::asyncServojFlush, Qt::QueuedConnection);
+
     m_rtSOCKET = nullptr;
+    keepalive = 1;
 }
 
 void CobotUrRealTimeComm::onConnected(){
@@ -34,10 +39,11 @@ void CobotUrRealTimeComm::onDisconnected(){
 
 CobotUrRealTimeComm::~CobotUrRealTimeComm(){
     if (m_rtSOCKET) {
-        servoj({}, 0);
         m_rtSOCKET->close();
     }
-    m_SOCKET->close();
+    if (m_SOCKET) {
+        m_SOCKET->close();
+    }
 }
 
 void CobotUrRealTimeComm::start(){
@@ -49,13 +55,37 @@ void CobotUrRealTimeComm::readData(){
     auto ba = m_SOCKET->read(2048);
     if (ba.size()) {
         m_robotState->unpack((uint8_t*) ba.constData());
-
-        servoj(m_robotState->getQActual());
     }
+
+    asyncServojFlush();
+}
+
+
+void CobotUrRealTimeComm::asyncServojFlush(){
+    std::vector<double> tmpq;
+    if (m_rt_res_mutex.try_lock()) {
+        if (m_rt_q_required.size()) {
+            m_qTarget = m_rt_q_required;
+            m_rt_q_required.clear();
+        }
+        m_rt_res_mutex.unlock();
+    }
+
+    if (m_qTarget.size() == 0) {
+        m_qTarget = m_robotState->getQActual();
+    }
+
+    servoj(m_qTarget);
 }
 
 void CobotUrRealTimeComm::writeLine(const QByteArray& ba){
-    m_SOCKET->write(ba);
+    auto nba = ba;
+    if (nba.size()) {
+        if (nba.at(nba.size() - 1) != '\n') {
+            nba.push_back('\n');
+        }
+        m_SOCKET->write(nba);
+    }
 }
 
 void CobotUrRealTimeComm::urProgConnect(){
@@ -63,17 +93,19 @@ void CobotUrRealTimeComm::urProgConnect(){
         return;
 
     m_rtSOCKET = m_tcpServer->nextPendingConnection();
+    m_rtSOCKET->setSocketOption(QAbstractSocket::LowDelayOption, 1);
+    connect(m_rtSOCKET, &QTcpSocket::disconnected, this, &CobotUrRealTimeComm::onRealTimeDisconnect);
     Q_EMIT realTimeProgConnected();
 }
 
-void CobotUrRealTimeComm::servoj(const std::vector<double>& j, int keepalive){
+void CobotUrRealTimeComm::servoj(const std::vector<double>& j){
     if (m_rtSOCKET == nullptr) {
-        COBOT_LOG.error() << "No rt connection";
-        return;;
+        return;
     }
+
     auto positions = j;
     if (positions.size() != 6) {
-        positions.resize(6, 0);
+        positions = m_robotState->getQActual();
     }
 
     unsigned int bytes_written;
@@ -92,9 +124,42 @@ void CobotUrRealTimeComm::servoj(const std::vector<double>& j, int keepalive){
     buf[6 * 4 + 2] = (tmp >> 16) & 0xff;
     buf[6 * 4 + 3] = (tmp >> 24) & 0xff;
     bytes_written = m_rtSOCKET->write((char*) buf, 28);
-    if (keepalive == 0) {
-        COBOT_LOG.info() << "Try to close ur";
+}
+
+void CobotUrRealTimeComm::stopProg(){
+    if (keepalive) {
+        keepalive = 0;
+        COBOT_LOG.info() << "Stopping Ur Driver Program";
+        servoj({});
+
+        /**
+         * 如果默认的程序不能正确的停止，则需要下面的语句。
+         */
+        //   m_SOCKET->write("stopj(10)\n");
     }
 }
+
+void CobotUrRealTimeComm::onRealTimeDisconnect(){
+    COBOT_LOG.info() << "RT Disconnected !!!";
+
+    m_rtSOCKET->close();
+    m_rtSOCKET->deleteLater();
+    m_rtSOCKET = nullptr;
+
+    Q_EMIT realTimeProgDisconnect();
+}
+
+void CobotUrRealTimeComm::asyncServoj(const std::vector<double>& positions, bool flushNow){
+    m_rt_res_mutex.lock();
+    m_rt_q_required = positions;
+    m_rt_res_mutex.unlock();
+
+//    COBOT_LOG.info() << positions[0];
+
+    if (flushNow) {
+        Q_EMIT asyncServojFlushRequired();
+    }
+}
+
 
 

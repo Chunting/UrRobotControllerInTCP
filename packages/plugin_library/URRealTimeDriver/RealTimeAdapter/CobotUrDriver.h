@@ -29,8 +29,11 @@ public:
     void setServojLookahead(double t);
     void setServojGain(double g);
 
+    void servoj(const std::vector<double>& positions);
+
 Q_SIGNALS:
     void driverStartFailed();
+    void driverStartSuccess();
 
 
 public:
@@ -42,6 +45,7 @@ protected:
     void handleRTCommConnected();
     void handleDisconnected();
     void handleRTProgConnect();
+    void handleRTProgDisconnect();
 
     bool uploadProg();
     void onConnectSuccess();

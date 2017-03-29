@@ -23,6 +23,7 @@ public:
 
 
 ArmRobotManipulator::ArmRobotManipulator(){
+    m_initUIData = 0;
     ui.setupUi(this);
 
     m_noHandleChange = false;
@@ -61,6 +62,12 @@ ArmRobotManipulator::ArmRobotManipulator(){
     connect(ui.btnStart, &QPushButton::released, this, &ArmRobotManipulator::startRobot);
     connect(ui.btnStop, &QPushButton::released, this, &ArmRobotManipulator::stopRobot);
     connect(this, &ArmRobotManipulator::updateActualQ, this, &ArmRobotManipulator::onActualQUpdate);
+
+    connect(ui.btnRecTarget, &QPushButton::released, this, &ArmRobotManipulator::onRecTarget);
+    connect(ui.btnGoTarget, &QPushButton::released, this, &ArmRobotManipulator::onGoTarget);
+
+    ui.btnStart->setEnabled(false);
+    ui.btnStop->setEnabled(false);
 }
 
 ArmRobotManipulator::~ArmRobotManipulator(){
@@ -73,6 +80,14 @@ bool ArmRobotManipulator::setup(const QString& configFilePath){
         m_defaultRobotInfo.clear();
         m_defaultRobotInfo << json["default_robot"].toObject()["factory"].toString();
         m_defaultRobotInfo << json["default_robot"].toObject()["type"].toString();
+
+        int jmin = json["joint_min"].toInt(-180);
+        int jmax = json["joint_max"].toInt(180);
+        for (int i = 0; i < (int) m_sliders.size(); i++) {
+            m_sliders[i]->setRange(jmin, jmax);
+        }
+
+
         qDebug() << m_defaultRobotInfo;
 
         setupCreationList();
@@ -139,6 +154,9 @@ void ArmRobotManipulator::createRobot(){
             m_ptrRobot.reset();
         }
     }
+
+    ui.btnStart->setEnabled(true);
+    ui.btnStop->setEnabled(true);
 }
 
 void ArmRobotManipulator::setupCreationList(){
@@ -179,6 +197,7 @@ void ArmRobotManipulator::setupCreationList(){
 
 void ArmRobotManipulator::startRobot(){
     if (m_ptrRobot) {
+        m_initUIData = 5;
         if (m_ptrRobot->start()) {
             COBOT_LOG.info() << "Robot Start Success";
         }
@@ -228,14 +247,44 @@ void ArmRobotManipulator::onActualQUpdate(){
     for (size_t i = 0; i < tmpq.size(); i++) {
         m_actual[i]->setValue(tmpq[i] / CV_PI * 180);
     }
+
+    if (m_initUIData > 0) {
+        auto log = COBOT_LOG.info();
+        log << "Real: ";
+        for (size_t i = 0; i < tmpq.size(); i++) {
+            m_target[i]->setValue(tmpq[i] / CV_PI * 180);
+            log << tmpq[i] / CV_PI * 180 << ". ";
+        }
+        m_initUIData--;
+    }
 }
 
 void ArmRobotManipulator::updateTargetQ(){
-    std::vector<double> target_q;
-
-    target_q.resize(m_target.size());
-    for (int i = 0; i < (int) m_target.size(); i++) {
-        target_q[i] = m_target[i]->value();
+    if (m_initUIData > 0) {
+        return;
     }
-    m_ptrRobot->move(target_q);
+
+    std::vector<double> target_q;
+    if (m_ptrRobot) {
+        target_q.resize(m_target.size());
+        for (int i = 0; i < (int) m_target.size(); i++) {
+            target_q[i] = m_target[i]->value() / 180 * CV_PI;
+        }
+        m_ptrRobot->move(target_q);
+    }
+}
+
+void ArmRobotManipulator::onRecTarget(){
+    m_recTarget.resize(m_target.size());
+    for (int i = 0; i < (int) m_recTarget.size(); i++) {
+        m_recTarget[i] = m_target[i]->value();
+    }
+}
+
+void ArmRobotManipulator::onGoTarget(){
+    if (m_recTarget.size() == m_target.size()) {
+        for (int i = 0; i < (int) m_recTarget.size(); i++) {
+            m_target[i]->setValue(m_recTarget[i]);
+        }
+    }
 }

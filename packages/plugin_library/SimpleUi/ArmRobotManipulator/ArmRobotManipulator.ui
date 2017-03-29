@@ -14,6 +14,13 @@
    <string>简易手臂机器人操作</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
+   <item row="3" column="1">
+    <widget class="QPushButton" name="btnGoTarget">
+     <property name="text">
+      <string>Go Target</string>
+     </property>
+    </widget>
+   </item>
    <item row="0" column="0">
     <widget class="QComboBox" name="cboRobotType">
      <property name="maxVisibleItems">
@@ -34,7 +41,34 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="0" rowspan="3">
+   <item row="4" column="1">
+    <spacer name="verticalSpacer_2">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="6" column="1">
+    <widget class="QPushButton" name="btnStop">
+     <property name="text">
+      <string>Stop</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="1">
+    <widget class="QPushButton" name="btnStart">
+     <property name="text">
+      <string>Start</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0" rowspan="6">
     <widget class="QGroupBox" name="groupBox">
      <property name="font">
       <font>
@@ -320,16 +354,9 @@
     </spacer>
    </item>
    <item row="2" column="1">
-    <widget class="QPushButton" name="btnStart">
+    <widget class="QPushButton" name="btnRecTarget">
      <property name="text">
-      <string>Start</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="1">
-    <widget class="QPushButton" name="btnStop">
-     <property name="text">
-      <string>Stop</string>
+      <string>RecTarget</string>
      </property>
     </widget>
    </item>

@@ -28,6 +28,7 @@ public:
         connect(this, &CobotUrRealTimeCommCtrl::start, ur, &CobotUrRealTimeComm::start);
         connect(this, &CobotUrRealTimeCommCtrl::commandReady, ur, &CobotUrRealTimeComm::writeLine);
         connect(ur, &CobotUrRealTimeComm::connected, this, &CobotUrRealTimeCommCtrl::onRealTimeConnected);
+        connect(this, &CobotUrRealTimeCommCtrl::stopServoj, ur, &CobotUrRealTimeComm::stopProg);
         workerThread.start();
     }
 
@@ -39,25 +40,23 @@ public:
 
     void startComm(){
         Q_EMIT start();
-
-        // Also start a tcp socket
-        // Upload a program
-
-
-        //
     }
 
-    void writeLine(const QByteArray& ba){
+    void addCommandToQueue(const QByteArray& ba){
         Q_EMIT commandReady(ba);
+    }
+
+    void requireStopServoj(){
+        Q_EMIT stopServoj();
     }
 
 Q_SIGNALS:
     void start();
     void commandReady(const QByteArray& ba);
+    void stopServoj();
 
 protected:
     void onRealTimeConnected();
-//    bool uploadProg();
 
 private:
     const int MULT_JOINTSTATE_ = 1000000;

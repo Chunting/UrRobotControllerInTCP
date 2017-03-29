@@ -52,9 +52,13 @@ protected:
     void setupCreationList();
     void onActualQUpdate();
     void updateTargetQ();
+
+    void onRecTarget();
+    void onGoTarget();
 protected:
     int m_joint_num;
     bool m_noHandleChange;
+    int m_initUIData;
 
     Ui::ArmRobotManipulator ui;
 
@@ -68,6 +72,8 @@ protected:
 
     std::vector<double> m_actualValue;
     std::mutex m_mutex;
+
+    std::vector<double> m_recTarget;
 };
 
 

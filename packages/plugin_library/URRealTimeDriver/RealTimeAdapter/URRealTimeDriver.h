@@ -17,7 +17,8 @@
 
 using namespace cobotsys;
 
-class URRealTimeDriver : public AbstractArmRobotRealTimeDriver {
+class URRealTimeDriver : public QObject, public AbstractArmRobotRealTimeDriver {
+Q_OBJECT
 public:
     URRealTimeDriver();
     virtual ~URRealTimeDriver();
@@ -35,6 +36,7 @@ protected:
 
     bool _setup(const QString& configFilePath);
 
+    void driverReady();
 protected:
     std::mutex m_mutex;
     std::thread m_thread;

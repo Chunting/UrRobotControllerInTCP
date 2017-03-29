@@ -8,13 +8,14 @@
 #include "URRealTimeDriver.h"
 
 
-URRealTimeDriver::URRealTimeDriver(){
+URRealTimeDriver::URRealTimeDriver() : QObject(nullptr){
     m_isWatcherRunning = false;
     m_isStarted = false;
 
     m_ctrl = nullptr;
     m_rt_ctrl = nullptr;
     m_urDriver = nullptr;
+    m_curReqQ.clear();
 }
 
 URRealTimeDriver::~URRealTimeDriver(){
@@ -27,7 +28,9 @@ URRealTimeDriver::~URRealTimeDriver(){
 
 void URRealTimeDriver::move(const std::vector<double>& q){
     std::lock_guard<std::mutex> lock_guard(m_mutex);
-    m_curReqQ = q;
+    if (m_isStarted) {
+        m_curReqQ = q;
+    }
 }
 
 std::shared_ptr<AbstractDigitIoDriver> URRealTimeDriver::getDigitIoDriver(int deviceId){
@@ -51,12 +54,16 @@ void URRealTimeDriver::attach(std::shared_ptr<ArmRobotRealTimeStatusObserver> ob
 bool URRealTimeDriver::start(){
     std::lock_guard<std::mutex> lock_guard(m_mutex);
 
+    if (m_urDriver) {
+        COBOT_LOG.info() << "Already start, if want restart, stop first";
+        return false;
+    }
     m_urDriver = new CobotUrDriver(m_rt_msg_cond, m_msg_cond, m_attr_robot_ip.c_str());
+    connect(m_urDriver, &CobotUrDriver::driverStartSuccess, this, &URRealTimeDriver::driverReady);
     m_urDriver->setServojTime(m_attr_servoj_time);
     m_urDriver->setServojLookahead(m_attr_servoj_lookahead);
     m_urDriver->setServojGain(m_attr_servoj_gain);
     m_urDriver->startDriver();
-
     return true;
 }
 
@@ -64,9 +71,11 @@ void URRealTimeDriver::stop(){
     std::lock_guard<std::mutex> lock_guard(m_mutex);
 
     if (m_urDriver) {
+        m_isStarted = false;
         m_urDriver->stopDriver();
         m_urDriver->deleteLater();
         m_urDriver = nullptr;
+        m_curReqQ.clear();
     }
 }
 
@@ -120,16 +129,12 @@ void URRealTimeDriver::robotStatusWatcher(){
             ob->onArmRobotStatusUpdate(pStatus);
         }
 
-
         if (m_mutex.try_lock()) {
             q_next = m_curReqQ;
             m_mutex.unlock();
         }
         if (m_isStarted && q_next.size() >= 6) {
-            if (m_rt_ctrl) {
-//                m_rt_ctrl->writeLine(q_next);
-            }
-//            m_urDriver->servoj(q_next);
+            m_urDriver->servoj(q_next);
         }
     }
 }
@@ -142,26 +147,13 @@ bool URRealTimeDriver::_setup(const QString& configFilePath){
         m_attr_servoj_lookahead = json["servoj_lookahead"].toDouble(0.05);
         m_attr_servoj_gain = json["servoj_gain"].toDouble(300);
 
-        /**
-         * DO TEST
-         */
-        /**
-         * END TEST
-         */
-
-        bool ur_create_success = false;
-        try {
-//            m_urDriver = std::make_shared<UrDriver>(m_rt_msg_cond, m_msg_cond, m_attr_robot_ip);
-//            m_urDriver->setServojTime(m_attr_servoj_time);
-//            m_urDriver->setServojLookahead(m_attr_servoj_lookahead);
-//            m_urDriver->setServojGain(m_attr_servoj_gain);
-
-            m_isWatcherRunning = true;
-            m_thread = std::thread(&URRealTimeDriver::robotStatusWatcher, this);
-            ur_create_success = true;
-        } catch (std::exception& e) {
-        }
-        return ur_create_success;
+        m_isWatcherRunning = true;
+        m_thread = std::thread(&URRealTimeDriver::robotStatusWatcher, this);
+        return true;
     }
     return false;
+}
+
+void URRealTimeDriver::driverReady(){
+    m_isStarted = true;
 }
