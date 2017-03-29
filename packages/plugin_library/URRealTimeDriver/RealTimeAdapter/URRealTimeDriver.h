@@ -13,6 +13,7 @@
 #include "CobotUrComm.h"
 #include "CobotUrCommCtrl.h"
 #include "CobotUrRealTimeCommCtrl.h"
+#include "CobotUrDriver.h"
 
 using namespace cobotsys;
 
@@ -54,6 +55,8 @@ protected:
 
     CobotUrCommCtrl* m_ctrl;
     CobotUrRealTimeCommCtrl* m_rt_ctrl;
+
+    CobotUrDriver* m_urDriver;
 };
 
 

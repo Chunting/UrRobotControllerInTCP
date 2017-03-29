@@ -14,6 +14,7 @@ URRealTimeDriver::URRealTimeDriver(){
 
     m_ctrl = nullptr;
     m_rt_ctrl = nullptr;
+    m_urDriver = nullptr;
 }
 
 URRealTimeDriver::~URRealTimeDriver(){
@@ -50,11 +51,11 @@ void URRealTimeDriver::attach(std::shared_ptr<ArmRobotRealTimeStatusObserver> ob
 bool URRealTimeDriver::start(){
     std::lock_guard<std::mutex> lock_guard(m_mutex);
 
-    m_ctrl = new CobotUrCommCtrl(m_msg_cond, m_attr_robot_ip.c_str());
-    m_rt_ctrl = new CobotUrRealTimeCommCtrl(m_rt_msg_cond, m_attr_robot_ip.c_str());
-
-    m_ctrl->startComm();
-    m_rt_ctrl->startComm();
+    m_urDriver = new CobotUrDriver(m_rt_msg_cond, m_msg_cond, m_attr_robot_ip.c_str());
+    m_urDriver->setServojTime(m_attr_servoj_time);
+    m_urDriver->setServojLookahead(m_attr_servoj_lookahead);
+    m_urDriver->setServojGain(m_attr_servoj_gain);
+    m_urDriver->startDriver();
 
     return true;
 }
@@ -62,13 +63,10 @@ bool URRealTimeDriver::start(){
 void URRealTimeDriver::stop(){
     std::lock_guard<std::mutex> lock_guard(m_mutex);
 
-    if (m_ctrl) {
-        m_ctrl->deleteLater();
-        m_ctrl = nullptr;
-    }
-    if (m_rt_ctrl) {
-        m_rt_ctrl->deleteLater();
-        m_rt_ctrl = nullptr;
+    if (m_urDriver) {
+        m_urDriver->stopDriver();
+        m_urDriver->deleteLater();
+        m_urDriver = nullptr;
     }
 }
 
@@ -101,13 +99,17 @@ void URRealTimeDriver::robotStatusWatcher(){
         std::chrono::duration<double> time_diff = time_rdy - time_cur;
         time_cur = time_rdy;
 
-        if (m_rt_ctrl) {
-            auto pState = m_rt_ctrl->ur->getRobotState();
-            q_next = pState->getQActual();
+        if (m_mutex.try_lock()) {
+            if (m_urDriver) {
+                auto pState = m_urDriver->m_urRealTimeCommCtrl->ur->getRobotState();
+                q_next = pState->getQActual();
+            }
+            m_mutex.unlock();
         }
+
         pStatus->q_actual = q_next;
 
-        COBOT_LOG.info() << "Status Updated: " << time_diff.count();
+//        COBOT_LOG.info() << "Status Updated: " << time_diff.count();
 
         // Notify all attached observer
         if (m_mutex.try_lock()) {

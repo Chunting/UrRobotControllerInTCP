@@ -27,6 +27,7 @@ public:
         connect(&workerThread, &QThread::finished, ur, &QObject::deleteLater);
         connect(this, &CobotUrRealTimeCommCtrl::start, ur, &CobotUrRealTimeComm::start);
         connect(this, &CobotUrRealTimeCommCtrl::commandReady, ur, &CobotUrRealTimeComm::writeLine);
+        connect(ur, &CobotUrRealTimeComm::connected, this, &CobotUrRealTimeCommCtrl::onRealTimeConnected);
         workerThread.start();
     }
 
@@ -53,6 +54,14 @@ public:
 Q_SIGNALS:
     void start();
     void commandReady(const QByteArray& ba);
+
+protected:
+    void onRealTimeConnected();
+//    bool uploadProg();
+
+private:
+    const int MULT_JOINTSTATE_ = 1000000;
+    const int MULT_TIME_ = 1000000;
 };
 
 #endif //PROJECT_COBOTURREALTIMECOMMCTRL_H

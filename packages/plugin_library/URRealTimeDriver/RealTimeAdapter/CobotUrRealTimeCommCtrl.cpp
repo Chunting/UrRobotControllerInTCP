@@ -4,3 +4,8 @@
 //
 
 #include "CobotUrRealTimeCommCtrl.h"
+
+
+void CobotUrRealTimeCommCtrl::onRealTimeConnected(){
+
+}

@@ -22,7 +22,8 @@ public:
 
     void setupHost(const QString& host);
 
-
+    std::shared_ptr<RobotState> getRobotState(){ return m_robotState; }
+    std::string getLocalIp();
 Q_SIGNALS:
     void connected();
     void disconnected();
@@ -42,6 +43,7 @@ protected:
     QString m_host;
     std::shared_ptr<RobotState> m_robotState;
     std::condition_variable& m_msg_cond;
+    std::string localIp_;
 };
 
 

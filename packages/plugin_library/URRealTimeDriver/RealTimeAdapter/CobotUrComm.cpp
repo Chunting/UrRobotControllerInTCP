@@ -4,6 +4,7 @@
 //
 
 #include <cobotsys_logger.h>
+#include <QtNetwork/QHostAddress>
 #include "CobotUrComm.h"
 #include "CobotUrFirmwareQueryer.h"
 
@@ -58,7 +59,12 @@ void CobotUrComm::secReadData(){
 
 void CobotUrComm::secConnectHandle(){
     COBOT_LOG.info() << "Secondary interface: Got connection";
+    localIp_ = m_secSOCK->localAddress().toString().toStdString();
     Q_EMIT connected();
+}
+
+std::string CobotUrComm::getLocalIp(){
+    return localIp_;
 }
 
 void CobotUrComm::secDisconnectHandle(){
@@ -67,5 +73,4 @@ void CobotUrComm::secDisconnectHandle(){
 }
 
 void CobotUrComm::writeLine(const QByteArray& ba){
-
 }
