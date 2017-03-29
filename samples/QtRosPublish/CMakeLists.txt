@@ -14,6 +14,9 @@ find_package(Qt5Widgets REQUIRED) # Fuck, 如果要使用autouic那么必须引�
 
 FILE(GLOB ${PROJECT_NAME}_files *.cpp *.h res.qrc)
 
-add_executable(${PROJECT_NAME} ${${PROJECT_NAME}_files})
+get_property(UseROS GLOBAL PROPERTY BUILD_WITH_ROS)
+if (${UseROS} STREQUAL "ON")
+    add_executable(${PROJECT_NAME} ${${PROJECT_NAME}_files})
 
-target_link_libraries(${PROJECT_NAME} cobotsys cobotsys_ros_wrapper)
+    target_link_libraries(${PROJECT_NAME} cobotsys cobotsys_ros_wrapper)
+endif ()

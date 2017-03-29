@@ -1,7 +1,7 @@
 
 project(cobotsys_ros_wrapper)
 
-find_package(catkin REQUIRED COMPONENTS
+find_package(catkin QUIET COMPONENTS
         roscpp
         std_msgs
         genmsg
@@ -21,34 +21,39 @@ find_package(catkin REQUIRED COMPONENTS
         pluginlib
         )
 
-# Qt
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTOUIC ON)
-set(CMAKE_AUTORCC ON)
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
+if (catkin_FOUND)
+    # Qt
+    set(CMAKE_AUTOMOC ON)
+    set(CMAKE_AUTOUIC ON)
+    set(CMAKE_AUTORCC ON)
+    set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-find_package(Qt5Core REQUIRED)
-find_package(Qt5Gui REQUIRED)
-find_package(Qt5Widgets REQUIRED)
-find_package(Eigen3 REQUIRED)
-if (NOT DEFINED EIGEN3_INCLUDE_DIR)
-    set(EIGEN3_INCLUDE_DIR /usr/include/eigen3)
-endif (NOT DEFINED EIGEN3_INCLUDE_DIR)
+    find_package(Qt5Core REQUIRED)
+    find_package(Qt5Gui REQUIRED)
+    find_package(Qt5Widgets REQUIRED)
+    find_package(Eigen3 REQUIRED)
+    if (NOT DEFINED EIGEN3_INCLUDE_DIR)
+        set(EIGEN3_INCLUDE_DIR /usr/include/eigen3)
+    endif (NOT DEFINED EIGEN3_INCLUDE_DIR)
 
-include_directories(${EIGEN3_INCLUDE_DIR})
-include_directories(include)
+    include_directories(${EIGEN3_INCLUDE_DIR})
+    include_directories(include)
 
-set_property(GLOBAL PROPERTY CORE_INC ${EIGEN3_INCLUDE_DIR} APPEND)
+    set_property(GLOBAL PROPERTY CORE_INC ${EIGEN3_INCLUDE_DIR} APPEND)
+    set_property(GLOBAL PROPERTY BUILD_WITH_ROS "ON")
 
-FILE(GLOB ${PROJECT_NAME}_files src/* include/*)
+    FILE(GLOB ${PROJECT_NAME}_files src/* include/*)
 
-add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_files})
+    add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_files})
 
-add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+    add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
-target_link_libraries(${PROJECT_NAME} cobotsys Qt5::Core Qt5::Widgets ${catkin_LIBRARIES})
+    target_link_libraries(${PROJECT_NAME} cobotsys Qt5::Core Qt5::Widgets ${catkin_LIBRARIES})
 
-set_target_properties(${PROJECT_NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+    set_target_properties(${PROJECT_NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
-##
-install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION lib)
+    ##
+    install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION lib)
+else ()
+    set_property(GLOBAL PROPERTY BUILD_WITH_ROS "OFF")
+endif ()

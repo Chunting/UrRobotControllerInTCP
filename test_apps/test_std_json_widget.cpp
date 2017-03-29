@@ -11,7 +11,6 @@
 #include <cobotsys_file_finder.h>
 #include <cobotsys_abstract_controller.h>
 #include <QApplication>
-#include <ros/ros.h>
 #include <QtWidgets/QFileDialog>
 
 bool loop(cobotsys::ObjectGroup& objectGroup){
