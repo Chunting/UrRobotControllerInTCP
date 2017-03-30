@@ -55,6 +55,15 @@ protected:
 
     void onRecTarget();
     void onGoTarget();
+    void onPosiB();
+    void onGoPosiB();
+    void onLoopAB();
+
+    void loopAbProg();
+    void updateTargetQToUi();
+
+    std::vector<double> getUiTarget();
+    void goTarget(const std::vector<double>& targetq);
 protected:
     int m_joint_num;
     bool m_noHandleChange;
@@ -66,6 +75,8 @@ protected:
     std::vector<QDoubleSpinBox*> m_target;
     std::vector<QDoubleSpinBox*> m_actual;
 
+    std::vector<double> m_targetToGo;
+
     QStringList m_defaultRobotInfo;
 
     std::shared_ptr<AbstractArmRobotRealTimeDriver> m_ptrRobot;
@@ -73,7 +84,14 @@ protected:
     std::vector<double> m_actualValue;
     std::mutex m_mutex;
 
-    std::vector<double> m_recTarget;
+    std::vector<double> m_PosiA;
+    std::vector<double> m_PosiB;
+    std::vector<double> m_loopQ;
+    std::vector<double> m_qActual;
+
+    std::vector<std::vector<double> > m_loopQQueue;
+    size_t m_loopQQueueIndex;
+    bool m_loopAB;
 
     QString m_groupBoxDefTitle;
 };

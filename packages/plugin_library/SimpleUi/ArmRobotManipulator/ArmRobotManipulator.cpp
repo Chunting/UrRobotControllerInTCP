@@ -13,13 +13,13 @@
 
 class AutoCtx {
 protected:
-    bool m_sign;
+    bool& m_sign;
 public:
     AutoCtx(bool& b) : m_sign(b){ m_sign = true; }
 
     ~AutoCtx(){ m_sign = false; }
 };
-#define Q_SLOT_REDUCE(flag) if ((flag)) {return;} AutoCtx autoctx(flag);
+#define Q_SLOT_REDUCE(flag) if (flag) {return;} AutoCtx autoctx(flag);
 
 
 ArmRobotManipulator::ArmRobotManipulator(){
@@ -27,6 +27,7 @@ ArmRobotManipulator::ArmRobotManipulator(){
     ui.setupUi(this);
 
     m_noHandleChange = false;
+    m_targetToGo.resize(6);
 
     m_sliders.push_back(ui.slider_1);
     m_sliders.push_back(ui.slider_2);
@@ -65,11 +66,15 @@ ArmRobotManipulator::ArmRobotManipulator(){
 
     connect(ui.btnRecTarget, &QPushButton::released, this, &ArmRobotManipulator::onRecTarget);
     connect(ui.btnGoTarget, &QPushButton::released, this, &ArmRobotManipulator::onGoTarget);
+    connect(ui.btnPosiB, &QPushButton::released, this, &ArmRobotManipulator::onPosiB);
+    connect(ui.btnGoPosiB, &QPushButton::released, this, &ArmRobotManipulator::onGoPosiB);
+    connect(ui.btnLoopAB, &QPushButton::released, this, &ArmRobotManipulator::onLoopAB);
 
     ui.btnStart->setEnabled(false);
     ui.btnStop->setEnabled(false);
 
     m_groupBoxDefTitle = ui.groupBox->title();
+    m_loopAB = false;
 }
 
 ArmRobotManipulator::~ArmRobotManipulator(){
@@ -106,7 +111,6 @@ void ArmRobotManipulator::handleSliderChange(){
             dsbTgt->setValue(slider->value());
         }
     }
-
     updateTargetQ();
 }
 
@@ -124,6 +128,7 @@ void ArmRobotManipulator::handleTargetChange(){
             return;
         }
     }
+    updateTargetQ();
 }
 
 void ArmRobotManipulator::createRobot(){
@@ -209,6 +214,7 @@ void ArmRobotManipulator::startRobot(){
 void ArmRobotManipulator::stopRobot(){
     if (m_ptrRobot) {
         m_ptrRobot->stop();
+        m_loopAB = false;
     }
 }
 
@@ -245,6 +251,7 @@ void ArmRobotManipulator::onActualQUpdate(){
     m_mutex.lock();
     tmpq = m_actualValue;
     m_mutex.unlock();
+    m_qActual = tmpq;
 
     for (size_t i = 0; i < tmpq.size(); i++) {
         m_actual[i]->setValue(tmpq[i] / CV_PI * 180);
@@ -257,7 +264,12 @@ void ArmRobotManipulator::onActualQUpdate(){
             m_target[i]->setValue(tmpq[i] / CV_PI * 180);
             log << tmpq[i] / CV_PI * 180 << ". ";
         }
+        m_targetToGo = m_actualValue;
         m_initUIData--;
+    }
+
+    if (m_loopAB) {
+        loopAbProg();
     }
 }
 
@@ -266,27 +278,87 @@ void ArmRobotManipulator::updateTargetQ(){
         return;
     }
 
-    std::vector<double> target_q;
-    if (m_ptrRobot) {
-        target_q.resize(m_target.size());
-        for (int i = 0; i < (int) m_target.size(); i++) {
-            target_q[i] = m_target[i]->value() / 180 * CV_PI;
-        }
-        m_ptrRobot->move(target_q);
-    }
+    std::vector<double> target_q = getUiTarget();
+
+    goTarget(target_q);
 }
 
 void ArmRobotManipulator::onRecTarget(){
-    m_recTarget.resize(m_target.size());
-    for (int i = 0; i < (int) m_recTarget.size(); i++) {
-        m_recTarget[i] = m_target[i]->value();
-    }
+    m_PosiA = getUiTarget();
 }
 
 void ArmRobotManipulator::onGoTarget(){
-    if (m_recTarget.size() == m_target.size()) {
-        for (int i = 0; i < (int) m_recTarget.size(); i++) {
-            m_target[i]->setValue(m_recTarget[i]);
+    goTarget(m_PosiA);
+}
+
+void ArmRobotManipulator::onPosiB(){
+    m_PosiB = getUiTarget();
+}
+
+void ArmRobotManipulator::onGoPosiB(){
+    goTarget(m_PosiB);
+}
+
+void ArmRobotManipulator::onLoopAB(){
+    m_loopAB = !m_loopAB;
+    if (m_loopAB) {
+        m_loopQ = m_PosiA;
+        m_loopQQueueIndex = 0;
+        m_loopQQueue.clear();
+        m_loopQQueue.push_back(m_PosiA);
+        m_loopQQueue.push_back(m_PosiB);
+        goTarget(m_loopQ);
+    }
+}
+
+std::vector<double> ArmRobotManipulator::getUiTarget(){
+    std::vector<double> target;
+    target.resize(m_target.size());
+    for (int i = 0; i < (int) target.size(); i++) {
+        target[i] = m_target[i]->value() / 180.0 * CV_PI;
+    }
+    return target;
+}
+
+void ArmRobotManipulator::goTarget(const std::vector<double>& targetq){
+    m_targetToGo = targetq;
+
+    updateTargetQToUi();
+
+    if (m_ptrRobot) {
+        auto log = COBOT_LOG.message("Target");
+        for (size_t i = 0; i < m_targetToGo.size(); i++) {
+            log << std::setw(5) << std::setprecision(5) << m_targetToGo[i] / CV_PI * 180;
+            if (i + m_targetToGo.size())
+                log << ", ";
         }
+
+        m_ptrRobot->move(m_targetToGo);
+    }
+}
+
+void ArmRobotManipulator::loopAbProg(){
+    if (m_loopQ.size() != m_qActual.size())
+        return;
+
+    double err = 0;
+    for (size_t i = 0; i < m_loopQ.size(); i++) {
+        auto d = m_loopQ[i] - m_qActual[i];
+        err += d * d;
+    }
+    err = sqrt(err);
+
+    if (err <= 0.1) {
+        m_loopQQueueIndex++;
+        if (m_loopQQueueIndex >= m_loopQQueue.size())
+            m_loopQQueueIndex = 0;
+        m_loopQ = m_loopQQueue[m_loopQQueueIndex];
+        goTarget(m_loopQ);
+    }
+}
+
+void ArmRobotManipulator::updateTargetQToUi(){
+    for (int i = 0; i < (int) m_targetToGo.size(); i++) {
+        m_target[i]->setValue(m_targetToGo[i] * 180 / CV_PI);
     }
 }
