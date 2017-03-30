@@ -7,7 +7,7 @@
 #include <QFile>
 #include <QFileDialog>
 #include <extra2.h>
-#include <opencv2\opencv.hpp>
+#include <opencv2/opencv.hpp>
 
 CameraColorViewer2::CameraColorViewer2(){
     ui.setupUi(this);

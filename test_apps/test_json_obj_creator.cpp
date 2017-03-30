@@ -11,7 +11,7 @@
 #include <opencv/highgui.h>
 #include <cobotsys_file_finder.h>
 #include <extra2.h>
-#include <opencv2/highgui.hpp>
+#include <opencv2/opencv.hpp>
 
 void loop(cobotsys::ObjectGroup& objectGroup){
     auto pCamera = std::dynamic_pointer_cast<cobotsys::AbstractCamera>(objectGroup.getObject("camera"));
