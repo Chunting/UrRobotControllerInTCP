@@ -35,6 +35,7 @@ bool EasySharedNames::tryOpenSharedNames(){
         addRef();
         bresult = true;
     } catch (boost::interprocess::interprocess_exception& ex) {
+        printf("error: %s\n", ex.what());
         bresult = false;
     }
     return bresult;

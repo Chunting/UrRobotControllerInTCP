@@ -28,7 +28,6 @@ public:
 
 namespace cobotsys {
 class AbstractControllerWidget : public QWidget, public AbstractController {
-Q_OBJECT
 public:
     AbstractControllerWidget();
     virtual ~AbstractControllerWidget();

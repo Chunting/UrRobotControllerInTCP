@@ -45,7 +45,7 @@ bool BasicSharedCvMat::writeMat(const cv::Mat &mat){
     mathdr.rows = mat.rows;
     mathdr.cols = mat.cols;
     mathdr.type = mat.type();
-    mathdr.step = mat.step[0];
+    mathdr.step = (int)mat.step[0];
     auto mmsize = mat_mem_.size();
     if (mat_data_len == mmsize && mat_mem_.isValid()) {
         mat_mem_.lock();

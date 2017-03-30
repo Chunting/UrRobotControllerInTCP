@@ -63,26 +63,34 @@ std::string FileFinder::realPathOf(const std::string& path){
     auto pfull = realpath(path.c_str(), &ch_buf[0]);
 #endif
     if (pfull) {
-        return pfull;
+        std::string rpath = pfull;
+        bool isExist = isFileExist(rpath);
+        if (isExist)
+            return rpath;
     }
     return std::string();
 }
 
+void FileFinder::storSearchPath(const std::string & path_to_find, PreDefPath pathType){
+    base_paths.push_back(path_to_find);
+    pre_def_path[pathType] = path_to_find;
+    auto log = COBOT_LOG.message("File Finder");
+    log << "Add Path: " << path_to_find;
+    if (pathType == PreDefPath::Data) {
+        log << ", Data Dir Updated";
+    }
+}
+
 void FileFinder::addSearchPath(const std::string& path_to_find, FileFinder::PreDefPath pathType){
-    bool is_found;
     auto rpath = realPathOf(path_to_find);
     if (rpath.size()) {
-        base_paths.push_back(rpath);
-        pre_def_path[pathType] = rpath;
-        COBOT_LOG.message("File Finder") << "Add Path: " << rpath;
+        storSearchPath(rpath, pathType);
     } else {
         for (const auto& path : base_paths) {
             auto tmp_path = path + path_slash + path_to_find;
             rpath = realPathOf(tmp_path);
             if (rpath.size()) {
-                base_paths.push_back(rpath);
-                pre_def_path[pathType] = rpath;
-                COBOT_LOG.message("File Finder") << "Add Path: " << rpath;
+                storSearchPath(rpath, pathType);
                 break;
             }
         }

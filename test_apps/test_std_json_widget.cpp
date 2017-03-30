@@ -41,6 +41,7 @@ int main(int argc, char** argv){
 
     cobotsys::GlobalObjectFactory globalObjectFactory;
     globalObjectFactory.loadLibrarys("../lib/plugins");
+    globalObjectFactory.loadLibrarys("../../lib/plugins");
 
     QJsonObject jsonObject;
 

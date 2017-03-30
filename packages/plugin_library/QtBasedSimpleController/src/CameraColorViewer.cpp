@@ -7,7 +7,7 @@
 #include <QtCore/QCoreApplication>
 #include <cobotsys_global_object_factory.h>
 #include "CameraColorViewer.h"
-
+#include "opencv2/opencv.hpp"
 
 CameraColorViewer::CameraColorViewer()
         : QObject(nullptr){

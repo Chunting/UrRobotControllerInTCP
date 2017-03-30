@@ -9,6 +9,7 @@
 #include <cobotsys_abstract_camera.h>
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
+#include <opencv2/highgui.hpp>
 
 int main(int argc, char** argv){
     QCoreApplication a(argc, argv);

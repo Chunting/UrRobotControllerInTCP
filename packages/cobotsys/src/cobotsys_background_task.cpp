@@ -39,6 +39,7 @@ bool BackgroundTask::run(const BackgroundTaskSettings &settings){
         const auto &conf = v_conf[i];
         _process_list[i]->run(conf);
     }
+    return true;
 }
 
 void BackgroundTask::onProcessFinish(int exitCode){
