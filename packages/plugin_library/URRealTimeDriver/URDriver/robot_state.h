@@ -25,7 +25,13 @@
 #include <string.h>
 #include <mutex>
 #include <condition_variable>
-//#include <netinet/in.h>
+
+#ifdef WIN32
+#include <Winsock2.h>
+#else
+#include <netinet/in.h>
+#endif
+
 
 namespace message_types {
 enum message_type {

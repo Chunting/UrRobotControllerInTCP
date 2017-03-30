@@ -24,7 +24,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <mutex>
-//#include <netinet/in.h>
+
+#ifdef WIN32
+#include <Winsock2.h>
+#else
+#include <netinet/in.h>
+
+#endif
 #include <condition_variable>
 
 class RobotStateRT {
