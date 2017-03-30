@@ -7,10 +7,10 @@ if (WIN32)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /source-charset:utf-8")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /source-charset:utf-8")
     set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-else()
+else ()
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
-endif()
+endif ()
 
 
 # 工程名
@@ -83,27 +83,27 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/lib)
 
 # 依赖链接库
-if(WIN32)
-target_link_libraries(${PROJECT_NAME}
-		Ws2_32
-        Qt5::Core
-        Qt5::Widgets
-        Qt5::OpenGL
-        Qt5::Network
-        ${OpenCV_LIBRARIES}
-        ${Boost_LIBRARIES}
-        ${extend_library_list})
-else()
-target_link_libraries(${PROJECT_NAME}
-        rt
-        Qt5::Core
-        Qt5::Widgets
-        Qt5::OpenGL
-        Qt5::Network
-        ${OpenCV_LIBRARIES}
-        ${Boost_LIBRARIES}
-        ${extend_library_list})
-endif()
+if (WIN32)
+    target_link_libraries(${PROJECT_NAME}
+            Ws2_32
+            Qt5::Core
+            Qt5::Widgets
+            Qt5::OpenGL
+            Qt5::Network
+            ${OpenCV_LIBRARIES}
+            ${Boost_LIBRARIES}
+            ${extend_library_list})
+else ()
+    target_link_libraries(${PROJECT_NAME}
+            rt
+            Qt5::Core
+            Qt5::Widgets
+            Qt5::OpenGL
+            Qt5::Network
+            ${OpenCV_LIBRARIES}
+            ${Boost_LIBRARIES}
+            ${extend_library_list})
+endif ()
 
 #get_property(ros_ext_lib GLOBAL PROPERTY ROS_EXTEND)
 #add_custom_command(TARGET ${PROJECT_NAME}
