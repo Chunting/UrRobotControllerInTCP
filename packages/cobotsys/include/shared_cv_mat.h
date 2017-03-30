@@ -8,7 +8,7 @@
 
 #include "shared_memory.h"
 #include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/opencv.hpp>
 #include <cv.h>
 #include <boost/interprocess/sync/named_semaphore.hpp>
 #include <functional>
