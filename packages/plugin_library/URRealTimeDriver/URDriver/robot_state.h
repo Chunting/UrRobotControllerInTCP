@@ -25,7 +25,7 @@
 #include <string.h>
 #include <mutex>
 #include <condition_variable>
-#include <netinet/in.h>
+//#include <netinet/in.h>
 
 namespace message_types {
 enum message_type {

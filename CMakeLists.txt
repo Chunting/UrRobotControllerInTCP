@@ -2,8 +2,13 @@ cmake_minimum_required(VERSION 3.6)
 # 默认编译标准
 set(CMAKE_CXX_STANDARD 11)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+if (WIN32)
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /source-charset:utf-8")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /source-charset:utf-8")
+else()
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+endif()
 
 set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} $ENV{CMAKE_PREFIX_PATH})  # 这里定位并使用CMAKE_PREFIX_PATH
 set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} $ENV{QT5_INSTALL_PATH})   # Qt5
@@ -19,7 +24,7 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
 # 一般信息打印
 message("General cobotsys root config:")
-message(STATUS "CMAKE PREFIX PATH: " ${CMAKE_PREFIX_PATH})
+message(STATUS "CMAKE PREFIX PATH: " "${CMAKE_PREFIX_PATH}")
 message(STATUS "DEBUG   Flags: ${CMAKE_CXX_FLAGS_DEBUG} ")
 message(STATUS "RELEASE Flags: ${CMAKE_CXX_FLAGS_RELEASE} ")
 

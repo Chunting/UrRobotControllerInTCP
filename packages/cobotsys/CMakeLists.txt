@@ -4,10 +4,13 @@ set(CMAKE_CXX_STANDARD 11)
 
 # 编译器命令行参数
 if (WIN32)
-else ()
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")      # 为了生成可重定位的代码
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")  #
-endif ()
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /source-charset:utf-8")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /source-charset:utf-8")
+    set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+else()
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+endif()
 
 
 # 工程名
@@ -28,7 +31,9 @@ find_package(Qt5Widgets REQUIRED)
 find_package(Qt5OpenGL REQUIRED)
 find_package(Qt5Network REQUIRED)
 find_package(OpenCV REQUIRED)
-find_package(Boost REQUIRED COMPONENTS system program_options filesystem)
+find_package(Boost REQUIRED COMPONENTS date_time system program_options filesystem)
+message(STATUS "BOOST_INCLUDEDIR " ${Boost_LIBRARY_DIRS})
+link_directories(${Boost_LIBRARY_DIRS})
 
 # 头文件引用
 include_directories(framework/include)
@@ -72,6 +77,16 @@ file(GLOB ${PROJECT_NAME}_files src/* include/* framework/src/* framework/includ
 add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_files})
 
 # 依赖链接库
+if(WIN32)
+target_link_libraries(${PROJECT_NAME}
+        Qt5::Core
+        Qt5::Widgets
+        Qt5::OpenGL
+        Qt5::Network
+        ${OpenCV_LIBRARIES}
+        ${Boost_LIBRARIES}
+        ${extend_library_list})
+else()
 target_link_libraries(${PROJECT_NAME}
         rt
         Qt5::Core
@@ -81,6 +96,7 @@ target_link_libraries(${PROJECT_NAME}
         ${OpenCV_LIBRARIES}
         ${Boost_LIBRARIES}
         ${extend_library_list})
+endif()
 
 #get_property(ros_ext_lib GLOBAL PROPERTY ROS_EXTEND)
 #add_custom_command(TARGET ${PROJECT_NAME}
@@ -89,6 +105,5 @@ target_link_libraries(${PROJECT_NAME}
 #        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
 # 安装
-install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION lib)
 install(DIRECTORY include/ DESTINATION include/cobotsys FILES_MATCHING PATTERN "*.h")
 install(DIRECTORY framework/ DESTINATION include/cobotsys FILES_MATCHING PATTERN "*.h")
