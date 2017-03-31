@@ -40,6 +40,7 @@ public:
 
 Q_SIGNALS:
     void updateActualQ();
+    void robotConnectStateChanged(bool isConnected);
 protected:
     virtual void closeEvent(QCloseEvent* event);
 
@@ -49,6 +50,8 @@ public:
     virtual void onArmRobotStatusUpdate(const ArmRobotStatusPtr& ptrRobotStatus);
 
 protected:
+    void handleRobotState(bool isConnected);
+
     void setupCreationList();
     void onActualQUpdate();
     void updateTargetQ();

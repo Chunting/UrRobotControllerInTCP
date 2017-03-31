@@ -63,6 +63,7 @@ ArmRobotManipulator::ArmRobotManipulator(){
     connect(ui.btnStart, &QPushButton::released, this, &ArmRobotManipulator::startRobot);
     connect(ui.btnStop, &QPushButton::released, this, &ArmRobotManipulator::stopRobot);
     connect(this, &ArmRobotManipulator::updateActualQ, this, &ArmRobotManipulator::onActualQUpdate);
+    connect(this, &ArmRobotManipulator::robotConnectStateChanged, this, &ArmRobotManipulator::handleRobotState);
 
     connect(ui.btnRecTarget, &QPushButton::released, this, &ArmRobotManipulator::onRecTarget);
     connect(ui.btnGoTarget, &QPushButton::released, this, &ArmRobotManipulator::onGoTarget);
@@ -163,7 +164,6 @@ void ArmRobotManipulator::createRobot(){
     }
 
     ui.btnStart->setEnabled(true);
-    ui.btnStop->setEnabled(true);
 }
 
 void ArmRobotManipulator::setupCreationList(){
@@ -204,6 +204,8 @@ void ArmRobotManipulator::setupCreationList(){
 
 void ArmRobotManipulator::startRobot(){
     if (m_ptrRobot) {
+        ui.btnStart->setEnabled(false);
+
         m_initUIData = 5;
         if (m_ptrRobot->start()) {
             COBOT_LOG.info() << "Robot Start Success";
@@ -213,15 +215,19 @@ void ArmRobotManipulator::startRobot(){
 
 void ArmRobotManipulator::stopRobot(){
     if (m_ptrRobot) {
+        ui.btnStop->setEnabled(false);
+
         m_ptrRobot->stop();
         m_loopAB = false;
     }
 }
 
 void ArmRobotManipulator::onArmRobotConnect(){
+    Q_EMIT robotConnectStateChanged(true);
 }
 
 void ArmRobotManipulator::onArmRobotDisconnect(){
+    Q_EMIT robotConnectStateChanged(false);
 }
 
 void ArmRobotManipulator::onArmRobotStatusUpdate(const ArmRobotStatusPtr& ptrRobotStatus){
@@ -360,5 +366,15 @@ void ArmRobotManipulator::loopAbProg(){
 void ArmRobotManipulator::updateTargetQToUi(){
     for (int i = 0; i < (int) m_targetToGo.size(); i++) {
         m_target[i]->setValue(m_targetToGo[i] * 180 / CV_PI);
+    }
+}
+
+void ArmRobotManipulator::handleRobotState(bool isConnected){
+    if (isConnected){
+        ui.btnStart->setEnabled(false);
+        ui.btnStop->setEnabled(true);
+    } else {
+        ui.btnStart->setEnabled(true);
+        ui.btnStop->setEnabled(false);
     }
 }
