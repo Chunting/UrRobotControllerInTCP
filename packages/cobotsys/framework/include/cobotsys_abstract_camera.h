@@ -21,6 +21,7 @@ namespace cobotsys {
 
 /**
  * @defgroup camera
+ * @brief 相机API接口
  * @{
  */
 class CameraStreamObserver;

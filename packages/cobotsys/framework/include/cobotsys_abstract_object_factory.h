@@ -18,6 +18,7 @@ namespace cobotsys {
  * @{
  *
  * @defgroup factory
+ * @brief 软件框架相关
  * @{
  */
 
