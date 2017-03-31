@@ -208,7 +208,7 @@ void CobotUrDriver::handleRTProgConnect(){
 
 void CobotUrDriver::handleRTProgDisconnect(){
     if (m_isConnected) {
-        // TODO: handle if need to re-upload ur script
+        Q_EMIT driverStopped();
     }
 }
 

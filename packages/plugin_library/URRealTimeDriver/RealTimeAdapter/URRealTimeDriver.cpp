@@ -76,11 +76,12 @@ void URRealTimeDriver::stop(){
     std::lock_guard<std::mutex> lock_guard(m_mutex);
 
     if (m_urDriver) {
+        m_curReqQValid = false;
+        m_curReqQ.clear();
         m_isStarted = false;
         m_urDriver->stopDriver();
         m_urDriver->deleteLater();
         m_urDriver = nullptr;
-        m_curReqQ.clear();
     }
 }
 
@@ -136,7 +137,6 @@ void URRealTimeDriver::robotStatusWatcher(){
         // 获取当前控制数据
         if (m_mutex.try_lock()) {
             if (m_curReqQValid) {
-                m_curReqQValid = false;
                 q_next = m_curReqQ;
             }
             m_mutex.unlock();

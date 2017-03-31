@@ -143,7 +143,7 @@ void CobotUrRealTimeComm::stopProg(){
 }
 
 void CobotUrRealTimeComm::onRealTimeDisconnect(){
-    COBOT_LOG.info() << "RT Disconnected !!!";
+    COBOT_LOG.info() << "RealTime Ctrl Disconnected !!!";
 
     m_rtSOCKET->close();
     m_rtSOCKET->deleteLater();
