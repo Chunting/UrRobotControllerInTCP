@@ -6,6 +6,7 @@
 #include <QtCore/QJsonObject>
 #include <extra2.h>
 #include "URRealTimeDriver.h"
+#include "CobotUr.h"
 
 
 URRealTimeDriver::URRealTimeDriver() : QObject(nullptr){
@@ -30,6 +31,7 @@ void URRealTimeDriver::move(const std::vector<double>& q){
     std::lock_guard<std::mutex> lock_guard(m_mutex);
     if (m_isStarted) {
         m_curReqQ = q;
+        m_curReqQValid = true;
     }
 }
 
@@ -59,7 +61,8 @@ bool URRealTimeDriver::start(){
         return false;
     }
     m_urDriver = new CobotUrDriver(m_rt_msg_cond, m_msg_cond, m_attr_robot_ip.c_str());
-    connect(m_urDriver, &CobotUrDriver::driverStartSuccess, this, &URRealTimeDriver::driverReady);
+    connect(m_urDriver, &CobotUrDriver::driverStartSuccess, this, &URRealTimeDriver::handleDriverReady);
+    connect(m_urDriver, &CobotUrDriver::driverStartFailed, this, &URRealTimeDriver::handleDriverDisconnect);
     m_urDriver->setServojTime(m_attr_servoj_time);
     m_urDriver->setServojLookahead(m_attr_servoj_lookahead);
     m_urDriver->setServojGain(m_attr_servoj_gain);
@@ -104,10 +107,13 @@ void URRealTimeDriver::robotStatusWatcher(){
     while (m_isWatcherRunning) {
         m_rt_msg_cond.wait(lck);
 
+        // 计算时间间隔
         auto time_rdy = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<double> time_diff = time_rdy - time_cur;
+        std::chrono::duration<double> time_diff = time_rdy - time_cur; // 时间间隙
         time_cur = time_rdy;
+        //COBOT_LOG.info() << "Status Updated: " << time_diff.count();
 
+        // 抓取当前姿态
         if (m_mutex.try_lock()) {
             if (m_urDriver) {
                 auto pState = m_urDriver->m_urRealTimeCommCtrl->ur->getRobotState();
@@ -115,25 +121,27 @@ void URRealTimeDriver::robotStatusWatcher(){
             }
             m_mutex.unlock();
         }
-
         pStatus->q_actual = q_next;
 
-//        COBOT_LOG.info() << "Status Updated: " << time_diff.count();
 
-        // Notify all attached observer
-        if (m_mutex.try_lock()) {
-            observer_tmp = m_observers;
-            m_mutex.unlock();
-        }
-        for (auto& ob : observer_tmp) {
-            ob->onArmRobotStatusUpdate(pStatus);
+        // 通知所有观察者，机器人数据已经更新。
+        if (m_isStarted) {
+            notify([=](std::shared_ptr<ArmRobotRealTimeStatusObserver>& observer){
+                observer->onArmRobotStatusUpdate(pStatus);
+            });
         }
 
+        // 获取当前控制数据
         if (m_mutex.try_lock()) {
-            q_next = m_curReqQ;
+            if (m_curReqQValid) {
+                m_curReqQValid = false;
+                q_next = m_curReqQ;
+            }
             m_mutex.unlock();
         }
-        if (m_isStarted && q_next.size() >= 6) {
+
+        // 更新控制驱动数据, 如果没有数据，默认会是当前状态。
+        if (m_isStarted && q_next.size() >= CobotUr::JOINT_NUM_) {
             m_urDriver->servoj(q_next);
         }
     }
@@ -154,10 +162,34 @@ bool URRealTimeDriver::_setup(const QString& configFilePath){
     return false;
 }
 
-void URRealTimeDriver::driverReady(){
+void URRealTimeDriver::handleDriverReady(){
     m_isStarted = true;
+    notify([=](std::shared_ptr<ArmRobotRealTimeStatusObserver>& observer){
+        observer->onArmRobotConnect();
+    });
 }
 
 QString URRealTimeDriver::getRobotUrl(){
     return m_attr_robot_ip.c_str();
+}
+
+void URRealTimeDriver::handleDriverDisconnect(){
+    stop();
+    notify([=](std::shared_ptr<ArmRobotRealTimeStatusObserver>& observer){
+        observer->onArmRobotDisconnect();
+    });
+}
+
+void URRealTimeDriver::notify(std::function<void(std::shared_ptr<ArmRobotRealTimeStatusObserver>& observer)> func){
+    if (func) {
+        std::vector<std::shared_ptr<ArmRobotRealTimeStatusObserver> > observer_tmp;
+        if (m_mutex.try_lock()) {
+            observer_tmp = m_observers;
+            m_mutex.unlock();
+        }
+
+        for (auto& observer : observer_tmp) {
+            func(observer);
+        }
+    }
 }

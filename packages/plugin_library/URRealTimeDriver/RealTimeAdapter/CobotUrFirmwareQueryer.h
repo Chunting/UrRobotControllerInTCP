@@ -11,6 +11,8 @@
 #include <memory>
 #include <QTcpSocket>
 #include <cobotsys_logger.h>
+#include "CobotUr.h"
+#include <cobotsys_qt.h>
 
 class CobotUrFirmwareQueryer : public QObject {
 Q_OBJECT
@@ -25,22 +27,28 @@ public:
     ~CobotUrFirmwareQueryer(){
     }
 
+    /**
+     * 获取UR的版本号，如果连接失败，那么返回一个空的指针。
+     * @param robotState
+     * @return
+     */
     std::shared_ptr<RobotState> getVersion(std::shared_ptr<RobotState> robotState){
-        QTcpSocket* m_priSOCK = new QTcpSocket(this);
-        m_priSOCK->setSocketOption(QAbstractSocket::LowDelayOption, 1);
-        m_priSOCK->connectToHost(m_host, 30001);
+        QTcpSocket* tcpSocket = new QTcpSocket(this);
+        tcpSocket->setSocketOption(QAbstractSocket::LowDelayOption, 1);
+        tcpSocket->connectToHost(m_host, 30001);
 
-        if (m_priSOCK->waitForConnected()) {
-            if (m_priSOCK->waitForReadyRead()) {
-                auto ba = m_priSOCK->read(512);
+        if (tcpSocket->waitForConnected(CobotUr::MAX_SOCKET_WAIT_)) {
+            if (tcpSocket->waitForReadyRead(CobotUr::MAX_SOCKET_WAIT_)) {
+                auto ba = tcpSocket->read(512);
                 if (robotState) {
                     robotState->unpack((uint8_t*) ba.constData(), ba.size());
                     COBOT_LOG.info() << "Firmware version detected: " << robotState->getVersion();
                 }
-                m_priSOCK->close();
+                tcpSocket->close();
                 return robotState;
             }
         }
+        COBOT_LOG.error() << "CobotUrFirmwareQueryer: " << tcpSocket->errorString();
         return nullptr;
     }
 };

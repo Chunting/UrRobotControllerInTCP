@@ -27,19 +27,20 @@ public:
 Q_SIGNALS:
     void connected();
     void disconnected();
+    void connectFail();
 
 public:
     void start();
     void stop();
-    void writeLine(const QByteArray& ba);
 
 protected:
     void secReadData();
     void secConnectHandle();
     void secDisconnectHandle();
+    void onSocketError(QAbstractSocket::SocketError socketError);
 
 protected:
-    QTcpSocket* m_secSOCK;
+    QTcpSocket* m_tcpSocket;
     QString m_host;
     std::shared_ptr<RobotState> m_robotState;
     std::condition_variable& m_msg_cond;

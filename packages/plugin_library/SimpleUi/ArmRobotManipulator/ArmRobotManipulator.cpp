@@ -259,7 +259,7 @@ void ArmRobotManipulator::onActualQUpdate(){
 
     if (m_initUIData > 0) {
         auto log = COBOT_LOG.info();
-        log << "Real: ";
+        log << "Actual Q: ";
         for (size_t i = 0; i < tmpq.size(); i++) {
             m_target[i]->setValue(tmpq[i] / CV_PI * 180);
             log << tmpq[i] / CV_PI * 180 << ". ";

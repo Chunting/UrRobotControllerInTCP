@@ -7,23 +7,26 @@
 #include <QtNetwork/QHostAddress>
 #include "CobotUrComm.h"
 #include "CobotUrFirmwareQueryer.h"
+#include <cobotsys_qt.h>
 
 CobotUrComm::CobotUrComm(std::condition_variable& cond_msg, QObject* parent)
         : QObject(parent), m_msg_cond(cond_msg){
 
     m_robotState = std::make_shared<RobotState>(m_msg_cond);
 
-    m_secSOCK = new QTcpSocket(this);
+    m_tcpSocket = new QTcpSocket(this);
 
-    m_secSOCK->setSocketOption(QAbstractSocket::LowDelayOption, 1);
+    m_tcpSocket->setSocketOption(QAbstractSocket::LowDelayOption, 1);
 
-    connect(m_secSOCK, &QTcpSocket::readyRead, this, &CobotUrComm::secReadData);
-    connect(m_secSOCK, &QTcpSocket::connected, this, &CobotUrComm::secConnectHandle);
-    connect(m_secSOCK, &QTcpSocket::disconnected, this, &CobotUrComm::secDisconnectHandle);
+    connect(m_tcpSocket, &QTcpSocket::readyRead, this, &CobotUrComm::secReadData);
+    connect(m_tcpSocket, &QTcpSocket::connected, this, &CobotUrComm::secConnectHandle);
+    connect(m_tcpSocket, &QTcpSocket::disconnected, this, &CobotUrComm::secDisconnectHandle);
+    connect(m_tcpSocket, static_cast<void (QAbstractSocket::*)(QAbstractSocket::SocketError)>(&QAbstractSocket::error),
+            this, &CobotUrComm::onSocketError);
 }
 
 CobotUrComm::~CobotUrComm(){
-    m_secSOCK->close();
+    m_tcpSocket->close();
 }
 
 void CobotUrComm::start(){
@@ -31,12 +34,14 @@ void CobotUrComm::start(){
 
     COBOT_LOG.info() << "Acquire firmware version: Connecting...";
     CobotUrFirmwareQueryer firmQueryer(m_host);
-    firmQueryer.getVersion(m_robotState);
-
-    /**
-     * Link ur general message channel
-     */
-    m_secSOCK->connectToHost(m_host, 30002);
+    if (firmQueryer.getVersion(m_robotState)) {
+        /**
+         * Link ur general message channel
+         */
+        m_tcpSocket->connectToHost(m_host, 30002);
+    } else {
+        Q_EMIT connectFail();
+    }
 }
 
 void CobotUrComm::setupHost(const QString& host){
@@ -47,19 +52,18 @@ void CobotUrComm::stop(){
 }
 
 void CobotUrComm::secReadData(){
-    auto ba = m_secSOCK->read(2048);
+    auto ba = m_tcpSocket->read(2048);
     if (ba.size() > 0) {
         m_robotState->unpack((uint8_t*) ba.constData(), ba.size());
-//        COBOT_LOG.info() << "Arrival UR Communication: " << ba.size();
     } else {
         m_robotState->setDisconnected();
-        m_secSOCK->close();
+        m_tcpSocket->close();
     }
 }
 
 void CobotUrComm::secConnectHandle(){
     COBOT_LOG.info() << "Secondary interface: Got connection";
-    localIp_ = m_secSOCK->localAddress().toString().toStdString();
+    localIp_ = m_tcpSocket->localAddress().toString().toStdString();
     Q_EMIT connected();
 }
 
@@ -72,5 +76,7 @@ void CobotUrComm::secDisconnectHandle(){
     Q_EMIT disconnected();
 }
 
-void CobotUrComm::writeLine(const QByteArray& ba){
+void CobotUrComm::onSocketError(QAbstractSocket::SocketError socketError){
+    COBOT_LOG.error() << "CobotUrComm: " << m_tcpSocket->errorString();
+    Q_EMIT connectFail();
 }

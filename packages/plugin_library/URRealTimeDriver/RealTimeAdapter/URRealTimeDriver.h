@@ -34,7 +34,9 @@ protected:
 
     bool _setup(const QString& configFilePath);
 
-    void driverReady();
+    void handleDriverReady();
+    void handleDriverDisconnect();
+    void notify(std::function<void(std::shared_ptr<ArmRobotRealTimeStatusObserver>& observer)> func);
 protected:
     std::mutex m_mutex;
     std::thread m_thread;
@@ -52,6 +54,7 @@ protected:
     std::vector<std::shared_ptr<ArmRobotRealTimeStatusObserver> > m_observers;
 
     std::vector<double> m_curReqQ;
+    bool m_curReqQValid;
 
     CobotUrCommCtrl* m_ctrl;
     CobotUrRealTimeCommCtrl* m_rt_ctrl;

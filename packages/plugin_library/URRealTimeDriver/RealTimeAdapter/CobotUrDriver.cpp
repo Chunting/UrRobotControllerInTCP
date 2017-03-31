@@ -21,6 +21,8 @@ CobotUrDriver::CobotUrDriver(std::condition_variable& rt_msg_cond,
     connect(m_urRealTimeCommCtrl->ur, &CobotUrRealTimeComm::realTimeProgDisconnect,
             this, &CobotUrDriver::handleRTProgDisconnect);
 
+    connect(m_urCommCtrl->ur, &CobotUrComm::connectFail, this, &CobotUrDriver::handleDisconnected);
+
 
     m_noDisconnectedAccept = false;
 
