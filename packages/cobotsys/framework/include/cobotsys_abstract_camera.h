@@ -14,7 +14,15 @@
 
 
 namespace cobotsys {
+/**
+ * @addtogroup framework
+ * @{
+ */
 
+/**
+ * @defgroup camera
+ * @{
+ */
 class CameraStreamObserver;
 
 
@@ -80,8 +88,13 @@ public:
     virtual bool capture(int waitMs = -1) = 0; /// @note 控制相机进行一次图像捕获
 };
 
+/**
+ * @}
+ */
 
-//
+/**
+ * @}
+ */
 }
 
 

@@ -10,8 +10,12 @@
 
 namespace cobotsys {
 /**
- * @defgroup framework
+ * @addtogroup framework
  * @{
+ */
+
+/**
+ * @brief 二指手的状态定义
  */
 enum class GripperPosition {
     Open = 0,

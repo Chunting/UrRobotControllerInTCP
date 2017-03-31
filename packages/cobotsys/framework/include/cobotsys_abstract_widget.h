@@ -12,6 +12,11 @@
 
 namespace cobotsys {
 /**
+ * @addtogroup framework
+ * @{
+ */
+
+/**
  * 创建这个类只是为了把在其他动态库里的Widget动态的创建出来。这个类本身没有什么。
  */
 class AbstractWidget : public QWidget, public AbstractObject {
@@ -19,6 +24,9 @@ public:
     AbstractWidget();
     virtual ~AbstractWidget();
 };
+/**
+ * @}
+ */
 }
 
 #endif //PROJECT_COBOTSYS_ABSTRACT_WIDGET_H

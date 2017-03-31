@@ -28,6 +28,9 @@ namespace cobotsys {
  *  所有可以动态创建的对象都是从 AbstractObject 继承，然后通过 GlobalObjectFactory 来创建。
  *
  * @{
+ *
+ * @addtogroup factory
+ * @{
  */
 /**
  * @note ObjectGroup 是一个辅助的类，用于从JSON配置里创建对象
@@ -178,6 +181,7 @@ private:
     std::shared_ptr<GlobalObjectFactoryImpl> m_impl;
 };
 /**
+ * @}
  * @}
  */
 }
