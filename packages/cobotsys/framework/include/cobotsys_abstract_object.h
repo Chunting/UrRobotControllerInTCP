@@ -10,6 +10,16 @@
 #include <QString>
 
 namespace cobotsys {
+/**
+ * @defgroup framework
+ * @{
+ */
+
+/**
+ * @brief 所有动态对象的根对象
+ *
+ * AbstractObject 是这个软件框架的最上层的类对象，只有一个 setup() 函数，而且还是虚函数。
+ */
 class AbstractObject : public std::enable_shared_from_this<AbstractObject> {
 public:
     AbstractObject();
@@ -21,10 +31,16 @@ public:
      *
      * 正常情况下，配置文件是JSON格式的。
      * @param configFilePath 当前对象所需要的配置文件的路径
-     * @return
+     * @retval true 当前对像成功的加载了配置
+     * @retval false 配置加载失败。原因看log
+     *    一般可能的原因是配置文件不存在，或者是配置不正确，这个要看具体的实现
+     *    的类是怎么搞的。
      */
     virtual bool setup(const QString& configFilePath) = 0;
 };
+/**
+ * @}
+ */
 }
 
 typedef std::shared_ptr<cobotsys::AbstractObject> AbstractObjectPtr;

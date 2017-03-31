@@ -8,6 +8,19 @@
 #include "cobotsys_file_finder.h"
 
 
+/**
+ * @mainpage cobotsys
+ *
+ *
+ * 多看代码。。。
+ *
+ *
+ *
+ *
+ *
+ */
+
+
 // TODO 下面定义的宏可以改成跨平台的方案
 #define PATH_SLASH_CHAR     '/'
 

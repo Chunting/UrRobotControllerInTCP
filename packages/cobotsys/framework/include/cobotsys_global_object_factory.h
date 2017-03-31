@@ -16,15 +16,27 @@
 #include <cobotsys_logger.h>
 #include <cobotsys_qt.h>
 
-namespace cobotsys {
 
+namespace cobotsys {
 /**
- * @note ObjectGroup是一个辅助的类，用于从JSON配置里创建对象
+ * @defgroup framework
+ *  @brief cobotsys软件框架
+ *
+ *  balabala...
+ *  @see AbstractObject
+ *
+ *  所有可以动态创建的对象都是从 AbstractObject 继承，然后通过 GlobalObjectFactory 来创建。
+ *
+ * @{
+ */
+/**
+ * @note ObjectGroup 是一个辅助的类，用于从JSON配置里创建对象
  *       有些时候同一个对象如果有多个接口，可以让一个对象来表示多个，
  *       可以避免重复创建
 
-  下面是JSON格式的例子，objectGroup是ObjectGroup对象所需要的数据项
+  下面是JSON格式的例子，objectGroup是 ObjectGroup 对象所需要的数据项
   它的值是一个数组
+
   @arg objectId  要创建的对象的ID，ID必须唯一，但是Key可以相同，即
                  两个ID可以使用同一个具体对象。
   @arg objectKey 对象的唯一Key
@@ -33,6 +45,7 @@ namespace cobotsys {
   @arg config    配置文件路径，可以是相对路径，会基本FileFinder来查找文件
 
   如果objectKey已经创建过了，factory与type会被忽略。
+  @code
 {
   "objectGroup": [
     {
@@ -48,6 +61,7 @@ namespace cobotsys {
     }
   ]
 }
+ @endcode
  *
  * 对像可以有相同的
  *
@@ -98,7 +112,7 @@ protected:
 /**
  * 正常情况下，这个对象在main函数里初始化并创建一个基本对象。
  * 例如：
-
+@code
 int main(int argc, char** argv){
     QApplication a(argc, argv);
     cobotsys::init_library(argc, argv);
@@ -110,6 +124,7 @@ int main(int argc, char** argv){
 
     return a.exec();
 }
+@endcode
  * 以上是这个对象的正确用法。
  */
 class GlobalObjectFactory {
@@ -162,8 +177,10 @@ private:
     class GlobalObjectFactoryImpl;
     std::shared_ptr<GlobalObjectFactoryImpl> m_impl;
 };
-
-//
+/**
+ * @}
+ */
 }
+
 
 #endif //PROJECT_COBOTSYS_GLOBAL_OBJECT_FACTORY_H

@@ -9,12 +9,14 @@
 #include "cobotsys_abstract_object.h"
 
 namespace cobotsys {
-
+/**
+ * @defgroup framework
+ * @{
+ */
 enum class GripperPosition {
     Open = 0,
     Close = 1000000,
 };
-
 
 class GripperStatusObserver {
 public:
@@ -55,6 +57,9 @@ public:
      */
     virtual bool setGripperPosition(int position) = 0;
 };
+/**
+ * @}
+ */
 }
 
 #endif //PROJECT_COBOTSYS_ABSTRACT_GRIPPER_H
