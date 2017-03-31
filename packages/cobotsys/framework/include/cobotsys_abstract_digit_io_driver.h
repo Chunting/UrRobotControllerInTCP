@@ -13,8 +13,8 @@
 namespace cobotsys {
 
 enum class DigitIoStatus {
-    Reset,
-    Set,
+    Reset = 0,
+    Set = 1,
 };
 
 enum class DigitIoPort {
@@ -35,8 +35,21 @@ public:
     AbstractDigitIoDriver();
     virtual ~AbstractDigitIoDriver();
 
+    /**
+     * 用于设置IO口的状态为ON
+     * @param ioPorts 可以是 DigitIoPort的组合
+     */
     virtual void setIo(DigitIoPorts ioPorts) = 0;
+    /**
+     * 清除IO状态为OFF
+     * @param ioPorts
+     */
     virtual void resetIo(DigitIoPorts ioPorts) = 0;
+    /**
+     * 获取指定IO口状态。
+     * @param ioPort
+     * @return
+     */
     virtual DigitIoStatus getIoStatus(DigitIoPort ioPort) = 0;
 };
 }

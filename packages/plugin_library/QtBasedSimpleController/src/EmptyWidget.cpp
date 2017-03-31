@@ -21,3 +21,7 @@ void EmptyWidget::pause(){
 
 void EmptyWidget::stop(){
 }
+
+bool EmptyWidget::setup(const QString& configFilePath){
+    return true;
+}

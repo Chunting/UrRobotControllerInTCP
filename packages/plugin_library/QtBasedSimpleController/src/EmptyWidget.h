@@ -18,6 +18,7 @@ public:
     virtual bool start();
     virtual void pause();
     virtual void stop();
+    virtual bool setup(const QString& configFilePath);
 };
 
 

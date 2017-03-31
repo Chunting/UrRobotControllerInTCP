@@ -13,19 +13,11 @@ cobotsys::AbstractController::~AbstractController(){
     INFO_DESTRUCTOR(this);
 }
 
-bool cobotsys::AbstractController::setup(const QString& configFilePath){
-    return false;
-}
-
 namespace cobotsys {
 AbstractControllerWidget::AbstractControllerWidget() : QWidget(nullptr){
 }
 
 AbstractControllerWidget::~AbstractControllerWidget(){
     INFO_DESTRUCTOR(this);
-}
-
-bool AbstractControllerWidget::setup(const QString& configFilePath){
-    return false;
 }
 }

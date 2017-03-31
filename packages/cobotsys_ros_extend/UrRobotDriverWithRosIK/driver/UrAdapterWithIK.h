@@ -8,7 +8,6 @@
 
 
 #include <cobotsys_abstract_robot_driver.h>
-#include <cobotsys_observer_template.h>
 #include "../../../plugin_library/UrRobotDriver/src/ur_driver.h"
 #include <UrStatusWatcher2.h>
 #include <QTimer>

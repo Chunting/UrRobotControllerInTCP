@@ -12,16 +12,25 @@
 #include <QWidget>
 
 namespace cobotsys {
+/**
+ * AbstractController
+ * 用于流程控制的外部接口，从用户界面的角度来说
+ * 适用于从单一工作点移动到另一个单一工作点。
+ *
+ * 对应于界面上的三个按钮
+ */
 class AbstractController : public AbstractObject {
 public:
     AbstractController();
     virtual ~AbstractController();
 
+    /**
+     *
+     * @return
+     */
     virtual bool start() = 0;
     virtual void pause() = 0;
     virtual void stop() = 0;
-
-    virtual bool setup(const QString& configFilePath);
 };
 }
 
@@ -31,8 +40,6 @@ class AbstractControllerWidget : public QWidget, public AbstractController {
 public:
     AbstractControllerWidget();
     virtual ~AbstractControllerWidget();
-
-    virtual bool setup(const QString& configFilePath);
 };
 }
 
