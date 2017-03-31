@@ -34,6 +34,7 @@ public:
 Q_SIGNALS:
     void driverStartFailed();
     void driverStartSuccess();
+    void driverStopped();
 
 
 public:
@@ -58,6 +59,8 @@ private:
     double servoj_lookahead_time_;
     double servoj_gain_;
     std::string ip_addr_;
+
+    int m_disconnectCount;
 
     int m_connectTime;
     bool m_isConnected;

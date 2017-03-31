@@ -5,7 +5,7 @@
 
 #include <cobotsys_logger.h>
 #include "CobotUrRealTimeComm.h"
-
+#include <cobotsys_qt.h>
 
 CobotUrRealTimeComm::CobotUrRealTimeComm(std::condition_variable& cond_msg, const QString& hostIp, QObject* parent)
         : QObject(parent), m_msg_cond(cond_msg){
@@ -22,6 +22,9 @@ CobotUrRealTimeComm::CobotUrRealTimeComm(std::condition_variable& cond_msg, cons
 
     connect(this, &CobotUrRealTimeComm::asyncServojFlushRequired,
             this, &CobotUrRealTimeComm::asyncServojFlush, Qt::QueuedConnection);
+
+    connect(m_SOCKET, static_cast<void (QAbstractSocket::*)(QAbstractSocket::SocketError)>(&QAbstractSocket::error),
+            this, &CobotUrRealTimeComm::onSocketError);
 
     m_rtSOCKET = nullptr;
     keepalive = 1;
@@ -159,6 +162,11 @@ void CobotUrRealTimeComm::asyncServoj(const std::vector<double>& positions, bool
     if (flushNow) {
         Q_EMIT asyncServojFlushRequired();
     }
+}
+
+void CobotUrRealTimeComm::onSocketError(QAbstractSocket::SocketError socketError){
+    COBOT_LOG.error() << "CobotUrRealTimeComm: " << m_SOCKET->errorString();
+    Q_EMIT connectFail();
 }
 
 

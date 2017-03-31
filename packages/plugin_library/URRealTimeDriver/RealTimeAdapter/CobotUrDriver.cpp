@@ -14,14 +14,17 @@ CobotUrDriver::CobotUrDriver(std::condition_variable& rt_msg_cond,
 
     connect(m_urCommCtrl->ur, &CobotUrComm::connected, this, &CobotUrDriver::handleCommConnected);
     connect(m_urRealTimeCommCtrl->ur, &CobotUrRealTimeComm::connected, this, &CobotUrDriver::handleRTCommConnected);
+
     connect(m_urCommCtrl->ur, &CobotUrComm::disconnected, this, &CobotUrDriver::handleDisconnected);
     connect(m_urRealTimeCommCtrl->ur, &CobotUrRealTimeComm::disconnected, this, &CobotUrDriver::handleDisconnected);
+
     connect(m_urRealTimeCommCtrl->ur, &CobotUrRealTimeComm::realTimeProgConnected,
             this, &CobotUrDriver::handleRTProgConnect);
     connect(m_urRealTimeCommCtrl->ur, &CobotUrRealTimeComm::realTimeProgDisconnect,
             this, &CobotUrDriver::handleRTProgDisconnect);
 
     connect(m_urCommCtrl->ur, &CobotUrComm::connectFail, this, &CobotUrDriver::handleDisconnected);
+    connect(m_urRealTimeCommCtrl->ur, &CobotUrRealTimeComm::connectFail, this, &CobotUrDriver::handleDisconnected);
 
 
     m_noDisconnectedAccept = false;
@@ -54,6 +57,7 @@ void CobotUrDriver::handleRTCommConnected(){
 
 void CobotUrDriver::startDriver(){
     m_noDisconnectedAccept = true;
+    m_disconnectCount = 0;
     m_connectTime = 0;
     m_isConnected = false;
     m_urCommCtrl->startComm();
@@ -63,9 +67,13 @@ void CobotUrDriver::startDriver(){
 void CobotUrDriver::handleDisconnected(){
     m_connectTime = 0;
     m_isConnected = false;
+    m_disconnectCount++;
 
     if (m_noDisconnectedAccept) {
         Q_EMIT driverStartFailed();
+    }
+    if (m_disconnectCount >= 2) {
+        Q_EMIT driverStopped();
     }
 }
 
@@ -102,6 +110,7 @@ bool CobotUrDriver::uploadProg(){
     cmd_str += "\t\t\tif (state == SERVO_RUNNING) and ";
     cmd_str += "(cmd_servo_state == SERVO_IDLE):\n";
     cmd_str += "\t\t\t\tdo_brake = True\n";
+    cmd_str += "\t\t\t\tkeepalive = 0\n"; // 如果出现这种情况，直接断开连接，退出脚本程序。
     cmd_str += "\t\t\tend\n";
     cmd_str += "\t\t\tstate = cmd_servo_state\n";
     cmd_str += "\t\t\tcmd_servo_state = SERVO_IDLE\n";

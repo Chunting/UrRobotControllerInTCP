@@ -63,6 +63,8 @@ bool URRealTimeDriver::start(){
     m_urDriver = new CobotUrDriver(m_rt_msg_cond, m_msg_cond, m_attr_robot_ip.c_str());
     connect(m_urDriver, &CobotUrDriver::driverStartSuccess, this, &URRealTimeDriver::handleDriverReady);
     connect(m_urDriver, &CobotUrDriver::driverStartFailed, this, &URRealTimeDriver::handleDriverDisconnect);
+    connect(m_urDriver, &CobotUrDriver::driverStopped, this, &URRealTimeDriver::handleDriverDisconnect);
+    connect(m_urDriver, &QObject::destroyed, [=](QObject*){ handleDriverDisconnect(); });
     m_urDriver->setServojTime(m_attr_servoj_time);
     m_urDriver->setServojLookahead(m_attr_servoj_lookahead);
     m_urDriver->setServojGain(m_attr_servoj_gain);
@@ -174,6 +176,7 @@ QString URRealTimeDriver::getRobotUrl(){
 }
 
 void URRealTimeDriver::handleDriverDisconnect(){
+    COBOT_LOG.info() << "URRealTimeDriver Disconnect";
     stop();
     notify([=](std::shared_ptr<ArmRobotRealTimeStatusObserver>& observer){
         observer->onArmRobotDisconnect();

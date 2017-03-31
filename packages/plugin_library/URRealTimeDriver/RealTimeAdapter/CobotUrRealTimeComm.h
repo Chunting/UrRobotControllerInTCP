@@ -46,8 +46,9 @@ public:
 Q_SIGNALS:
     void connected();
     void disconnected();
-    void realTimeProgConnected();
+    void connectFail();
 
+    void realTimeProgConnected();
     void realTimeProgDisconnect();
 
     void asyncServojFlushRequired();
@@ -56,6 +57,7 @@ protected:
     void urProgConnect();
     void onRealTimeDisconnect();
     void asyncServojFlush();
+    void onSocketError(QAbstractSocket::SocketError socketError);
 protected:
     QString m_hostIp;
     std::shared_ptr<RobotStateRT> m_robotState;
