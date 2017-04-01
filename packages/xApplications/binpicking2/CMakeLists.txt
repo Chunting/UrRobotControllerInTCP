@@ -17,6 +17,7 @@ get_property(UseROS GLOBAL PROPERTY BUILD_WITH_ROS)
 find_package(freenect2 QUIET)
 if (freenect2_FOUND)
     if (${UseROS} STREQUAL "ON")
+        find_package(OpenCL REQUIRED)
         include_directories(${freenect2_INCLUDE_DIRS})
 
         # OpenCV
