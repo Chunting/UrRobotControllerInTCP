@@ -167,5 +167,11 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/samples)
 message("")
 
 include(InstallRequiredSystemLibraries)
+SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "cobotsys SDK")
+set(CPACK_PACKAGE_VERSION_MAJOR "0")
+set(CPACK_PACKAGE_VERSION_MINOR "0")
+SET(CPACK_PACKAGE_VERSION_PATCH "1")
+#SET(CPACK_GENERATOR "DEB")
+set(CPACK_PACKAGE_CONTACT "pan@cobotsys.com")
 include(CPack)
 

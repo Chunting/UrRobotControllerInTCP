@@ -112,5 +112,7 @@ endif ()
 #        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
 # 安装
+install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME} LIBRARY DESTINATION lib)
+install(EXPORT ${PROJECT_NAME} DESTINATION lib)
 install(DIRECTORY include/ DESTINATION include/cobotsys FILES_MATCHING PATTERN "*.h")
-install(DIRECTORY framework/ DESTINATION include/cobotsys FILES_MATCHING PATTERN "*.h")
+install(DIRECTORY framework/include/ DESTINATION include/cobotsys FILES_MATCHING PATTERN "*.h")
