@@ -112,7 +112,11 @@ endif ()
 #        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
 # 安装
-install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME} LIBRARY DESTINATION lib COMPONENT libraries)
-install(EXPORT ${PROJECT_NAME} DESTINATION lib)
-install(DIRECTORY include/ DESTINATION include/cobotsys COMPONENT headers FILES_MATCHING PATTERN "*.h")
-install(DIRECTORY framework/include/ DESTINATION include/cobotsys COMPONENT headers FILES_MATCHING PATTERN "*.h")
+install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME} LIBRARY
+        DESTINATION lib
+        INCLUDES DESTINATION include/cobotsys)
+install(EXPORT ${PROJECT_NAME} DESTINATION lib
+        FILE ${PROJECT_NAME}Config.cmake
+        EXPORT_LINK_INTERFACE_LIBRARIES)
+install(DIRECTORY include/ DESTINATION include/cobotsys FILES_MATCHING PATTERN "*.h")
+install(DIRECTORY framework/include/ DESTINATION include/cobotsys FILES_MATCHING PATTERN "*.h")

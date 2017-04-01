@@ -3,6 +3,10 @@ cmake_minimum_required(VERSION 3.6)
 set(CMAKE_CXX_STANDARD 11)
 project(cobotsys)
 option(BUILD_DOC "Build Document")
+if (${CMAKE_BUILD_TYPE} MATCHES "Release")
+    message("Build Type: ---------------------------------RELEASE")
+    set(BUILD_DOC ON)
+endif ()
 
 if (WIN32)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /source-charset:utf-8")
@@ -20,7 +24,7 @@ add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 # install rpath
 # see http://blog.theerrorlog.com/the-gnu-linker-and-rpath.html
 # Unix-like Only(Linux Mac)
-set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib;$ENV{QT5_INSTALL_PATH}/lib;$ORIGIN/../lib")
+set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib;$ENV{QT5_INSTALL_PATH}/lib;$ORIGIN/../lib;$ORIGIN/../../lib")
 
 # 这里设置默认的输出目录
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -65,6 +69,7 @@ if (BUILD_DOC)
                 WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
                 COMMENT "Generating API documentation with Doxygen"
                 VERBATIM)
+        install(DIRECTORY ${CMAKE_BINARY_DIR}/docs/ DESTINATION docs COMPONENT doc)
     else ()
         message("Doxygen need to be installed to generate the doxygen documentation")
     endif ()

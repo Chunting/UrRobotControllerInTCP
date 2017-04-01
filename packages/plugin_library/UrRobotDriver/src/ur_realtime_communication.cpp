@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-#include <printf.h>
 #include "ur_realtime_communication.h"
 
 UrRealtimeCommunication::UrRealtimeCommunication(
