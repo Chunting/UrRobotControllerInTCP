@@ -28,6 +28,7 @@ public:
         Data,
         Config,
         Script,
+        Plugin,
         AppRuntimeDir
     };
 public:

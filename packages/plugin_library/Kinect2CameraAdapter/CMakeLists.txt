@@ -29,5 +29,7 @@ if (freenect2_FOUND)
             ${freenect2_LIBRARY}
             ${OpenCL_LIBRARY}
             ${OpenCV_LIBRARIES})
+
+    install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION plugins)
 endif ()
 

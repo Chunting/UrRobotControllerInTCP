@@ -21,7 +21,7 @@ int main(int argc, char** argv){
 
     cobotsys::init_library(argc, argv);
 
-    globalObjectFactory.loadLibrarys("../lib/plugins");
+    globalObjectFactory.loadLibrarys();
 
     pObject = globalObjectFactory.createObject("SimpleControllerFactory, Ver 1.0", "CameraViewWidget");
 

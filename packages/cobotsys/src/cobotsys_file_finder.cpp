@@ -5,6 +5,7 @@
 
 
 #include "cobotsys_file_finder.h"
+#include <QDir>
 
 namespace cobotsys {
 
@@ -39,6 +40,12 @@ void FileFinder::loadDataPaths(){
     addSearchPath("../data", Data);
     addSearchPath("../../data", Data);
 
+    addSearchPath(".", Plugin);
+    addSearchPath("../plugins", Plugin);
+    addSearchPath("../../plugins", Plugin);
+    addSearchPath("../lib/plugins", Plugin);
+    addSearchPath("../../lib/plugins", Plugin);
+
     COBOT_LOG.message("File Finder") << "Current Path: " << realPathOf(".");
 }
 
@@ -65,13 +72,21 @@ std::string FileFinder::realPathOf(const std::string& path){
     if (pfull) {
         std::string rpath = pfull;
         bool isExist = isFileExist(rpath);
-        if (isExist)
+        if (isExist) {
             return rpath;
+        }
     }
     return std::string();
 }
 
-void FileFinder::storSearchPath(const std::string & path_to_find, PreDefPath pathType){
+void FileFinder::storSearchPath(const std::string& path_to_find, PreDefPath pathType){
+
+    for (auto& iter : base_paths) {
+        if (iter == path_to_find) {
+            return;
+        }
+    }
+
     base_paths.push_back(path_to_find);
     pre_def_path[pathType] = path_to_find;
     auto log = COBOT_LOG.message("File Finder");
@@ -81,14 +96,23 @@ void FileFinder::storSearchPath(const std::string & path_to_find, PreDefPath pat
     }
 }
 
+std::string realPath2(const std::string& path_to_find){
+    QDir dir(QDir::currentPath());
+    dir.setPath(QString::fromLocal8Bit(path_to_find.c_str()));
+    if (dir.exists()) {
+        return dir.absolutePath().toLocal8Bit().constData();
+    }
+    return std::string();
+}
+
 void FileFinder::addSearchPath(const std::string& path_to_find, FileFinder::PreDefPath pathType){
-    auto rpath = realPathOf(path_to_find);
+    auto rpath = realPath2(path_to_find);
     if (rpath.size()) {
         storSearchPath(rpath, pathType);
     } else {
         for (const auto& path : base_paths) {
             auto tmp_path = path + path_slash + path_to_find;
-            rpath = realPathOf(tmp_path);
+            rpath = realPath2(tmp_path);
             if (rpath.size()) {
                 storSearchPath(rpath, pathType);
                 break;

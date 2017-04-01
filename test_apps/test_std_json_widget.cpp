@@ -31,17 +31,18 @@ int main(int argc, char** argv){
 
     QString json_path;
 
+    cobotsys::GlobalObjectFactory globalObjectFactory;
+    globalObjectFactory.loadLibrarys();
+
     if (argc <= 1) {
-        json_path = QFileDialog::getOpenFileName(nullptr, QString(), "../../data");
+        json_path = QFileDialog::getOpenFileName(nullptr, QString(), cobotsys::FileFinder::getPreDefPath(cobotsys::FileFinder::Data).c_str());
         if (json_path.isEmpty())
             return 1;
     } else {
         json_path = argv[1];
     }
 
-    cobotsys::GlobalObjectFactory globalObjectFactory;
-    globalObjectFactory.loadLibrarys("../lib/plugins");
-    globalObjectFactory.loadLibrarys("../../lib/plugins");
+
 
     QJsonObject jsonObject;
 

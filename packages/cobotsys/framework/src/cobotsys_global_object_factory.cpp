@@ -5,6 +5,7 @@
 
 #include <QtCore/QJsonArray>
 #include <include/extra2.h>
+#include <include/cobotsys_file_finder.h>
 #include "cobotsys_global_object_factory.h"
 
 #define OBJECT_FACTORY_SYMBOL "getAbstractObjectFactoryInstance"
@@ -155,6 +156,14 @@ std::vector<std::string> GlobalObjectFactory::getFactorySupportedNames(const std
         return iter->second;
     }
     return std::vector<std::string>();
+}
+
+void GlobalObjectFactory::loadLibrarys(const std::string& path){
+    loadLibrarys(QString::fromLocal8Bit(path.c_str()));
+}
+
+void GlobalObjectFactory::loadLibrarys(){
+    loadLibrarys(FileFinder::getPreDefPath(FileFinder::Plugin));
 }
 }
 

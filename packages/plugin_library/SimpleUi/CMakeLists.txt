@@ -17,3 +17,5 @@ file(GLOB ${PROJECT_NAME}_files RobotXyz/* Factory/* ArmRobotManipulator/*)
 add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_files})
 
 target_link_libraries(${PROJECT_NAME} cobotsys)
+
+install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION plugins)

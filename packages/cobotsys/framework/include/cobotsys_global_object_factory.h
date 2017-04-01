@@ -122,7 +122,7 @@ int main(int argc, char** argv){
     cobotsys::init_library(argc, argv);
 
     cobotsys::GlobalObjectFactory globalObjectFactory;
-    globalObjectFactory.loadLibrarys("../lib/plugins");
+    globalObjectFactory.loadLibrarys();
 
     ........do something.....
 
@@ -151,6 +151,8 @@ public:
      * @param path
      */
     void loadLibrarys(const QString& path);
+    void loadLibrarys(const std::string& path);
+    void loadLibrarys();
 
     /**
      * 加载当前进程里的AbstractObjectFactory。

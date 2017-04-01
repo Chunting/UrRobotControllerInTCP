@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.6)
 # 默认编译标准
 set(CMAKE_CXX_STANDARD 11)
+project(cobotsys)
 option(BUILD_DOC "Build Document")
 
 if (WIN32)
@@ -17,7 +18,9 @@ set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_SOURCE_DIR}/cmake/Modules/")
 add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 
 # install rpath
-set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib;$ENV{QT5_INSTALL_PATH}/lib")
+# see http://blog.theerrorlog.com/the-gnu-linker-and-rpath.html
+# Unix-like Only(Linux Mac)
+set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib;$ENV{QT5_INSTALL_PATH}/lib;$ORIGIN/../lib")
 
 # 这里设置默认的输出目录
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -166,11 +169,14 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/samples)
 
 message("")
 
+install(DIRECTORY data/ DESTINATION data COMPONENT data)
+
 include(InstallRequiredSystemLibraries)
 SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "cobotsys SDK")
 set(CPACK_PACKAGE_VERSION_MAJOR "0")
 set(CPACK_PACKAGE_VERSION_MINOR "0")
 SET(CPACK_PACKAGE_VERSION_PATCH "1")
+SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/Copyright.txt")
 #SET(CPACK_GENERATOR "DEB")
 set(CPACK_PACKAGE_CONTACT "pan@cobotsys.com")
 include(CPack)
