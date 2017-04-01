@@ -12,8 +12,12 @@
 
 namespace cobotsys {
 /**
- * @defgroup framework
+ * @addtogroup framework
  * @{
+ * @defgroup robot
+ * @{
+ *
+ * @brief 机器人驱动接口
  */
 
 /**
@@ -113,6 +117,7 @@ public:
     virtual QString getRobotUrl() = 0;
 };
 /**
+ * @}
  * @}
  */
 }

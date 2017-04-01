@@ -12,6 +12,10 @@ namespace cobotsys {
 /**
  * @addtogroup framework
  * @{
+ * @defgroup hand
+ * @{
+ *
+ * @brief 定义用于机器人末段安装的执行部件
  */
 
 /**
@@ -62,6 +66,7 @@ public:
     virtual bool setGripperPosition(int position) = 0;
 };
 /**
+ * @}
  * @}
  */
 }

@@ -20,18 +20,19 @@
 namespace cobotsys {
 /**
  * @defgroup framework
- *  @brief cobotsys软件框架
+ * @brief cobotsys 软件框架
  *
- *  balabala...
- *  @see AbstractObject
+ * balabala...
+ * @see AbstractObject
  *
- *  所有可以动态创建的对象都是从 AbstractObject 继承，然后通过 GlobalObjectFactory 来创建。
+ * 所有可以动态创建的对象都是从 AbstractObject 继承，然后通过 GlobalObjectFactory 来创建。
  *
  * @{
  *
  * @addtogroup factory
  * @{
  */
+
 /**
  * @note ObjectGroup 是一个辅助的类，用于从JSON配置里创建对象
  *       有些时候同一个对象如果有多个接口，可以让一个对象来表示多个，

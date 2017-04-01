@@ -14,7 +14,11 @@
  *
  * 多看代码。。。
  *
+ * @section 安装与使用
  *
+ * 参看源文件目录下的README.md
+ *
+ * @see framework
  *
  *
  *
