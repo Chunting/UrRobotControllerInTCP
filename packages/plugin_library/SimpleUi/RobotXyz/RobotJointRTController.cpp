@@ -25,10 +25,10 @@ void RobotJointRTController::onJointStatusUpdate(const std::vector<double>& join
     Q_EMIT jointUpdated();
 }
 
-void RobotJointRTController::onRobotConnected(std::shared_ptr<AbstractRobotDriver> pRobot){
+void RobotJointRTController::onRobotConnected(std::shared_ptr<AbstractArmRobotMoveDriver> pRobot){
 }
 
-void RobotJointRTController::onRobotDisconnected(std::shared_ptr<AbstractRobotDriver> pRobot){
+void RobotJointRTController::onRobotDisconnected(std::shared_ptr<AbstractArmRobotMoveDriver> pRobot){
 }
 
 void RobotJointRTController::getCurJoint(std::vector<double>& j){

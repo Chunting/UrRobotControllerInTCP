@@ -6,12 +6,12 @@
 #ifndef PROJECT_ROBOTJOINTRTCONTROLLER_H
 #define PROJECT_ROBOTJOINTRTCONTROLLER_H
 
-#include <cobotsys_abstract_robot_driver.h>
+#include <cobotsys_abstract_arm_robot_move_driver.h>
 #include <QtCore/QMutex>
 
 using namespace cobotsys;
 
-class RobotJointRTController : public QObject, public RobotStatusObserver {
+class RobotJointRTController : public QObject, public ArmRobotMoveStatusObserver {
 Q_OBJECT
 public:
     RobotJointRTController();
@@ -19,8 +19,8 @@ public:
 
     virtual void onMoveFinish(uint32_t moveId);
     virtual void onJointStatusUpdate(const std::vector<double>& jointPose);
-    virtual void onRobotConnected(std::shared_ptr<AbstractRobotDriver> pRobot);
-    virtual void onRobotDisconnected(std::shared_ptr<AbstractRobotDriver> pRobot);
+    virtual void onRobotConnected(std::shared_ptr<AbstractArmRobotMoveDriver> pRobot);
+    virtual void onRobotDisconnected(std::shared_ptr<AbstractArmRobotMoveDriver> pRobot);
 
     void getCurJoint(std::vector<double>& j);
 

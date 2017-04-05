@@ -41,10 +41,10 @@ void UrRobotStatusDebugger::onJointStatusUpdate(const std::vector<double>& joint
     }
 }
 
-void UrRobotStatusDebugger::onRobotConnected(std::shared_ptr<AbstractRobotDriver> pRobot){
+void UrRobotStatusDebugger::onRobotConnected(std::shared_ptr<AbstractArmRobotMoveDriver> pRobot){
 }
 
-void UrRobotStatusDebugger::onRobotDisconnected(std::shared_ptr<AbstractRobotDriver> pRobot){
+void UrRobotStatusDebugger::onRobotDisconnected(std::shared_ptr<AbstractArmRobotMoveDriver> pRobot){
 }
 
 bool UrRobotStatusDebugger::setup(const QString& configFilePath){

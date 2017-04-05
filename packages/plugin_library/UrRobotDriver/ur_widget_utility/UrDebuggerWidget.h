@@ -6,7 +6,7 @@
 #ifndef PROJECT_URDEBUGGERWIDGET_H
 #define PROJECT_URDEBUGGERWIDGET_H
 
-#include <cobotsys_abstract_robot_driver.h>
+#include <cobotsys_abstract_arm_robot_move_driver.h>
 #include <cobotsys_abstract_controller.h>
 #include <QCloseEvent>
 #include "ui_UrDebuggerWidget.h"
@@ -15,7 +15,7 @@
 
 using namespace cobotsys;
 class UrDebuggerWidget : public cobotsys::AbstractControllerWidget,
-                         public RobotStatusObserver {
+                         public ArmRobotMoveStatusObserver {
 Q_OBJECT
 public:
     UrDebuggerWidget();
@@ -39,8 +39,8 @@ protected:
 public:
     virtual void onMoveFinish(uint32_t moveId);
     virtual void onJointStatusUpdate(const std::vector<double>& jointPose);
-    virtual void onRobotConnected(std::shared_ptr<AbstractRobotDriver> pRobot);
-    virtual void onRobotDisconnected(std::shared_ptr<AbstractRobotDriver> pRobot);
+    virtual void onRobotConnected(std::shared_ptr<AbstractArmRobotMoveDriver> pRobot);
+    virtual void onRobotDisconnected(std::shared_ptr<AbstractArmRobotMoveDriver> pRobot);
 
 
 protected:
@@ -50,7 +50,7 @@ protected:
 
     bool moveTarget();
 protected:
-    std::shared_ptr<AbstractRobotDriver> m_robotDriver;
+    std::shared_ptr<AbstractArmRobotMoveDriver> m_robotDriver;
     bool m_reverseMove;
     double m_incBase;
     Ui::RobotDebugger ui;

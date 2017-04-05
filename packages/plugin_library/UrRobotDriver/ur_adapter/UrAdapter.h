@@ -7,14 +7,14 @@
 #define PROJECT_URADAPTER_H
 
 
-#include <cobotsys_abstract_robot_driver.h>
+#include <cobotsys_abstract_arm_robot_move_driver.h>
 #include "ur_driver.h"
 #include <UrStatusWatcher.h>
 #include <QTimer>
 
 using namespace cobotsys;
 
-class UrAdapter : public QObject, public cobotsys::AbstractRobotDriver {
+class UrAdapter : public QObject, public cobotsys::AbstractArmRobotMoveDriver {
 Q_OBJECT
 public:
     UrAdapter();
@@ -24,7 +24,7 @@ public:
     virtual bool move(uint32_t moveId, const cv::Point3d& pos, const cv::Vec3d& normal);
     virtual void move(uint32_t moveId, const std::vector<double>& jointPos);
 
-    virtual void attach(std::shared_ptr<RobotStatusObserver> observer);
+    virtual void attach(std::shared_ptr<ArmRobotMoveStatusObserver> observer);
     virtual void directControl(const std::string& command);
 
     virtual std::shared_ptr<QIODevice> getSerialIoDevice(int devicdId = 0);
@@ -41,13 +41,13 @@ public:
 
     std::shared_ptr<UrDriver>& getDriver(){ return m_urDriver; }
 
-    void notify(std::function<void(std::shared_ptr<RobotStatusObserver>&)> applyFunc);
+    void notify(std::function<void(std::shared_ptr<ArmRobotMoveStatusObserver>&)> applyFunc);
 
     void tickCheckService();
 
     bool connectedOnceSetup();
 protected:
-    std::vector<std::shared_ptr<RobotStatusObserver> > m_observerArray;
+    std::vector<std::shared_ptr<ArmRobotMoveStatusObserver> > m_observerArray;
     std::shared_ptr<UrDriver> m_urDriver;
 
     std::condition_variable m_rt_msg_cond;

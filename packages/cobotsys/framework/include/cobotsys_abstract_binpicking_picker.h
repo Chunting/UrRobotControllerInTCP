@@ -8,7 +8,7 @@
 
 
 #include "cobotsys_abstract_object.h"
-#include "cobotsys_abstract_robot_driver.h"
+#include "cobotsys_abstract_arm_robot_move_driver.h"
 
 namespace cobotsys {
 class AbstractBinpickingPicker : public AbstractObject {
@@ -17,7 +17,7 @@ public:
     virtual ~AbstractBinpickingPicker();
 
     virtual void pickObject() = 0;
-    virtual void setRobotDriver(std::shared_ptr<AbstractRobotDriver> robotDriver) = 0;
+    virtual void setRobotDriver(std::shared_ptr<AbstractArmRobotMoveDriver> robotDriver) = 0;
     virtual void setDigitIoDriver(std::shared_ptr<AbstractDigitIoDriver> digitIoDriver) = 0;
 };
 }

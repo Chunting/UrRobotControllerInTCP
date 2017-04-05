@@ -7,19 +7,19 @@
 #define PROJECT_URROBOTSTATUSDEBUGGER_H
 
 
-#include <cobotsys_abstract_robot_driver.h>
+#include <cobotsys_abstract_arm_robot_move_driver.h>
 
 using namespace cobotsys;
 
-class UrRobotStatusDebugger : public cobotsys::AbstractObject, public cobotsys::RobotStatusObserver {
+class UrRobotStatusDebugger : public cobotsys::AbstractObject, public cobotsys::ArmRobotMoveStatusObserver {
 public:
     UrRobotStatusDebugger();
     virtual ~UrRobotStatusDebugger();
 
     virtual void onMoveFinish(uint32_t moveId);
     virtual void onJointStatusUpdate(const std::vector<double>& jointPose);
-    virtual void onRobotConnected(std::shared_ptr<AbstractRobotDriver> pRobot);
-    virtual void onRobotDisconnected(std::shared_ptr<AbstractRobotDriver> pRobot);
+    virtual void onRobotConnected(std::shared_ptr<AbstractArmRobotMoveDriver> pRobot);
+    virtual void onRobotDisconnected(std::shared_ptr<AbstractArmRobotMoveDriver> pRobot);
     virtual bool setup(const QString& configFilePath);
 protected:
 

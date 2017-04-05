@@ -15,8 +15,8 @@ else ()
     find_package(Qt5Gui REQUIRED)
     find_package(Qt5Widgets REQUIRED) # Fuck, 如果要使用autouic那么必须引用这个Qt5Widgets.
 
-    include_directories(src)
-    include_directories(ur_adapter)
+    include_directories(../src)
+    include_directories(../ur_adapter)
 
     file(GLOB ${PROJECT_NAME}_files ur_adapter/* ur_widget_utility/* src/*)
 

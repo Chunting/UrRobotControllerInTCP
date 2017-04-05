@@ -109,7 +109,7 @@ void UrAdapter::pause(){
     }
 }
 
-void UrAdapter::attach(std::shared_ptr<RobotStatusObserver> observer){
+void UrAdapter::attach(std::shared_ptr<ArmRobotMoveStatusObserver> observer){
     for (auto& o : m_observerArray) {
         if (o == observer)
             return;
@@ -120,7 +120,7 @@ void UrAdapter::attach(std::shared_ptr<RobotStatusObserver> observer){
     }
 }
 
-void UrAdapter::notify(std::function<void(std::shared_ptr<RobotStatusObserver>&)> applyFunc){
+void UrAdapter::notify(std::function<void(std::shared_ptr<ArmRobotMoveStatusObserver>&)> applyFunc){
     if (applyFunc && m_isStarted) {
         for (auto& o : m_observerArray) {
             applyFunc(o);
@@ -133,16 +133,16 @@ void UrAdapter::tickCheckService(){
         if (m_urDriver->rt_interface_->connected_) {
             if (m_connectionNotifyStatus) {
                 if (connectedOnceSetup()) {
-                    notify([=](std::shared_ptr<RobotStatusObserver>& o){
-                        o->onRobotConnected(std::dynamic_pointer_cast<AbstractRobotDriver>(shared_from_this()));
+                    notify([=](std::shared_ptr<ArmRobotMoveStatusObserver>& o){
+                        o->onRobotConnected(std::dynamic_pointer_cast<AbstractArmRobotMoveDriver>(shared_from_this()));
                     });
                     m_connectionNotifyStatus = false;
                     m_disconnectNotifyStatus = true;
                 }
             }
         } else if (m_disconnectNotifyStatus) {
-            notify([=](std::shared_ptr<RobotStatusObserver>& o){
-                o->onRobotDisconnected(std::dynamic_pointer_cast<AbstractRobotDriver>(shared_from_this()));
+            notify([=](std::shared_ptr<ArmRobotMoveStatusObserver>& o){
+                o->onRobotDisconnected(std::dynamic_pointer_cast<AbstractArmRobotMoveDriver>(shared_from_this()));
             });
             m_connectionNotifyStatus = true;
             m_disconnectNotifyStatus = false;

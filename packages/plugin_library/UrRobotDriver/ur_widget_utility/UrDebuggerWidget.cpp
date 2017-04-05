@@ -79,7 +79,7 @@ bool UrDebuggerWidget::setup(const QString& configFilePath){
     auto robot_factory = json["robot_factory"].toString("UrRobotDriverFactory, Ver 1.0");
     auto robot_type = json["robot_type"].toString("UrAdapter");
     auto pObject = GlobalObjectFactory::instance()->createObject(robot_factory, robot_type);
-    m_robotDriver = std::dynamic_pointer_cast<cobotsys::AbstractRobotDriver>(pObject);
+    m_robotDriver = std::dynamic_pointer_cast<cobotsys::AbstractArmRobotMoveDriver>(pObject);
 
     m_incBase = json["step_angle"].toDouble(1);
     m_singleMoveRangeLow = json["range_low"].toDouble(-180) / 180 * CV_PI;
@@ -91,7 +91,7 @@ bool UrDebuggerWidget::setup(const QString& configFilePath){
         m_singleMoveRangeLow = -CV_PI;
 
     if (m_robotDriver) {
-        m_robotDriver->attach(std::dynamic_pointer_cast<RobotStatusObserver>(shared_from_this()));
+        m_robotDriver->attach(std::dynamic_pointer_cast<ArmRobotMoveStatusObserver>(shared_from_this()));
         m_robotDriver->setup(configFilePath);
     }
     return true;
@@ -125,11 +125,11 @@ void UrDebuggerWidget::onJointStatusUpdate(const std::vector<double>& jointPose)
     }
 }
 
-void UrDebuggerWidget::onRobotConnected(std::shared_ptr<AbstractRobotDriver> pRobot){
+void UrDebuggerWidget::onRobotConnected(std::shared_ptr<AbstractArmRobotMoveDriver> pRobot){
     m_doAction = true;
 }
 
-void UrDebuggerWidget::onRobotDisconnected(std::shared_ptr<AbstractRobotDriver> pRobot){
+void UrDebuggerWidget::onRobotDisconnected(std::shared_ptr<AbstractArmRobotMoveDriver> pRobot){
     m_doAction = false;
 }
 

@@ -36,7 +36,7 @@ void UrStatusWatcher::run(){
 
         if (driver) {
             auto q_actual = driver->rt_interface_->robot_state_->getQActual();
-            m_adapter.notify([=](std::shared_ptr<RobotStatusObserver>& o){
+            m_adapter.notify([=](std::shared_ptr<ArmRobotMoveStatusObserver>& o){
                 o->onJointStatusUpdate(q_actual);
             });
         }

@@ -31,15 +31,9 @@ RobotXyzWidget::~RobotXyzWidget(){
 }
 
 void RobotXyzWidget::start(){
-    if (m_robotDriver) {
-        m_robotDriver->start();
-    }
 }
 
 void RobotXyzWidget::stop(){
-    if (m_robotDriver) {
-        m_robotDriver->pause();
-    }
 }
 
 void RobotXyzWidget::loadRobotDriver(){
@@ -57,7 +51,7 @@ void RobotXyzWidget::loadRobotDriver(){
 }
 
 void RobotXyzWidget::setupRobotDriver(ObjectGroup& objectGroup){
-    auto robotDriver = std::dynamic_pointer_cast<AbstractRobotDriver>(objectGroup.getObject("Robot"));
+    auto robotDriver = std::dynamic_pointer_cast<AbstractArmRobotMoveDriver>(objectGroup.getObject("Robot"));
     if (robotDriver) {
         m_robotDriver = robotDriver;
         m_robotDriver->attach(m_jrtController);
