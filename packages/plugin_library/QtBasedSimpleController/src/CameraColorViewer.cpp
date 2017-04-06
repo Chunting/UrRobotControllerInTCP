@@ -43,12 +43,12 @@ void CameraColorViewer::stop(){
     }
 }
 
-void CameraColorViewer::onCameraStreamUpdate(const std::vector<cobotsys::CameraStreamObserver::StreamFrame>& frames){
-    for (const auto& frame: frames) {
-        if (frame.frame.type == cobotsys::CameraFrameType::Color) {
+void CameraColorViewer::onCameraStreamUpdate(const cobotsys::CameraFrame& frames){
+    for (const auto& frame: frames.frames) {
+        if (frame.type == cobotsys::ImageType::Color) {
             cv::Mat m;
-            cv::pyrDown(frame.frame.image, m);
-            cv::imshow(frame.frame.typeName(), m);
+            cv::pyrDown(frame.data, m);
+            cv::imshow(cobotsys::toString(frame.type), m);
 
             char key = (char) cv::waitKey(5);
             if (key == 27) {

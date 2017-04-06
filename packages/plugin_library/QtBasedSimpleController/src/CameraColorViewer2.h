@@ -47,7 +47,7 @@ public:
     void updateLabelImage();
 
 public:
-    virtual void onCameraStreamUpdate(const std::vector<StreamFrame>& frames);
+    virtual void onCameraStreamUpdate(const cobotsys::CameraFrame& frames);
 
 protected:
     void initWidgetView(cobotsys::ObjectGroup& objectGroup);

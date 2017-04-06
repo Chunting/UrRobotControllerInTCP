@@ -9,17 +9,20 @@
 
 #include "cobotsys_abstract_object.h"
 #include "cobotsys_abstract_arm_robot_move_driver.h"
+#include "cobotsys_data_types.h"
 
 namespace cobotsys {
+namespace binpicking {
 class AbstractBinpickingPicker : public AbstractObject {
 public:
     AbstractBinpickingPicker();
     virtual ~AbstractBinpickingPicker();
 
-    virtual void pickObject() = 0;
+    virtual void pickObject(const BinObjGrabPose& binObjGrabPose) = 0;
     virtual void setRobotDriver(std::shared_ptr<AbstractArmRobotMoveDriver> robotDriver) = 0;
     virtual void setDigitIoDriver(std::shared_ptr<AbstractDigitIoDriver> digitIoDriver) = 0;
 };
+}
 }
 
 

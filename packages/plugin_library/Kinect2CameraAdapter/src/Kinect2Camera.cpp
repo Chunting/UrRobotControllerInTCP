@@ -22,9 +22,6 @@ Kinect2Camera::~Kinect2Camera(){
     delete m_freenect2;
 }
 
-const cobotsys::CameraInformation& Kinect2Camera::getCameraInformation() const{
-    return m_cameraInfo;
-}
 
 bool Kinect2Camera::open(int deviceId){
     if (m_isOpened)
@@ -123,14 +120,15 @@ bool Kinect2Camera::capture(int waitMs){
                 cv::Mat(ir->height, ir->width, CV_32FC1, ir->data).copyTo(raw_ir);
                 cv::Mat(depth->height, depth->width, CV_32FC1, depth->data).copyTo(raw_depth);
 
-                cobotsys::CameraFrame c_color = {cobotsys::CameraFrameType::Color, raw_color};
-                cobotsys::CameraFrame c_depth = {cobotsys::CameraFrameType::Depth, raw_depth};
-                cobotsys::CameraFrame c_ir = {cobotsys::CameraFrameType::Ir, raw_ir};
+                cobotsys::ImageFrame c_color = {cobotsys::ImageType::Color, raw_color};
+                cobotsys::ImageFrame c_depth = {cobotsys::ImageType::Depth, raw_depth};
+                cobotsys::ImageFrame c_ir = {cobotsys::ImageType::Ir, raw_ir};
 
-                std::vector<cobotsys::CameraStreamObserver::StreamFrame> streamFrames;
-                streamFrames.push_back({0, timeAfterWait, c_color});
-                streamFrames.push_back({1, timeAfterWait, c_depth});
-                streamFrames.push_back({2, timeAfterWait, c_ir});
+                cobotsys::CameraFrame streamFrames;
+                streamFrames.capture_time = timeAfterWait;
+                streamFrames.frames.push_back(c_color);
+                streamFrames.frames.push_back(c_depth);
+                streamFrames.frames.push_back(c_ir);
 
                 notify(streamFrames);
 
@@ -152,10 +150,10 @@ void Kinect2Camera::delayClose(){
 }
 
 
-void Kinect2Camera::notify(const std::vector<cobotsys::CameraStreamObserver::StreamFrame>& frames){
+void Kinect2Camera::notify(const cobotsys::CameraFrame& cameraFrame){
     m_isNotifyCalling = true;
     for (auto& observer : m_observers) {
-        observer->onCameraStreamUpdate(frames);
+        observer->onCameraStreamUpdate(cameraFrame);
     }
     m_isNotifyCalling = false;
 }
@@ -194,6 +192,43 @@ libfreenect2::PacketPipeline* Kinect2Camera::createPipeline(int deviceId){
 bool Kinect2Camera::setup(const QString& configFilePath){
     COBOT_LOG.info() << "This Camera Driver is not finish yet.";
     return false;
+}
+
+std::string Kinect2Camera::getManufacturer() const{
+    return "MicroSoft";
+}
+
+std::string Kinect2Camera::getFullDescription() const{
+    return "Xbox Kinect 2.0";
+}
+
+std::string Kinect2Camera::getSerialNumber() const{
+    return m_deviceSerialNumber;
+}
+
+int Kinect2Camera::getImageWidth(int imageIdx) const{
+    if (imageIdx == 0) return 1920;
+    if (imageIdx == 1) return 512;
+    if (imageIdx == 2) return 512;
+    return 0;
+}
+
+int Kinect2Camera::getImageHeight(int imageIdx) const{
+    if (imageIdx == 0) return 1080;
+    if (imageIdx == 1) return 424;
+    if (imageIdx == 2) return 424;
+    return 0;
+}
+
+ImageType Kinect2Camera::getImageType(int imageIdx) const{
+    if (imageIdx == 0) return ImageType::Color;
+    if (imageIdx == 1) return ImageType::Depth;
+    if (imageIdx == 2) return ImageType::Ir;
+    return ImageType::Color;
+}
+
+int Kinect2Camera::getImageCount() const{
+    return 3;
 }
 
 

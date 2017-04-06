@@ -56,12 +56,11 @@ void CameraColorViewer2::stop(){
     }
 }
 
-void CameraColorViewer2::onCameraStreamUpdate(
-        const std::vector<cobotsys::CameraStreamObserver::StreamFrame>& frames){
-    for (const auto& frame : frames) {
-        if (frame.frame.type == cobotsys::CameraFrameType::Color) {
+void CameraColorViewer2::onCameraStreamUpdate(const cobotsys::CameraFrame& frames){
+    for (const auto& frame : frames.frames) {
+        if (frame.type == cobotsys::ImageType::Color) {
             cv::Mat mat;
-            cv::pyrDown(frame.frame.image, mat);
+            cv::pyrDown(frame.data, mat);
 
             m_imageCache.updateImage(mat);
 

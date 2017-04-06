@@ -16,13 +16,12 @@
 #include <cobotsys_logger.h>
 #include <chrono>
 
+using namespace cobotsys;
 
 class Kinect2Camera : public cobotsys::AbstractCamera {
 public:
     Kinect2Camera();
     virtual ~Kinect2Camera();
-
-    const cobotsys::CameraInformation& getCameraInformation() const;
 
     virtual bool open(int deviceId = 0);
     virtual void close(); ///  @note 最好不要在回调函数里调用close函数。
@@ -31,13 +30,23 @@ public:
     virtual bool capture(int waitMs); /// @note 控制相机进行一次图像捕获
 
     virtual bool setup(const QString& configFilePath);
+
+
+    virtual std::string getManufacturer() const;
+    virtual std::string getFullDescription() const;
+    virtual std::string getSerialNumber() const;
+
+    virtual int getImageWidth(int imageIdx = 0) const;
+    virtual int getImageHeight(int imageIdx = 0) const;
+    virtual ImageType getImageType(int imageIdx = 0) const;
+    virtual int getImageCount() const;
 protected:
     libfreenect2::PacketPipeline* createPipeline(int deviceId);
-    void notify(const std::vector<cobotsys::CameraStreamObserver::StreamFrame>& frames);
+    void notify(const cobotsys::CameraFrame& cameraFrame);
 
     void delayClose();
 protected:
-    cobotsys::CameraInformation m_cameraInfo;
+
 
     std::vector<std::shared_ptr<cobotsys::CameraStreamObserver> > m_observers;
 

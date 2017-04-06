@@ -1,0 +1,10 @@
+{
+  "objectGroup": [
+    {
+      "objectId": "Widget",
+      "objectKey": "Widget",
+      "factory": "SimpleControllerFactory, Ver 1.0",
+      "type": "CameraViewWidget"
+    }
+  ]
+}

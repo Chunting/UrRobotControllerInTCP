@@ -7,7 +7,6 @@
 #include <extra2.h>
 #include "Kinect2CameraFactory.h"
 #include "Kinect2Camera.h"
-#include "CameraPreview.h"
 
 Kinect2CameraFactory::Kinect2CameraFactory(){
 //    libfreenect2::setGlobalLogger(libfreenect2::createConsoleLogger(libfreenect2::Logger::Warning));
@@ -28,7 +27,5 @@ std::string Kinect2CameraFactory::getFactoryType(){
 std::shared_ptr<cobotsys::AbstractObject> Kinect2CameraFactory::createObject(const std::string& type){
     if (type == "Kinect2")
         return std::make_shared<Kinect2Camera>();
-    if (type == "CameraPreview")
-        return std::make_shared<CameraPreview>();
     return nullptr;
 }
