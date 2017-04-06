@@ -64,6 +64,7 @@ public:
     void loadLibrary(const QFileInfo& fileInfo){
         auto fAddr = QLibrary::resolve(fileInfo.absoluteFilePath(), OBJECT_FACTORY_SYMBOL);
         auto qFunc = (getAbstractObjectFactoryInstance) fAddr;
+        auto libnm = fileInfo.baseName().toStdString();
 
         if (qFunc) {
             auto rawFactory = static_cast<AbstractObjectFactory*>(qFunc());
@@ -76,6 +77,8 @@ public:
                 appendFactory(shrFactory);
                 dumpLibraryInfo(shrFactory, fileInfo);
             }
+        } else {
+            COBOT_LOG.warning() << "Unable to get Entry for: " << libnm;
         }
     }
 
