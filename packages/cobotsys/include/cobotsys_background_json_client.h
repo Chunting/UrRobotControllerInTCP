@@ -18,29 +18,29 @@ class BackgroundJsonClient : public SimpleNetworkClient {
 Q_OBJECT
 
 public:
-    BackgroundJsonClient(QObject *parent = nullptr);
+    BackgroundJsonClient(QObject* parent = nullptr);
 
 
-    void registerCommandHandler(const QString &command, std::function<void(const QJsonObject &)> handler);
+    void registerCommandHandler(const QString& command, std::function<void(const QJsonObject&)> handler);
 
     template<class T>
-    void registerCommandHandler(const QString &command, T *class_this, void(T::* f)(const QJsonObject &)){
-        registerCommandHandler(command, [=](const QJsonObject &j){ ((*class_this).*f)(j); });
+    void registerCommandHandler(const QString& command, T* class_this, void(T::* f)(const QJsonObject&)) {
+        registerCommandHandler(command, [=](const QJsonObject& j) { ((*class_this).*f)(j); });
     }
 
-    void replyJson(const QJsonObject &json);
-    void writeJson(const QJsonObject &json);
+    void replyJson(const QJsonObject& json);
+    void writeJson(const QJsonObject& json);
 protected:
-    virtual void processData(const QByteArray &ba);
+    virtual void processData(const QByteArray& ba);
     virtual void processConnect();
     virtual void processDisconnect();
 
 protected:
-    void processMessage(const Message &m);
-    void processJson(const QJsonObject &json);
+    void processMessage(const Message& m);
+    void processJson(const QJsonObject& json);
 
 protected:
-    void cmdGetSlaveName(const QJsonObject &json);
+    void cmdGetSlaveName(const QJsonObject& json);
 
 protected:
     uint32_t _num_debug_inc;

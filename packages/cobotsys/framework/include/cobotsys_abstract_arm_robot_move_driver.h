@@ -49,7 +49,7 @@ public:
      * 当一次 move() 操作结束后， 即会调用对应的 onMoveFinish() 函数
      * @param[in] observer 观察者对象
      */
-    virtual void attach(std::shared_ptr<ArmRobotMoveStatusObserver> observer) = 0;
+    virtual void attach(const std::shared_ptr<ArmRobotMoveStatusObserver>& observer) = 0;
 
 public:
     /**

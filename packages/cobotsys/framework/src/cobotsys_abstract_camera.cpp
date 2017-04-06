@@ -7,17 +7,17 @@
 
 
 namespace cobotsys {
-AbstractCamera::AbstractCamera(){
+AbstractCamera::AbstractCamera() {
 }
 
-AbstractCamera::~AbstractCamera(){
+AbstractCamera::~AbstractCamera() {
     INFO_DESTRUCTOR(this);
 }
 
-CameraStreamObserver::CameraStreamObserver(){
+CameraStreamObserver::CameraStreamObserver() {
 }
 
-CameraStreamObserver::~CameraStreamObserver(){
+CameraStreamObserver::~CameraStreamObserver() {
     INFO_DESTRUCTOR(this);
 }
 }

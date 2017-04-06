@@ -21,7 +21,7 @@ namespace gui {
 class LoggerHighlighter : QSyntaxHighlighter {
 Q_OBJECT
 public:
-    LoggerHighlighter(QTextDocument *parent = nullptr);
+    LoggerHighlighter(QTextDocument* parent = nullptr);
     ~LoggerHighlighter();
 
 public:
@@ -33,16 +33,16 @@ public:
     LineFormat defaultFormat;
     QTextCharFormat fmt_url;
 
-    LineFormat &getFormat(const QString &entry);
-    bool hasFormat(const QString &entry);
+    LineFormat& getFormat(const QString& entry);
+    bool hasFormat(const QString& entry);
 
 
-    static void loadDefaultLoggerStyle(LoggerHighlighter *highlighter);
-    static LoggerHighlighter *highlightEditorWithDefaultStyle(QTextDocument *document);
+    static void loadDefaultLoggerStyle(LoggerHighlighter* highlighter);
+    static LoggerHighlighter* highlightEditorWithDefaultStyle(QTextDocument* document);
 protected:
-    void highlightBlock(const QString &text);
-    void highlightGeneralLine(const QString &text);
-    void highlightUrl(const QString &text);
+    void highlightBlock(const QString& text);
+    void highlightGeneralLine(const QString& text);
+    void highlightUrl(const QString& text);
 };
 }
 }

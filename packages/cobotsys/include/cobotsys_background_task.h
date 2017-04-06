@@ -16,11 +16,11 @@ namespace cobotsys {
 class BackgroundTask : public QObject {
 Q_OBJECT
 public:
-    BackgroundTask(QObject *parent = nullptr);
+    BackgroundTask(QObject* parent = nullptr);
     ~BackgroundTask();
 
 
-    bool run(const BackgroundTaskSettings &settings);
+    bool run(const BackgroundTaskSettings& settings);
     void stop();
 
 Q_SIGNALS:

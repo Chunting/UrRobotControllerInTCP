@@ -8,10 +8,10 @@
 
 
 namespace cobotsys {
-AbstractWidget::AbstractWidget() : QWidget(nullptr){
+AbstractWidget::AbstractWidget() : QWidget(nullptr) {
 }
 
-AbstractWidget::~AbstractWidget(){
+AbstractWidget::~AbstractWidget() {
     INFO_DESTRUCTOR(this);
 }
 }

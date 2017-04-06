@@ -23,9 +23,9 @@ namespace ros_con_special {
 #define FG_MAGENTA      "\033[35m"
 #define FG_CYAN         "\033[36m"
 
-const char *none = "";
+const char* none = "";
 
-void replace_con_pattern(QByteArray &ba, const char *s_part, const char *e_part){
+void replace_con_pattern(QByteArray& ba, const char* s_part, const char* e_part) {
     int pos_cur = 0;
     int pos_idx = 0;
     int pos_m;
@@ -42,7 +42,7 @@ void replace_con_pattern(QByteArray &ba, const char *s_part, const char *e_part)
 }
 
 
-QByteArray &replace_con_chars(QByteArray &ba){
+QByteArray& replace_con_chars(QByteArray& ba) {
     replace_con_pattern(ba, "\033[", "m");
     replace_con_pattern(ba, "\033]", ";");
     ba.replace('\07', none);
@@ -72,15 +72,15 @@ QByteArray &replace_con_chars(QByteArray &ba){
 }
 }
 
-BackgroundProcess::BackgroundProcess(QObject *parent) : QObject(parent){
+BackgroundProcess::BackgroundProcess(QObject* parent) : QObject(parent) {
     _process = nullptr;
 }
 
-BackgroundProcess::~BackgroundProcess(){
+BackgroundProcess::~BackgroundProcess() {
     kill();
 }
 
-void BackgroundProcess::run(const ProcessRunSettings &runSettings){
+void BackgroundProcess::run(const ProcessRunSettings& runSettings) {
     if (_process) {
         kill();
     }
@@ -104,7 +104,7 @@ void BackgroundProcess::run(const ProcessRunSettings &runSettings){
 
     // Setup run environment
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-    for (const auto &iter : runSettings.getEnvMap()) {
+    for (const auto& iter : runSettings.getEnvMap()) {
         env.insert(iter.first, iter.second);
     }
     _process->setProcessEnvironment(env);
@@ -115,24 +115,21 @@ void BackgroundProcess::run(const ProcessRunSettings &runSettings){
     // Start process
     QString command;
     switch (runSettings.getTaskProcessType()) {
-        case TaskProcessType::Program:
-            command = qfile + " " + runSettings.getCommandLine();
-            COBOT_LOG.notice() << "Program: " << command.toLocal8Bit().constData();
-            _process->start(command);
-            break;
-        case TaskProcessType::BashScript:
-            _process->start("bash", QStringList() << "-c" << qfile);
-            break;
-        case TaskProcessType::RosProgram:
-            _process->start(qfile, ros_arg_list);
-            break;
+    case TaskProcessType::Program:command = qfile + " " + runSettings.getCommandLine();
+        COBOT_LOG.notice() << "Program: " << command.toLocal8Bit().constData();
+        _process->start(command);
+        break;
+    case TaskProcessType::BashScript:_process->start("bash", QStringList() << "-c" << qfile);
+        break;
+    case TaskProcessType::RosProgram:_process->start(qfile, ros_arg_list);
+        break;
     }
 }
 
-void BackgroundProcess::kill(){
+void BackgroundProcess::kill() {
 
 #ifdef Q_OS_LINUX
-    kill_process_childs(_process->pid(), 0, [=](int pid, int ppid){
+    kill_process_childs(_process->pid(), 0, [=](int pid, int ppid) {
         COBOT_LOG.notice() << "CHILD KILL PID: " << std::setw(6) << pid << ", parent: " << ppid;
         ::kill(pid, SIGINT);
         ::kill(pid, SIGKILL);
@@ -144,7 +141,7 @@ void BackgroundProcess::kill(){
     _process->waitForFinished(-1);
 }
 
-void process_out_to_log(QByteArray &prev, QByteArray &cur){
+void process_out_to_log(QByteArray& prev, QByteArray& cur) {
     ros_con_special::replace_con_chars(cur);
 
     if (prev.size())
@@ -155,21 +152,21 @@ void process_out_to_log(QByteArray &prev, QByteArray &cur){
     qt_ba_to_cobot_log(prev);
 }
 
-void BackgroundProcess::readStandardError(){
+void BackgroundProcess::readStandardError() {
     if (_no_print) return;
 
     auto ba = _process->readAllStandardError();
     process_out_to_log(_std_err, ba);
 }
 
-void BackgroundProcess::readStandardOutput(){
+void BackgroundProcess::readStandardOutput() {
     if (_no_print) return;
 
     auto ba = _process->readAllStandardOutput();
     process_out_to_log(_std_err, ba);
 }
 
-void BackgroundProcess::processFinish(int exit, QProcess::ExitStatus exitStatus){
+void BackgroundProcess::processFinish(int exit, QProcess::ExitStatus exitStatus) {
     emit processFinished(exit);
 }
 

@@ -9,7 +9,7 @@
 namespace cobotsys {
 
 
-BackgroundProcessClient::BackgroundProcessClient(QObject *parent) : QObject(parent){
+BackgroundProcessClient::BackgroundProcessClient(QObject* parent) : QObject(parent) {
 
     getSlave().registerCommandHandler(BACK_CMD_RUN_SCRIPT, this, &BackgroundProcessClient::onRunScript);
     getSlave().registerCommandHandler(BACK_CMD_STOP_SCRIPT, this, &BackgroundProcessClient::onStopScript);
@@ -18,15 +18,15 @@ BackgroundProcessClient::BackgroundProcessClient(QObject *parent) : QObject(pare
 }
 
 
-BackgroundProcessClient::~BackgroundProcessClient(){
+BackgroundProcessClient::~BackgroundProcessClient() {
 }
 
 
-BackgroundJsonClient &BackgroundProcessClient::getSlave(){
+BackgroundJsonClient& BackgroundProcessClient::getSlave() {
     return _slave;
 }
 
-void BackgroundProcessClient::onRunScript(const QJsonObject &json){
+void BackgroundProcessClient::onRunScript(const QJsonObject& json) {
     auto reply_json = json;
     auto script_name = json[BACK_KEY_SCRIPT_NAME].toString();
     if (script_name.isEmpty()) {
@@ -40,14 +40,14 @@ void BackgroundProcessClient::onRunScript(const QJsonObject &json){
     _slave.replyJson(reply_json);
 }
 
-void BackgroundProcessClient::onStopScript(const QJsonObject &json){
+void BackgroundProcessClient::onStopScript(const QJsonObject& json) {
     auto reply_json = json;
     reply_json[BACK_KEY_RESULT] = true;
     _task->stop();
     _slave.replyJson(reply_json);
 }
 
-bool BackgroundProcessClient::loadScriptSetting(const QString &settingName){
+bool BackgroundProcessClient::loadScriptSetting(const QString& settingName) {
     std::string setting_str = settingName.toLocal8Bit().constData();
     cv::FileStorage fs(_script_file_name.toLocal8Bit().constData(), cv::FileStorage::READ);
     if (fs.isOpened()) {
@@ -58,11 +58,11 @@ bool BackgroundProcessClient::loadScriptSetting(const QString &settingName){
     return false;
 }
 
-void BackgroundProcessClient::setScriptConfigFile(const QString &filename){
+void BackgroundProcessClient::setScriptConfigFile(const QString& filename) {
     _script_file_name = filename;
 }
 
-void BackgroundProcessClient::onTaskFinish(){
+void BackgroundProcessClient::onTaskFinish() {
     QJsonObject json;
     json[JSON_COMMAND_KEY] = BACK_CMD_STATUS;
     json[BACK_KEY_TASK_STATUS] = false;

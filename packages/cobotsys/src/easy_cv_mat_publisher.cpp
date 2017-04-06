@@ -10,18 +10,18 @@ namespace common {
 
 
 EasyCvMatPublisher::EasyCvMatPublisher() :
-        easy_shared_names_(EASY_CV_MAT_RW_NAMESPACE){
+        easy_shared_names_(EASY_CV_MAT_RW_NAMESPACE) {
 }
 
-EasyCvMatPublisher::~EasyCvMatPublisher(){
+EasyCvMatPublisher::~EasyCvMatPublisher() {
 
     // 释放由当前类创建的名字
-    for (const auto &iter : easy_publish_workers_) {
+    for (const auto& iter : easy_publish_workers_) {
         easy_shared_names_.removeName(iter.first);
     }
 }
 
-bool EasyCvMatPublisher::publishCvMat(const std::string &img_desc, const cv::Mat &img){
+bool EasyCvMatPublisher::publishCvMat(const std::string& img_desc, const cv::Mat& img) {
     auto publishWorker = findOrCreatePostWorker(img_desc, img);
     if (publishWorker) {
         return publishWorker->publishCvMat(img);
@@ -30,7 +30,7 @@ bool EasyCvMatPublisher::publishCvMat(const std::string &img_desc, const cv::Mat
 }
 
 std::shared_ptr<EasyCvMatPublisher::CvMatPublishWorker>
-EasyCvMatPublisher::findOrCreatePostWorker(const std::string &img_desc, const cv::Mat &img){
+EasyCvMatPublisher::findOrCreatePostWorker(const std::string& img_desc, const cv::Mat& img) {
 
     if (easy_shared_names_.hasName(img_desc)) {
         auto iter = easy_publish_workers_.find(img_desc);
@@ -63,11 +63,11 @@ EasyCvMatPublisher::findOrCreatePostWorker(const std::string &img_desc, const cv
 }
 
 
-bool EasyCvMatPublisher::CvMatPublishWorker::publishCvMat(const cv::Mat &img){
+bool EasyCvMatPublisher::CvMatPublishWorker::publishCvMat(const cv::Mat& img) {
     return shared_cv_mat.writeMat(img);
 }
 
-EasyCvMatPublisher::CvMatPublishWorker::~CvMatPublishWorker(){
+EasyCvMatPublisher::CvMatPublishWorker::~CvMatPublishWorker() {
     shared_cv_mat.writeEmptyMat();
 }
 }

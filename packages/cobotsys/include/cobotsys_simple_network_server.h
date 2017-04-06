@@ -21,11 +21,11 @@ namespace cobotsys {
 class SimpleNetworkServer : public QObject {
 Q_OBJECT
 public:
-    SimpleNetworkServer(QObject *parent = nullptr);
+    SimpleNetworkServer(QObject* parent = nullptr);
     ~SimpleNetworkServer();
 
 
-    bool lanuchMaster(const server::CONFIG &config = server::CONFIG());
+    bool lanuchMaster(const server::CONFIG& config = server::CONFIG());
 
 protected:
     void onNewConnection();
@@ -39,7 +39,7 @@ protected:
 
 protected:
     struct TCPLink {
-        QTcpSocket *tcp_socket;
+        QTcpSocket* tcp_socket;
         TCPLink();
         ~TCPLink();
     };
@@ -48,14 +48,14 @@ protected:
     void deleteTCPLink(std::shared_ptr<TCPLink> link);
 
 protected:
-    virtual void processClientData(QTcpSocket *clientLink, const QByteArray &ba);
-    virtual void processClientConnect(QTcpSocket *tcpSocket);
-    virtual void processClientDisconnect(QTcpSocket *tcpSocket);
+    virtual void processClientData(QTcpSocket* clientLink, const QByteArray& ba);
+    virtual void processClientConnect(QTcpSocket* tcpSocket);
+    virtual void processClientDisconnect(QTcpSocket* tcpSocket);
 
 protected:
-    QTcpServer *_server;
+    QTcpServer* _server;
     server::CONFIG _config;
-    std::map<void *, std::shared_ptr<TCPLink> > _links;
+    std::map<void*, std::shared_ptr<TCPLink> > _links;
 };
 
 //

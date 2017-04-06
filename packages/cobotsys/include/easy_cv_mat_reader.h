@@ -28,15 +28,15 @@ class EasyCvMatHolder {
 public:
     EasyCvMatHolder();
 
-    bool getMat(cv::Mat &mat);
-    bool updateMat(const cv::Mat &mat);
-    void setUpdateCallback(std::function<bool(const std::string &, const cv::Mat &)> callback);
+    bool getMat(cv::Mat& mat);
+    bool updateMat(const cv::Mat& mat);
+    void setUpdateCallback(std::function<bool(const std::string&, const cv::Mat&)> callback);
 
-    bool isReaderReleased(){ return is_reader_released_; }
+    bool isReaderReleased() { return is_reader_released_; }
 
-    std::string &name(){ return mat_name_; }
+    std::string& name() { return mat_name_; }
 
-    const std::string &name() const{ return mat_name_; }
+    const std::string& name() const { return mat_name_; }
 
     void stopReader();
 
@@ -44,7 +44,7 @@ public:
 protected:
     boost::interprocess::interprocess_semaphore ready_semaphore_;
     boost::interprocess::interprocess_mutex num_lock_;
-    std::function<bool(const std::string &, const cv::Mat &)> callback_;
+    std::function<bool(const std::string&, const cv::Mat&)> callback_;
     cv::Mat inner_mat_;
     uint32_t num_post_;
     uint32_t num_read_;
@@ -62,12 +62,12 @@ public:
 
     std::vector<std::string> existMatNames();
 
-    std::shared_ptr<EasyCvMatHolder> lanuch(const std::string &img_desc,
+    std::shared_ptr<EasyCvMatHolder> lanuch(const std::string& img_desc,
                                             std::function<void(EasyCvMatReaderStatus reason)> on_status = nullptr);
 
     friend class EasyCvMatHolder;
 protected:
-    void backgroundWorker(const std::string &img_desc,
+    void backgroundWorker(const std::string& img_desc,
                           std::shared_ptr<EasyCvMatHolder> holder,
                           std::function<void(EasyCvMatReaderStatus)> on_status);
 protected:

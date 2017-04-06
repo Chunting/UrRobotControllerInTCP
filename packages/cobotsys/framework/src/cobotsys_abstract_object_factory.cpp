@@ -8,10 +8,10 @@
 
 
 namespace cobotsys {
-AbstractObjectFactory::AbstractObjectFactory(){
+AbstractObjectFactory::AbstractObjectFactory() {
 }
 
-AbstractObjectFactory::~AbstractObjectFactory(){
+AbstractObjectFactory::~AbstractObjectFactory() {
     INFO_DESTRUCTOR(this);
 }
 }

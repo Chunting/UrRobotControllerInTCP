@@ -19,7 +19,7 @@ std::shared_ptr<AbstractDigitIoDriver> EpsonRobotDriver::getDigitIoDriver(int de
     return nullptr;
 }
 
-void EpsonRobotDriver::attach(std::shared_ptr<ArmRobotRealTimeStatusObserver> observer){
+void EpsonRobotDriver::attach(const shared_ptr<ArmRobotRealTimeStatusObserver>& observer) {
 }
 
 bool EpsonRobotDriver::start(){

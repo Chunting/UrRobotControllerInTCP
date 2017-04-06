@@ -25,7 +25,7 @@ public:
 
     virtual bool open(int deviceId = 0);
     virtual void close(); ///  @note 最好不要在回调函数里调用close函数。
-    virtual void attach(std::shared_ptr<cobotsys::CameraStreamObserver> observer);
+    virtual void attach(const shared_ptr<cobotsys::CameraStreamObserver>& observer);
 
     virtual bool capture(int waitMs); /// @note 控制相机进行一次图像捕获
 

@@ -14,26 +14,26 @@ namespace cobotsys {
 class BackgroundProcessServer : public QObject {
 Q_OBJECT
 public:
-    BackgroundProcessServer(QObject *parent = nullptr);
+    BackgroundProcessServer(QObject* parent = nullptr);
     ~BackgroundProcessServer();
 
-    void runScript(const QString &script_name, std::function<void(bool)> on_client_reply = nullptr);
+    void runScript(const QString& script_name, std::function<void(bool)> on_client_reply = nullptr);
     void stopScript(std::function<void(bool)> on_client_reply = nullptr);
 
-    BackgroundJsonServer &getServer();
-    BackgroundJsonServer *getServerPtr();
+    BackgroundJsonServer& getServer();
+    BackgroundJsonServer* getServerPtr();
 
 Q_SIGNALS:
     void clientTaskChanged(const QString& client, bool is_task_running);
 
 protected:
     void onScriptFinish();
-    void onClientJson(const QJsonObject &json);
-    void onClientConnect(const QString &client_name);
-    void onClientDisconnect(const QString &client_name);
+    void onClientJson(const QJsonObject& json);
+    void onClientConnect(const QString& client_name);
+    void onClientDisconnect(const QString& client_name);
 
 protected:
-    BackgroundJsonServer *_server;
+    BackgroundJsonServer* _server;
 
     struct SlaveTaskView {
         bool is_running;

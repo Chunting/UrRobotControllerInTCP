@@ -7,17 +7,17 @@
 #include "extra2.h"
 
 namespace cobotsys {
-AbstractArmRobotRealTimeDriver::AbstractArmRobotRealTimeDriver(){
+AbstractArmRobotRealTimeDriver::AbstractArmRobotRealTimeDriver() {
 }
 
-AbstractArmRobotRealTimeDriver::~AbstractArmRobotRealTimeDriver(){
+AbstractArmRobotRealTimeDriver::~AbstractArmRobotRealTimeDriver() {
     INFO_DESTRUCTOR(this);
 }
 
-ArmRobotRealTimeStatusObserver::ArmRobotRealTimeStatusObserver(){
+ArmRobotRealTimeStatusObserver::ArmRobotRealTimeStatusObserver() {
 }
 
-ArmRobotRealTimeStatusObserver::~ArmRobotRealTimeStatusObserver(){
+ArmRobotRealTimeStatusObserver::~ArmRobotRealTimeStatusObserver() {
     INFO_DESTRUCTOR(this);
 }
 }

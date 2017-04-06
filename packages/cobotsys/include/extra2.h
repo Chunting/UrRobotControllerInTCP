@@ -32,7 +32,7 @@ QImage matToQImage(const cv::Mat& mat);
 
 
 template<class T, class N, class M>
-void range_limit(T& v, const N& min_, const M& max_){
+void range_limit(T& v, const N& min_, const M& max_) {
     if ((T) min_ < (T) max_) {
         if (v < (T) min_)
             v = (T) min_;

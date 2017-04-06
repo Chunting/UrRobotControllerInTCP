@@ -23,19 +23,19 @@ public:
     std::map<std::string, std::vector<std::string> > factorySupportTypes;
 
 
-    bool hasFactory(const std::string& factoryType) const{
+    bool hasFactory(const std::string& factoryType) const {
         return (objectFactoryMap.find(factoryType) != objectFactoryMap.end());
     }
 
-    bool hasFactory(std::shared_ptr<AbstractObjectFactory>& factory){
+    bool hasFactory(std::shared_ptr<AbstractObjectFactory>& factory) {
         return hasFactory(factory->getFactoryType());
     }
 
-    void appendFactory(std::shared_ptr<AbstractObjectFactory>& factory){
+    void appendFactory(std::shared_ptr<AbstractObjectFactory>& factory) {
         objectFactoryMap[factory->getFactoryType()] = factory;
     }
 
-    void dumpLibraryInfo(std::shared_ptr<AbstractObjectFactory>& shrFactory, const QFileInfo& fileInfo){
+    void dumpLibraryInfo(std::shared_ptr<AbstractObjectFactory>& shrFactory, const QFileInfo& fileInfo) {
         auto tlist = shrFactory->getSupportTypes();
 
         factorySupportTypes[shrFactory->getFactoryType()] = tlist;
@@ -61,7 +61,7 @@ public:
         }
     }
 
-    void loadLibrary(const QFileInfo& fileInfo){
+    void loadLibrary(const QFileInfo& fileInfo) {
         auto fAddr = QLibrary::resolve(fileInfo.absoluteFilePath(), OBJECT_FACTORY_SYMBOL);
         auto qFunc = (getAbstractObjectFactoryInstance) fAddr;
         auto libnm = fileInfo.baseName().toStdString();
@@ -82,7 +82,7 @@ public:
         }
     }
 
-    std::shared_ptr<AbstractObject> createObject(const std::string& factory, const std::string& type){
+    std::shared_ptr<AbstractObject> createObject(const std::string& factory, const std::string& type) {
         auto iter = objectFactoryMap.find(factory);
         if (iter != objectFactoryMap.end()) {
             auto result = iter->second->createObject(type);
@@ -100,23 +100,23 @@ public:
 namespace cobotsys {
 
 GlobalObjectFactory::GlobalObjectFactory()
-        : m_impl(new GlobalObjectFactoryImpl){
+        : m_impl(new GlobalObjectFactoryImpl) {
     g_defaultObjectFactory = this;
 }
 
-GlobalObjectFactory::~GlobalObjectFactory(){
+GlobalObjectFactory::~GlobalObjectFactory() {
     INFO_DESTRUCTOR(this);
 }
 
-std::shared_ptr<AbstractObject> GlobalObjectFactory::createObject(const std::string& factory, const std::string& type){
+std::shared_ptr<AbstractObject> GlobalObjectFactory::createObject(const std::string& factory, const std::string& type) {
     return m_impl->createObject(factory, type);
 }
 
-std::shared_ptr<AbstractObject> GlobalObjectFactory::createObject(const QString& factory, const QString& type){
+std::shared_ptr<AbstractObject> GlobalObjectFactory::createObject(const QString& factory, const QString& type) {
     return createObject((std::string) factory.toLocal8Bit().constData(), (std::string) type.toLocal8Bit().constData());
 }
 
-void GlobalObjectFactory::loadLibrarys(const QString& path){
+void GlobalObjectFactory::loadLibrarys(const QString& path) {
     QDir dirPath(path);
     if (dirPath.exists()) {
         auto fileInfoList = dirPath.entryInfoList(QDir::Files);
@@ -129,15 +129,15 @@ void GlobalObjectFactory::loadLibrarys(const QString& path){
     }
 }
 
-GlobalObjectFactory* GlobalObjectFactory::instance(){
+GlobalObjectFactory* GlobalObjectFactory::instance() {
     return g_defaultObjectFactory;
 }
 
-std::shared_ptr<AbstractObject> GlobalObjectFactory::createObject(const char* factory, const char* type){
+std::shared_ptr<AbstractObject> GlobalObjectFactory::createObject(const char* factory, const char* type) {
     return createObject(std::string(factory), std::string(type));
 }
 
-void GlobalObjectFactory::addExtendLibrary(std::shared_ptr<AbstractObjectFactory> factory){
+void GlobalObjectFactory::addExtendLibrary(std::shared_ptr<AbstractObjectFactory> factory) {
     if (m_impl->hasFactory(factory)) {
     } else {
         m_impl->appendFactory(factory);
@@ -145,7 +145,7 @@ void GlobalObjectFactory::addExtendLibrary(std::shared_ptr<AbstractObjectFactory
     }
 }
 
-std::vector<std::string> GlobalObjectFactory::getFactoryNames() const{
+std::vector<std::string> GlobalObjectFactory::getFactoryNames() const {
     std::vector<std::string> rNames;
     for (const auto& iter : m_impl->factorySupportTypes) {
         rNames.push_back(iter.first);
@@ -153,7 +153,7 @@ std::vector<std::string> GlobalObjectFactory::getFactoryNames() const{
     return rNames;
 }
 
-std::vector<std::string> GlobalObjectFactory::getFactorySupportedNames(const std::string& factoryName) const{
+std::vector<std::string> GlobalObjectFactory::getFactorySupportedNames(const std::string& factoryName) const {
     const auto iter = m_impl->factorySupportTypes.find(factoryName);
     if (iter != m_impl->factorySupportTypes.end()) {
         return iter->second;
@@ -161,25 +161,25 @@ std::vector<std::string> GlobalObjectFactory::getFactorySupportedNames(const std
     return std::vector<std::string>();
 }
 
-void GlobalObjectFactory::loadLibrarys(const std::string& path){
+void GlobalObjectFactory::loadLibrarys(const std::string& path) {
     loadLibrarys(QString::fromLocal8Bit(path.c_str()));
 }
 
-void GlobalObjectFactory::loadLibrarys(){
+void GlobalObjectFactory::loadLibrarys() {
     loadLibrarys(FileFinder::getPreDefPath(FileFinder::Plugin));
 }
 }
 
 namespace cobotsys {
-ObjectGroup::ObjectGroup(){
+ObjectGroup::ObjectGroup() {
 }
 
-ObjectGroup::~ObjectGroup(){
+ObjectGroup::~ObjectGroup() {
     m_idKeys.clear();
     m_objs.clear();
 }
 
-bool ObjectGroup::init(const QJsonObject& jsonConfig){
+bool ObjectGroup::init(const QJsonObject& jsonConfig) {
     m_idKeys.clear();
     m_objs.clear();
 
@@ -191,7 +191,7 @@ bool ObjectGroup::init(const QJsonObject& jsonConfig){
     return false;
 }
 
-bool ObjectGroup::_initImpl(const QJsonObject& jsonConfig){
+bool ObjectGroup::_initImpl(const QJsonObject& jsonConfig) {
     if (GlobalObjectFactory::instance() == nullptr)
         return false;
 
@@ -244,7 +244,7 @@ bool ObjectGroup::_initImpl(const QJsonObject& jsonConfig){
     return true;
 }
 
-std::shared_ptr<AbstractObject> ObjectGroup::getObject(const std::string& objectId){
+std::shared_ptr<AbstractObject> ObjectGroup::getObject(const std::string& objectId) {
     auto kIter = m_idKeys.find(objectId);
     if (kIter != m_idKeys.end()) {
         auto oIter = m_objs.find(kIter->second);

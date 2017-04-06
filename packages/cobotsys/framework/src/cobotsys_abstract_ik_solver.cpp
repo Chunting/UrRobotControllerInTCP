@@ -7,9 +7,9 @@
 
 
 namespace cobotsys {
-AbstractIKSolver::AbstractIKSolver(){
+AbstractIKSolver::AbstractIKSolver() {
 }
 
-AbstractIKSolver::~AbstractIKSolver(){
+AbstractIKSolver::~AbstractIKSolver() {
 }
 }

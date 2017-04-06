@@ -6,7 +6,7 @@
 #ifndef PROJECT_COBOTSYS_ABSTRACT_CAMERA_H
 #define PROJECT_COBOTSYS_ABSTRACT_CAMERA_H
 
-
+#include "cobotsys.h"
 #include "cobotsys_abstract_object.h"
 #include <vector>
 #include <chrono>
@@ -40,7 +40,7 @@ public:
 
     virtual bool open(int deviceId = 0) = 0;
     virtual void close() = 0;
-    virtual void attach(std::shared_ptr<CameraStreamObserver> observer) = 0;
+    virtual void attach(const shared_ptr<CameraStreamObserver>& observer) = 0;
     virtual bool capture(int waitMs = -1) = 0; /// @note 控制相机进行一次图像捕获
 
     virtual std::string getManufacturer() const = 0;

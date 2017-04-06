@@ -9,17 +9,17 @@
 namespace cobotsys {
 
 BackgroundJsonServer::BackgroundSlaveView::BackgroundSlaveView(
-        std::function<void(const QJsonObject &, BackgroundSlaveView &)> jsonHandler){
-    _decoder = std::make_shared<MessageDecoder>([=](const Message &m){ processMessage(m); });
+        std::function<void(const QJsonObject&, BackgroundSlaveView&)> jsonHandler) {
+    _decoder = std::make_shared<MessageDecoder>([=](const Message& m) { processMessage(m); });
     _json_handler = jsonHandler;
 }
 
 
-void BackgroundJsonServer::BackgroundSlaveView::processData(const QByteArray &ba){
+void BackgroundJsonServer::BackgroundSlaveView::processData(const QByteArray& ba) {
     _decoder->decode(ba);
 }
 
-void BackgroundJsonServer::BackgroundSlaveView::processMessage(const distributed_system::Message &m){
+void BackgroundJsonServer::BackgroundSlaveView::processMessage(const distributed_system::Message& m) {
     if (m.getType() == MessageType::Utf8BasedJSON) {
         QJsonParseError jsonParseError;
         QByteArray json(m.getContent(), m.getContentLength());
@@ -36,7 +36,7 @@ void BackgroundJsonServer::BackgroundSlaveView::processMessage(const distributed
 }
 
 
-double BackgroundJsonServer::CallbackTracker::calcTimeElapsed() const{
+double BackgroundJsonServer::CallbackTracker::calcTimeElapsed() const {
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> diff = end - send_time;
     return diff.count();
@@ -49,9 +49,9 @@ double BackgroundJsonServer::CallbackTracker::calcTimeElapsed() const{
 namespace cobotsys {
 
 
-BackgroundJsonServer::BackgroundJsonServer(QObject *parent) : SimpleNetworkServer(parent){
+BackgroundJsonServer::BackgroundJsonServer(QObject* parent) : SimpleNetworkServer(parent) {
     _instance_id = QUuid::createUuid().toString();
-    _json_handler = [=](const QJsonObject &j){ COBOT_LOG.warning() << "Unhandled: " << j; };
+    _json_handler = [=](const QJsonObject& j) { COBOT_LOG.warning() << "Unhandled: " << j; };
 
     _chk_timer = new QTimer(this);
     _chk_timer->setInterval(100);
@@ -60,10 +60,10 @@ BackgroundJsonServer::BackgroundJsonServer(QObject *parent) : SimpleNetworkServe
 }
 
 
-BackgroundJsonServer::~BackgroundJsonServer(){
+BackgroundJsonServer::~BackgroundJsonServer() {
 }
 
-void BackgroundJsonServer::processClientData(QTcpSocket *clientLink, const QByteArray &ba){
+void BackgroundJsonServer::processClientData(QTcpSocket* clientLink, const QByteArray& ba) {
 
     // 处理数据
     auto viewIter = _slaves.find(clientLink);
@@ -73,10 +73,10 @@ void BackgroundJsonServer::processClientData(QTcpSocket *clientLink, const QByte
 }
 
 
-void BackgroundJsonServer::createClientView(QTcpSocket *clientLink){
+void BackgroundJsonServer::createClientView(QTcpSocket* clientLink) {
     auto iter = _slaves.find(clientLink);
     if (iter == _slaves.end()) {
-        auto view = std::make_shared<BackgroundSlaveView>([=](const QJsonObject &j, BackgroundSlaveView &v){
+        auto view = std::make_shared<BackgroundSlaveView>([=](const QJsonObject& j, BackgroundSlaveView& v) {
             processJson(j, clientLink, v);
         });
 
@@ -84,9 +84,9 @@ void BackgroundJsonServer::createClientView(QTcpSocket *clientLink){
     }
 }
 
-void BackgroundJsonServer::processJson(const QJsonObject &json,
-                                   QTcpSocket *link,
-                                   BackgroundJsonServer::BackgroundSlaveView &view){
+void BackgroundJsonServer::processJson(const QJsonObject& json,
+                                       QTcpSocket* link,
+                                       BackgroundJsonServer::BackgroundSlaveView& view) {
 
     if (json.contains(JSON_REPLY) && json.contains(JSON_COMMAND_SEQ)) {
         auto seqn = json[JSON_COMMAND_SEQ].toString();
@@ -106,14 +106,14 @@ void BackgroundJsonServer::processJson(const QJsonObject &json,
 }
 
 
-void BackgroundJsonServer::processClientConnect(QTcpSocket *tcpSocket){
+void BackgroundJsonServer::processClientConnect(QTcpSocket* tcpSocket) {
     createClientView(tcpSocket);
 
     cmdGetName(tcpSocket);
 }
 
 
-void BackgroundJsonServer::processClientDisconnect(QTcpSocket *tcpSocket){
+void BackgroundJsonServer::processClientDisconnect(QTcpSocket* tcpSocket) {
     auto iter = _slaves.find(tcpSocket);
     if (iter != _slaves.end()) {
         Q_EMIT clientDisconnected(iter->second->getName());
@@ -121,16 +121,16 @@ void BackgroundJsonServer::processClientDisconnect(QTcpSocket *tcpSocket){
     }
 }
 
-void BackgroundJsonServer::directWriteJson(QTcpSocket *clientLink, const QJsonObject &json){
+void BackgroundJsonServer::directWriteJson(QTcpSocket* clientLink, const QJsonObject& json) {
     clientLink->write(MessageEncoder::genJsonMessage(json).getData());
 }
 
 
-void BackgroundJsonServer::cmdGetName(QTcpSocket *clientLink){
+void BackgroundJsonServer::cmdGetName(QTcpSocket* clientLink) {
     QJsonObject json;
     json[JSON_COMMAND_KEY] = "GetSlaveName";
 
-    writeJson(clientLink, json, [=](const JsonReply &rjs){
+    writeJson(clientLink, json, [=](const JsonReply& rjs) {
         if (rjs.reply_status == JsonReplyStatus::Success) {
             auto pView = _slaves[clientLink];
             pView->slave_instance_id = rjs.json_object[BACK_KEY_SLAVE_INSTANCE_ID].toString();
@@ -142,11 +142,11 @@ void BackgroundJsonServer::cmdGetName(QTcpSocket *clientLink){
     });
 }
 
-void BackgroundJsonServer::writeJson(const QJsonObject &json,
-                                 std::function<void(const cobotsys::JsonReply &)> on_slave_reply){
+void BackgroundJsonServer::writeJson(const QJsonObject& json,
+                                     std::function<void(const cobotsys::JsonReply&)> on_slave_reply) {
     if (json.contains(JSON_RECEIVER)) {
         auto receiver = json[JSON_RECEIVER].toString();
-        for (auto &iter : _slaves) {
+        for (auto& iter : _slaves) {
             if (iter.second->getName() == receiver) {
                 writeJson(iter.first, json, on_slave_reply);
                 return;
@@ -154,15 +154,15 @@ void BackgroundJsonServer::writeJson(const QJsonObject &json,
         }
         COBOT_LOG.warning() << "No such target named: " << receiver;
     } else {
-        for (auto &iter : _slaves) {
+        for (auto& iter : _slaves) {
             writeJson(iter.first, json, on_slave_reply);
         }
     }
 }
 
-void BackgroundJsonServer::writeJson(QTcpSocket *clientLink,
-                                 const QJsonObject &json,
-                                 std::function<void(const cobotsys::JsonReply &)> on_slave_reply){
+void BackgroundJsonServer::writeJson(QTcpSocket* clientLink,
+                                     const QJsonObject& json,
+                                     std::function<void(const cobotsys::JsonReply&)> on_slave_reply) {
     auto localJson = json;
     auto seqNum = QUuid::createUuid().toString();
 
@@ -176,11 +176,11 @@ void BackgroundJsonServer::writeJson(QTcpSocket *clientLink,
     directWriteJson(clientLink, localJson);
 }
 
-void BackgroundJsonServer::setJsonHandler(std::function<void(const QJsonObject &)> general_handler){
+void BackgroundJsonServer::setJsonHandler(std::function<void(const QJsonObject&)> general_handler) {
     _json_handler = general_handler;
 }
 
-void BackgroundJsonServer::callJsonHandler(const QJsonObject &json){
+void BackgroundJsonServer::callJsonHandler(const QJsonObject& json) {
     if (_json_handler) {
         _json_handler(json);
     } else {
@@ -188,11 +188,11 @@ void BackgroundJsonServer::callJsonHandler(const QJsonObject &json){
     }
 }
 
-void BackgroundJsonServer::timeoutChecker(){
+void BackgroundJsonServer::timeoutChecker() {
 
     auto cur = std::chrono::high_resolution_clock::now();
     std::vector<QString> keys;
-    for (auto &pair : _jcmd_history) {
+    for (auto& pair : _jcmd_history) {
         auto time_elapsed = pair.second.calcTimeElapsed();
         if (time_elapsed > 0.5) {
             if (pair.second.callback) {

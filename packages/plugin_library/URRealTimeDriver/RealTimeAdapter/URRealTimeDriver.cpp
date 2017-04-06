@@ -9,7 +9,7 @@
 #include "CobotUr.h"
 
 
-URRealTimeDriver::URRealTimeDriver() : QObject(nullptr){
+URRealTimeDriver::URRealTimeDriver() : QObject(nullptr) {
     m_isWatcherRunning = false;
     m_isStarted = false;
 
@@ -19,7 +19,7 @@ URRealTimeDriver::URRealTimeDriver() : QObject(nullptr){
     m_curReqQ.clear();
 }
 
-URRealTimeDriver::~URRealTimeDriver(){
+URRealTimeDriver::~URRealTimeDriver() {
     if (m_isWatcherRunning) {
         m_isWatcherRunning = false;
         m_rt_msg_cond.notify_all();
@@ -27,7 +27,7 @@ URRealTimeDriver::~URRealTimeDriver(){
     }
 }
 
-void URRealTimeDriver::move(const std::vector<double>& q){
+void URRealTimeDriver::move(const std::vector<double>& q) {
     std::lock_guard<std::mutex> lock_guard(m_mutex);
     if (m_isStarted) {
         m_curReqQ = q;
@@ -35,11 +35,11 @@ void URRealTimeDriver::move(const std::vector<double>& q){
     }
 }
 
-std::shared_ptr<AbstractDigitIoDriver> URRealTimeDriver::getDigitIoDriver(int deviceId){
+std::shared_ptr<AbstractDigitIoDriver> URRealTimeDriver::getDigitIoDriver(int deviceId) {
     return nullptr;
 }
 
-void URRealTimeDriver::attach(std::shared_ptr<ArmRobotRealTimeStatusObserver> observer){
+void URRealTimeDriver::attach(const shared_ptr<ArmRobotRealTimeStatusObserver>& observer) {
     std::lock_guard<std::mutex> lock_guard(m_mutex);
 
     for (auto& iter : m_observers) {
@@ -53,7 +53,7 @@ void URRealTimeDriver::attach(std::shared_ptr<ArmRobotRealTimeStatusObserver> ob
     }
 }
 
-bool URRealTimeDriver::start(){
+bool URRealTimeDriver::start() {
     std::lock_guard<std::mutex> lock_guard(m_mutex);
 
     if (m_urDriver) {
@@ -64,7 +64,7 @@ bool URRealTimeDriver::start(){
     connect(m_urDriver, &CobotUrDriver::driverStartSuccess, this, &URRealTimeDriver::handleDriverReady);
     connect(m_urDriver, &CobotUrDriver::driverStartFailed, this, &URRealTimeDriver::handleDriverDisconnect);
     connect(m_urDriver, &CobotUrDriver::driverStopped, this, &URRealTimeDriver::handleDriverDisconnect);
-    connect(m_urDriver, &QObject::destroyed, [=](QObject*){ handleDriverDisconnect(); });
+    connect(m_urDriver, &QObject::destroyed, [=](QObject*) { handleDriverDisconnect(); });
     m_urDriver->setServojTime(m_attr_servoj_time);
     m_urDriver->setServojLookahead(m_attr_servoj_lookahead);
     m_urDriver->setServojGain(m_attr_servoj_gain);
@@ -72,7 +72,7 @@ bool URRealTimeDriver::start(){
     return true;
 }
 
-void URRealTimeDriver::stop(){
+void URRealTimeDriver::stop() {
     std::lock_guard<std::mutex> lock_guard(m_mutex);
 
     if (m_urDriver) {
@@ -85,7 +85,7 @@ void URRealTimeDriver::stop(){
     }
 }
 
-bool URRealTimeDriver::setup(const QString& configFilePath){
+bool URRealTimeDriver::setup(const QString& configFilePath) {
     std::lock_guard<std::mutex> lock_guard(m_mutex);
 
     auto success = _setup(configFilePath);
@@ -96,7 +96,7 @@ bool URRealTimeDriver::setup(const QString& configFilePath){
     return success;
 }
 
-void URRealTimeDriver::robotStatusWatcher(){
+void URRealTimeDriver::robotStatusWatcher() {
     std::mutex m;
     std::unique_lock<std::mutex> lck(m);
 
@@ -129,7 +129,7 @@ void URRealTimeDriver::robotStatusWatcher(){
 
         // 通知所有观察者，机器人数据已经更新。
         if (m_isStarted) {
-            notify([=](std::shared_ptr<ArmRobotRealTimeStatusObserver>& observer){
+            notify([=](std::shared_ptr<ArmRobotRealTimeStatusObserver>& observer) {
                 observer->onArmRobotStatusUpdate(pStatus);
             });
         }
@@ -149,7 +149,7 @@ void URRealTimeDriver::robotStatusWatcher(){
     }
 }
 
-bool URRealTimeDriver::_setup(const QString& configFilePath){
+bool URRealTimeDriver::_setup(const QString& configFilePath) {
     QJsonObject json;
     if (loadJson(json, configFilePath)) {
         m_attr_robot_ip = json["robot_ip"].toString("localhost").toStdString();
@@ -164,26 +164,26 @@ bool URRealTimeDriver::_setup(const QString& configFilePath){
     return false;
 }
 
-void URRealTimeDriver::handleDriverReady(){
+void URRealTimeDriver::handleDriverReady() {
     m_isStarted = true;
-    notify([=](std::shared_ptr<ArmRobotRealTimeStatusObserver>& observer){
+    notify([=](std::shared_ptr<ArmRobotRealTimeStatusObserver>& observer) {
         observer->onArmRobotConnect();
     });
 }
 
-QString URRealTimeDriver::getRobotUrl(){
+QString URRealTimeDriver::getRobotUrl() {
     return m_attr_robot_ip.c_str();
 }
 
-void URRealTimeDriver::handleDriverDisconnect(){
+void URRealTimeDriver::handleDriverDisconnect() {
     COBOT_LOG.info() << "URRealTimeDriver Disconnect";
     stop();
-    notify([=](std::shared_ptr<ArmRobotRealTimeStatusObserver>& observer){
+    notify([=](std::shared_ptr<ArmRobotRealTimeStatusObserver>& observer) {
         observer->onArmRobotDisconnect();
     });
 }
 
-void URRealTimeDriver::notify(std::function<void(std::shared_ptr<ArmRobotRealTimeStatusObserver>& observer)> func){
+void URRealTimeDriver::notify(std::function<void(std::shared_ptr<ArmRobotRealTimeStatusObserver>& observer)> func) {
     if (func) {
         std::vector<std::shared_ptr<ArmRobotRealTimeStatusObserver> > observer_tmp;
         if (m_mutex.try_lock()) {

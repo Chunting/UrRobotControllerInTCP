@@ -13,7 +13,7 @@ namespace cobotsys {
 
 void easy_gui_reset();
 void easy_gui_show_setup(bool show_with_cv_imshow = true);
-void easy_gui_show(const std::string &title, const cv::Mat &image);
+void easy_gui_show(const std::string& title, const cv::Mat& image);
 }
 
 #endif //PROJECT_EASY_GUI_H

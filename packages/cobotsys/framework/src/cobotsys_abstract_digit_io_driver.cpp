@@ -7,9 +7,9 @@
 
 
 namespace cobotsys {
-AbstractDigitIoDriver::AbstractDigitIoDriver(){
+AbstractDigitIoDriver::AbstractDigitIoDriver() {
 }
 
-AbstractDigitIoDriver::~AbstractDigitIoDriver(){
+AbstractDigitIoDriver::~AbstractDigitIoDriver() {
 }
 }

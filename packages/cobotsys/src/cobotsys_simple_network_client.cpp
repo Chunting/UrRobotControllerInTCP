@@ -8,7 +8,7 @@
 
 namespace cobotsys {
 
-SimpleNetworkClient::SimpleNetworkClient(QObject *parent) : QObject(parent){
+SimpleNetworkClient::SimpleNetworkClient(QObject* parent) : QObject(parent) {
     _socket = new QTcpSocket(this);
     _is_connected = false;
     _re_connect_delay = 100;
@@ -21,22 +21,22 @@ SimpleNetworkClient::SimpleNetworkClient(QObject *parent) : QObject(parent){
     connect(_socket, &QTcpSocket::readyRead, this, &SimpleNetworkClient::onDataReady);
 }
 
-SimpleNetworkClient::~SimpleNetworkClient(){
+SimpleNetworkClient::~SimpleNetworkClient() {
 }
 
-void SimpleNetworkClient::connectHost(const server::CONFIG &config){
+void SimpleNetworkClient::connectHost(const server::CONFIG& config) {
     _config = config;
     doConnectHost();
 }
 
-void SimpleNetworkClient::onConnect(){
+void SimpleNetworkClient::onConnect() {
     _is_connected = true;
     COBOT_LOG.notice() << "SimpleNetworkClient: " << "Connected";
 
     processConnect();
 }
 
-void SimpleNetworkClient::onDisconnect(){
+void SimpleNetworkClient::onDisconnect() {
     auto last_connection_status = _is_connected;
     _is_connected = false;
     COBOT_LOG.notice() << "SimpleNetworkClient: " << "Disconnected";
@@ -47,38 +47,38 @@ void SimpleNetworkClient::onDisconnect(){
     doConnectHost(_re_connect_delay);
 }
 
-void SimpleNetworkClient::onHostFound(){
+void SimpleNetworkClient::onHostFound() {
     COBOT_LOG.notice() << "SimpleNetworkClient: " << "Found Server: " << _socket->peerName();
 }
 
-void SimpleNetworkClient::onError(QAbstractSocket::SocketError error){
+void SimpleNetworkClient::onError(QAbstractSocket::SocketError error) {
     COBOT_LOG.notice() << "SimpleNetworkClient: " << _socket->errorString();
 
     doConnectHost(_re_connect_delay);
 }
 
-void SimpleNetworkClient::onDataReady(){
+void SimpleNetworkClient::onDataReady() {
     auto ba = _socket->readAll();
     if (ba.size()) {
         processData(ba);
     }
 }
 
-void SimpleNetworkClient::processData(const QByteArray &ba){
+void SimpleNetworkClient::processData(const QByteArray& ba) {
     COBOT_LOG.info() << "RECV [" << std::setw(5) << ba.size() << "] " << ba.constData();
 }
 
-void SimpleNetworkClient::writeData(const QByteArray &ba){
+void SimpleNetworkClient::writeData(const QByteArray& ba) {
     if (_socket) {
         _socket->write(ba);
     }
 }
 
-void SimpleNetworkClient::doConnectHost(int delayMSec){
+void SimpleNetworkClient::doConnectHost(int delayMSec) {
     if (_is_connected)
         return;
 
-    auto doCONNECT = [=](){
+    auto doCONNECT = [=]() {
         _socket->connectToHost(_config.address, _config.port, QIODevice::ReadWrite);
     };
 
@@ -88,13 +88,13 @@ void SimpleNetworkClient::doConnectHost(int delayMSec){
         doCONNECT();
 }
 
-void SimpleNetworkClient::processConnect(){
+void SimpleNetworkClient::processConnect() {
 }
 
-void SimpleNetworkClient::processDisconnect(){
+void SimpleNetworkClient::processDisconnect() {
 }
 
-void SimpleNetworkClient::setNodeName(const QString &name){
+void SimpleNetworkClient::setNodeName(const QString& name) {
     _node_name = name;
 }
 

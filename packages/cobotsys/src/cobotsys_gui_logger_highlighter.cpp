@@ -9,56 +9,56 @@
 
 namespace cobotsys {
 namespace gui {
-LoggerHighlighter::LoggerHighlighter(QTextDocument *parent)
-        : QSyntaxHighlighter(parent){
+LoggerHighlighter::LoggerHighlighter(QTextDocument* parent)
+        : QSyntaxHighlighter(parent) {
     defaultFormat.entry.setFontWeight(QFont::Bold);
 }
 
-LoggerHighlighter::~LoggerHighlighter(){
+LoggerHighlighter::~LoggerHighlighter() {
 }
 
-LoggerHighlighter::LineFormat &LoggerHighlighter::getFormat(const QString &entry){
+LoggerHighlighter::LineFormat& LoggerHighlighter::getFormat(const QString& entry) {
     return formats[entry.toUpper()];
 }
 
-bool LoggerHighlighter::hasFormat(const QString &entry){
+bool LoggerHighlighter::hasFormat(const QString& entry) {
     return formats.find(entry.toUpper()) != formats.end();
 }
 }
 
-void gui::LoggerHighlighter::highlightBlock(const QString &text){
+void gui::LoggerHighlighter::highlightBlock(const QString& text) {
     highlightGeneralLine(text);
     highlightUrl(text);
 }
 
-void gui::LoggerHighlighter::loadDefaultLoggerStyle(gui::LoggerHighlighter *highlighter){
+void gui::LoggerHighlighter::loadDefaultLoggerStyle(gui::LoggerHighlighter* highlighter) {
     if (highlighter == nullptr) {
         COBOT_LOG.error() << "Highlighter is nullptr";
         return;
     };
 
-    auto set_warning = [=](const QString &s){
+    auto set_warning = [=](const QString& s) {
         highlighter->getFormat(s).entry.setForeground(Qt::darkYellow);
         highlighter->getFormat(s).entry.setFontWeight(QFont::Bold);
         highlighter->getFormat(s).entry.setFontItalic(true);
         highlighter->getFormat(s).text.setForeground(Qt::darkYellow);
     };
 
-    auto set_success = [=](const QString &s){
+    auto set_success = [=](const QString& s) {
         highlighter->getFormat(s).entry.setForeground(Qt::darkGreen);
         highlighter->getFormat(s).entry.setFontWeight(QFont::Bold);
         highlighter->getFormat(s).entry.setFontItalic(true);
         highlighter->getFormat(s).text.setForeground(Qt::darkGreen);
     };
 
-    auto set_error = [=](const QString &s){
+    auto set_error = [=](const QString& s) {
         highlighter->getFormat(s).entry.setForeground(Qt::red);
         highlighter->getFormat(s).entry.setFontWeight(QFont::Bold);
         highlighter->getFormat(s).entry.setFontItalic(true);
         highlighter->getFormat(s).text.setForeground(Qt::red);
     };
 
-    auto set_notice = [=](const QString &s){
+    auto set_notice = [=](const QString& s) {
         auto color = QColor::fromRgb(12, 61, 207);
         highlighter->getFormat(s).entry.setForeground(color);
         highlighter->getFormat(s).entry.setFontWeight(QFont::Bold);
@@ -87,16 +87,16 @@ void gui::LoggerHighlighter::loadDefaultLoggerStyle(gui::LoggerHighlighter *high
     highlighter->fmt_url.setFontWeight(QFont::Bold);
 }
 
-gui::LoggerHighlighter *gui::LoggerHighlighter::highlightEditorWithDefaultStyle(QTextDocument *document){
+gui::LoggerHighlighter* gui::LoggerHighlighter::highlightEditorWithDefaultStyle(QTextDocument* document) {
     if (document) {
-        LoggerHighlighter *highlighter = new LoggerHighlighter(document);
+        LoggerHighlighter* highlighter = new LoggerHighlighter(document);
         loadDefaultLoggerStyle(highlighter);
         return highlighter;
     }
     return nullptr;
 }
 
-void gui::LoggerHighlighter::highlightGeneralLine(const QString &text){
+void gui::LoggerHighlighter::highlightGeneralLine(const QString& text) {
     static QRegularExpression reg("(\\[\\s*(.*?)\\])(.*)");
 
     auto mexpr = reg.match(text);
@@ -104,7 +104,7 @@ void gui::LoggerHighlighter::highlightGeneralLine(const QString &text){
 //        qDebug() << mexpr.captured() << mexpr.captured(1) << mexpr.captured(2) << mexpr.captured(3);
         setFormat(mexpr.capturedStart(1), mexpr.capturedLength(1), defaultFormat.entry);
         if (hasFormat(mexpr.captured(2))) {
-            auto &fmt = getFormat(mexpr.captured(2));
+            auto& fmt = getFormat(mexpr.captured(2));
             setFormat(mexpr.capturedStart(2), mexpr.capturedLength(2), fmt.entry);
             setFormat(mexpr.capturedStart(3), mexpr.capturedLength(3), fmt.text);
         } else {
@@ -113,7 +113,7 @@ void gui::LoggerHighlighter::highlightGeneralLine(const QString &text){
     }
 }
 
-void gui::LoggerHighlighter::highlightUrl(const QString &text){
+void gui::LoggerHighlighter::highlightUrl(const QString& text) {
     static QRegularExpression reg("((https|http|ftp|rtsp|mms)?:\\/\\/)[^\\s]+");
     auto mexpr = reg.match(text);
     if (mexpr.hasMatch()) {

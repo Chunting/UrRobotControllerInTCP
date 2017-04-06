@@ -23,18 +23,18 @@ protected:
     typedef boost::interprocess::allocator<ShmString, SegmentManager> StringAllocator;
     typedef boost::interprocess::vector<ShmString, StringAllocator> ShmStringVector;
 public:
-    EasySharedNames(const std::string &share_names_id = std::string());
+    EasySharedNames(const std::string& share_names_id = std::string());
     ~EasySharedNames();
 
-    bool hasName(const std::string &sh_name);
-    bool pushName(const std::string &sh_name);
-    bool removeName(const std::string &sh_name);
+    bool hasName(const std::string& sh_name);
+    bool pushName(const std::string& sh_name);
+    bool removeName(const std::string& sh_name);
     std::vector<std::string> getNames();
 
-    uint32_t refCount() const{ return ptr_shared ? ptr_shared->refCount : 0; }
+    uint32_t refCount() const { return ptr_shared ? ptr_shared->refCount : 0; }
 
-    static void remove(const std::string &share_names_id = std::string());
-    static void dumpAllNames(std::ostream &oss, const std::string &share_names_id = std::string());
+    static void remove(const std::string& share_names_id = std::string());
+    static void dumpAllNames(std::ostream& oss, const std::string& share_names_id = std::string());
 protected:
     bool tryOpenSharedNames();
     bool createSharedNames();
@@ -43,10 +43,10 @@ protected:
     void addRef();
     void decRef();
 
-    const char *localNameRoot() const;
-    const char *localNameObj() const;
+    const char* localNameRoot() const;
+    const char* localNameObj() const;
 
-    ShmString toShared(const std::string &s);
+    ShmString toShared(const std::string& s);
     static const std::string managed_shared_memory_name;
 protected:
     std::shared_ptr<boost::interprocess::managed_shared_memory> managed_memory;
@@ -59,9 +59,9 @@ protected:
         uint32_t refCount;
         boost::interprocess::interprocess_mutex mutex;
 
-        SharedNames(const StringAllocator &a);
+        SharedNames(const StringAllocator& a);
     };
-    SharedNames *ptr_shared;
+    SharedNames* ptr_shared;
 };
 }
 }

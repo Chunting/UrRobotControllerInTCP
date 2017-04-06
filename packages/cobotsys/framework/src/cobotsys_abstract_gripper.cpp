@@ -7,17 +7,17 @@
 #include "extra2.h"
 
 namespace cobotsys {
-GripperStatusObserver::GripperStatusObserver(){
+GripperStatusObserver::GripperStatusObserver() {
 }
 
-GripperStatusObserver::~GripperStatusObserver(){
+GripperStatusObserver::~GripperStatusObserver() {
     INFO_DESTRUCTOR(this);
 }
 
-AbstractGripper::AbstractGripper(){
+AbstractGripper::AbstractGripper() {
 }
 
-AbstractGripper::~AbstractGripper(){
+AbstractGripper::~AbstractGripper() {
     INFO_DESTRUCTOR(this);
 }
 }

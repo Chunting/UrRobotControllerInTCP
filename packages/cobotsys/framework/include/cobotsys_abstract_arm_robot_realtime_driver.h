@@ -7,6 +7,7 @@
 #define PROJECT_COBOTSYS_ABSTRACT_ARM_ROBOT_REALTIME_DRIVER_H
 
 #include <vector>
+#include <cobotsys.h>
 #include <cobotsys_abstract_object.h>
 #include <cobotsys_abstract_digit_io_driver.h>
 
@@ -85,7 +86,7 @@ public:
      * @param[in] deviceId
      * @return
      */
-    virtual std::shared_ptr<AbstractDigitIoDriver> getDigitIoDriver(int deviceId = 0) = 0;
+    virtual shared_ptr<AbstractDigitIoDriver> getDigitIoDriver(int deviceId = 0) = 0;
 
     /**
      * 向机器人注册观察者，当机器人事件发生后，会通过观察者接口API来通知所有已注册对象。
@@ -93,7 +94,7 @@ public:
      * 已经实现线程安全
      * @param observer
      */
-    virtual void attach(std::shared_ptr<ArmRobotRealTimeStatusObserver> observer) = 0;
+    virtual void attach(const shared_ptr<ArmRobotRealTimeStatusObserver>& observer) = 0;
 
     /**
      * 启动机器人控制。仅仅只是发送命令过程没有问题。实际上需要

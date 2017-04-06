@@ -21,20 +21,20 @@ public:
     BasicSharedCvMat();
     ~BasicSharedCvMat();
 
-    bool createSharedMat(const std::string &mat_name, const cv::Mat &mat_info);
-    bool openSharedMat(const std::string &mat_name);
-    bool openSharedMat(const std::string &mat_name, const cv::Mat &mat_info);
-    void setMatUpdatedCallback(std::function<void(const cv::Mat &)> on_mat_updated);
+    bool createSharedMat(const std::string& mat_name, const cv::Mat& mat_info);
+    bool openSharedMat(const std::string& mat_name);
+    bool openSharedMat(const std::string& mat_name, const cv::Mat& mat_info);
+    void setMatUpdatedCallback(std::function<void(const cv::Mat&)> on_mat_updated);
 
-    bool writeMat(const cv::Mat &mat);
-    bool readMat(cv::Mat &mat);
+    bool writeMat(const cv::Mat& mat);
+    bool readMat(cv::Mat& mat);
 
     void writeEmptyMat();
 
     bool readLoop();
     void wait();
 protected:
-    size_t calcMatSizeUsed(const cv::Mat &mat) const;
+    size_t calcMatSizeUsed(const cv::Mat& mat) const;
 
 protected:
     SharedMemory mat_mem_;
@@ -45,7 +45,7 @@ protected:
         int type;
         int step;
     };
-    std::function<void(const cv::Mat &)> mat_updated_callback_;
+    std::function<void(const cv::Mat&)> mat_updated_callback_;
 };
 }
 }

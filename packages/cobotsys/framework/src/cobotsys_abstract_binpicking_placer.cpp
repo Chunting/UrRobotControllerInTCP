@@ -6,9 +6,9 @@
 #include "cobotsys_abstract_binpicking_placer.h"
 
 namespace cobotsys {
-AbstractBinpickingPlacer::AbstractBinpickingPlacer(){
+AbstractBinpickingPlacer::AbstractBinpickingPlacer() {
 }
 
-AbstractBinpickingPlacer::~AbstractBinpickingPlacer(){
+AbstractBinpickingPlacer::~AbstractBinpickingPlacer() {
 }
 }

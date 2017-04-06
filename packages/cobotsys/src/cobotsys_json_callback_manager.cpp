@@ -11,16 +11,16 @@
 namespace cobotsys {
 
 
-JsonCallbackManager::~JsonCallbackManager(){
+JsonCallbackManager::~JsonCallbackManager() {
 }
 
-JsonCallbackManager::JsonCallbackManager(std::function<void(const QJsonObject &)> jsonWriter,
-                                         const QString &receiverId){
+JsonCallbackManager::JsonCallbackManager(std::function<void(const QJsonObject&)> jsonWriter,
+                                         const QString& receiverId) {
     _json_writer = jsonWriter;
     _json_receiver = receiverId;
 }
 
-void JsonCallbackManager::processJson(const QJsonObject &jsonObject){
+void JsonCallbackManager::processJson(const QJsonObject& jsonObject) {
     if (jsonObject.contains(JSON_COMMAND_SEQ) && jsonObject.contains(JSON_REPLY)) {
         if (jsonObject[JSON_RECEIVER].toString() == _json_receiver) {
             auto seqNum = jsonObject[JSON_COMMAND_SEQ].toString();
@@ -44,7 +44,7 @@ void JsonCallbackManager::processJson(const QJsonObject &jsonObject){
 
         auto iter = _json_command_listener_callbacks.find(command);
         if (iter != _json_command_listener_callbacks.end()) {
-            for (auto &callPair : iter->second) {
+            for (auto& callPair : iter->second) {
                 if (callPair.second) {
                     callPair.second(jsonObject);
                 }
@@ -57,10 +57,10 @@ void JsonCallbackManager::processJson(const QJsonObject &jsonObject){
     }
 }
 
-bool JsonCallbackManager::addJsonCommandListener(const QString &jsonCommand, const QString &callbackName,
-                                                 std::function<void(const QJsonObject &)> callback, bool alwaysAdd){
+bool JsonCallbackManager::addJsonCommandListener(const QString& jsonCommand, const QString& callbackName,
+                                                 std::function<void(const QJsonObject&)> callback, bool alwaysAdd) {
 
-    auto &callList = _json_command_listener_callbacks[jsonCommand];
+    auto& callList = _json_command_listener_callbacks[jsonCommand];
     auto call_iter = callList.find(callbackName);
 
     if (!alwaysAdd) {
@@ -74,14 +74,14 @@ bool JsonCallbackManager::addJsonCommandListener(const QString &jsonCommand, con
 }
 
 
-void JsonCallbackManager::writeJsonMessage(const QJsonObject &jsonObject,
-                                           std::function<void(const JsonReply &)> callback){
+void JsonCallbackManager::writeJsonMessage(const QJsonObject& jsonObject,
+                                           std::function<void(const JsonReply&)> callback) {
 
     auto localJson = jsonObject;
     auto seqNum = QUuid::createUuid().toString();
 
     localJson[JSON_COMMAND_SEQ] = QJsonValue(seqNum);
-    auto &ctrack = _json_write_callbacks[seqNum];
+    auto& ctrack = _json_write_callbacks[seqNum];
     ctrack.sendTime = QDateTime::currentMSecsSinceEpoch();
     ctrack.callback = callback;
     ctrack.sendData = localJson;
@@ -91,11 +91,11 @@ void JsonCallbackManager::writeJsonMessage(const QJsonObject &jsonObject,
         _json_writer(localJson);
 }
 
-void JsonCallbackManager::checkTimeout(){
+void JsonCallbackManager::checkTimeout() {
     auto cur_mtime = QDateTime::currentMSecsSinceEpoch();
 
     std::vector<QString> timeoutKeys;
-    for (auto &pair : _json_write_callbacks) {
+    for (auto& pair : _json_write_callbacks) {
         auto diff_time = cur_mtime - pair.second.sendTime;
         if (diff_time > 500) {
             if (pair.second.callback) {
@@ -109,7 +109,7 @@ void JsonCallbackManager::checkTimeout(){
         }
     }
 
-    for (auto &key : timeoutKeys) {
+    for (auto& key : timeoutKeys) {
         _json_write_callbacks.erase(key);
     }
 }

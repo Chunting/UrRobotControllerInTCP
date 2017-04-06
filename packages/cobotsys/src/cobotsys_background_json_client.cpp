@@ -10,28 +10,28 @@
 namespace cobotsys {
 using namespace distributed_system;
 
-BackgroundJsonClient::BackgroundJsonClient(QObject *parent) : SimpleNetworkClient(parent){
+BackgroundJsonClient::BackgroundJsonClient(QObject* parent) : SimpleNetworkClient(parent) {
     _num_debug_inc = 0;
     _instance_id = QUuid::createUuid().toString();
-    _decoder = std::make_shared<MessageDecoder>([=](const Message &m){ processMessage(m); });
+    _decoder = std::make_shared<MessageDecoder>([=](const Message& m) { processMessage(m); });
     _json_callback_manager = std::make_shared<JsonCallbackManager>(
-            [=](const QJsonObject &j){ writeJson(j); }, _instance_id);
+            [=](const QJsonObject& j) { writeJson(j); }, _instance_id);
 
     registerCommandHandler(BACK_GET_SLAVE_NAME, this, &BackgroundJsonClient::cmdGetSlaveName);
 }
 
-void BackgroundJsonClient::processData(const QByteArray &ba){
+void BackgroundJsonClient::processData(const QByteArray& ba) {
     _decoder->decode(ba);
 }
 
-void BackgroundJsonClient::processConnect(){
+void BackgroundJsonClient::processConnect() {
     writeData("Hello World!");
 }
 
-void BackgroundJsonClient::processDisconnect(){
+void BackgroundJsonClient::processDisconnect() {
 }
 
-void BackgroundJsonClient::processMessage(const Message &m){
+void BackgroundJsonClient::processMessage(const Message& m) {
     if (m.getType() == MessageType::Utf8BasedJSON) {
         QJsonParseError jsonParseError;
         QByteArray json(m.getContent(), m.getContentLength());
@@ -45,16 +45,16 @@ void BackgroundJsonClient::processMessage(const Message &m){
     }
 }
 
-void BackgroundJsonClient::processJson(const QJsonObject &json){
+void BackgroundJsonClient::processJson(const QJsonObject& json) {
     _json_callback_manager->processJson(json);
 }
 
-void BackgroundJsonClient::writeJson(const QJsonObject &json){
+void BackgroundJsonClient::writeJson(const QJsonObject& json) {
     _socket->write(MessageEncoder::genJsonMessage(json).getData());
     COBOT_LOG.info() << "Client JSON: " << json;
 }
 
-void BackgroundJsonClient::cmdGetSlaveName(const QJsonObject &json){
+void BackgroundJsonClient::cmdGetSlaveName(const QJsonObject& json) {
     auto rcmd = json;
 
     rcmd[BACK_KEY_SLAVE_NAME] = _node_name;
@@ -63,7 +63,7 @@ void BackgroundJsonClient::cmdGetSlaveName(const QJsonObject &json){
     replyJson(rcmd);
 }
 
-void BackgroundJsonClient::replyJson(const QJsonObject &json){
+void BackgroundJsonClient::replyJson(const QJsonObject& json) {
     auto rejs = json;
     rejs.remove(JSON_SENDER);
     rejs.remove(JSON_COMMAND_KEY);
@@ -71,7 +71,8 @@ void BackgroundJsonClient::replyJson(const QJsonObject &json){
     writeJson(rejs);
 }
 
-void BackgroundJsonClient::registerCommandHandler(const QString &command, std::function<void(const QJsonObject &)> handler){
+void
+BackgroundJsonClient::registerCommandHandler(const QString& command, std::function<void(const QJsonObject&)> handler) {
     _json_callback_manager->addJsonCommandListener(command, command, handler);
 }
 

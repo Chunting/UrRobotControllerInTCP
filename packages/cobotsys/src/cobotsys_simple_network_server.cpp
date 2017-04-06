@@ -6,11 +6,11 @@
 #include "cobotsys_simple_network_server.h"
 
 namespace cobotsys {
-SimpleNetworkServer::TCPLink::TCPLink(){
+SimpleNetworkServer::TCPLink::TCPLink() {
     tcp_socket = nullptr;
 }
 
-SimpleNetworkServer::TCPLink::~TCPLink(){
+SimpleNetworkServer::TCPLink::~TCPLink() {
     if (tcp_socket) {
         tcp_socket->deleteLater();
     }
@@ -21,12 +21,12 @@ SimpleNetworkServer::TCPLink::~TCPLink(){
 namespace cobotsys {
 
 
-SimpleNetworkServer::SimpleNetworkServer(QObject *parent) : QObject(parent){
+SimpleNetworkServer::SimpleNetworkServer(QObject* parent) : QObject(parent) {
     _server = new QTcpServer(this);
     connect(_server, &QTcpServer::newConnection, this, &SimpleNetworkServer::onNewConnection);
 }
 
-void SimpleNetworkServer::onNewConnection(){
+void SimpleNetworkServer::onNewConnection() {
     auto tcp_socket = _server->nextPendingConnection();
     connect(tcp_socket, &QTcpSocket::connected, this, &SimpleNetworkServer::onClientConnect);
     connect(tcp_socket, &QTcpSocket::disconnected, this, &SimpleNetworkServer::onClientDisconnect);
@@ -45,10 +45,10 @@ void SimpleNetworkServer::onNewConnection(){
 }
 
 
-SimpleNetworkServer::~SimpleNetworkServer(){
+SimpleNetworkServer::~SimpleNetworkServer() {
 }
 
-bool SimpleNetworkServer::lanuchMaster(const server::CONFIG &config){
+bool SimpleNetworkServer::lanuchMaster(const server::CONFIG& config) {
     if (_server->listen(config.address, config.port)) {
         _config = config;
         COBOT_LOG.notice() << "SimpleNetworkServer, Lanuch Success. [" << config.address.toString()
@@ -58,14 +58,14 @@ bool SimpleNetworkServer::lanuchMaster(const server::CONFIG &config){
     return false;
 }
 
-void SimpleNetworkServer::onClientConnect(){
+void SimpleNetworkServer::onClientConnect() {
     auto pLink = getLink();
     if (pLink) {
         COBOT_LOG.notice() << "Server: " << "Client Connect.";
     }
 }
 
-void SimpleNetworkServer::onClientDisconnect(){
+void SimpleNetworkServer::onClientDisconnect() {
     auto pLink = getLink();
     if (pLink) {
         COBOT_LOG.notice() << "Server: " << "Client Disconnect.";
@@ -75,21 +75,21 @@ void SimpleNetworkServer::onClientDisconnect(){
     }
 }
 
-void SimpleNetworkServer::onClientFound(){
+void SimpleNetworkServer::onClientFound() {
     auto pLink = getLink();
     if (pLink) {
         COBOT_LOG.notice() << "Server: " << "Client Found.";
     }
 }
 
-void SimpleNetworkServer::onClientError(QAbstractSocket::SocketError error){
+void SimpleNetworkServer::onClientError(QAbstractSocket::SocketError error) {
     auto pLink = getLink();
     if (pLink) {
         COBOT_LOG.notice() << "Server: " << "Error: " << pLink->tcp_socket->errorString();
     }
 }
 
-void SimpleNetworkServer::onClientDataReady(){
+void SimpleNetworkServer::onClientDataReady() {
     auto pLink = getLink();
     if (pLink) {
         auto ba = pLink->tcp_socket->readAll();
@@ -97,26 +97,26 @@ void SimpleNetworkServer::onClientDataReady(){
     }
 }
 
-std::shared_ptr<SimpleNetworkServer::TCPLink> SimpleNetworkServer::getLink(){
+std::shared_ptr<SimpleNetworkServer::TCPLink> SimpleNetworkServer::getLink() {
     auto iter = _links.find(sender());
     if (iter != _links.end())
         return iter->second;
     return nullptr;
 }
 
-void SimpleNetworkServer::deleteTCPLink(std::shared_ptr<SimpleNetworkServer::TCPLink> link){
+void SimpleNetworkServer::deleteTCPLink(std::shared_ptr<SimpleNetworkServer::TCPLink> link) {
     _links.erase(link->tcp_socket);
 }
 
-void SimpleNetworkServer::processClientData(QTcpSocket *clientLink, const QByteArray &ba){
+void SimpleNetworkServer::processClientData(QTcpSocket* clientLink, const QByteArray& ba) {
     COBOT_LOG.info() << clientLink << ": " << ba.constData();
     clientLink->write(ba);
 }
 
-void SimpleNetworkServer::processClientConnect(QTcpSocket *tcpSocket){
+void SimpleNetworkServer::processClientConnect(QTcpSocket* tcpSocket) {
 }
 
-void SimpleNetworkServer::processClientDisconnect(QTcpSocket *tcpSocket){
+void SimpleNetworkServer::processClientDisconnect(QTcpSocket* tcpSocket) {
 }
 
 

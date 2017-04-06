@@ -18,7 +18,7 @@ std::string path_slash = "/";
 std::vector<std::string> FileFinder::base_paths;
 std::map<FileFinder::PreDefPath, std::string> FileFinder::pre_def_path;
 
-std::string FileFinder::find(const std::string& base_name){
+std::string FileFinder::find(const std::string& base_name) {
     if (isFileExist(base_name))
         return realPathOf(base_name);
 
@@ -35,7 +35,7 @@ std::string FileFinder::find(const std::string& base_name){
     return std::string();
 }
 
-void FileFinder::loadDataPaths(){
+void FileFinder::loadDataPaths() {
     addSearchPath(".", Data);
     addSearchPath("../data", Data);
     addSearchPath("../../data", Data);
@@ -49,7 +49,7 @@ void FileFinder::loadDataPaths(){
     COBOT_LOG.message("File Finder") << "Current Path: " << realPathOf(".");
 }
 
-bool FileFinder::isFileExist(const std::string& filePath){
+bool FileFinder::isFileExist(const std::string& filePath) {
     struct stat stFileInfo;
     int intStat;
 
@@ -62,7 +62,7 @@ bool FileFinder::isFileExist(const std::string& filePath){
     }
 }
 
-std::string FileFinder::realPathOf(const std::string& path){
+std::string FileFinder::realPathOf(const std::string& path) {
     std::vector<char> ch_buf(1024);
 #ifdef WIN32
     auto pfull = _fullpath(&ch_buf[0], path.c_str(), ch_buf.size());
@@ -79,7 +79,7 @@ std::string FileFinder::realPathOf(const std::string& path){
     return std::string();
 }
 
-void FileFinder::storSearchPath(const std::string& path_to_find, PreDefPath pathType){
+void FileFinder::storSearchPath(const std::string& path_to_find, PreDefPath pathType) {
 
     for (auto& iter : base_paths) {
         if (iter == path_to_find) {
@@ -96,7 +96,7 @@ void FileFinder::storSearchPath(const std::string& path_to_find, PreDefPath path
     }
 }
 
-std::string realPath2(const std::string& path_to_find){
+std::string realPath2(const std::string& path_to_find) {
     QDir dir(QDir::currentPath());
     dir.setPath(QString::fromLocal8Bit(path_to_find.c_str()));
     if (dir.exists()) {
@@ -105,7 +105,7 @@ std::string realPath2(const std::string& path_to_find){
     return std::string();
 }
 
-void FileFinder::addSearchPath(const std::string& path_to_find, FileFinder::PreDefPath pathType){
+void FileFinder::addSearchPath(const std::string& path_to_find, FileFinder::PreDefPath pathType) {
     auto rpath = realPath2(path_to_find);
     if (rpath.size()) {
         storSearchPath(rpath, pathType);
@@ -121,7 +121,7 @@ void FileFinder::addSearchPath(const std::string& path_to_find, FileFinder::PreD
     }
 }
 
-std::string FileFinder::getPreDefPath(PreDefPath pathType){
+std::string FileFinder::getPreDefPath(PreDefPath pathType) {
     return pre_def_path[pathType];
 }
 }

@@ -18,26 +18,26 @@ namespace cobotsys {
 class BackgroundProcessClient : public QObject {
 Q_OBJECT
 public:
-    BackgroundProcessClient(QObject *parent = nullptr);
+    BackgroundProcessClient(QObject* parent = nullptr);
     ~BackgroundProcessClient();
 
 
-    BackgroundJsonClient &getSlave();
+    BackgroundJsonClient& getSlave();
 
 
-    void setScriptConfigFile(const QString &filename);
+    void setScriptConfigFile(const QString& filename);
 protected:
 
-    void onRunScript(const QJsonObject &json);
-    void onStopScript(const QJsonObject &json);
+    void onRunScript(const QJsonObject& json);
+    void onStopScript(const QJsonObject& json);
 
-    bool loadScriptSetting(const QString &settingName);
+    bool loadScriptSetting(const QString& settingName);
 
     void onTaskFinish();
 protected:
     QString _script_file_name;
     BackgroundJsonClient _slave;
-    BackgroundTask *_task;
+    BackgroundTask* _task;
 
     BackgroundTaskSettings _task_setting;
 };

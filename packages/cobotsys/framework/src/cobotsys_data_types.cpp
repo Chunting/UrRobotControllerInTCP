@@ -6,7 +6,7 @@
 #include "cobotsys_data_types.h"
 
 namespace cobotsys {
-std::string toString(ImageType imageType){
+std::string toString(ImageType imageType) {
     switch (imageType) {
     case ImageType::Color: return "Color";
     case ImageType::Depth: return "Depth";

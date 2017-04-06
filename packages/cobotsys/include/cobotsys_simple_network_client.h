@@ -23,12 +23,12 @@ Q_OBJECT
 public:
 
 public:
-    SimpleNetworkClient(QObject *parent = nullptr);
+    SimpleNetworkClient(QObject* parent = nullptr);
     ~SimpleNetworkClient();
 
-    void connectHost(const server::CONFIG &config = server::CONFIG());
-    void writeData(const QByteArray &ba);
-    void setNodeName(const QString &name);
+    void connectHost(const server::CONFIG& config = server::CONFIG());
+    void writeData(const QByteArray& ba);
+    void setNodeName(const QString& name);
 
 protected:
     void onConnect();
@@ -41,13 +41,13 @@ protected:
     void doConnectHost(int delayMSec = 0);
 
 protected:
-    virtual void processData(const QByteArray &ba);
+    virtual void processData(const QByteArray& ba);
     virtual void processConnect();
     virtual void processDisconnect();
 
 
 protected:
-    QTcpSocket *_socket;
+    QTcpSocket* _socket;
     server::CONFIG _config;
     bool _is_connected;
     int _re_connect_delay;

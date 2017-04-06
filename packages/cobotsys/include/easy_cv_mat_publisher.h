@@ -19,7 +19,7 @@ class EasyCvMatPublisher {
 public:
     EasyCvMatPublisher();
     ~EasyCvMatPublisher();
-    bool publishCvMat(const std::string &img_desc, const cv::Mat &img);
+    bool publishCvMat(const std::string& img_desc, const cv::Mat& img);
 
 protected:
     class CvMatPublishWorker {
@@ -28,12 +28,11 @@ protected:
         BasicSharedCvMat shared_cv_mat;
 
 
-        bool publishCvMat(const cv::Mat &img);
-
+        bool publishCvMat(const cv::Mat& img);
     };
 
 protected:
-    std::shared_ptr<CvMatPublishWorker> findOrCreatePostWorker(const std::string &img_desc, const cv::Mat &img);
+    std::shared_ptr<CvMatPublishWorker> findOrCreatePostWorker(const std::string& img_desc, const cv::Mat& img);
 protected:
     EasySharedNames easy_shared_names_;
     std::map<std::string, std::shared_ptr<CvMatPublishWorker> > easy_publish_workers_;

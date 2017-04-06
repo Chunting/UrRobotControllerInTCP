@@ -17,7 +17,6 @@ public:
     virtual ~AbstractBinpickingVisionDetector();
 
     virtual void processVisionImage() = 0;
-
 };
 }
 }

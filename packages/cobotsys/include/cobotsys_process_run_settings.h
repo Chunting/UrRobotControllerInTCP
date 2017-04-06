@@ -23,7 +23,7 @@ enum class TaskProcessType {
     RosProgram
 };
 
-std::ostream &operator<<(std::ostream &oss, TaskProcessType t);
+std::ostream& operator<<(std::ostream& oss, TaskProcessType t);
 
 
 class ProcessRunSettings {
@@ -31,13 +31,13 @@ public:
     ProcessRunSettings();
     ~ProcessRunSettings();
 
-    void write(cv::FileStorage &fs) const;
-    void read(const cv::FileNode &fn);
+    void write(cv::FileStorage& fs) const;
+    void read(const cv::FileNode& fn);
 
-    const std::map<QString, QString> &getEnvMap() const;
-    const std::map<QString, QString> &getRosParamMap() const;
-    const QString &getPath() const;
-    const QString &getCommandLine() const;
+    const std::map<QString, QString>& getEnvMap() const;
+    const std::map<QString, QString>& getRosParamMap() const;
+    const QString& getPath() const;
+    const QString& getCommandLine() const;
     bool showConsolePrint() const;
     TaskProcessType getTaskProcessType() const;
 
@@ -56,24 +56,24 @@ public:
     BackgroundTaskSettings();
     ~BackgroundTaskSettings();
 
-    void write(cv::FileStorage &fs) const;
-    void read(const cv::FileNode &fn);
+    void write(cv::FileStorage& fs) const;
+    void read(const cv::FileNode& fn);
 
-    const std::vector<ProcessRunSettings> &getTaskSettings() const;
+    const std::vector<ProcessRunSettings>& getTaskSettings() const;
 
-    void debugPrint(const std::string &taskName = std::string());
+    void debugPrint(const std::string& taskName = std::string());
 protected:
     std::vector<ProcessRunSettings> _process_settings;
 };
 
 
 template<class T>
-void write(cv::FileStorage &fs, const std::string &, const T &data){
+void write(cv::FileStorage& fs, const std::string&, const T& data) {
     data.write(fs);
 }
 
 template<class T>
-void read(const cv::FileNode &node, T &data, const T &def_val = T()){
+void read(const cv::FileNode& node, T& data, const T& def_val = T()) {
     if (node.empty())
         data = def_val;
     else

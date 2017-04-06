@@ -8,21 +8,21 @@
 
 
 namespace cobotsys {
-ArmRobotMoveStatusObserver::ArmRobotMoveStatusObserver(){
+ArmRobotMoveStatusObserver::ArmRobotMoveStatusObserver() {
 }
 
-ArmRobotMoveStatusObserver::~ArmRobotMoveStatusObserver(){
+ArmRobotMoveStatusObserver::~ArmRobotMoveStatusObserver() {
 }
 }
 
 namespace cobotsys {
-AbstractArmRobotMoveDriver::AbstractArmRobotMoveDriver(){
+AbstractArmRobotMoveDriver::AbstractArmRobotMoveDriver() {
 }
 
-AbstractArmRobotMoveDriver::~AbstractArmRobotMoveDriver(){
+AbstractArmRobotMoveDriver::~AbstractArmRobotMoveDriver() {
 }
 
-uint32_t AbstractArmRobotMoveDriver::generateMoveId(){
+uint32_t AbstractArmRobotMoveDriver::generateMoveId() {
     static uint32_t moveId = 0;
     static std::mutex moveIdMutex;
     std::lock_guard<std::mutex> lock_guard(moveIdMutex);

@@ -9,9 +9,9 @@
 using namespace cobotsys;
 using namespace cobotsys::binpicking;
 
-AbstractBinpickingPicker::AbstractBinpickingPicker(){
+AbstractBinpickingPicker::AbstractBinpickingPicker() {
 }
 
-AbstractBinpickingPicker::~AbstractBinpickingPicker(){
+AbstractBinpickingPicker::~AbstractBinpickingPicker() {
     INFO_DESTRUCTOR(this);
 }

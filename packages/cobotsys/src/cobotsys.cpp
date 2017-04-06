@@ -39,7 +39,7 @@ static std::string internal_app_name;
 static std::string internal_app_directory;
 
 
-void parser_app_name(const char *arg){
+void parser_app_name(const char* arg) {
 
     internal_app_path = arg;
 
@@ -58,7 +58,7 @@ void parser_app_name(const char *arg){
 }
 
 
-void init_library(int argc, char **argv){
+void init_library(int argc, char** argv) {
     FileFinder::loadDataPaths();
     internal_info::parser_app_name(argv[0]);
 }

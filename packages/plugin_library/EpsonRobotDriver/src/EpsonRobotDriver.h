@@ -18,7 +18,7 @@ public:
 public:
     virtual void move(const std::vector<double>& q);
     virtual std::shared_ptr<AbstractDigitIoDriver> getDigitIoDriver(int deviceId = 0);
-    virtual void attach(std::shared_ptr<ArmRobotRealTimeStatusObserver> observer);
+    virtual void attach(const shared_ptr<ArmRobotRealTimeStatusObserver>& observer);
     virtual bool start();
     virtual void stop();
     virtual bool setup(const QString& configFilePath);

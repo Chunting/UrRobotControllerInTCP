@@ -7,19 +7,19 @@
 
 
 namespace cobotsys {
-Logger::Logger(){
+Logger::Logger() {
     m_current_entry = "INFO";
     m_log_to_cout = false;
     m_cache_log_message = true;
     m_prefix_width = 12;
 }
 
-void Logger::println(const std::string &text){
+void Logger::println(const std::string& text) {
     if (m_append_filter)
         m_append_filter("", text);
 }
 
-void Logger::append(const std::string &entry, const std::string &message){
+void Logger::append(const std::string& entry, const std::string& message) {
     m_res_mutex.lock();
     if (m_cache_log_message)
         m_logs.push_back({entry, message});
@@ -41,23 +41,23 @@ void Logger::append(const std::string &entry, const std::string &message){
     m_res_mutex.unlock();
 }
 
-void Logger::append(const std::string &message){
+void Logger::append(const std::string& message) {
     append(m_current_entry, message);
 }
 
-void Logger::setCurrentEntry(const std::string &entry){
+void Logger::setCurrentEntry(const std::string& entry) {
     m_current_entry = entry;
-    for (auto &c : m_current_entry) c = toupper(c);
+    for (auto& c : m_current_entry) c = toupper(c);
 }
 
-const std::string &Logger::currentEntry() const{
+const std::string& Logger::currentEntry() const {
     return m_current_entry;
 }
 
-void Logger::setAppendFilter(std::function<void(const std::string &entry, const std::string &message)> filter){
+void Logger::setAppendFilter(std::function<void(const std::string& entry, const std::string& message)> filter) {
     if (filter) {
         m_append_filter = filter;
-        for (auto &iter : m_logs) {
+        for (auto& iter : m_logs) {
             m_append_filter(iter.entry, iter.message);
         }
     } else {
@@ -65,7 +65,7 @@ void Logger::setAppendFilter(std::function<void(const std::string &entry, const 
     }
 }
 
-Logger &Logger::instance(){
+Logger& Logger::instance() {
     static Logger logger;
     static bool first_init = true;
     if (first_init) {
@@ -77,36 +77,36 @@ Logger &Logger::instance(){
     return logger;
 }
 
-Logger::MessageWrapper Logger::message(const std::string &entry){
+Logger::MessageWrapper Logger::message(const std::string& entry) {
     return MessageWrapper(entry, *this);
 }
 
-Logger::MessageWrapper Logger::message(){
+Logger::MessageWrapper Logger::message() {
     return message(m_current_entry);
 }
 
-Logger::MessageWrapper Logger::error(){
+Logger::MessageWrapper Logger::error() {
     return message("Error");
 }
 
-Logger::MessageWrapper Logger::warning(){
+Logger::MessageWrapper Logger::warning() {
     return message("Warning");
 }
 
-Logger::MessageWrapper Logger::notice(){
+Logger::MessageWrapper Logger::notice() {
     return message("Notice");
 }
 
-Logger::MessageWrapper Logger::info(){
+Logger::MessageWrapper Logger::info() {
     return message("Info");
 }
 
-void Logger::setCurrentInstanceName(const std::string &s){
+void Logger::setCurrentInstanceName(const std::string& s) {
     m_current_instance_name = s;
 }
 }
 
-cobotsys::Logger::MessageWrapper &endl(cobotsys::Logger::MessageWrapper &mwp){
+cobotsys::Logger::MessageWrapper& endl(cobotsys::Logger::MessageWrapper& mwp) {
     mwp.endl();
     return mwp;
 }

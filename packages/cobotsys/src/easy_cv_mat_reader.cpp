@@ -11,16 +11,16 @@ namespace common {
 
 
 EasyCvMatReader::EasyCvMatReader() :
-        easy_shared_names_(EASY_CV_MAT_RW_NAMESPACE){
+        easy_shared_names_(EASY_CV_MAT_RW_NAMESPACE) {
 }
 
-EasyCvMatReader::~EasyCvMatReader(){
+EasyCvMatReader::~EasyCvMatReader() {
 }
 
 
 std::shared_ptr<EasyCvMatHolder> EasyCvMatReader::lanuch(
-        const std::string &img_desc,
-        std::function<void(EasyCvMatReaderStatus)> on_status){
+        const std::string& img_desc,
+        std::function<void(EasyCvMatReaderStatus)> on_status) {
 
     std::shared_ptr<EasyCvMatHolder> rholder;
 
@@ -30,12 +30,12 @@ std::shared_ptr<EasyCvMatHolder> EasyCvMatReader::lanuch(
     rholder->name() = img_desc;
     if (easy_shared_names_.hasName(img_desc)) {
 
-        std::thread reader([=](){
+        std::thread reader([=]() {
             backgroundWorker(img_desc, rholder, on_status);
         });
         reader.detach();
     } else {
-        std::thread reader([=](){
+        std::thread reader([=]() {
             if (on_status) {
                 on_status(EasyCvMatReaderStatus::TargetImageDoesNotExist);
             } else {
@@ -50,9 +50,9 @@ std::shared_ptr<EasyCvMatHolder> EasyCvMatReader::lanuch(
     return rholder;
 }
 
-void EasyCvMatReader::backgroundWorker(const std::string &img_desc,
+void EasyCvMatReader::backgroundWorker(const std::string& img_desc,
                                        std::shared_ptr<EasyCvMatHolder> holder,
-                                       std::function<void(EasyCvMatReaderStatus)> on_status){
+                                       std::function<void(EasyCvMatReaderStatus)> on_status) {
     BasicSharedCvMat basicSharedCvMat;
     EasyCvMatReaderStatus reader_status;
     cv::Mat local_mat;
@@ -93,14 +93,14 @@ void EasyCvMatReader::backgroundWorker(const std::string &img_desc,
 
 
 EasyCvMatHolder::EasyCvMatHolder() :
-        ready_semaphore_(0){
+        ready_semaphore_(0) {
     num_post_ = 0;
     num_read_ = 0;
     _stop_reader = false;
     is_reader_released_ = false;
 }
 
-bool EasyCvMatHolder::getMat(cv::Mat &mat){
+bool EasyCvMatHolder::getMat(cv::Mat& mat) {
     if (ready_semaphore_.try_wait()) {
         bool isNew = false;
 
@@ -115,7 +115,7 @@ bool EasyCvMatHolder::getMat(cv::Mat &mat){
     return false;
 }
 
-bool EasyCvMatHolder::updateMat(const cv::Mat &mat){
+bool EasyCvMatHolder::updateMat(const cv::Mat& mat) {
     if (_stop_reader)
         return true;
 
@@ -133,15 +133,15 @@ bool EasyCvMatHolder::updateMat(const cv::Mat &mat){
     return bresult;
 }
 
-void EasyCvMatHolder::setUpdateCallback(std::function<bool(const std::string &, const cv::Mat &)> callback){
+void EasyCvMatHolder::setUpdateCallback(std::function<bool(const std::string&, const cv::Mat&)> callback) {
     callback_ = callback;
 }
 
-void EasyCvMatHolder::stopReader(){
+void EasyCvMatHolder::stopReader() {
     _stop_reader = true;
 }
 
-std::vector<std::string> EasyCvMatReader::existMatNames(){
+std::vector<std::string> EasyCvMatReader::existMatNames() {
     return easy_shared_names_.getNames();
 }
 

@@ -8,20 +8,20 @@
 namespace cobotsys {
 namespace common {
 
-BasicSharedCvMat::BasicSharedCvMat(){
+BasicSharedCvMat::BasicSharedCvMat() {
 }
 
-BasicSharedCvMat::~BasicSharedCvMat(){
+BasicSharedCvMat::~BasicSharedCvMat() {
 }
 
-bool BasicSharedCvMat::createSharedMat(const std::string &mat_name, const cv::Mat &mat_info){
+bool BasicSharedCvMat::createSharedMat(const std::string& mat_name, const cv::Mat& mat_info) {
     if (mat_mem_.create(mat_name, calcMatSizeUsed(mat_info))) {
         return true;
     }
     return false;
 }
 
-bool BasicSharedCvMat::openSharedMat(const std::string &mat_name){
+bool BasicSharedCvMat::openSharedMat(const std::string& mat_name) {
     if (mat_mem_.open(mat_name)) {
         return true;
     }
@@ -29,14 +29,14 @@ bool BasicSharedCvMat::openSharedMat(const std::string &mat_name){
 }
 
 
-bool BasicSharedCvMat::openSharedMat(const std::string &mat_name, const cv::Mat &mat_info){
+bool BasicSharedCvMat::openSharedMat(const std::string& mat_name, const cv::Mat& mat_info) {
     if (mat_mem_.open(mat_name, calcMatSizeUsed(mat_info))) {
         return true;
     }
     return false;
 }
 
-bool BasicSharedCvMat::writeMat(const cv::Mat &mat){
+bool BasicSharedCvMat::writeMat(const cv::Mat& mat) {
     auto mat_data_len = calcMatSizeUsed(mat);
     auto mat_head_len = sizeof(mat_head);
     auto mat_body_len = mat_data_len - mat_head_len;
@@ -45,7 +45,7 @@ bool BasicSharedCvMat::writeMat(const cv::Mat &mat){
     mathdr.rows = mat.rows;
     mathdr.cols = mat.cols;
     mathdr.type = mat.type();
-    mathdr.step = (int)mat.step[0];
+    mathdr.step = (int) mat.step[0];
     auto mmsize = mat_mem_.size();
     if (mat_data_len == mmsize && mat_mem_.isValid()) {
         mat_mem_.lock();
@@ -58,7 +58,7 @@ bool BasicSharedCvMat::writeMat(const cv::Mat &mat){
     return false;
 }
 
-bool BasicSharedCvMat::readMat(cv::Mat &mat){
+bool BasicSharedCvMat::readMat(cv::Mat& mat) {
     mat_head mathdr;
     auto mat_head_len = sizeof(mat_head);
 
@@ -75,15 +75,15 @@ bool BasicSharedCvMat::readMat(cv::Mat &mat){
     return bresult;
 }
 
-size_t BasicSharedCvMat::calcMatSizeUsed(const cv::Mat &mat) const{
+size_t BasicSharedCvMat::calcMatSizeUsed(const cv::Mat& mat) const {
     return (size_t) (mat.step[0] * mat.rows) + sizeof(mat_head);
 }
 
-void BasicSharedCvMat::setMatUpdatedCallback(std::function<void(const cv::Mat &)> on_mat_updated){
+void BasicSharedCvMat::setMatUpdatedCallback(std::function<void(const cv::Mat&)> on_mat_updated) {
     mat_updated_callback_ = on_mat_updated;
 }
 
-bool BasicSharedCvMat::readLoop(){
+bool BasicSharedCvMat::readLoop() {
     mat_mem_.getSemaphore().wait();
 
     if (mat_updated_callback_) {
@@ -97,7 +97,7 @@ bool BasicSharedCvMat::readLoop(){
     return false;
 }
 
-void BasicSharedCvMat::writeEmptyMat(){
+void BasicSharedCvMat::writeEmptyMat() {
     mat_head mathdr = {0};
     auto mmsize = mat_mem_.size();
     if (mat_mem_.isValid()) {
@@ -108,7 +108,7 @@ void BasicSharedCvMat::writeEmptyMat(){
     }
 }
 
-void BasicSharedCvMat::wait(){
+void BasicSharedCvMat::wait() {
     mat_mem_.getSemaphore().wait();
 }
 }

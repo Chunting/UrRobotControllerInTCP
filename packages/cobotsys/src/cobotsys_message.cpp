@@ -11,26 +11,26 @@ namespace distributed_system {
 #define MESSAGE_HEADER_MAGIC_NUM 0x12345656
 #define MESSAGE_CHECKSUM_SIZE   sizeof(uint16_t)
 
-MessageEncoder::MessageEncoder(){
+MessageEncoder::MessageEncoder() {
 }
 
-MessageEncoder::~MessageEncoder(){
+MessageEncoder::~MessageEncoder() {
 }
 
-Message MessageEncoder::genStringMessage(const std::string &msg){
+Message MessageEncoder::genStringMessage(const std::string& msg) {
     return genMessage(QByteArray(msg.c_str(), msg.size() + 1), MessageType::String);
 }
 
 
-Message MessageEncoder::genStringMessage(const QString &msg){
+Message MessageEncoder::genStringMessage(const QString& msg) {
     return genStringMessage(std::string(msg.toLocal8Bit().constData()));
 }
 
-Message MessageEncoder::genJsonMessage(const QJsonObject &msg){
+Message MessageEncoder::genJsonMessage(const QJsonObject& msg) {
     return genMessage(QJsonDocument(msg).toJson(), MessageType::Utf8BasedJSON);
 }
 
-Message MessageEncoder::genMessage(const QByteArray &msg, MessageType type){
+Message MessageEncoder::genMessage(const QByteArray& msg, MessageType type) {
     QByteArray ba;
     MessageHeader msg_hdr;
 
@@ -40,63 +40,63 @@ Message MessageEncoder::genMessage(const QByteArray &msg, MessageType type){
     msg_hdr.type = (uint32_t) type;
 
     // push head and body
-    ba.append((const char *) &msg_hdr, sizeof(msg_hdr));
+    ba.append((const char*) &msg_hdr, sizeof(msg_hdr));
     ba.append(msg);
 
     // calc checksum
     uint16_t checksum = qChecksum(ba.constData(), ba.size());
 
     // push checksum
-    ba.append((const char *) &checksum, sizeof(checksum));
+    ba.append((const char*) &checksum, sizeof(checksum));
 
     // final message
     return Message(ba);
 }
 
 
-Message::Message(const Message &r) : _data(r._data){
+Message::Message(const Message& r) : _data(r._data) {
 }
 
-Message::Message(const QByteArray &ba) : _data(ba){
+Message::Message(const QByteArray& ba) : _data(ba) {
 }
 
-Message::Message(){
+Message::Message() {
 }
 
-Message::~Message(){
+Message::~Message() {
 }
 
-bool Message::isValid() const{
+bool Message::isValid() const {
     if (_data.size() >= MESSAGE_CHECKSUM_SIZE) {
         auto real_checksum = qChecksum(_data.constData(), _data.size() - MESSAGE_CHECKSUM_SIZE);
-        auto msgr_checksum = *(uint16_t *) (_data.constData() + _data.size() - MESSAGE_CHECKSUM_SIZE);
+        auto msgr_checksum = *(uint16_t*) (_data.constData() + _data.size() - MESSAGE_CHECKSUM_SIZE);
         return (real_checksum == msgr_checksum);
     }
     return false;
 }
 
-const QByteArray &Message::getData() const{
+const QByteArray& Message::getData() const {
     return _data;
 }
 
 
-const char *Message::getContent() const{
+const char* Message::getContent() const {
     return (_data.constData() + sizeof(MessageHeader));
 }
 
-MessageType Message::getType() const{
-    return (MessageType) ((MessageHeader *) _data.constData())->type;
+MessageType Message::getType() const {
+    return (MessageType) ((MessageHeader*) _data.constData())->type;
 }
 
-int Message::getContentLength() const{
+int Message::getContentLength() const {
     int rsize = _data.size() - (int) sizeof(MessageHeader) - MESSAGE_CHECKSUM_SIZE;
     if (rsize >= 0)
         return rsize;
     return 0;
 }
 
-bool MessageDecoder::extractMessage(int pos_magic){
-    auto msg_hdr = (const MessageHeader *) (_prev_data.constData() + pos_magic);
+bool MessageDecoder::extractMessage(int pos_magic) {
+    auto msg_hdr = (const MessageHeader*) (_prev_data.constData() + pos_magic);
 
     int remain_size = _prev_data.size() - pos_magic;
     int msg_length = (int) msg_hdr->length;
@@ -117,7 +117,7 @@ bool MessageDecoder::extractMessage(int pos_magic){
     return false;
 }
 
-void MessageDecoder::decode(const QByteArray &ba){
+void MessageDecoder::decode(const QByteArray& ba) {
     cacheData(ba);
 
     int pos_magic = 0;
@@ -132,17 +132,17 @@ void MessageDecoder::decode(const QByteArray &ba){
     }
 }
 
-MessageDecoder::MessageDecoder(std::function<void(const Message &)> msg_handler){
+MessageDecoder::MessageDecoder(std::function<void(const Message&)> msg_handler) {
     _handler = msg_handler;
 
     uint32_t magic_num = MESSAGE_HEADER_MAGIC_NUM;
-    _ba_magic.append((const char *) &magic_num, sizeof(magic_num));
+    _ba_magic.append((const char*) &magic_num, sizeof(magic_num));
 }
 
-MessageDecoder::~MessageDecoder(){
+MessageDecoder::~MessageDecoder() {
 }
 
-void MessageDecoder::cacheData(const QByteArray &ba){
+void MessageDecoder::cacheData(const QByteArray& ba) {
     if (_prev_data.size())
         _prev_data.append(ba);
     else

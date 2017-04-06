@@ -12,7 +12,7 @@
 #include "include/extra2.h"
 #include <QDebug>
 
-void qt_ba_to_cobot_log(QByteArray& ba){
+void qt_ba_to_cobot_log(QByteArray& ba) {
     int search_index = 0;
     int pos = 0;
 
@@ -31,7 +31,7 @@ void qt_ba_to_cobot_log(QByteArray& ba){
 }
 
 
-QString get_subprocess_pid_list(int pid){
+QString get_subprocess_pid_list(int pid) {
     QProcess killer;
     QStringList params;
     params << "--ppid";
@@ -49,7 +49,7 @@ QString get_subprocess_pid_list(int pid){
     return QString();
 }
 
-void kill_process_childs(int pid, int ppid, std::function<void(int, int)> killMethod){
+void kill_process_childs(int pid, int ppid, std::function<void(int, int)> killMethod) {
     auto str = get_subprocess_pid_list(pid);
     QStringList list = str.split(QRegularExpression("\\s+"), QString::SkipEmptyParts);
 
@@ -70,7 +70,7 @@ void kill_process_childs(int pid, int ppid, std::function<void(int, int)> killMe
     }
 }
 
-QStringList gen_ros_internal_args(const std::map<QString, QString>& arg_map){
+QStringList gen_ros_internal_args(const std::map<QString, QString>& arg_map) {
     QStringList ros_arg_list;
     for (const auto& arg : arg_map) {
         QString ros_arg = "_";
@@ -82,7 +82,7 @@ QStringList gen_ros_internal_args(const std::map<QString, QString>& arg_map){
     return ros_arg_list;
 }
 
-bool loadJson(QJsonObject& obj, const std::string& baseName){
+bool loadJson(QJsonObject& obj, const std::string& baseName) {
     QJsonParseError jsonParseError;
 
     auto fullPath = cobotsys::FileFinder::find(baseName);
@@ -104,7 +104,7 @@ bool loadJson(QJsonObject& obj, const std::string& baseName){
 }
 
 
-QImage matToQImage(const cv::Mat& mat){
+QImage matToQImage(const cv::Mat& mat) {
     // 8-bits unsigned, NO. OF CHANNELS = 1
     if (mat.type() == CV_8UC1) {
         QImage image(mat.cols, mat.rows, QImage::Format_Indexed8);
@@ -142,7 +142,7 @@ QImage matToQImage(const cv::Mat& mat){
     }
 }
 
-bool loadJson(QJsonObject& obj, const QString& baseName){
+bool loadJson(QJsonObject& obj, const QString& baseName) {
     return loadJson(obj, std::string(baseName.toLocal8Bit().constData()));
 }
 

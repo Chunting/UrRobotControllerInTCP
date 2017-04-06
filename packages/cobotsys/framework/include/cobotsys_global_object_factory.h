@@ -103,7 +103,7 @@ protected:
         std::shared_ptr<ObjectSourceInfo> pInfo;
         std::shared_ptr<AbstractObject> pObject;
 
-        ~ObjectInfo(){
+        ~ObjectInfo() {
             pInfo = nullptr;
             pObject = nullptr;
         }
@@ -163,20 +163,17 @@ public:
 
     /**
      * 获取当前已经管理的所有动态库的名称
-     * @return
      */
     std::vector<std::string> getFactoryNames() const;
 
     /**
      * 获取对应动态库可以创建的所有对象类型的名称。
-     * @param factoryName
-     * @return
+     * @param[in] factoryName
      */
     std::vector<std::string> getFactorySupportedNames(const std::string& factoryName) const;
 
     /**
      * 获取当前对象(GlobalObjectFactory)的实例。
-     * @return
      */
     static GlobalObjectFactory* instance();
 private:

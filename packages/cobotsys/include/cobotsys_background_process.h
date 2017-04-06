@@ -17,11 +17,11 @@ namespace cobotsys {
 class BackgroundProcess : public QObject {
 Q_OBJECT
 public:
-    BackgroundProcess(QObject *parent);
+    BackgroundProcess(QObject* parent);
     ~BackgroundProcess();
 
 
-    void run(const ProcessRunSettings &runSettings);
+    void run(const ProcessRunSettings& runSettings);
     void kill();
 
 Q_SIGNALS:
@@ -32,7 +32,7 @@ protected:
     void readStandardOutput();
     void processFinish(int exit, QProcess::ExitStatus exitStatus);
 protected:
-    QProcess *_process;
+    QProcess* _process;
     ProcessRunSettings _run_settings;
     bool _no_print;
     QByteArray _std_err;

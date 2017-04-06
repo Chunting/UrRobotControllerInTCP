@@ -24,11 +24,7 @@ struct CONFIG {
 
 
 QHostAddress localIPv4();
-
 }
-
-
-//
 }
 
 #endif //PROJECT_COBOTSYS_COMPUTE_CONFIG_H

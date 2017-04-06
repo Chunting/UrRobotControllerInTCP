@@ -13,7 +13,7 @@
 #include <QImage>
 #include <cobotsys_logger.h>
 
-std::ostream &operator<<(std::ostream &oss, const QString &str);
-std::ostream &operator<<(std::ostream &oss, const QJsonObject &obj);
+std::ostream& operator<<(std::ostream& oss, const QString& str);
+std::ostream& operator<<(std::ostream& oss, const QJsonObject& obj);
 
 #endif //PROJECT_COBOTSYS_QT_H

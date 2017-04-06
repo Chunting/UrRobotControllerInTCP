@@ -31,25 +31,25 @@ public:
     SharedMemory();
     ~SharedMemory();
 
-    bool create(const std::string &memory_id, size_t memory_size);
-    bool open(const std::string &memory_id);
-    bool open(const std::string &memory_id, size_t memory_size);
+    bool create(const std::string& memory_id, size_t memory_size);
+    bool open(const std::string& memory_id);
+    bool open(const std::string& memory_id, size_t memory_size);
     bool isValid() const;
     size_t size() const;
-    bool write(const void *data_ptr, size_t data_len, size_t offset = 0);
-    bool read(void *data_ptr, size_t data_len, size_t offset = 0);
+    bool write(const void* data_ptr, size_t data_len, size_t offset = 0);
+    bool read(void* data_ptr, size_t data_len, size_t offset = 0);
 
-    void *rawDataAt(size_t offset = 0);
+    void* rawDataAt(size_t offset = 0);
 
-    bool write(const std::string &msg);
+    bool write(const std::string& msg);
 
     template<class T>
-    bool read(T &t){
+    bool read(T& t) {
         return read(&t, sizeof(t));
     }
 
     template<class T>
-    bool write(const T &t){
+    bool write(const T& t) {
         return write(&t, sizeof(t));
     }
 
@@ -58,20 +58,20 @@ public:
     bool unlock();
     bool tryLock();
 
-    boost::interprocess::interprocess_semaphore &getSemaphore();
+    boost::interprocess::interprocess_semaphore& getSemaphore();
 
 protected:
-    void removeNamedResource(const std::string &s);
+    void removeNamedResource(const std::string& s);
 
     void addRef();
     void decRef();
 private:
     std::string shared_memory_id_;
     size_t shared_memory_size_;
-    char_vector *ptr_vector_;
-    boost::interprocess::interprocess_mutex *ptr_mutex_;
-    boost::interprocess::interprocess_semaphore *ptr_semaphore_;
-    uint32_t *ptr_ucounter_;
+    char_vector* ptr_vector_;
+    boost::interprocess::interprocess_mutex* ptr_mutex_;
+    boost::interprocess::interprocess_semaphore* ptr_semaphore_;
+    uint32_t* ptr_ucounter_;
 
     boost::interprocess::managed_shared_memory bi_managed_;
 };
@@ -79,23 +79,23 @@ private:
 template<class Ty>
 class SharedStructData {
 public:
-    SharedStructData(){
+    SharedStructData() {
     }
 
-    bool init(const std::string &name_id){
+    bool init(const std::string& name_id) {
         return shared_memory.create(name_id, sizeof(Ty));
     }
 
-    bool isValid() const{ return shared_memory.isValid(); }
+    bool isValid() const { return shared_memory.isValid(); }
 
-    Ty &read(){
+    Ty& read() {
         shared_memory.lock();
         shared_memory.read(local_data);
         shared_memory.unlock();
         return local_data;
     }
 
-    void sync(){
+    void sync() {
         shared_memory.lock();
         shared_memory.write(local_data);
         shared_memory.unlock();

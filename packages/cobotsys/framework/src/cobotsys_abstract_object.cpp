@@ -10,10 +10,10 @@
 
 
 namespace cobotsys {
-AbstractObject::AbstractObject(){
+AbstractObject::AbstractObject() {
 }
 
-AbstractObject::~AbstractObject(){
+AbstractObject::~AbstractObject() {
     INFO_DESTRUCTOR(this);
 }
 }

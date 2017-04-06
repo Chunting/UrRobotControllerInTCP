@@ -7,7 +7,7 @@
 #include "Kinect2Camera.h"
 
 
-Kinect2Camera::Kinect2Camera(){
+Kinect2Camera::Kinect2Camera() {
     m_freenect2 = new libfreenect2::Freenect2;
     m_freenectDev = nullptr;
     m_devicdId = -1;
@@ -17,13 +17,13 @@ Kinect2Camera::Kinect2Camera(){
     m_isOpened = false;
 }
 
-Kinect2Camera::~Kinect2Camera(){
+Kinect2Camera::~Kinect2Camera() {
     close();
     delete m_freenect2;
 }
 
 
-bool Kinect2Camera::open(int deviceId){
+bool Kinect2Camera::open(int deviceId) {
     if (m_isOpened)
         return true;
 
@@ -68,7 +68,7 @@ bool Kinect2Camera::open(int deviceId){
     return false;
 }
 
-void Kinect2Camera::close(){
+void Kinect2Camera::close() {
     std::lock_guard<std::mutex> lock(m_ioMutex);
 
     if (m_isNotifyCalling) {
@@ -89,7 +89,7 @@ void Kinect2Camera::close(){
     m_isOpened = false;
 }
 
-void Kinect2Camera::attach(std::shared_ptr<cobotsys::CameraStreamObserver> observer){
+void Kinect2Camera::attach(const shared_ptr<cobotsys::CameraStreamObserver>& observer) {
     for (auto& o : m_observers) {
         if (o == observer)
             return;
@@ -100,7 +100,7 @@ void Kinect2Camera::attach(std::shared_ptr<cobotsys::CameraStreamObserver> obser
     }
 }
 
-bool Kinect2Camera::capture(int waitMs){
+bool Kinect2Camera::capture(int waitMs) {
     if (m_listener) {
         if (m_listener->hasNewFrame()) {
             libfreenect2::FrameMap frames;
@@ -142,7 +142,7 @@ bool Kinect2Camera::capture(int waitMs){
 }
 
 
-void Kinect2Camera::delayClose(){
+void Kinect2Camera::delayClose() {
     if (m_isCloseCallInNotify) {
         close();
     }
@@ -150,7 +150,7 @@ void Kinect2Camera::delayClose(){
 }
 
 
-void Kinect2Camera::notify(const cobotsys::CameraFrame& cameraFrame){
+void Kinect2Camera::notify(const cobotsys::CameraFrame& cameraFrame) {
     m_isNotifyCalling = true;
     for (auto& observer : m_observers) {
         observer->onCameraStreamUpdate(cameraFrame);
@@ -158,7 +158,7 @@ void Kinect2Camera::notify(const cobotsys::CameraFrame& cameraFrame){
     m_isNotifyCalling = false;
 }
 
-libfreenect2::PacketPipeline* Kinect2Camera::createPipeline(int deviceId){
+libfreenect2::PacketPipeline* Kinect2Camera::createPipeline(int deviceId) {
     libfreenect2::PacketPipeline* pipeline = nullptr;
 #ifdef LIBFREENECT2_WITH_CUDA_SUPPORT
     if (pipeline == nullptr) {
@@ -189,45 +189,45 @@ libfreenect2::PacketPipeline* Kinect2Camera::createPipeline(int deviceId){
     return pipeline;
 }
 
-bool Kinect2Camera::setup(const QString& configFilePath){
+bool Kinect2Camera::setup(const QString& configFilePath) {
     COBOT_LOG.info() << "This Camera Driver is not finish yet.";
     return false;
 }
 
-std::string Kinect2Camera::getManufacturer() const{
+std::string Kinect2Camera::getManufacturer() const {
     return "MicroSoft";
 }
 
-std::string Kinect2Camera::getFullDescription() const{
+std::string Kinect2Camera::getFullDescription() const {
     return "Xbox Kinect 2.0";
 }
 
-std::string Kinect2Camera::getSerialNumber() const{
+std::string Kinect2Camera::getSerialNumber() const {
     return m_deviceSerialNumber;
 }
 
-int Kinect2Camera::getImageWidth(int imageIdx) const{
+int Kinect2Camera::getImageWidth(int imageIdx) const {
     if (imageIdx == 0) return 1920;
     if (imageIdx == 1) return 512;
     if (imageIdx == 2) return 512;
     return 0;
 }
 
-int Kinect2Camera::getImageHeight(int imageIdx) const{
+int Kinect2Camera::getImageHeight(int imageIdx) const {
     if (imageIdx == 0) return 1080;
     if (imageIdx == 1) return 424;
     if (imageIdx == 2) return 424;
     return 0;
 }
 
-ImageType Kinect2Camera::getImageType(int imageIdx) const{
+ImageType Kinect2Camera::getImageType(int imageIdx) const {
     if (imageIdx == 0) return ImageType::Color;
     if (imageIdx == 1) return ImageType::Depth;
     if (imageIdx == 2) return ImageType::Ir;
     return ImageType::Color;
 }
 
-int Kinect2Camera::getImageCount() const{
+int Kinect2Camera::getImageCount() const {
     return 3;
 }
 
