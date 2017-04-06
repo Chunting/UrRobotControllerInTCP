@@ -8,6 +8,7 @@
 #include <QFileDialog>
 #include <extra2.h>
 #include <opencv2/opencv.hpp>
+#include <cobotsys_file_finder.h>
 
 CameraColorViewer2::CameraColorViewer2(){
     ui.setupUi(this);
@@ -70,7 +71,7 @@ void CameraColorViewer2::onCameraStreamUpdate(const cobotsys::CameraFrame& frame
 }
 
 void CameraColorViewer2::loadJSON(){
-    QString filename = QFileDialog::getOpenFileName(this, "", "../../data");
+    QString filename = QFileDialog::getOpenFileName(this, "", cobotsys::FileFinder::getPreDefPath().c_str());
     if (filename.isEmpty())
         return;;
 
