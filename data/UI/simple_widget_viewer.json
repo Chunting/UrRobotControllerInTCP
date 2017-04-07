@@ -1,0 +1,10 @@
+{
+  "objectGroup": [
+    {
+      "objectId": "Widget",
+      "objectKey": "Widget",
+      "factory": "SimpleUiFactory, Ver 1.0",
+      "type": "SimpleWidgetViewer"
+    }
+  ]
+}
