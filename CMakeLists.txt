@@ -166,11 +166,11 @@ foreach (inc ${inc_dirs})
 endforeach ()
 
 # Test
-build_package(${CMAKE_SOURCE_DIR}/test_apps)
+build_package(${CMAKE_CURRENT_SOURCE_DIR}/test_apps)
 
 # App & Sample
-add_subdirectory(${CMAKE_SOURCE_DIR}/packages/xApplications)
-add_subdirectory(${CMAKE_SOURCE_DIR}/samples)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/packages/xApplications)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/samples)
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/data/ DESTINATION ${CMAKE_BINARY_DIR}/data)
 
@@ -183,7 +183,7 @@ SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "cobotsys SDK")
 set(CPACK_PACKAGE_VERSION_MAJOR "0")
 set(CPACK_PACKAGE_VERSION_MINOR "0")
 SET(CPACK_PACKAGE_VERSION_PATCH "1")
-SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/Copyright.txt")
+SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/Copyright.txt")
 #SET(CPACK_GENERATOR "DEB")
 set(CPACK_PACKAGE_CONTACT "pan@cobotsys.com")
 include(CPack)

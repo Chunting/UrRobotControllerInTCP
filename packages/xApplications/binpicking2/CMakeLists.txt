@@ -34,7 +34,5 @@ if (freenect2_FOUND)
                 ${OpenCL_LIBRARY})
 
         install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)
-
-        install(DIRECTORY ${CMAKE_SOURCE_DIR}/data DESTINATION ${CMAKE_INSTALL_PREFIX})
     endif ()
 endif ()
