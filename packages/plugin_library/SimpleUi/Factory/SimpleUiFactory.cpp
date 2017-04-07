@@ -8,50 +8,12 @@
 #include <extra2.h>
 #include <RobotXyz/RobotXyzWidget.h>
 #include <ArmRobotManipulator/ArmRobotManipulator.h>
+#include <SimpleWidgetViewer/SimpleWidgetViewer.h>
 
-#define DECL_ITEM(_type) { m_creator[( #_type )] = [](){ return std::make_shared<_type>(); }; }
+#include "cobotsys_abstract_factory_macro.h"
 
-class SimpleUiFactory : public cobotsys::AbstractObjectFactory {
-public:
-    std::map<std::string, std::function<AbstractObjectPtr()> > m_creator;
-
-    SimpleUiFactory(){
-        DECL_ITEM(RobotXyzWidget)
-        DECL_ITEM(ArmRobotManipulator)
-    }
-
-    virtual ~SimpleUiFactory(){
-        INFO_DESTRUCTOR(this);
-    }
-
-    virtual std::vector<std::string> getSupportTypes(){
-        std::vector<std::string> r;
-        for (const auto& iter : m_creator)
-            r.push_back(iter.first);
-        return r;
-    }
-
-    virtual std::string getFactoryType(){
-        return "SimpleUiFactory, Ver 1.0";
-    }
-
-    virtual std::shared_ptr<cobotsys::AbstractObject> createObject(const std::string& type){
-        auto iter = m_creator.find(type);
-        if (iter != m_creator.end()) {
-            if (iter->second) {
-                return iter->second();
-            }
-        }
-        return std::shared_ptr<cobotsys::AbstractObject>();
-    }
-};
-
-static std::shared_ptr<SimpleUiFactory> localFactory;
-
-extern "C" void* getAbstractObjectFactoryInstance(){
-    if (localFactory == nullptr) {
-        localFactory = std::make_shared<SimpleUiFactory>();
-    }
-
-    return localFactory.get();
-};
+COBOTSYS_FACTORY_BEGIN(SimpleUiFactory)
+        COBOTSYS_FACTORY_EXPORT(RobotXyzWidget)
+        COBOTSYS_FACTORY_EXPORT(ArmRobotManipulator)
+        COBOTSYS_FACTORY_EXPORT(SimpleWidgetViewer)
+COBOTSYS_FACTORY_END(SimpleUiFactory, "1.0")

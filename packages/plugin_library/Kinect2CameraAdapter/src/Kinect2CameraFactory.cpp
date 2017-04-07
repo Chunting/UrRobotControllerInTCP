@@ -5,27 +5,11 @@
 
 #include <libfreenect2/logger.h>
 #include <extra2.h>
-#include "Kinect2CameraFactory.h"
+#include <cobotsys_abstract_factory_macro.h>
 #include "Kinect2Camera.h"
 
-Kinect2CameraFactory::Kinect2CameraFactory(){
 //    libfreenect2::setGlobalLogger(libfreenect2::createConsoleLogger(libfreenect2::Logger::Warning));
-}
 
-Kinect2CameraFactory::~Kinect2CameraFactory(){
-    INFO_DESTRUCTOR(this);
-}
-
-std::vector<std::string> Kinect2CameraFactory::getSupportTypes(){
-    return {"Kinect2", "CameraPreview"};
-}
-
-std::string Kinect2CameraFactory::getFactoryType(){
-    return "Kinect2CameraFactory, Ver 1.0";
-}
-
-std::shared_ptr<cobotsys::AbstractObject> Kinect2CameraFactory::createObject(const std::string& type){
-    if (type == "Kinect2")
-        return std::make_shared<Kinect2Camera>();
-    return nullptr;
-}
+COBOTSYS_FACTORY_BEGIN(Kinect2CameraFactory)
+        COBOTSYS_FACTORY_EXPORT(Kinect2Camera)
+COBOTSYS_FACTORY_END(Kinect2CameraFactory, "1.0")

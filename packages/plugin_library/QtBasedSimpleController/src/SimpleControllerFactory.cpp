@@ -4,42 +4,14 @@
 //
 
 #include <extra2.h>
-#include "SimpleControllerFactory.h"
+#include <cobotsys_abstract_factory_macro.h>
 #include "CameraColorViewer.h"
 #include "CameraColorViewer2.h"
 #include "EmptyWidget.h"
 
-std::shared_ptr<SimpleControllerFactory> localFactory;
 
-extern "C" void* getAbstractObjectFactoryInstance(){
-    if (localFactory == nullptr) {
-        localFactory = std::make_shared<SimpleControllerFactory>();
-    }
-
-    return localFactory.get();
-};
-
-SimpleControllerFactory::SimpleControllerFactory(){
-}
-
-SimpleControllerFactory::~SimpleControllerFactory(){
-    INFO_DESTRUCTOR(this);
-}
-
-std::vector<std::string> SimpleControllerFactory::getSupportTypes(){
-    return {"SimpleCameraView", "CameraViewWidget", "EmptyWidget"};
-}
-
-std::string SimpleControllerFactory::getFactoryType(){
-    return "SimpleControllerFactory, Ver 1.0";
-}
-
-std::shared_ptr<cobotsys::AbstractObject> SimpleControllerFactory::createObject(const std::string& type){
-    if (type == "SimpleCameraView")
-        return std::make_shared<CameraColorViewer>();
-    if (type == "CameraViewWidget")
-        return std::make_shared<CameraColorViewer2>();
-    if (type == "EmptyWidget")
-        return std::make_shared<EmptyWidget>();
-    return std::shared_ptr<cobotsys::AbstractObject>();
-}
+COBOTSYS_FACTORY_BEGIN(SimpleControllerFactory)
+        COBOTSYS_FACTORY_EXPORT(CameraColorViewer)
+        COBOTSYS_FACTORY_EXPORT(CameraColorViewer2)
+        COBOTSYS_FACTORY_EXPORT(EmptyWidget)
+COBOTSYS_FACTORY_END(SimpleControllerFactory, "1.0")
