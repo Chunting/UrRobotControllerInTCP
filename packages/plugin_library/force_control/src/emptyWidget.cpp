@@ -13,5 +13,5 @@ emptyWidget::~emptyWidget() {
 }
 
 bool emptyWidget::setup(const QString &configFilePath) {
-    return AbstractObject::setup(configFilePath);
+    return true;
 }

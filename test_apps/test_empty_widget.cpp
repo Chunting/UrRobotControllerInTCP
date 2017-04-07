@@ -21,11 +21,11 @@ int main(int argc, char** argv){
 
     cobotsys::init_library(argc, argv);
 
-    globalObjectFactory.loadLibrarys("../lib/plugins");
+    globalObjectFactory.loadLibrarys();
 
     pObject = globalObjectFactory.createObject("ForceControlFactory, Ver 1.0", "emptyWidget");
 
-    auto pController = std::dynamic_pointer_cast<cobotsys::AbstractControllerWidget>(pObject);
+    auto pController = std::dynamic_pointer_cast<cobotsys::AbstractWidget>(pObject);
 
     pController->show();
 
