@@ -115,8 +115,6 @@ endif ()
 install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME} LIBRARY
         DESTINATION lib
         INCLUDES DESTINATION include/cobotsys)
-install(EXPORT ${PROJECT_NAME} DESTINATION lib
-        FILE ${PROJECT_NAME}Config.cmake
-        EXPORT_LINK_INTERFACE_LIBRARIES)
+install(EXPORT ${PROJECT_NAME} DESTINATION lib)
 install(DIRECTORY include/ DESTINATION include/cobotsys FILES_MATCHING PATTERN "*.h")
 install(DIRECTORY framework/include/ DESTINATION include/cobotsys FILES_MATCHING PATTERN "*.h")

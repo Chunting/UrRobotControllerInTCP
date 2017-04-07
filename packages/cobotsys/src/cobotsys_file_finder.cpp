@@ -6,6 +6,7 @@
 
 #include "cobotsys_file_finder.h"
 #include <QDir>
+#include <QtCore/QCoreApplication>
 
 namespace cobotsys {
 
@@ -36,15 +37,9 @@ std::string FileFinder::find(const std::string& base_name) {
 }
 
 void FileFinder::loadDataPaths() {
-    addSearchPath(".", Data);
-    addSearchPath("../data", Data);
-    addSearchPath("../../data", Data);
-
-    addSearchPath(".", Plugin);
-    addSearchPath("../plugins", Plugin);
-    addSearchPath("../../plugins", Plugin);
-    addSearchPath("../lib/plugins", Plugin);
-    addSearchPath("../../lib/plugins", Plugin);
+    std::string app_path = QCoreApplication::applicationDirPath().toLocal8Bit().constData();
+    addSearchPath(app_path + "/../data", Data);
+    addSearchPath(app_path + "/../plugins", Plugin);
 
     COBOT_LOG.message("File Finder") << "Current Path: " << realPathOf(".");
 }

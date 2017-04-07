@@ -35,34 +35,45 @@ public:
         objectFactoryMap[factory->getFactoryType()] = factory;
     }
 
-    void dumpLibraryInfo(std::shared_ptr<AbstractObjectFactory>& shrFactory, const QFileInfo& fileInfo) {
-        auto tlist = shrFactory->getSupportTypes();
+    void dumpLibraryInfo(std::shared_ptr<AbstractObjectFactory>& shrFactory,
+                         const QFileInfo& fileInfo,
+                         const QString& err = QString()) {
+        if (shrFactory) {
+            auto tlist = shrFactory->getSupportTypes();
 
-        factorySupportTypes[shrFactory->getFactoryType()] = tlist;
+            factorySupportTypes[shrFactory->getFactoryType()] = tlist;
 
-        std::stringstream oss;
-        oss << "{";
-        for (size_t i = 0; i < tlist.size(); i++) {
-            oss << tlist[i];
-            if (i + 1 < tlist.size()) oss << ", ";
-        }
-        oss << "}";
+            std::stringstream oss;
+            oss << "{";
+            for (size_t i = 0; i < tlist.size(); i++) {
+                oss << tlist[i];
+                if (i + 1 < tlist.size()) oss << ", ";
+            }
+            oss << "}";
 
-        if (fileInfo.fileName().isEmpty()) {
-            COBOT_LOG.message("Extend")
-                    << std::setw(32) << "ROS Extend" << ": "
-                    << shrFactory->getFactoryType()
-                    << ", " << oss.str();
+            if (fileInfo.fileName().isEmpty()) {
+                COBOT_LOG.message("Extend")
+                        << std::setw(32) << "ROS Extend" << ": "
+                        << shrFactory->getFactoryType()
+                        << ", " << oss.str();
+            } else {
+                COBOT_LOG.message("Plugin")
+                        << std::setw(32) << fileInfo.fileName() << ": "
+                        << shrFactory->getFactoryType()
+                        << ", " << oss.str();
+            }
         } else {
-            COBOT_LOG.message("Plugin")
-                    << std::setw(32) << fileInfo.fileName() << ": "
-                    << shrFactory->getFactoryType()
-                    << ", " << oss.str();
+            COBOT_LOG.message("Plugin") << std::setw(32) << fileInfo.fileName()
+                                        << ": "
+                                        << "Unable to get library Entry, "
+                                        << err;
         }
     }
 
     void loadLibrary(const QFileInfo& fileInfo) {
-        auto fAddr = QLibrary::resolve(fileInfo.absoluteFilePath(), OBJECT_FACTORY_SYMBOL);
+        QLibrary dlLib(fileInfo.absoluteFilePath());
+        auto nload = dlLib.load();
+        auto fAddr = dlLib.resolve(OBJECT_FACTORY_SYMBOL);
         auto qFunc = (getAbstractObjectFactoryInstance) fAddr;
         auto libnm = fileInfo.baseName().toStdString();
 
@@ -78,7 +89,8 @@ public:
                 dumpLibraryInfo(shrFactory, fileInfo);
             }
         } else {
-            COBOT_LOG.warning() << "Unable to get Entry for: " << libnm;
+            std::shared_ptr<AbstractObjectFactory> shrFactory;
+            dumpLibraryInfo(shrFactory, fileInfo, dlLib.errorString());
         }
     }
 

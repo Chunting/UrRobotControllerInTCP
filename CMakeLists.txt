@@ -24,7 +24,7 @@ add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 # install rpath
 # see http://blog.theerrorlog.com/the-gnu-linker-and-rpath.html
 # Unix-like Only(Linux Mac)
-set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib;$ENV{QT5_INSTALL_PATH}/lib;$ORIGIN/../lib;$ORIGIN/../../lib")
+set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib;$ENV{QT5_INSTALL_PATH}/lib;$ORIGIN/../lib")
 
 # 这里设置默认的输出目录
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -171,6 +171,8 @@ build_package(${CMAKE_SOURCE_DIR}/test_apps)
 # App & Sample
 add_subdirectory(${CMAKE_SOURCE_DIR}/packages/xApplications)
 add_subdirectory(${CMAKE_SOURCE_DIR}/samples)
+
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/data/ DESTINATION ${CMAKE_BINARY_DIR}/data)
 
 message("")
 
