@@ -22,6 +22,7 @@ SimpleWidgetViewer::SimpleWidgetViewer() {
 }
 
 SimpleWidgetViewer::~SimpleWidgetViewer() {
+    COBOT_LOG.setAppendFilter([](const std::string& e, const std::string& m) {});
     INFO_DESTRUCTOR(this);
 }
 
