@@ -153,12 +153,6 @@ endforeach ()
 # Plugin
 add_subdirectory(${CMAKE_SOURCE_DIR}/packages/plugin_library)
 
-# ROS extend
-#set_property(GLOBAL PROPERTY ROS_EXTEND "")
-add_subdirectory(${CMAKE_SOURCE_DIR}/packages/cobotsys_ros_extend)
-get_property(ros_ext_lib GLOBAL PROPERTY ROS_EXTEND)
-#message(STATUS "extlibs: ${ros_ext_lib}")
-
 get_property(inc_dirs GLOBAL PROPERTY ROS_INCLUDE)
 foreach (inc ${inc_dirs})
     message(STATUS "Include: " ${inc})
@@ -185,6 +179,6 @@ set(CPACK_PACKAGE_VERSION_MINOR "0")
 SET(CPACK_PACKAGE_VERSION_PATCH "1")
 SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/Copyright.txt")
 #SET(CPACK_GENERATOR "DEB")
-set(CPACK_PACKAGE_CONTACT "pan@cobotsys.com")
+set(CPACK_PACKAGE_CONTACT "pxy@cobotsys.com")
 include(CPack)
 
