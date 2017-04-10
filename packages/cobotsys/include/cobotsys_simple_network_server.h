@@ -13,7 +13,7 @@
 #include <QTcpServer>
 #include <QTcpSocket>
 #include <cobotsys_compute_config.h>
-#include <cobotsys_qt.h>
+#include <cobotsys.h>
 
 namespace cobotsys {
 

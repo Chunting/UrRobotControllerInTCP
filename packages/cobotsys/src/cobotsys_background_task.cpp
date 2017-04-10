@@ -4,7 +4,7 @@
 //
 
 #include <cobotsys_file_finder.h>
-#include <cobotsys_qt.h>
+#include <cobotsys.h>
 #include "cobotsys_background_task.h"
 
 namespace cobotsys {

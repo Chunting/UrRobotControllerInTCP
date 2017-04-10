@@ -7,7 +7,7 @@
 #include <QtNetwork/QHostAddress>
 #include "CobotUrComm.h"
 #include "CobotUrFirmwareQueryer.h"
-#include <cobotsys_qt.h>
+#include <cobotsys.h>
 
 CobotUrComm::CobotUrComm(std::condition_variable& cond_msg, QObject* parent)
         : QObject(parent), m_msg_cond(cond_msg){

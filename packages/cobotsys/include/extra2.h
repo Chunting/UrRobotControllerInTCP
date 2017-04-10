@@ -16,8 +16,8 @@
 #include <QStringList>
 #include <QJsonObject>
 #include <QImage>
-#include <opencv/cv.h>
-#include <cobotsys_qt.h>
+#include <opencv2/opencv.hpp>
+#include <cobotsys.h>
 
 void qt_ba_to_cobot_log(QByteArray& ba);
 void kill_process_childs(int pid, int ppid, std::function<void(int, int)> killMethod);

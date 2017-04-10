@@ -6,12 +6,23 @@
 #ifndef PROJECT_COBOTSYS_H
 #define PROJECT_COBOTSYS_H
 
+
+#include <cobotsys_logger.h>
 #include <string>
 #include <vector>
 #include <iomanip>
 #include <iostream>
 #include <functional>
 #include <memory>
+#include <ostream>
+
+#include <QString>
+#include <QJsonObject>
+#include <QJsonDocument>
+#include <QImage>
+#include <QFont>
+#include <QFontInfo>
+#include <QDebug>
 
 using std::shared_ptr;
 using std::make_shared;
@@ -67,5 +78,8 @@ public:
 };
 }
 
+std::ostream& operator<<(std::ostream& oss, const QString& str);
+std::ostream& operator<<(std::ostream& oss, const QJsonObject& obj);
+QFont getMonospaceFont();
 
 #endif //PROJECT_COBOTSYS_H

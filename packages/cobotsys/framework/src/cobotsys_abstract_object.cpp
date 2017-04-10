@@ -4,7 +4,7 @@
 //
 
 #include <cobotsys_logger.h>
-#include <cobotsys_qt.h>
+#include <cobotsys.h>
 #include <extra2.h>
 #include "cobotsys_abstract_object.h"
 

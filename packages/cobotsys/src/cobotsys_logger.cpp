@@ -20,7 +20,10 @@ void Logger::println(const std::string& text) {
 }
 
 void Logger::append(const std::string& entry, const std::string& message) {
+    std::map<void*, std::function<void(const std::string&, const std::string&)> > obs;
     m_res_mutex.lock();
+    obs = m_observers;
+
     if (m_cache_log_message)
         m_logs.push_back({entry, message});
 
@@ -39,6 +42,10 @@ void Logger::append(const std::string& entry, const std::string& message) {
             std::cout << std::endl;
     }
     m_res_mutex.unlock();
+
+    for (auto& ob : obs) {
+        ob.second(entry, message);
+    }
 }
 
 void Logger::append(const std::string& message) {
@@ -103,6 +110,23 @@ Logger::MessageWrapper Logger::info() {
 
 void Logger::setCurrentInstanceName(const std::string& s) {
     m_current_instance_name = s;
+}
+
+void Logger::addFilter(void* obj, std::function<void(const std::string& entry, const std::string& message)> filter) {
+    if (obj && filter) {
+        m_res_mutex.lock();
+        m_observers[obj] = filter;
+        m_res_mutex.unlock();
+
+        for (auto& iter : m_logs) {
+            filter(iter.entry, iter.message);
+        }
+    }
+}
+
+void Logger::clrFilter(void* obj) {
+    std::lock_guard<std::mutex> lockctx(m_res_mutex);
+    m_observers.erase(obj);
 }
 }
 

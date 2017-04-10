@@ -26,6 +26,8 @@ public:
 
 public:
     void actionCreateWidget();
+    void actionClear();
+    void actionCreateWidgetNoJson();
 
 protected:
     void refreshWidgetList();

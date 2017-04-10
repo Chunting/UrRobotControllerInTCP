@@ -12,7 +12,7 @@
 #include <QTcpSocket>
 #include <cobotsys_logger.h>
 #include "CobotUr.h"
-#include <cobotsys_qt.h>
+#include <cobotsys.h>
 
 class CobotUrFirmwareQueryer : public QObject {
 Q_OBJECT
