@@ -7,7 +7,8 @@
 #include <QtCore/QJsonObject>
 #include <extra2.h>
 #include "KinematicSolver.h"
-
+#include <cobotsys_file_finder.h>
+using namespace cobotsys;
 KinematicSolver::KinematicSolver(){
 
 }
@@ -20,5 +21,13 @@ bool KinematicSolver::solve(const vector<double>& cur, const vector<double>& tar
 	return true;
 }
 bool KinematicSolver::setup(const QString& configFilePath) {
-	return true;
+    //auto a = FileFinder::find("CONFI/force_control/ur3.urdf.xacro")
+    QJsonObject json;
+    if (loadJson(json, configFilePath)) {
+        m_defaultSolverInfo = json["kinematic_solver_factory"].toString();
+        auto file = cobotsys::FileFinder::find(json["robot_model_path"].toString().toStdString());
+        m_urdf_path= QString().fromStdString(file);
+        return true;
+    }
+    return false;
 }

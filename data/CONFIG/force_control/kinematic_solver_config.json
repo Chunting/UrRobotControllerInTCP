@@ -1,0 +1,4 @@
+{
+  "kinematic_solver_factory": "KinematicSolverFactory, Ver 1.0",
+  "urdf_path":"CONFIG/force_control/ur3.urdf.xacro" 
+}
