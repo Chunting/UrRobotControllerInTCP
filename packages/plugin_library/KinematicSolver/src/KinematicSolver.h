@@ -8,7 +8,8 @@
 
 
 #include "cobotsys_abstract_ik_solver.h"
-
+#include <QObject>
+//#include "..\..\orocos_kdl\src\"
 
 using namespace cobotsys;
 class KinematicSolver : virtual public cobotsys::AbstractIKSolver {
@@ -29,6 +30,8 @@ public:
     virtual bool setup(const QString& configFilePath);
 
 protected:
+	QString m_defaultSolverInfo;
+    QString m_urdf_path;
 };
 
 
