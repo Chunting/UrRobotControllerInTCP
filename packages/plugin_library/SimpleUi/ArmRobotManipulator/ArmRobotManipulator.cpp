@@ -79,6 +79,7 @@ ArmRobotManipulator::ArmRobotManipulator(){
 }
 
 ArmRobotManipulator::~ArmRobotManipulator(){
+    INFO_DESTRUCTOR(this);
 }
 
 bool ArmRobotManipulator::setup(const QString& configFilePath){
