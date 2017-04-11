@@ -21,4 +21,4 @@ add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_files})
 
 target_link_libraries(${PROJECT_NAME} cobotsys)
 
-install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION plugins)
+install(TARGETS ${PROJECT_NAME} LIBRARY RUNTIME DESTINATION plugins)
