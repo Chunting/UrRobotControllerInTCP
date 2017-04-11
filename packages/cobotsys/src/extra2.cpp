@@ -92,13 +92,13 @@ bool loadJson(QJsonObject& obj, const std::string& baseName) {
 
     QFile qFile(fullPath.c_str());
     if (qFile.open(QIODevice::ReadOnly)) {
-        QTextStream qTextStream(&qFile);
-        auto qss = qTextStream.readAll();
-        auto jDoc = QJsonDocument::fromJson(qss.toUtf8(), &jsonParseError);
+        auto qss = qFile.readAll();
+        auto jDoc = QJsonDocument::fromJson(qss, &jsonParseError);
         if (jsonParseError.error == QJsonParseError::NoError) {
             obj = jDoc.object();
             return true;
         }
+		COBOT_LOG.error() << jsonParseError.errorString();
     }
     return false;
 }
