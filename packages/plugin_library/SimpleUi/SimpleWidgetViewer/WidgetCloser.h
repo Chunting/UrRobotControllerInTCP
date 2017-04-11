@@ -13,7 +13,7 @@
 class WidgetCloser : public QObject {
 Q_OBJECT
 public:
-
+	WidgetCloser(QObject* parent);
 Q_SIGNALS:
     void widgetClosed();
 protected:

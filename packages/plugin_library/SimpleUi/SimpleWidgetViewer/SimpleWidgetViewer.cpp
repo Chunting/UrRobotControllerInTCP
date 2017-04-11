@@ -14,7 +14,7 @@
 
 SimpleWidgetViewer::SimpleWidgetViewer() {
     ui.setupUi(this);
-    m_closer = new WidgetCloser;
+	m_closer = new WidgetCloser(this);
 
     connect(ui.btnCreate, &QPushButton::released, this, &SimpleWidgetViewer::actionCreateWidget);
     connect(ui.btnCreateNoJson, &QPushButton::released, this, &SimpleWidgetViewer::actionCreateWidgetNoJson);
@@ -87,7 +87,11 @@ void SimpleWidgetViewer::actionCreateWidget() {
 }
 
 void SimpleWidgetViewer::resetCurObj() {
-    m_pWidget = nullptr;
+	auto widget = std::dynamic_pointer_cast<QWidget>(m_pWidget);
+	if (widget) {
+		widget->removeEventFilter(m_closer);
+	}
+    //m_pWidget = nullptr;
 }
 
 void SimpleWidgetViewer::updateTextToUI() {

@@ -146,3 +146,16 @@ bool loadJson(QJsonObject& obj, const QString& baseName) {
     return loadJson(obj, std::string(baseName.toLocal8Bit().constData()));
 }
 
+std::string simple_typeid_name(const char* pname) {
+    std::string new_class_name = pname;
+    #ifdef _WIN32
+    if (new_class_name.substr(0, 6) == "class ") {
+        new_class_name = new_class_name.substr(6);
+    }
+    auto ptail = new_class_name.find(" * __ptr64");
+    if (ptail != new_class_name.npos) {
+        new_class_name.erase(ptail);
+    }
+    #endif // WIN32
+    return new_class_name;
+}

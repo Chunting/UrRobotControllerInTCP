@@ -28,7 +28,9 @@ bool loadJson(QJsonObject& obj, const std::string& baseName);
 bool loadJson(QJsonObject& obj, const QString& baseName);
 QImage matToQImage(const cv::Mat& mat);
 
-#define INFO_DESTRUCTOR(_this) COBOT_LOG.info() << "Destructor: " << typeid(_this).name()
+std::string simple_typeid_name(const char* pname);
+
+#define INFO_DESTRUCTOR(_this) COBOT_LOG.info() << "Destructor: " << simple_typeid_name(typeid(_this).name())
 
 
 template<class T, class N, class M>
