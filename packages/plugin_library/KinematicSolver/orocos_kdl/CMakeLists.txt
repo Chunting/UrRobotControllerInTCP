@@ -54,14 +54,14 @@ ENDIF (NOT CMAKE_BUILD_TYPE)
 
 SET(KDL_CFLAGS "")
 
-find_package(Eigen3 QUIET)
-if (NOT Eigen_FOUND)
-    include(${PROJ_SOURCE_DIR}/config/FindEigen3.cmake)
-    set(Eigen_INCLUDE_DIR "$ENV{Eigen_DIR}")#Changed by Sail,Eigen_DIR should be set.Give some change, it may be OK.
-    message("aaa ${Eigen_INCLUDE_DIR}")
-endif ()
-include_directories(${Eigen_INCLUDE_DIR})
-SET(KDL_CFLAGS "${KDL_CFLAGS} -I${Eigen_INCLUDE_DIR}")
+#find_package(Eigen3 QUIET)
+#if (NOT Eigen_FOUND)
+#    include(${PROJ_SOURCE_DIR}/config/FindEigen3.cmake)
+#    set(Eigen_INCLUDE_DIR "$ENV{Eigen_DIR}")#Changed by Sail,Eigen_DIR should be set.Give some change, it may be OK.
+#    message("aaa ${Eigen_INCLUDE_DIR}")
+#endif ()
+#include_directories(${Eigen_INCLUDE_DIR})
+#SET(KDL_CFLAGS "${KDL_CFLAGS} -I${Eigen_INCLUDE_DIR}")
 
 # Check the platform STL containers capabilities
 include(config/CheckSTLContainers.cmake)
