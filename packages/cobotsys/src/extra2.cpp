@@ -127,14 +127,14 @@ QImage matToQImage(const cv::Mat& mat) {
         // Copy input Mat
         const uchar* pSrc = (const uchar*) mat.data;
         // Create QImage with same dimensions as input Mat
-        QImage image(pSrc, mat.cols, mat.rows, mat.step, QImage::Format_RGB888);
+        QImage image(pSrc, (int)mat.cols, (int)mat.rows, (int)mat.step, QImage::Format_RGB888);
         return image.rgbSwapped();
     } else if (mat.type() == CV_8UC4) {
 //        qDebug() << "CV_8UC4";
         // Copy input Mat
         const uchar* pSrc = (const uchar*) mat.data;
         // Create QImage with same dimensions as input Mat
-        QImage image(pSrc, mat.cols, mat.rows, mat.step, QImage::Format_ARGB32);
+        QImage image(pSrc, (int)mat.cols, (int)mat.rows, (int)mat.step, QImage::Format_ARGB32);
         return image.copy();
     } else {
         qDebug() << "ERROR: Mat could not be converted to QImage.";

@@ -13,5 +13,6 @@ std::string toString(ImageType imageType) {
     case ImageType::Ir: return "Ir";
     case ImageType::Mono: return "Mono";
     }
+	return std::string();
 }
 }
