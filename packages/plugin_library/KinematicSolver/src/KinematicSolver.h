@@ -9,7 +9,7 @@
 
 #include "cobotsys_abstract_ik_solver.h"
 #include <QObject>
-#include "..\orocos_kdl\src\chain.hpp"
+#include "../orocos_kdl/src/chain.hpp"
 
 using namespace cobotsys;
 class KinematicSolver : virtual public cobotsys::AbstractIKSolver {

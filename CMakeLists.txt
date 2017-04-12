@@ -18,7 +18,6 @@ endif ()
 
 set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} $ENV{CMAKE_PREFIX_PATH})  # 这里定位并使用CMAKE_PREFIX_PATH
 set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} $ENV{QT5_INSTALL_PATH})   # Qt5
-set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_SOURCE_DIR}/cmake/Modules/")
 add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 
 # install rpath
@@ -141,6 +140,7 @@ function(build_sample path_to_package)
     endif ()
 endfunction()
 
+include_directories(${CMAKE_SOURCE_DIR}/packages/header_only_libraries)
 # 这里，后面的package是依赖前面的package的。
 build_package(${CMAKE_SOURCE_DIR}/packages/cobotsys)
 build_package(${CMAKE_SOURCE_DIR}/packages/cobotsys_ros_wrapper)
