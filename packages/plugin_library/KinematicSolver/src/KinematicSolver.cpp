@@ -1,4 +1,4 @@
-﻿//
+//
 // Created by 杨帆 on 17-4-10.
 // Copyright (c) 2017 Wuhan Collaborative Robot Technology Co.,Ltd. All rights reserved.
 //
@@ -9,7 +9,9 @@
 #include <extra2.h>
 #include "KinematicSolver.h"
 #include <cobotsys_file_finder.h>
+#include "../orocos_kdl/src/frames_io.hpp"
 using namespace cobotsys;
+using namespace std;
 KinematicSolver::KinematicSolver(){
 
 }
@@ -17,9 +19,64 @@ KinematicSolver::KinematicSolver(){
 KinematicSolver::~KinematicSolver(){
 
 }
-
-bool KinematicSolver::solve(const vector<double>& cur, const vector<double>& target, vector<double>& result) {
+bool KinematicSolver::jntToCart(const Eigen::VectorXd& targetJoint, Eigen::Affine3d targetPos){
+	KDL::JntArray targetJnt(targetJoint.size());
+	targetJnt.data = targetJoint;
+	KDL::Frame targetFrame;
+	m_fk_solver->JntToCart(targetJnt, targetFrame);
+	tf::transformKDLToEigen(targetFrame, targetPos);
 	return true;
+}
+bool KinematicSolver::cartToJnt(const Eigen::VectorXd& initialJoint, const Eigen::Affine3d targetPos, Eigen::VectorXd& targetJoint){
+	//target: xyz, rpy.
+	//TODO:最好能兼容打印显示Frame这种结构体。
+	//extra2.h中加入math.h
+	if (initialJoint.size() != targetJoint.size()) {
+		COBOT_LOG.error() << "Current joint size is not equal to target joint size!";
+		return false;
+	}
+	KDL::JntArray q_init;
+	q_init.data = initialJoint;
+	KDL::Frame targetFrame;
+	tf::transformEigenToKDL(targetPos, targetFrame);
+	KDL::JntArray q_out(targetJoint.size());
+	int retval;
+	retval=m_ik_solver->CartToJnt(q_init, targetFrame, q_out);
+	switch (retval) {
+	case 0:
+		//Eigen::VectorXd::Map(&targetJoint[0], targetJoint.size()) = q_out.data;
+		break;
+	case -1:
+		COBOT_LOG.error() << "Kinamatic Solver:the gradient of $ E $ towards the joints is to small.";
+		break;
+	case -2:
+		COBOT_LOG.error() << "Kinamatic Solver:joint position increments are to small.";
+		break;
+	case -3:
+		COBOT_LOG.error() << "Kinamatic Solver:number of iterations is exceeded.";
+		break;
+	}
+	if (retval != 0) {
+		std::cout << "---------Inverse Kinematic Solver failed ----------------------------" << endl;
+		COBOT_LOG.error() << "pos " << targetFrame << endl;
+		std::cout << "reached pos " << m_ik_solver->T_base_head << endl;
+		std::cout << "TF from pos to head \n" << targetFrame.Inverse()*m_ik_solver->T_base_head << endl;
+		std::cout << "gradient " << m_ik_solver->grad.transpose() << endl;
+		std::cout << "q_out " << q_out.data.transpose() / M_PI*180.0 << endl;
+		std::cout << "q_init " << q_init.data.transpose() / M_PI*180.0 << endl;
+		std::cout << "return value " << retval << endl;
+		std::cout << "last #iter " << m_ik_solver->lastNrOfIter << endl;
+		std::cout << "last diff  " << m_ik_solver->lastDifference << endl;
+		//cout << "jacobian of goal values ";
+		//m_ik_solver->display_jac(q);
+		//std::cout << "jacobian of solved values ";
+		//solver.display_jac(q_sol);
+		return false;
+	}
+	else {
+		return true;
+	}
+	
 }
 bool KinematicSolver::setup(const QString& configFilePath) {
 	//auto a = FileFinder::find(configFilePath.toStdString);
@@ -60,6 +117,8 @@ bool KinematicSolver::setup(const QString& configFilePath) {
 		//从1到6为机器人六个可活动关节,其余limit值无效。
 		m_robot_joint_limits.erase(m_robot_joint_limits.begin());
 		m_robot_joint_limits.erase(m_robot_joint_limits.end()-1);
+		m_fk_solver=new KDL::ChainFkSolverPos_recursive(m_robot_chain);
+		m_ik_solver=new KDL::ChainIkSolverPos_LMA(m_robot_chain);
         return true;
     }
     return false;
