@@ -8,7 +8,8 @@
 
 #include <vector>
 #include "cobotsys_abstract_object.h"
-
+#include <Eigen/Core>
+#include <Eigen/Geometry>
 using std::vector;
 namespace cobotsys {
 
@@ -29,7 +30,8 @@ public:
      * @retval true 求解成功
      * @retval false 无解
      */
-    virtual bool solve(const vector<double>& cur, const vector<double>& target, vector<double>& result) = 0;
+	virtual bool cartToJnt(const Eigen::VectorXd& initialJoint, Eigen::Affine3d targetPos, Eigen::VectorXd& targetJoint)=0;
+	virtual bool jntToCart(const Eigen::VectorXd& targetJoint, Eigen::Affine3d targetPos)=0;
 };
 /**
  * @}
