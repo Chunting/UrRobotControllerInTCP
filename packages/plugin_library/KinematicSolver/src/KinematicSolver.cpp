@@ -102,9 +102,16 @@ bool KinematicSolver::setup(const QString& configFilePath) {
 
             //inline Frame(const Rotation& R,const Vector& V);
             KDL::Frame frame(rot,vec);
-
-            int axis_xyz=segmentObj["rotation"].toObject()["axis_xyz"].toInt();
-            KDL::Joint joint((KDL::Joint::JointType)axis_xyz);
+			QJsonArray jnt = segmentObj["rotation"].toObject()["axis_xyz"].toArray();
+			KDL::Vector rot_axis(jnt.at(0).toDouble(), jnt.at(1).toDouble(), jnt.at(2).toDouble());
+			KDL::Joint joint;
+			//如果不能单位化，则认为是0向量，进而认为是固定关节。
+			if (rot_axis.Normalize() < 1.0) {
+				joint = KDL::Joint(KDL::Joint::JointType::None);
+			}
+			else {
+				joint= KDL::Joint(KDL::Vector::Zero(), rot_axis, KDL::Joint::JointType::RotAxis);
+			}
             KDL::Segment seg = KDL::Segment(segmentName,joint,frame);
             m_robot_chain.addSegment(seg);
             JointLimits jointLimits;

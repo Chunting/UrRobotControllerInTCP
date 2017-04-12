@@ -30,5 +30,6 @@ int main(int argc, char** argv){
 	//COBOT_LOG.info() << QString("configFilePath") << cobotsys::FileFinder::find("CONFIG/force_control/kinematic_solver_config.json");
 	//pKSolver->setup("CONFIG/force_control/kinematic_solver_config_no_comment.json");
 	pKSolver->setup("CONFIG/force_control/kinematic_solver_ur3_config.json");
+	//pKSolver->setup("CONFIG/force_control/kinematic_solver_motoman_fs100_config.json");
     return a.exec();
 }
