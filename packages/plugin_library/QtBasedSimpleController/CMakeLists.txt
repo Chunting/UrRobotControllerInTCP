@@ -25,3 +25,7 @@ target_link_libraries(${PROJECT_NAME}
         ${freenect2_LIBRARY}
         ${OpenCL_LIBRARY}
         ${OpenCV_LIBRARIES})
+
+install(TARGETS ${PROJECT_NAME}
+        LIBRARY DESTINATION plugins
+        RUNTIME DESTINATION plugins)
