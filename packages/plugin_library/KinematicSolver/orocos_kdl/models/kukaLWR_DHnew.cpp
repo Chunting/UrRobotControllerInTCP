@@ -1,4 +1,4 @@
-// Copyright  (C)  2009  Ruben Smits <ruben dot smits at mech dot kuleuven dot be>
+﻿// Copyright  (C)  2009  Ruben Smits <ruben dot smits at mech dot kuleuven dot be>
 
 // Version: 1.0
 // Author: Ruben Smits <ruben dot smits at mech dot kuleuven dot be>

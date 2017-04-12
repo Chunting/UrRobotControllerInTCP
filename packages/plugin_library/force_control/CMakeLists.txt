@@ -1,6 +1,6 @@
-﻿
 
-project(URRealTimeDriver)
+
+project(force_control)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
@@ -11,16 +11,9 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Gui REQUIRED)
 find_package(Qt5Widgets REQUIRED) # Fuck, 如果要使用autouic那么必须引用这个Qt5Widgets.
-find_package(Qt5Network REQUIRED)
 
-include_directories(URDriver)
+file(GLOB ${PROJECT_NAME}_files src/*)
 
-file(GLOB ${PROJECT_NAME}_files URDriver/* RealTimeAdapter/*)
-
-add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_files})
+add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_files} src/emptyWidget.cpp src/emptyWidget.h)
 
 target_link_libraries(${PROJECT_NAME} cobotsys)
-
-install(TARGETS ${PROJECT_NAME}
-        LIBRARY DESTINATION plugins
-        RUNTIME DESTINATION plugins)

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.6)
+﻿cmake_minimum_required(VERSION 3.6)
 # 默认编译标准
 set(CMAKE_CXX_STANDARD 11)
 
@@ -11,7 +11,6 @@ else ()
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 endif ()
-
 
 # 工程名
 project(cobotsys)
@@ -100,8 +99,8 @@ else ()
 endif ()
 
 # 安装
-install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}
-        LIBRARY DESTINATION lib
+install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME} LIBRARY
+        DESTINATION lib
 		ARCHIVE DESTINATION lib
         RUNTIME DESTINATION bin
         INCLUDES DESTINATION include/cobotsys)

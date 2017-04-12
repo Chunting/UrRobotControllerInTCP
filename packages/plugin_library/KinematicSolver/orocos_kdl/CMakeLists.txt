@@ -1,4 +1,4 @@
-#
+﻿#
 # Test CMake version
 #
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
