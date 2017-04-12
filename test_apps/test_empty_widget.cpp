@@ -27,7 +27,10 @@ int main(int argc, char** argv){
 
     auto pController = std::dynamic_pointer_cast<cobotsys::AbstractWidget>(pObject);
 
-    pController->show();
+	QString ss;
+	pController->setup(ss);
+
+//    pController->show();
 
     return a.exec();
 }

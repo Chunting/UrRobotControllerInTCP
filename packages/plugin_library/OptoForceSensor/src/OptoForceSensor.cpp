@@ -16,7 +16,7 @@ bool OptoForceSensor::setup(const QString &configFilePath) {
 	return true;
 }
 
-bool OptoForceSensor::open(int deviceId = 0) {
+bool OptoForceSensor::open(int deviceId) {
 	return true;
 }
 

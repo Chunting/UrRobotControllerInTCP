@@ -1,0 +1,19 @@
+{
+  "robot_object": {
+    "factory": "URRealTimeDriverFactory, Ver 1.0",
+    "type": "URRealTimeDriver",
+    "config": "CONFIG/ForceControlConfig/ur_force_guide_robot_config.json"
+  },
+  "sensor_object": {
+    "factory": "OptoForceSensorFactory, Ver 1.0",
+    "type": "OptoForceSensor",
+    "config": "CONFIG/ForceControlConfig/optoforce_sensor_config.json"
+  },
+  "solver_object": {
+    "factory": "ForceControlSolverFactory, Ver 1.0",
+    "type": "ForceControlSolver",
+    "config": "CONFIG/ForceControlConfig/force_control_solver_config.json"
+  },
+  "joint_min": -180,
+  "joint_max": 180
+}
