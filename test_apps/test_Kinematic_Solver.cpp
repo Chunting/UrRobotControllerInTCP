@@ -28,9 +28,9 @@ int main(int argc, char** argv){
 
     auto pKSolver = std::dynamic_pointer_cast<cobotsys::AbstractIKSolver>(pObject);
 	//COBOT_LOG.info() << QString("configFilePath") << cobotsys::FileFinder::find("CONFIG/force_control/kinematic_solver_config.json");
-	pKSolver->setup("CONFIG/force_control/kinematic_solver_config_no_comment.json");
+	//pKSolver->setup("CONFIG/force_control/kinematic_solver_config_no_comment.json");
 	//bug1:重新生成，data文件不会更新；重新生成缓存，data文件才会更新。
 	//bug2:json文件中不能有中文。
-	//pKSolver->setup("CONFIG/force_control/kinematic_solver_config_cn.json");
+	pKSolver->setup("CONFIG/force_control/kinematic_solver_ur3_config.json");
     return a.exec();
 }
