@@ -140,10 +140,10 @@ function(build_sample path_to_package)
     endif ()
 endfunction()
 
-include_directories(${CMAKE_SOURCE_DIR}/packages/header_only_libraries)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/packages/header_only_libraries)
 # 这里，后面的package是依赖前面的package的。
-build_package(${CMAKE_SOURCE_DIR}/packages/cobotsys)
-build_package(${CMAKE_SOURCE_DIR}/packages/cobotsys_ros_wrapper)
+build_package(${CMAKE_CURRENT_SOURCE_DIR}/packages/cobotsys)
+build_package(${CMAKE_CURRENT_SOURCE_DIR}/packages/cobotsys_ros_wrapper)
 
 # include core，有些头文件是在sub_directory里直接include_directories
 # 这样，后面的其他工程如果引用了头文件，会导致不能编译通过。
@@ -157,7 +157,7 @@ foreach (inc ${core_inc_dirs})
 endforeach ()
 
 # Plugin
-add_subdirectory(${CMAKE_SOURCE_DIR}/packages/plugin_library)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/packages/plugin_library)
 
 get_property(inc_dirs GLOBAL PROPERTY ROS_INCLUDE)
 foreach (inc ${inc_dirs})
@@ -177,6 +177,7 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/data/ DESTINATION ${CMAKE_BINARY_DIR}/data
 message("")
 
 install(DIRECTORY data/ DESTINATION data COMPONENT data)
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/packages/header_only_libraries/ DESTINATION include)
 
 include(InstallRequiredSystemLibraries)
 SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "cobotsys SDK")
