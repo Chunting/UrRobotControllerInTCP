@@ -3,9 +3,9 @@
 // Copyright (c) 2017 Wuhan Collaborative Robot Technology Co.,Ltd. All rights reserved.
 //
 
-#include <QtCore/QJsonArray>
-#include <include/extra2.h>
-#include <include/cobotsys_file_finder.h>
+#include <QJsonArray>
+#include <extra2.h>
+#include <cobotsys_file_finder.h>
 #include "cobotsys_global_object_factory.h"
 
 #define OBJECT_FACTORY_SYMBOL "getAbstractObjectFactoryInstance"
@@ -99,7 +99,7 @@ public:
         if (iter != objectFactoryMap.end()) {
             auto result = iter->second->createObject(type);
             if (result) {
-                COBOT_LOG.message("Cr-Object") << factory << ", " << type;
+                COBOT_LOG.message("ObjFactory") << factory << ", " << type;
             }
             return result;
         }

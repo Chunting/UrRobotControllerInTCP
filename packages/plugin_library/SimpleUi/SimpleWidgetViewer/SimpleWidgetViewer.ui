@@ -34,7 +34,7 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="1">
+   <item row="3" column="1">
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -47,8 +47,22 @@
      </property>
     </spacer>
    </item>
-   <item row="1" column="0" rowspan="2">
+   <item row="1" column="1">
+    <widget class="QPushButton" name="btnCreateNoJson">
+     <property name="text">
+      <string>CreateNoJson</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0" rowspan="4">
     <widget class="QPlainTextEdit" name="plainTextEdit"/>
+   </item>
+   <item row="2" column="1">
+    <widget class="QPushButton" name="btnClear">
+     <property name="text">
+      <string>Clear</string>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

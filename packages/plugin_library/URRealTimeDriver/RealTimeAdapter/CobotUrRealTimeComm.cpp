@@ -5,7 +5,7 @@
 
 #include <cobotsys_logger.h>
 #include "CobotUrRealTimeComm.h"
-#include <cobotsys_qt.h>
+#include <cobotsys.h>
 
 CobotUrRealTimeComm::CobotUrRealTimeComm(std::condition_variable& cond_msg, const QString& hostIp, QObject* parent)
         : QObject(parent), m_msg_cond(cond_msg){

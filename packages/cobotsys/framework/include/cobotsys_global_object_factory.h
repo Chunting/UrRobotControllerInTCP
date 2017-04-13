@@ -14,7 +14,7 @@
 #include <cobotsys_abstract_object.h>
 #include <cobotsys_abstract_object_factory.h>
 #include <cobotsys_logger.h>
-#include <cobotsys_qt.h>
+#include <cobotsys.h>
 
 
 namespace cobotsys {

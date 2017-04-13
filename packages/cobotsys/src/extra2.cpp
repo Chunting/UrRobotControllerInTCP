@@ -92,13 +92,13 @@ bool loadJson(QJsonObject& obj, const std::string& baseName) {
 
     QFile qFile(fullPath.c_str());
     if (qFile.open(QIODevice::ReadOnly)) {
-        QTextStream qTextStream(&qFile);
-        auto qss = qTextStream.readAll();
-        auto jDoc = QJsonDocument::fromJson(qss.toUtf8(), &jsonParseError);
+        auto qss = qFile.readAll();
+        auto jDoc = QJsonDocument::fromJson(qss, &jsonParseError);
         if (jsonParseError.error == QJsonParseError::NoError) {
             obj = jDoc.object();
             return true;
         }
+		COBOT_LOG.error() << jsonParseError.errorString();
     }
     return false;
 }
@@ -127,14 +127,14 @@ QImage matToQImage(const cv::Mat& mat) {
         // Copy input Mat
         const uchar* pSrc = (const uchar*) mat.data;
         // Create QImage with same dimensions as input Mat
-        QImage image(pSrc, mat.cols, mat.rows, mat.step, QImage::Format_RGB888);
+        QImage image(pSrc, (int) mat.cols, (int) mat.rows, (int) mat.step, QImage::Format_RGB888);
         return image.rgbSwapped();
     } else if (mat.type() == CV_8UC4) {
 //        qDebug() << "CV_8UC4";
         // Copy input Mat
         const uchar* pSrc = (const uchar*) mat.data;
         // Create QImage with same dimensions as input Mat
-        QImage image(pSrc, mat.cols, mat.rows, mat.step, QImage::Format_ARGB32);
+        QImage image(pSrc, (int) mat.cols, (int) mat.rows, (int) mat.step, QImage::Format_ARGB32);
         return image.copy();
     } else {
         qDebug() << "ERROR: Mat could not be converted to QImage.";
@@ -146,3 +146,27 @@ bool loadJson(QJsonObject& obj, const QString& baseName) {
     return loadJson(obj, std::string(baseName.toLocal8Bit().constData()));
 }
 
+std::string simple_typeid_name(const char* pname) {
+    std::string new_class_name = pname;
+#ifdef _WIN32
+    if (new_class_name.substr(0, 6) == "class ") {
+        new_class_name = new_class_name.substr(6);
+    }
+    auto ptail = new_class_name.find(" * __ptr64");
+    if (ptail != new_class_name.npos) {
+        new_class_name.erase(ptail);
+    }
+#endif // WIN32
+
+    if (new_class_name.substr(3, 8) == "cobotsys") {
+        new_class_name = new_class_name.substr(3);
+        new_class_name.replace(8, 2, "::");
+        if (new_class_name.size()) {
+            if (new_class_name.back() == 'E') {
+                new_class_name.erase(new_class_name.begin() + new_class_name.size() - 1);
+            }
+        }
+    }
+
+    return new_class_name;
+}

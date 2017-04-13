@@ -18,7 +18,7 @@ MessageEncoder::~MessageEncoder() {
 }
 
 Message MessageEncoder::genStringMessage(const std::string& msg) {
-    return genMessage(QByteArray(msg.c_str(), msg.size() + 1), MessageType::String);
+    return genMessage(QByteArray(msg.c_str(), (int)(msg.size() + 1)), MessageType::String);
 }
 
 

@@ -6,7 +6,7 @@
 #include "cobotsys_json_callback_manager.h"
 #include <chrono>
 #include <QUuid>
-#include <cobotsys_qt.h>
+#include <cobotsys.h>
 
 namespace cobotsys {
 

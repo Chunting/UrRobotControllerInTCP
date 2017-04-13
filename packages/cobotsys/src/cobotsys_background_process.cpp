@@ -8,7 +8,7 @@
 #include <signal.h>
 #include <cobotsys_file_finder.h>
 #include "cobotsys_background_process.h"
-#include <cobotsys_qt.h>
+#include <cobotsys.h>
 
 
 namespace cobotsys {

@@ -9,10 +9,16 @@
 
 #include "cobotsys_abstract_ik_solver.h"
 #include <QObject>
-//#include "..\..\orocos_kdl\src\"
+#include "../orocos_kdl/src/chain.hpp"
 
 using namespace cobotsys;
 class KinematicSolver : virtual public cobotsys::AbstractIKSolver {
+    struct JointLimits{
+      double lower;
+      double upper;
+      double effort;
+      double velocity;
+    };
 public:
 	KinematicSolver();
     virtual ~KinematicSolver();
@@ -27,11 +33,13 @@ public:
 	* @retval false 无解
 	*/
     virtual bool solve(const vector<double>& cur, const vector<double>& target, vector<double>& result);
-    virtual bool setup(const QString& configFilePath);
+    virtual bool setup(const QString& configFilePath="CONFIG/force_control/kinematic_solver_config.json");
 
 protected:
+    KDL::Segment segmentParser();
 	QString m_defaultSolverInfo;
-    QString m_urdf_path;
+    KDL::Chain m_robot_chain;
+    std::vector<JointLimits> m_robot_joint_limits;
 };
 
 

@@ -1,4 +1,4 @@
-FILE( GLOB_RECURSE KDL_SRCS [^.]*.cpp [^.]*.cxx)
+﻿FILE( GLOB_RECURSE KDL_SRCS [^.]*.cpp [^.]*.cxx)
 FILE( GLOB KDL_HPPS [^.]*.hpp [^.]*.inl)
 
 FILE( GLOB UTIL_HPPS utilities/[^.]*.h utilities/[^.]*.hpp)
@@ -53,7 +53,7 @@ ENDIF()
 #of the debug library name and no symbols are exported by kdl, 
 #so it is necessary to compile it as a static library
 IF(MSVC)
-    SET(CMAKE_DEBUG_POSTFIX "d")
+    #SET(CMAKE_DEBUG_POSTFIX "d")
     SET(LIB_TYPE STATIC)
 ELSE(MSVC)
     SET(LIB_TYPE SHARED)

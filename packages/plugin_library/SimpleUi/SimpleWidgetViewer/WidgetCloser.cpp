@@ -6,12 +6,16 @@
 #include "WidgetCloser.h"
 #include <cobotsys_abstract_object.h>
 
+WidgetCloser::WidgetCloser(QObject* parent) :QObject(parent) {
+
+}
+
 bool WidgetCloser::eventFilter(QObject* obj, QEvent* event) {
-    if (event->type() == QEvent::Close) {
-        auto aobj = dynamic_cast<cobotsys::AbstractObject*>(obj);
-        if (aobj) {
-            Q_EMIT widgetClosed();
-        }
-    }
-    return QObject::eventFilter(obj, event);
+	if (event->type() == QEvent::Close) {
+		auto aobj = dynamic_cast<cobotsys::AbstractObject*>(obj);
+		if (aobj) {
+			Q_EMIT widgetClosed();
+		}
+	}
+	return QObject::eventFilter(obj, event);
 }

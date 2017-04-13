@@ -63,3 +63,32 @@ void init_library(int argc, char** argv) {
     internal_info::parser_app_name(argv[0]);
 }
 }
+
+
+std::ostream& operator<<(std::ostream& oss, const QString& str) {
+    oss << str.toLocal8Bit().constData();
+    return oss;
+}
+
+std::ostream& operator<<(std::ostream& oss, const QJsonObject& obj) {
+    oss << QJsonDocument(obj).toJson(QJsonDocument::Compact).constData();
+    return oss;
+}
+
+bool isFixedPitch(const QFont & font) {
+    const QFontInfo fi(font);
+    qDebug() << fi.family() << fi.fixedPitch();
+    return fi.fixedPitch();
+}
+
+QFont getMonospaceFont(){
+    QFont font("monospace");
+    if (isFixedPitch(font)) return font;
+    font.setStyleHint(QFont::Monospace);
+    if (isFixedPitch(font)) return font;
+    font.setStyleHint(QFont::TypeWriter);
+    if (isFixedPitch(font)) return font;
+    font.setFamily("courier");
+    if (isFixedPitch(font)) return font;
+    return font;
+}

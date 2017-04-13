@@ -13,19 +13,6 @@
 #include <QApplication>
 #include <QtWidgets/QFileDialog>
 
-bool loop(cobotsys::ObjectGroup& objectGroup) {
-    auto pObject = objectGroup.getObject("Widget");
-    auto pWidget = std::dynamic_pointer_cast<QWidget>(pObject);
-    if (pWidget) {
-        pObject->setup("");
-        pWidget->show();
-        return true;
-    }
-    COBOT_LOG.info() << "No Widget Found in JSON config.";
-    return false;
-}
-
-
 int main(int argc, char** argv) {
     QApplication a(argc, argv);
     cobotsys::init_library(argc, argv);
@@ -37,23 +24,12 @@ int main(int argc, char** argv) {
     globalObjectFactory.loadLibrarys();
 
 
-    json_path = cobotsys::FileFinder::find("simple_widget_viewer.json").c_str();
-
-    if (json_path.isEmpty()){
-        COBOT_LOG.error() << "Can not load WidgetViewer JSON config";
-        return 2;
-    }
-
-    QJsonObject jsonObject;
-
-    if (loadJson(jsonObject, json_path)) {
-        cobotsys::ObjectGroup objectGroup;
-        if (objectGroup.init(jsonObject)) {
-            if (loop(objectGroup)) {
-                auto r = a.exec();
-                return r;
-            }
-        }
+    auto pObject = globalObjectFactory.createObject("SimpleUiFactory, Ver 1.0", "SimpleWidgetViewer");
+    auto pWidget = std::dynamic_pointer_cast<QWidget>(pObject);
+    if (pWidget) {
+        pObject->setup("");
+        pWidget->show();
+        return a.exec();
     }
     return 0;
 }

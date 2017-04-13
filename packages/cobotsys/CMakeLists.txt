@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.6)
+﻿cmake_minimum_required(VERSION 3.6)
 # 默认编译标准
 set(CMAKE_CXX_STANDARD 11)
 
@@ -74,12 +74,6 @@ file(GLOB ${PROJECT_NAME}_files src/* include/* framework/src/* framework/includ
 
 # 主要的代码库部分
 add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_files})
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/lib)
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/lib)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/lib)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/lib)
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/lib)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/lib)
 
 # 依赖链接库
 if (WIN32)
@@ -104,10 +98,13 @@ else ()
             ${extend_library_list})
 endif ()
 
-#get_property(ros_ext_lib GLOBAL PROPERTY ROS_EXTEND)
-#add_custom_command(TARGET ${PROJECT_NAME}
-#        PRE_BUILD
-#        COMMAND python ../../data/scripts/gen_ros_extend.py "${ros_ext_lib}"
-#        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
-
 # 安装
+install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}
+        LIBRARY DESTINATION lib
+		ARCHIVE DESTINATION lib
+        RUNTIME DESTINATION bin
+        INCLUDES DESTINATION include/cobotsys)
+
+install(EXPORT ${PROJECT_NAME} DESTINATION lib)
+install(DIRECTORY include/ DESTINATION include/cobotsys FILES_MATCHING PATTERN "*.h")
+install(DIRECTORY framework/include/ DESTINATION include/cobotsys FILES_MATCHING PATTERN "*.h")

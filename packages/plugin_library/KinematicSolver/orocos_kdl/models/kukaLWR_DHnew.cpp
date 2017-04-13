@@ -1,4 +1,4 @@
-// Copyright  (C)  2009  Ruben Smits <ruben dot smits at mech dot kuleuven dot be>
+﻿// Copyright  (C)  2009  Ruben Smits <ruben dot smits at mech dot kuleuven dot be>
 
 // Version: 1.0
 // Author: Ruben Smits <ruben dot smits at mech dot kuleuven dot be>
@@ -43,7 +43,7 @@ namespace KDL{
 				  Frame::DH_Craig1989(0.0, -1.5707963, 0.4, 0.0).Inverse()*RigidBodyInertia(2,
 												   Vector(0.0,-0.3120511,-0.0038871),
 												   RotationalInertia(-0.5471572,-0.0000302,-0.5423253,0.0,0.0,0.0018828))));
-				  
+
 	//joint 3
 	kukaLWR_DHnew.addSegment(Segment(Joint(Joint::RotZ),
 				  Frame::DH_Craig1989(0.0, -1.5707963, 0.0, 0.0),

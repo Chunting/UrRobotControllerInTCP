@@ -75,6 +75,8 @@ public:
     const std::string& currentEntry() const;
 
     void setAppendFilter(std::function<void(const std::string& entry, const std::string& message)> filter);
+    void addFilter(void* obj, std::function<void(const std::string& entry, const std::string& message)> filter);
+    void clrFilter(void* obj);
 
     static Logger& instance();
 
@@ -101,6 +103,8 @@ protected:
     int m_prefix_width;
     std::string m_current_instance_name;
     std::mutex m_res_mutex;
+
+    std::map<void*, std::function<void(const std::string&, const std::string&)> > m_observers;
 };
 }
 #define COBOT_LOG    cobotsys::Logger::instance()

@@ -1,4 +1,4 @@
-
+﻿
 
 project(KinematicSolver)
 
@@ -16,6 +16,10 @@ file(GLOB ${PROJECT_NAME}_files src/*)
 
 add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_files})
 
-target_link_libraries(${PROJECT_NAME} cobotsys)
+#link_directories(C:\Libraries\)
+
+#message("aaaaaa:  ${PROJECT_SOURCE_DIR}/orocos_kdl/")
+target_link_libraries(${PROJECT_NAME} cobotsys orocos-kdl)
+
 
 #install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION plugins)

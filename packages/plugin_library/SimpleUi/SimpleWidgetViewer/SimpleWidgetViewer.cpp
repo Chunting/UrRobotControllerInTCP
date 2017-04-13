@@ -10,19 +10,22 @@
 #include <cobotsys_gui_logger_highlighter.h>
 #include <extra2.h>
 #include "SimpleWidgetViewer.h"
+#include <QSysInfo>
 
 SimpleWidgetViewer::SimpleWidgetViewer() {
     ui.setupUi(this);
-    m_closer = new WidgetCloser;
+	m_closer = new WidgetCloser(this);
 
     connect(ui.btnCreate, &QPushButton::released, this, &SimpleWidgetViewer::actionCreateWidget);
+    connect(ui.btnCreateNoJson, &QPushButton::released, this, &SimpleWidgetViewer::actionCreateWidgetNoJson);
+    connect(ui.btnClear, &QPushButton::released, this, &SimpleWidgetViewer::actionClear);
     connect(m_closer, &WidgetCloser::widgetClosed, this, &SimpleWidgetViewer::resetCurObj);
 
     createTextLogUi();
 }
 
 SimpleWidgetViewer::~SimpleWidgetViewer() {
-    COBOT_LOG.setAppendFilter([](const std::string& e, const std::string& m) {});
+    COBOT_LOG.clrFilter(this);
     INFO_DESTRUCTOR(this);
 }
 
@@ -52,7 +55,7 @@ void SimpleWidgetViewer::refreshWidgetList() {
             }
         }
     }
-    COBOT_LOG.setAppendFilter([=](const std::string& e, const std::string& m) { appendText(e, m); });
+    COBOT_LOG.addFilter(this, [=](const std::string& e, const std::string& m) { appendText(e, m); });
 }
 
 void SimpleWidgetViewer::actionCreateWidget() {
@@ -72,7 +75,7 @@ void SimpleWidgetViewer::actionCreateWidget() {
     m_pWidget = GlobalObjectFactory::instance()->createObject(factory, typen);
     auto widget = std::dynamic_pointer_cast<QWidget>(m_pWidget);
     if (widget) {
-//        widget->installEventFilter(m_closer);
+        widget->installEventFilter(m_closer);
         if (robotConfig.isEmpty()) {
             widget->show();
         } else {
@@ -84,7 +87,11 @@ void SimpleWidgetViewer::actionCreateWidget() {
 }
 
 void SimpleWidgetViewer::resetCurObj() {
-//    m_pWidget = nullptr;
+	auto widget = std::dynamic_pointer_cast<QWidget>(m_pWidget);
+	if (widget) {
+		widget->removeEventFilter(m_closer);
+	}
+    //m_pWidget = nullptr;
 }
 
 void SimpleWidgetViewer::updateTextToUI() {
@@ -127,7 +134,7 @@ void SimpleWidgetViewer::appendText(const std::string& entry, const std::string&
 }
 
 void SimpleWidgetViewer::createTextLogUi() {
-    QFont font("Courier");
+    QFont font = getMonospaceFont();
     ui.plainTextEdit->setReadOnly(true);
     ui.plainTextEdit->setFont(font);
     ui.plainTextEdit->setLineWrapMode(QPlainTextEdit::NoWrap);
@@ -140,4 +147,25 @@ void SimpleWidgetViewer::createTextLogUi() {
     m_editUpdateTimer->setInterval(1000 / 30); // 30Hz
     connect(m_editUpdateTimer, &QTimer::timeout, this, &SimpleWidgetViewer::updateTextToUI);
     m_editUpdateTimer->start();
+}
+
+void SimpleWidgetViewer::actionClear() {
+    ui.plainTextEdit->clear();
+}
+
+void SimpleWidgetViewer::actionCreateWidgetNoJson() {
+    if (!GlobalObjectFactory::instance()) return;
+    if (ui.comboBox->count() == 0)
+        return;
+
+    QStringList obj_info = ui.comboBox->currentData().toStringList();
+    QString factory = obj_info.at(0);
+    QString typen = obj_info.at(1);
+
+    m_pWidget = GlobalObjectFactory::instance()->createObject(factory, typen);
+    auto widget = std::dynamic_pointer_cast<QWidget>(m_pWidget);
+    if (widget) {
+        widget->installEventFilter(m_closer);
+        widget->show();
+    }
 }
