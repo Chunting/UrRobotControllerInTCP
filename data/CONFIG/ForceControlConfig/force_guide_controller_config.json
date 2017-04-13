@@ -14,6 +14,11 @@
     "type": "ForceControlSolver",
     "config": "CONFIG/ForceControlConfig/force_control_solver_config.json"
   },
+  "kinematic_object": {
+    "factory": "KinematicSolverFactory, Ver 1.0",
+    "type": "KinematicSolver",
+    "config": "CONFIG/force_control/kinematic_solver_ur3_config.json"
+  },
   "joint_min": -180,
   "joint_max": 180
 }

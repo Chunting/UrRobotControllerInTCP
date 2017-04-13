@@ -10,6 +10,7 @@
 #include <cobotsys_abstract_controller.h>
 #include <cobotsys_abstract_arm_robot_realtime_driver.h>
 #include <cobotsys_abstract_force_sensor.h>
+#include <cobotsys_abstract_kinematic_solver.h>
 #include <QObject>
 #include <QString>
 
@@ -26,7 +27,8 @@ public:
 	virtual void pause();
 	virtual void stop();
 
-	void createRobot();
+	bool createRobot();
+	bool createKinematicSolver();
 
 	void startRobot();
 	void stopRobot();
@@ -53,6 +55,12 @@ protected:
 	QString m_solverType;
 	QString m_solverConfig;
 	std::shared_ptr<AbstractObject> m_ptrSolver;
+
+
+	QString m_kinematicFactory;
+	QString m_kinematicType;
+	QString m_kinematicConfig;
+	std::shared_ptr<AbstractKinematicSolver> m_ptrKinematicSolver;
 
 	std::vector<double> m_deltaValue;
 	std::mutex m_mutex;
