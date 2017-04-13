@@ -5,3 +5,4 @@ cmake-build-release
 .vs
 CMakeLists.txt.user
 .gitignore
+.orig
