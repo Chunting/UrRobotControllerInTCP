@@ -17,18 +17,24 @@
 
 namespace cobotsys {
 
+enum class LoggerLevel {
+    Debug,
+    Info,
+    Notice,
+    Warning,
+    Error,
+    Fatal,
+};
+
+std::string toString(LoggerLevel level);
+
 class Logger {
 public:
     class MessageWrapper {
     public:
-        MessageWrapper(const MessageWrapper& r)
-                : entry(r.entry), logger(r.logger), oss(r.oss.str()) {
-        }
-
-        ~MessageWrapper() {
-            if (oss.str().size())
-                endl();
-        }
+        MessageWrapper(const std::string& e, Logger& r, LoggerLevel level);
+        MessageWrapper(const MessageWrapper& r);
+        ~MessageWrapper();
 
         template<class T>
         MessageWrapper& operator<<(const T& t) {
@@ -40,42 +46,27 @@ public:
             return pf(*this);
         }
 
-        void endl() {
-            logger.append(entry, oss.str());
-            oss.str("");
-        }
+        void endl();
 
     private:
-        std::string entry;
         std::stringstream oss;
         Logger& logger;
-
-        MessageWrapper(const std::string& e, Logger& r)
-                : entry(e), logger(r) {
-        }
-
-        friend class Logger;
     };
 public:
     Logger();
 
-    void append(const std::string& entry, const std::string& message);
-    void append(const std::string& message); // Will use current entry
+    void append(const std::string& message);
 
-    void println(const std::string& text);
-
-    MessageWrapper message(const std::string& entry);
+    MessageWrapper message(const std::string& entry, LoggerLevel level = LoggerLevel::Debug);
     MessageWrapper message();
     MessageWrapper error();
     MessageWrapper warning();
     MessageWrapper notice();
     MessageWrapper info();
+    MessageWrapper fatal();
 
-    void setCurrentEntry(const std::string& entry); // Will change all to Upper.
-    const std::string& currentEntry() const;
-
-    void setAppendFilter(std::function<void(const std::string& entry, const std::string& message)> filter);
-    void addFilter(void* obj, std::function<void(const std::string& entry, const std::string& message)> filter);
+    void setAppendFilter(std::function<void(const std::string& message)> filter);
+    void addFilter(void* obj, std::function<void(const std::string& message)> filter);
     void clrFilter(void* obj);
 
     static Logger& instance();
@@ -91,20 +82,15 @@ public:
 
     void setCurrentInstanceName(const std::string& s);
 protected:
-    struct LogMessage {
-        std::string entry;
-        std::string message;
-    };
-    std::deque<LogMessage> m_logs;
-    std::string m_current_entry;
-    std::function<void(const std::string&, const std::string&)> m_append_filter;
+    std::deque<std::string> m_logs;
+    std::function<void(const std::string&)> m_append_filter;
     bool m_log_to_cout;
     bool m_cache_log_message;
     int m_prefix_width;
     std::string m_current_instance_name;
     std::mutex m_res_mutex;
 
-    std::map<void*, std::function<void(const std::string&, const std::string&)> > m_observers;
+    std::map<void*, std::function<void(const std::string&)> > m_observers;
 };
 }
 #define COBOT_LOG    cobotsys::Logger::instance()

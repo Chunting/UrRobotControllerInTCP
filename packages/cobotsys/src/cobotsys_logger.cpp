@@ -7,65 +7,83 @@
 
 
 namespace cobotsys {
+
+Logger::MessageWrapper::MessageWrapper(const MessageWrapper & r)
+    : logger(r.logger) {
+}
+
+Logger::MessageWrapper::MessageWrapper(const std::string & e, Logger & r, LoggerLevel level)
+    : logger(r) {
+    oss << "[";
+    oss << std::setw(5) << toString(level);
+    oss << "]";
+    if (e.size()) {
+        oss << "[";
+        oss << std::setw(logger.prefixWidth()) << e;
+        oss << "]";
+    }
+    oss << " ";
+}
+
+Logger::MessageWrapper::~MessageWrapper() {
+    auto strfinal = oss.str();
+    if (strfinal.size()) {
+        if (strfinal.at(strfinal.size() - 1) != '\n') {
+            strfinal.push_back('\n');
+        }
+    }
+    logger.append(strfinal);
+}
+
+void Logger::MessageWrapper::endl() {
+    oss << std::endl;
+}
+
+
+std::string cobotsys::toString(LoggerLevel level) {
+    switch (level) {
+    case cobotsys::LoggerLevel::Debug:  return "DEBUG";  break;
+    case cobotsys::LoggerLevel::Info:   return "INFO";   break;
+    case cobotsys::LoggerLevel::Notice: return "NOTIC";  break;
+    case cobotsys::LoggerLevel::Warning:return "WARN";   break;
+    case cobotsys::LoggerLevel::Error:  return "ERROR";  break;
+    case cobotsys::LoggerLevel::Fatal:  return "FATAL";  break;
+    }
+    return std::string();
+}
+
 Logger::Logger() {
-    m_current_entry = "INFO";
     m_log_to_cout = false;
     m_cache_log_message = true;
     m_prefix_width = 12;
 }
 
-void Logger::println(const std::string& text) {
-    if (m_append_filter)
-        m_append_filter("", text);
-}
-
-void Logger::append(const std::string& entry, const std::string& message) {
-    std::map<void*, std::function<void(const std::string&, const std::string&)> > obs;
+void Logger::append(const std::string& message) {
+    std::map<void*, std::function<void(const std::string&)> > obs;
     m_res_mutex.lock();
     obs = m_observers;
 
     if (m_cache_log_message)
-        m_logs.push_back({entry, message});
+        m_logs.push_back(message);
 
     if (m_append_filter)
-        m_append_filter(entry, message);
+        m_append_filter(message);
 
     if (m_log_to_cout) {
-        std::cout << "["
-                  << std::setw(m_prefix_width) << entry
-                  << "] "
-                  << message;
-        if (message.size()) {
-            if (message.back() != '\n')
-                std::cout << std::endl;
-        } else
-            std::cout << std::endl;
+        std::cout << message;
     }
     m_res_mutex.unlock();
 
     for (auto& ob : obs) {
-        ob.second(entry, message);
+        ob.second(message);
     }
 }
 
-void Logger::append(const std::string& message) {
-    append(m_current_entry, message);
-}
-
-void Logger::setCurrentEntry(const std::string& entry) {
-    m_current_entry = entry;
-    for (auto& c : m_current_entry) c = toupper(c);
-}
-
-const std::string& Logger::currentEntry() const {
-    return m_current_entry;
-}
-
-void Logger::setAppendFilter(std::function<void(const std::string& entry, const std::string& message)> filter) {
+void Logger::setAppendFilter(std::function<void(const std::string& message)> filter) {
     if (filter) {
         m_append_filter = filter;
         for (auto& iter : m_logs) {
-            m_append_filter(iter.entry, iter.message);
+            m_append_filter(iter);
         }
     } else {
         m_append_filter = nullptr;
@@ -84,42 +102,46 @@ Logger& Logger::instance() {
     return logger;
 }
 
-Logger::MessageWrapper Logger::message(const std::string& entry) {
-    return MessageWrapper(entry, *this);
+Logger::MessageWrapper Logger::message(const std::string& entry, LoggerLevel level) {
+    return MessageWrapper(entry, *this, level);
 }
 
 Logger::MessageWrapper Logger::message() {
-    return message(m_current_entry);
+    return message("", LoggerLevel::Debug);
 }
 
 Logger::MessageWrapper Logger::error() {
-    return message("Error");
+    return message("", LoggerLevel::Error);
+}
+
+Logger::MessageWrapper Logger::fatal() {
+    return message("", LoggerLevel::Fatal);
 }
 
 Logger::MessageWrapper Logger::warning() {
-    return message("Warning");
+    return message("", LoggerLevel::Warning);
 }
 
 Logger::MessageWrapper Logger::notice() {
-    return message("Notice");
+    return message("", LoggerLevel::Notice);
 }
 
 Logger::MessageWrapper Logger::info() {
-    return message("Info");
+    return message("", LoggerLevel::Info);
 }
 
 void Logger::setCurrentInstanceName(const std::string& s) {
     m_current_instance_name = s;
 }
 
-void Logger::addFilter(void* obj, std::function<void(const std::string& entry, const std::string& message)> filter) {
+void Logger::addFilter(void* obj, std::function<void(const std::string& message)> filter) {
     if (obj && filter) {
         m_res_mutex.lock();
         m_observers[obj] = filter;
         m_res_mutex.unlock();
 
         for (auto& iter : m_logs) {
-            filter(iter.entry, iter.message);
+            filter(iter);
         }
     }
 }

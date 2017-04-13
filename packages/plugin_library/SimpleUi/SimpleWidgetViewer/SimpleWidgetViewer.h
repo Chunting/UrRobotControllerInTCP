@@ -35,7 +35,7 @@ protected:
 
     void createTextLogUi();
     void updateTextToUI();
-    void appendText(const std::string& entry, const std::string& message);
+    void appendText(const std::string& message);
 
 protected:
     Ui::SimpleWidgetViewer ui;

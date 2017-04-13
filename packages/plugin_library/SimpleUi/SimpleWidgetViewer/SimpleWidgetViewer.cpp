@@ -14,7 +14,7 @@
 
 SimpleWidgetViewer::SimpleWidgetViewer() {
     ui.setupUi(this);
-	m_closer = new WidgetCloser(this);
+    m_closer = new WidgetCloser(this);
 
     connect(ui.btnCreate, &QPushButton::released, this, &SimpleWidgetViewer::actionCreateWidget);
     connect(ui.btnCreateNoJson, &QPushButton::released, this, &SimpleWidgetViewer::actionCreateWidgetNoJson);
@@ -55,7 +55,7 @@ void SimpleWidgetViewer::refreshWidgetList() {
             }
         }
     }
-    COBOT_LOG.addFilter(this, [=](const std::string& e, const std::string& m) { appendText(e, m); });
+    COBOT_LOG.addFilter(this, [=](const std::string& m) { appendText(m); });
 }
 
 void SimpleWidgetViewer::actionCreateWidget() {
@@ -64,9 +64,9 @@ void SimpleWidgetViewer::actionCreateWidget() {
         return;
 
     QString robotConfig = QFileDialog::getOpenFileName(this,
-                                                       tr("Get Widget Config JSON file ..."),
-                                                       QString(FileFinder::getPreDefPath().c_str()),
-                                                       tr("JSON files (*.JSON *.json)"));
+        tr("Get Widget Config JSON file ..."),
+        QString(FileFinder::getPreDefPath().c_str()),
+        tr("JSON files (*.JSON *.json)"));
 
     QStringList obj_info = ui.comboBox->currentData().toStringList();
     QString factory = obj_info.at(0);
@@ -87,10 +87,10 @@ void SimpleWidgetViewer::actionCreateWidget() {
 }
 
 void SimpleWidgetViewer::resetCurObj() {
-	auto widget = std::dynamic_pointer_cast<QWidget>(m_pWidget);
-	if (widget) {
-		widget->removeEventFilter(m_closer);
-	}
+    auto widget = std::dynamic_pointer_cast<QWidget>(m_pWidget);
+    if (widget) {
+        widget->removeEventFilter(m_closer);
+    }
     //m_pWidget = nullptr;
 }
 
@@ -104,33 +104,11 @@ void SimpleWidgetViewer::updateTextToUI() {
     }
 }
 
-void SimpleWidgetViewer::appendText(const std::string& entry, const std::string& message) {
+void SimpleWidgetViewer::appendText(const std::string& message) {
     static QRegularExpression reg("^\\[\\s*([-A-Za-z_0-9]*)\\s*\\](.*)");
 
-    std::stringstream oss;
-    cobotsys::cout_formater formater(oss);
-
-    if (entry.empty()) {
-        QString qmsg = QString::fromLocal8Bit(message.c_str()).trimmed();
-
-        auto iter = reg.match(qmsg);
-        if (iter.hasMatch()) {
-            auto qEntry = iter.captured(1);
-            if (qEntry.size() > COBOT_LOG.prefixWidth())
-                qEntry = qEntry.leftJustified(COBOT_LOG.prefixWidth(), '.', true);
-            auto qMessage = iter.captured(2).trimmed();
-            appendText(qEntry.toLocal8Bit().constData(), qMessage.toLocal8Bit().constData());
-        } else {
-            m_cachedMessage += QString::fromLocal8Bit(message.c_str()) + "\n";
-        }
-    } else {
-        formater.section_width = COBOT_LOG.prefixWidth();
-        formater.section(entry);
-        formater.oss << " " << message;
-
-        QString final_message = QString::fromLocal8Bit(oss.str().c_str()).trimmed() + "\n";
-        m_cachedMessage += final_message;
-    }
+    QString final_message = QString::fromLocal8Bit(message.c_str());
+    m_cachedMessage += final_message;
 }
 
 void SimpleWidgetViewer::createTextLogUi() {

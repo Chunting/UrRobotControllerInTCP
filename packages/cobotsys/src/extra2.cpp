@@ -21,7 +21,7 @@ void qt_ba_to_cobot_log(QByteArray& ba) {
         if (pos > 0) {
             auto line_ba = ba.mid(search_index, pos - search_index);
             search_index = pos + 1;
-            COBOT_LOG.println(line_ba.constData());
+            COBOT_LOG.append(line_ba.constData());
         } else {
             ba = ba.mid(search_index);
             return;
