@@ -30,7 +30,9 @@ public:
      * @retval true 求解成功
      * @retval false 求解失败
      */
-	virtual bool cartToJnt(const Eigen::VectorXd& initialJoint, Eigen::Affine3d targetPos, Eigen::VectorXd& targetJoint)=0;
+	virtual bool cartToJnt(const Eigen::VectorXd& initialJoint, const Eigen::Affine3d& targetPos, Eigen::VectorXd& targetJoint)=0;
+	virtual bool cartToJnt(const std::vector<double>& initialJoint, const std::vector<double>& targetPos, std::vector<double>& targetJoint)=0;
+	
 	/**
 	* 用于正向运动求解计算，模型文件设置通过 setup() 来指定。
 	* @param[in] targetJoint 机器人的状态(关节角)
@@ -38,7 +40,8 @@ public:
 	* @retval true 求解成功
 	* @retval false 求解失败
 	*/
-	virtual bool jntToCart(const Eigen::VectorXd& targetJoint, Eigen::Affine3d targetPos)=0;
+	virtual bool jntToCart(const Eigen::VectorXd& targetJoint, Eigen::Affine3d& targetPos)=0;
+	virtual bool jntToCart(const std::vector<double>& targetJoint, std::vector<double>& targetPos)=0;
 };
 /**
  * @}

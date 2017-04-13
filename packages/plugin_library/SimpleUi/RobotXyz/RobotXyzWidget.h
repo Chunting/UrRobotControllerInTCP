@@ -37,6 +37,7 @@ public:
     void createArmRobotDriver();
     void createSolver();
 
+	void copyCurXyzRpy();
 
 Q_SIGNALS:
     void jointValueUpdated();

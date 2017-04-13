@@ -14,16 +14,17 @@ RobotXyzWidget::RobotXyzWidget() {
     connect(ui.btnInit, &QPushButton::released, this, &RobotXyzWidget::initUiComboList);
     connect(ui.btnCreateArmRobot, &QPushButton::released, this, &RobotXyzWidget::createArmRobotDriver);
     connect(ui.btnCreateIk, &QPushButton::released, this, &RobotXyzWidget::createSolver);
+	connect(ui.btnCopy, &QPushButton::released, this, &RobotXyzWidget::copyCurXyzRpy);
+	connect(ui.btnGo, &QPushButton::released, this, &RobotXyzWidget::onGoCommand);
 
     connect(this, &RobotXyzWidget::jointValueUpdated, this, &RobotXyzWidget::onJointUpdate);
 
-    m_dsbJointVals.push_back(ui.dsbRealJoint_1);
     m_dsbJointVals.push_back(ui.dsbRealJoint_1);
     m_dsbJointVals.push_back(ui.dsbRealJoint_2);
     m_dsbJointVals.push_back(ui.dsbRealJoint_3);
     m_dsbJointVals.push_back(ui.dsbRealJoint_4);
     m_dsbJointVals.push_back(ui.dsbRealJoint_5);
-
+	m_dsbJointVals.push_back(ui.dsbRealJoint_6);
 }
 
 RobotXyzWidget::~RobotXyzWidget() {
@@ -31,9 +32,15 @@ RobotXyzWidget::~RobotXyzWidget() {
 }
 
 void RobotXyzWidget::start() {
+	if (m_ptrRobot) {
+		m_ptrRobot->start();
+	}
 }
 
 void RobotXyzWidget::stop() {
+	if (m_ptrRobot) {
+		m_ptrRobot->stop();
+	}
 }
 
 
@@ -178,32 +185,46 @@ void RobotXyzWidget::onJointUpdate() {
     }
 
     // TODO here forward-kinxxx
-    std::vector<double> xyz;
+	std::vector<double> xyzrpy;
+	m_ptrSolver->jntToCart(qactual, xyzrpy);
 
     // Update to UI
-    if (xyz.size() == 6) {
-        ui.dsbActual_X->setValue(xyz[0]);
-        ui.dsbActual_Y->setValue(xyz[1]);
-        ui.dsbActual_Z->setValue(xyz[2]);
-        ui.dsbActual_R->setValue(xyz[3]);
-        ui.dsbActual_P->setValue(xyz[4]);
-        ui.dsbActual_y->setValue(xyz[5]);
+    if (xyzrpy.size() == 6) {
+        ui.dsbActual_X->setValue(xyzrpy[0] * 1000);
+        ui.dsbActual_Y->setValue(xyzrpy[1] * 1000);
+        ui.dsbActual_Z->setValue(xyzrpy[2] * 1000);
+        ui.dsbActual_R->setValue(xyzrpy[3] / M_PI * 180);
+        ui.dsbActual_P->setValue(xyzrpy[4] / M_PI * 180);
+        ui.dsbActual_y->setValue(xyzrpy[5] / M_PI * 180);
     }
+}
+
+void RobotXyzWidget::copyCurXyzRpy() {
+	ui.dsbCmd_1->setValue(ui.dsbActual_X->value());
+	ui.dsbCmd_2->setValue(ui.dsbActual_Y->value());
+	ui.dsbCmd_3->setValue(ui.dsbActual_Z->value());
+	ui.dsbCmd_4->setValue(ui.dsbActual_R->value());
+	ui.dsbCmd_5->setValue(ui.dsbActual_P->value());
+	ui.dsbCmd_6->setValue(ui.dsbActual_y->value());
 }
 
 void RobotXyzWidget::onGoCommand() {
     std::vector<double> cmd;
     std::vector<double> jcmd;
 
-    cmd.push_back(ui.dsbCmd_1->value());
-    cmd.push_back(ui.dsbCmd_2->value());
-    cmd.push_back(ui.dsbCmd_3->value());
-    cmd.push_back(ui.dsbCmd_4->value());
-    cmd.push_back(ui.dsbCmd_5->value());
-    cmd.push_back(ui.dsbCmd_6->value());
+    cmd.push_back(ui.dsbCmd_1->value() / 1000);
+    cmd.push_back(ui.dsbCmd_2->value() / 1000);
+    cmd.push_back(ui.dsbCmd_3->value() / 1000);
+    cmd.push_back(ui.dsbCmd_4->value() / 180 * M_PI);
+    cmd.push_back(ui.dsbCmd_5->value() / 180 * M_PI);
+    cmd.push_back(ui.dsbCmd_6->value() / 180 * M_PI);
 
     // TODO here calc cmd to joints and then move
     //m_ptrSolver->
+
+	// TODO here forward-kinxxx
+	m_ptrSolver->cartToJnt(m_jointValues, cmd, jcmd);
+
 
     m_ptrRobot->move(jcmd);
 }

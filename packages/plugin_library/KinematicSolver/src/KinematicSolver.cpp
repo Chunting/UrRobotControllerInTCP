@@ -19,7 +19,82 @@ KinematicSolver::KinematicSolver(){
 KinematicSolver::~KinematicSolver(){
 
 }
-bool KinematicSolver::jntToCart(const Eigen::VectorXd& targetJoint, Eigen::Affine3d targetPos){
+bool KinematicSolver::cartToJnt(const std::vector<double>& initialJoint, const std::vector<double>& targetPos, std::vector<double>& targetJoint) {
+	//target: xyz, rpy.
+	//TODO:最好能兼容打印显示Frame这种结构体。
+	//extra2.h中加入math.h
+	//if (initialJoint.size() != targetJoint.size()) {
+	//	COBOT_LOG.error() << "Current joint size is not equal to target joint size!";
+	//	return false;
+	//}
+	targetJoint.clear();
+	KDL::JntArray q_init(initialJoint.size());
+	for (int i = 0; i < initialJoint.size(); i++) {
+		q_init(i) = initialJoint.at(i);
+	}
+	KDL::Frame targetFrame(KDL::Rotation::RPY(targetPos[3], targetPos[4], targetPos[5]),KDL::Vector(targetPos[0], targetPos[1], targetPos[2]));
+	KDL::JntArray q_out(targetJoint.size());
+	int retval;
+	retval = m_ik_solver->CartToJnt(q_init, targetFrame, q_out);
+	switch (retval) {
+	case 0:
+		//Eigen::VectorXd::Map(&targetJoint[0], targetJoint.size()) = q_out.data;
+		targetJoint.clear();
+		for (int i = 0; i < q_out.data.size(); i++) {
+			targetJoint.push_back(q_out(i));
+		}
+		break;
+	case -1:
+		COBOT_LOG.error() << "Kinamatic Solver:the gradient of $ E $ towards the joints is to small.";
+		break;
+	case -2:
+		COBOT_LOG.error() << "Kinamatic Solver:joint position increments are to small.";
+		break;
+	case -3:
+		COBOT_LOG.error() << "Kinamatic Solver:number of iterations is exceeded.";
+		break;
+	}
+	if (retval != 0) {
+		std::cout << "---------Inverse Kinematic Solver failed ----------------------------" << endl;
+		COBOT_LOG.error() << "pos " << targetFrame << endl;
+		std::cout << "reached pos " << m_ik_solver->T_base_head << endl;
+		std::cout << "TF from pos to head \n" << targetFrame.Inverse()*m_ik_solver->T_base_head << endl;
+		std::cout << "gradient " << m_ik_solver->grad.transpose() << endl;
+		std::cout << "q_out " << q_out.data.transpose() / M_PI*180.0 << endl;
+		std::cout << "q_init " << q_init.data.transpose() / M_PI*180.0 << endl;
+		std::cout << "return value " << retval << endl;
+		std::cout << "last #iter " << m_ik_solver->lastNrOfIter << endl;
+		std::cout << "last diff  " << m_ik_solver->lastDifference << endl;
+		//cout << "jacobian of goal values ";
+		//m_ik_solver->display_jac(q);
+		//std::cout << "jacobian of solved values ";
+		//solver.display_jac(q_sol);
+		return false;
+	}
+	else {
+		return true;
+	}
+}
+
+bool KinematicSolver::jntToCart(const std::vector<double>& targetJoint, std::vector<double>& targetPos) {
+	KDL::JntArray targetJnt(targetJoint.size());
+	for (int i = 0; i < targetJoint.size(); i++) {
+		targetJnt(i) = targetJoint.at(i);
+	}
+	KDL::Frame targetFrame;
+	m_fk_solver->JntToCart(targetJnt, targetFrame);
+	double x, y, z;
+	targetFrame.M.GetRPY(x, y, z);
+	targetPos.push_back(targetFrame.p.x());
+	targetPos.push_back(targetFrame.p.y());
+	targetPos.push_back(targetFrame.p.z());
+	targetPos.push_back(x);
+	targetPos.push_back(y);
+	targetPos.push_back(z);
+	return true;
+
+}
+bool KinematicSolver::jntToCart(const Eigen::VectorXd& targetJoint, Eigen::Affine3d& targetPos){
 	KDL::JntArray targetJnt(targetJoint.size());
 	targetJnt.data = targetJoint;
 	KDL::Frame targetFrame;
@@ -27,7 +102,7 @@ bool KinematicSolver::jntToCart(const Eigen::VectorXd& targetJoint, Eigen::Affin
 	tf::transformKDLToEigen(targetFrame, targetPos);
 	return true;
 }
-bool KinematicSolver::cartToJnt(const Eigen::VectorXd& initialJoint, const Eigen::Affine3d targetPos, Eigen::VectorXd& targetJoint){
+bool KinematicSolver::cartToJnt(const Eigen::VectorXd& initialJoint, const Eigen::Affine3d& targetPos, Eigen::VectorXd& targetJoint){
 	//target: xyz, rpy.
 	//TODO:最好能兼容打印显示Frame这种结构体。
 	//extra2.h中加入math.h
