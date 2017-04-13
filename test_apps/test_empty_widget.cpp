@@ -30,7 +30,7 @@ int main(int argc, char** argv){
 	QString ss;
 	pController->setup(ss);
 
-//    pController->show();
+    pController->show();
 
     return a.exec();
 }
