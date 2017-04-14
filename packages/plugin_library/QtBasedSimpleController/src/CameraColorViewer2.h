@@ -36,6 +36,7 @@ public:
     virtual bool setup(const QString& configFilePath);
 
     void create();
+    void pauseStart();
 
 Q_SIGNALS:
     void imageUpdated();

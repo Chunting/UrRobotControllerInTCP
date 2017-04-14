@@ -101,3 +101,8 @@ void OpenCVCamera::clearAttachedObject() {
     std::lock_guard<std::mutex> lockGuard(m_mutex);
     m_observers.clear();
 }
+
+
+bool OpenCVCamera::isOpened() const {
+    return m_videoCapture.isOpened();
+}

@@ -22,6 +22,9 @@ Kinect2Camera::~Kinect2Camera() {
     delete m_freenect2;
 }
 
+bool Kinect2Camera::isOpened() const {
+    return m_isOpened;
+}
 
 bool Kinect2Camera::open(int deviceId) {
     if (m_isOpened)

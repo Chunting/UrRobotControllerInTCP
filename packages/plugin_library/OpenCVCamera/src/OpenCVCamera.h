@@ -20,6 +20,7 @@ public:
 
     virtual bool setup(const QString& configFilePath);
 
+    virtual bool isOpened() const;
     virtual bool open(int deviceId = 0);
     virtual void close();
     virtual void attach(const shared_ptr<CameraStreamObserver>& observer);

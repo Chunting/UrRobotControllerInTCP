@@ -15,6 +15,7 @@ CameraColorViewer2::CameraColorViewer2() {
 
     connect(this, &CameraColorViewer2::imageUpdated, this, &CameraColorViewer2::updateLabelImage);
     connect(ui.btnCreate, &QPushButton::released, this, &CameraColorViewer2::create);
+    connect(ui.btnPauseStart, &QPushButton::released, this, &CameraColorViewer2::pauseStart);
 
     m_captureTimer = new QTimer(this);
     m_captureTimer->setInterval(10);
@@ -39,6 +40,8 @@ void CameraColorViewer2::onCameraStreamUpdate(const cobotsys::CameraFrame& frame
             cv::Mat mat;
             if (frame.data.cols > 1920 / 2) {
                 cv::pyrDown(frame.data, mat);
+            } else {
+                mat = frame.data;
             }
 
             m_imageCache.updateImage(mat);
@@ -65,9 +68,9 @@ void CameraColorViewer2::create() {
     }
 
     QString objConfig = QFileDialog::getOpenFileName(this,
-                                                     tr("Get Camera Config JSON file ..."),
-                                                     QString(FileFinder::getPreDefPath().c_str()),
-                                                     tr("JSON files (*.JSON *.json)"));
+        tr("Get Camera Config JSON file ..."),
+        QString(FileFinder::getPreDefPath().c_str()),
+        tr("JSON files (*.JSON *.json)"));
     if (objConfig.isEmpty()) {
         COBOT_LOG.warning() << "Camera config is empty, Camera create may fail!";
     }
@@ -116,9 +119,20 @@ void CameraColorViewer2::initCreateList() {
     }
 }
 
+void CameraColorViewer2::pauseStart() {
+    if (m_camera) {
+        if (m_camera->isOpened()) {
+            m_camera->close();
+        } else {
+            m_camera->open();
+        }
+    }
+}
+
 void CameraColorViewer2::closeEvent(QCloseEvent* event) {
     if (m_camera) {
         m_camera->clearAttachedObject();
+        m_camera->close();
     }
     QWidget::closeEvent(event);
 }
