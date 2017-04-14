@@ -40,17 +40,6 @@ void Logger::MessageWrapper::endl() {
 }
 
 
-std::string cobotsys::toString(LoggerLevel level) {
-    switch (level) {
-    case cobotsys::LoggerLevel::Debug:  return "DEBUG";  break;
-    case cobotsys::LoggerLevel::Info:   return "INFO";   break;
-    case cobotsys::LoggerLevel::Notice: return "NOTIC";  break;
-    case cobotsys::LoggerLevel::Warning:return "WARN";   break;
-    case cobotsys::LoggerLevel::Error:  return "ERROR";  break;
-    case cobotsys::LoggerLevel::Fatal:  return "FATAL";  break;
-    }
-    return std::string();
-}
 
 Logger::Logger() {
     m_log_to_cout = false;
@@ -149,6 +138,18 @@ void Logger::addFilter(void* obj, std::function<void(const std::string& message)
 void Logger::clrFilter(void* obj) {
     std::lock_guard<std::mutex> lockctx(m_res_mutex);
     m_observers.erase(obj);
+}
+
+std::string toString(LoggerLevel level) {
+    switch (level) {
+    case cobotsys::LoggerLevel::Debug:  return "DEBUG";  break;
+    case cobotsys::LoggerLevel::Info:   return "INFO";   break;
+    case cobotsys::LoggerLevel::Notice: return "NOTIC";  break;
+    case cobotsys::LoggerLevel::Warning:return "WARN";   break;
+    case cobotsys::LoggerLevel::Error:  return "ERROR";  break;
+    case cobotsys::LoggerLevel::Fatal:  return "FATAL";  break;
+    }
+    return std::string();
 }
 }
 

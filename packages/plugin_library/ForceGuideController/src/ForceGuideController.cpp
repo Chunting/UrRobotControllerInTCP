@@ -7,6 +7,7 @@
 #include <cobotsys_global_object_factory.h>
 #include <QtWidgets/QFileDialog>
 #include <cobotsys_file_finder.h>
+#include <thread>
 
 ForceGuideController::ForceGuideController() {
 
@@ -118,8 +119,10 @@ void ForceGuideController::onArmRobotDisconnect() {
 }
 
 void ForceGuideController::onArmRobotStatusUpdate(const ArmRobotStatusPtr& ptrRobotStatus) {
-	_sleep(1000);
-	std::vector<double> q;
+//	_sleep(1000);std::this_thread::sleep_for(std::chrono::milliseconds(1)); // here no need to sleep
+
+
+    std::vector<double> q;
 	for (size_t x = 0; x < 6; x++)
 	{
 		q.push_back(0);
