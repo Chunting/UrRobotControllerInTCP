@@ -1,5 +1,5 @@
 //
-// Created by lhc on 17-4-10.
+// Created by longhuicai on 17-4-10.
 // Copyright (c) 2017 Wuhan Collaborative Robot Technology Co.,Ltd. All rights reserved.
 //
 
@@ -22,7 +22,9 @@ public:
 
 	virtual bool setup(const QString& configFilePath);
 
-	virtual void onForceSensorDataStreamUpdate(const forcesensor::Wrench& wrench);
+	virtual void onForceSensorConnect();
+	virtual void onForceSensorDisconnect();
+	virtual void onForceSensorDataStreamUpdate(const std::shared_ptr<forcesensor::Wrench>& ptrWrench);
 
 public:
 	virtual void onArmRobotConnect();
