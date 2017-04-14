@@ -67,17 +67,17 @@ void gui::LoggerHighlighter::loadDefaultLoggerStyle(gui::LoggerHighlighter* high
         highlighter->getFormat(s).text.setFontWeight(QFont::Bold);
     };
 
-    set_warning("Warning");
+    set_warning("WARN");
     set_warning("WARNING");
-    set_success("Success");
+    set_success("INFO");
     set_success("SUCCESS");
-    set_error("Error");
+    set_error("FATAL");
     set_error("ERROR");
     set_error("Failure");
     set_error("FAILURE");
-    set_notice("Notice");
-    set_notice("NOTICE");
+    set_notice("NOTIC");
 
+    highlighter->getFormat("FATAL").text.setFontWeight(QFont::Bold);
     highlighter->getFormat("INFO").entry.setFontWeight(QFont::Bold);
 
     highlighter->fmt_url.setForeground(Qt::darkBlue);
