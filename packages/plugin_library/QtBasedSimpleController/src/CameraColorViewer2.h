@@ -11,6 +11,9 @@
 #include <cobotsys_abstract_camera.h>
 #include <QPushButton>
 #include <QTimer>
+#include <QCloseEvent>
+
+using namespace cobotsys;
 
 
 class ImageCache {
@@ -24,8 +27,7 @@ protected:
 };
 
 
-class CameraColorViewer2
-        : public cobotsys::AbstractControllerWidget, public cobotsys::CameraStreamObserver {
+class CameraColorViewer2 : public AbstractWidget, public CameraStreamObserver {
 Q_OBJECT
 public:
     CameraColorViewer2();
@@ -33,29 +35,28 @@ public:
 
     virtual bool setup(const QString& configFilePath);
 
-    virtual bool start();
-    virtual void pause();
-    virtual void stop();
-
+    void create();
 
 Q_SIGNALS:
     void imageUpdated();
 
 public:
-    void loadJSON();
     void captureNew();
     void updateLabelImage();
+
+
+    void initCreateList();
 
 public:
     virtual void onCameraStreamUpdate(const cobotsys::CameraFrame& frames);
 
 protected:
-    void initWidgetView(cobotsys::ObjectGroup& objectGroup);
-
+    virtual void closeEvent(QCloseEvent* event);
 protected:
+
+
     Ui::CameraColorViewer2 ui;
-    cobotsys::ObjectGroup m_objectGroup;
-    std::shared_ptr<cobotsys::AbstractCamera> m_camera;
+    std::shared_ptr<AbstractCamera> m_camera;
     QTimer* m_captureTimer;
     ImageCache m_imageCache;
 };

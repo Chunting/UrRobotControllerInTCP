@@ -37,6 +37,11 @@ public:
      *    的类是怎么搞的。
      */
     virtual bool setup(const QString& configFilePath) = 0;
+
+    /**
+     * 删除所以通过观察模式 attach() 函数添加的对象，如果有的话。
+     */
+    virtual void clearAttachedObject();
 };
 /**
  * @}

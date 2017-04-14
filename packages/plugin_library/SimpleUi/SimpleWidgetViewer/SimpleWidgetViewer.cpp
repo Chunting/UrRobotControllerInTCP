@@ -143,6 +143,7 @@ void SimpleWidgetViewer::actionCreateWidgetNoJson() {
     m_pWidget = GlobalObjectFactory::instance()->createObject(factory, typen);
     auto widget = std::dynamic_pointer_cast<QWidget>(m_pWidget);
     if (widget) {
+        m_pWidget->setup("");
         widget->installEventFilter(m_closer);
         widget->show();
     }
