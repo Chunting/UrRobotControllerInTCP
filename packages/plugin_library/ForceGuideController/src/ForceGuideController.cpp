@@ -1,4 +1,4 @@
-//
+﻿//
 // Created by longhuicai on 17-4-10.
 //
 
@@ -7,6 +7,7 @@
 #include <cobotsys_global_object_factory.h>
 #include <QtWidgets/QFileDialog>
 #include <cobotsys_file_finder.h>
+#include <thread>
 
 ForceGuideController::ForceGuideController() : QObject(nullptr) {
 

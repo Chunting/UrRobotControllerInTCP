@@ -16,4 +16,7 @@ AbstractObject::AbstractObject() {
 AbstractObject::~AbstractObject() {
     INFO_DESTRUCTOR(this);
 }
+
+void AbstractObject::clearAttachedObject() {
+}
 }

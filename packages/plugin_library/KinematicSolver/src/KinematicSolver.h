@@ -40,7 +40,7 @@ public:
 
 	virtual bool cartToJnt(const std::vector<double>& initialJoint, const std::vector<double>& targetPos, std::vector<double>& targetJoint);
 	virtual bool jntToCart(const std::vector<double>& targetJoint, std::vector<double>& targetPos);
-
+	KDL::Chain UR3Chain();
     virtual bool setup(const QString& configFilePath="CONFIG/force_control/kinematic_solver_config.json");
 
 protected:

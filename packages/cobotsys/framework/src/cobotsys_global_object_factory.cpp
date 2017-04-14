@@ -63,10 +63,11 @@ public:
                         << ", " << oss.str();
             }
         } else {
-            COBOT_LOG.message("Plugin") << std::setw(32) << fileInfo.fileName()
-                                        << ": "
-                                        << "Unable to get library Entry, "
-                                        << err;
+            COBOT_LOG.message("Plugin", LoggerLevel::Warning)
+                    << std::setw(32) << fileInfo.fileName()
+                    << ": "
+                    << "Unable to get library Entry, "
+                    << err;
         }
     }
 

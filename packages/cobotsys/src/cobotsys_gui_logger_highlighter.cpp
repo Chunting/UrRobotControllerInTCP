@@ -41,7 +41,8 @@ void gui::LoggerHighlighter::loadDefaultLoggerStyle(gui::LoggerHighlighter* high
         highlighter->getFormat(s).entry.setForeground(Qt::darkYellow);
         highlighter->getFormat(s).entry.setFontWeight(QFont::Bold);
         highlighter->getFormat(s).entry.setFontItalic(true);
-        highlighter->getFormat(s).text.setForeground(Qt::darkYellow);
+        highlighter->getFormat(s).text.setForeground(QColor(0xfbb11700));
+        highlighter->getFormat(s).text.setFontWeight(QFont::Bold);
     };
 
     auto set_success = [=](const QString& s) {
@@ -67,17 +68,17 @@ void gui::LoggerHighlighter::loadDefaultLoggerStyle(gui::LoggerHighlighter* high
         highlighter->getFormat(s).text.setFontWeight(QFont::Bold);
     };
 
-    set_warning("Warning");
+    set_warning("WARN");
     set_warning("WARNING");
-    set_success("Success");
+    set_success("INFO");
     set_success("SUCCESS");
-    set_error("Error");
+    set_error("FATAL");
     set_error("ERROR");
     set_error("Failure");
     set_error("FAILURE");
-    set_notice("Notice");
-    set_notice("NOTICE");
+    set_notice("NOTIC");
 
+    highlighter->getFormat("FATAL").text.setFontWeight(QFont::Bold);
     highlighter->getFormat("INFO").entry.setFontWeight(QFont::Bold);
 
     highlighter->fmt_url.setForeground(Qt::darkBlue);

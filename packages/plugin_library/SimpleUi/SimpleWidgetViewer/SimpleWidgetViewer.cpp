@@ -54,6 +54,11 @@ void SimpleWidgetViewer::refreshWidgetList() {
                 ui.comboBox->addItem(text, data);
             }
         }
+		//Sail for fast select.
+		int index = ui.comboBox->findText("SimpleUiFactory, Ver 1.0 - RobotXyzWidget");
+		if (index > 0) {
+			ui.comboBox->setCurrentIndex(index);
+		}
     }
     COBOT_LOG.addFilter(this, [=](const std::string& m) { appendText(m); });
 }
@@ -143,6 +148,7 @@ void SimpleWidgetViewer::actionCreateWidgetNoJson() {
     m_pWidget = GlobalObjectFactory::instance()->createObject(factory, typen);
     auto widget = std::dynamic_pointer_cast<QWidget>(m_pWidget);
     if (widget) {
+        m_pWidget->setup("");
         widget->installEventFilter(m_closer);
         widget->show();
     }

@@ -38,6 +38,7 @@ public:
     AbstractCamera();
     virtual ~AbstractCamera();
 
+    virtual bool isOpened() const = 0; ///< 获取当前相机的状态
     virtual bool open(int deviceId = 0) = 0;
     virtual void close() = 0;
     virtual void attach(const shared_ptr<CameraStreamObserver>& observer) = 0;

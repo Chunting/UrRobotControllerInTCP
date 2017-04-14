@@ -39,6 +39,9 @@ public:
 
 	void copyCurXyzRpy();
 
+	void copyJoint();
+	void goJoint();
+
 Q_SIGNALS:
     void jointValueUpdated();
 

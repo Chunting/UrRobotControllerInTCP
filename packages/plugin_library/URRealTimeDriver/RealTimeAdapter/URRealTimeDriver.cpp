@@ -106,7 +106,7 @@ void URRealTimeDriver::robotStatusWatcher() {
     std::vector<std::shared_ptr<ArmRobotRealTimeStatusObserver> > observer_tmp;
     std::vector<double> q_next;
 
-
+	COBOT_LOG.notice() << "UR Status Watcher is Running.";
     while (m_isWatcherRunning) {
         m_rt_msg_cond.wait(lck);
 
@@ -145,6 +145,10 @@ void URRealTimeDriver::robotStatusWatcher() {
         // 更新控制驱动数据, 如果没有数据，默认会是当前状态。
         if (m_isStarted && q_next.size() >= CobotUr::JOINT_NUM_) {
             m_urDriver->servoj(q_next);
+			//auto info_log = COBOT_LOG.info();
+			//for (int i = 0; i < (int)q_next.size(); i++) {
+			//	info_log << q_next[i] / M_PI * 180 << ", ";
+			//}
         }
     }
 }
