@@ -7,6 +7,7 @@
 #define PROJECT_FORCEGUIDECONTROLLER_H
 
 #include <mutex>
+#include <thread>
 #include <cobotsys_abstract_controller.h>
 #include <cobotsys_abstract_arm_robot_realtime_driver.h>
 #include <cobotsys_abstract_force_sensor.h>
@@ -27,11 +28,14 @@ public:
 	virtual void pause();
 	virtual void stop();
 
+protected:
 	bool createRobot();
 	bool createKinematicSolver();
 
 	void startRobot();
 	void stopRobot();
+
+	void guideControlThread();
 
 public:
 	virtual void onArmRobotConnect();
@@ -39,23 +43,27 @@ public:
 	virtual void onArmRobotStatusUpdate(const ArmRobotStatusPtr& ptrRobotStatus);
 
 protected:
-	bool m_bcontrol;
+	bool m_bcontrolStart;
+
 	int m_joint_num;
+	std::vector<double> m_curQ;
+
 	QString m_robotFactory;
 	QString m_robotType;
 	QString m_robotConfig;
 	std::shared_ptr<AbstractArmRobotRealTimeDriver> m_ptrRobot;
+	bool m_bRobotConnect;
 
 	QString m_sensorFactory;
 	QString m_sensorType;
 	QString m_sensorConfig;
 	std::shared_ptr<AbstractForceSensor> m_ptrSensor;
+	bool m_bSensorConnect;
 
 	QString m_solverFactory;
 	QString m_solverType;
 	QString m_solverConfig;
 	std::shared_ptr<AbstractObject> m_ptrSolver;
-
 
 	QString m_kinematicFactory;
 	QString m_kinematicType;
@@ -64,6 +72,7 @@ protected:
 
 	std::vector<double> m_deltaValue;
 	std::mutex m_mutex;
+	std::thread m_controlThread;
 
 };
 

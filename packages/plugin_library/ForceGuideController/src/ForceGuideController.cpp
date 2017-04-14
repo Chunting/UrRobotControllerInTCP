@@ -1,5 +1,5 @@
 //
-// Created by lhc on 17-4-10.
+// Created by longhuicai on 17-4-10.
 //
 
 #include "ForceGuideController.h"
@@ -7,10 +7,8 @@
 #include <cobotsys_global_object_factory.h>
 #include <QtWidgets/QFileDialog>
 #include <cobotsys_file_finder.h>
-#include <Eigen/Core>
-#include <Eigen/Geometry>
 
-ForceGuideController::ForceGuideController() {
+ForceGuideController::ForceGuideController() : QObject(nullptr) {
 
 }
 
@@ -19,16 +17,23 @@ ForceGuideController::~ForceGuideController() {
 }
 
 bool ForceGuideController::setup(const QString &configFilePath) {
+	m_bcontrolStart = false;
+	m_bRobotConnect = false;
+	m_bSensorConnect = false;
+
+	bool ret = false;
 	QJsonObject json;
 	if (loadJson(json, configFilePath)) {
 		m_joint_num = json["joint_num"].toDouble(6);
+		m_curQ.resize(m_joint_num);
+
 		m_robotFactory = json["robot_object"].toObject()["factory"].toString();
 		m_robotType = json["robot_object"].toObject()["type"].toString();
 		m_robotConfig = json["robot_object"].toObject()["config"].toString();
 		if (m_robotFactory.isEmpty() || m_robotType.isEmpty() ) {
 			return false;
 		}
-		
+				
 		m_sensorFactory = json["sensor_object"].toObject()["factory"].toString();
 		m_sensorType = json["sensor_object"].toObject()["type"].toString();
 		m_sensorConfig = json["sensor_object"].toObject()["config"].toString();
@@ -57,9 +62,12 @@ bool ForceGuideController::setup(const QString &configFilePath) {
 //		createForceSensor();
 		createKinematicSolver();
 
-		return true;
+		ret = true;
 	}
-	return false;
+
+	m_controlThread = std::thread(&ForceGuideController::guideControlThread, this);
+
+	return ret;
 }
 
 
@@ -119,6 +127,44 @@ bool ForceGuideController::createKinematicSolver() {
 	return ret;
 }
 
+void ForceGuideController::guideControlThread() {
+	while (true)
+	{
+		if (m_bcontrolStart) {
+			if (m_bRobotConnect)//&&m_bSensorConnect)
+			{
+				if (m_ptrKinematicSolver) {
+					std::vector<double> pos;
+					m_ptrKinematicSolver->jntToCart(m_curQ, pos);
+
+					int dir = 1;
+					if (pos[2] < 0.2)
+						dir = 1;
+					else if (pos[2] > 0.4)
+						dir = -1;
+
+					pos[2] += 0.01*(dir);
+
+					std::vector<double> targetQ;
+					m_ptrKinematicSolver->cartToJnt(m_curQ, pos, targetQ);
+
+					m_ptrRobot->move(targetQ);
+
+					//sleep for loop
+					std::chrono::milliseconds timespan(10); 
+					std::this_thread::sleep_for(timespan);
+
+				}
+				else {
+					COBOT_LOG.error() << "kinematic solver not created!";
+				}
+			}
+			else {
+				COBOT_LOG.error() << "robot not connected!";
+			}
+		}
+	}
+}
 
 void ForceGuideController::startRobot() {
 	if (m_ptrRobot) {
@@ -137,8 +183,24 @@ void ForceGuideController::stopRobot() {
 
 
 bool ForceGuideController::start() {
+	//test
+	std::vector<double> src;
+	for (int i = 0; i < m_joint_num; ++i)
+		src.push_back(0);
+	src[0] = 2.04;
+	src[1] = 1.25;
+	src[2] = 1.02;
+	src[3] = 1.02;
+	src[4] = 1.25;
+	src[5] = 1.30;
+	std::vector<double> pos;
+	m_ptrKinematicSolver->jntToCart(src, pos);
+	std::vector<double> result;
+	m_ptrKinematicSolver->cartToJnt(src, pos, result);
+
 	bool ret = true;
 	startRobot();
+	m_bcontrolStart = true;
 	return ret;
 }
 void ForceGuideController::pause() {
@@ -146,20 +208,38 @@ void ForceGuideController::pause() {
 
 void ForceGuideController::stop() {
 	stopRobot();
+	m_bcontrolStart = false;
 }
 
 void ForceGuideController::onArmRobotConnect() {
+	m_bRobotConnect = true;
 	COBOT_LOG.info() << "Robot connect";
 }
 
 void ForceGuideController::onArmRobotDisconnect() {
+	m_bRobotConnect = false;
 	COBOT_LOG.info() << "Robot disconnect";
 }
 
 void ForceGuideController::onArmRobotStatusUpdate(const ArmRobotStatusPtr& ptrRobotStatus) {
+	if (ptrRobotStatus->q_actual.size() != m_joint_num) {
+		COBOT_LOG.error() << "actural joint count not equal with value from config.";
+		return;
+	}
 
+	m_curQ = ptrRobotStatus->q_actual;
 
-	COBOT_LOG.info() << "Robot state update";
+	//std::vector<double> pos;
+	//m_ptrKinematicSolver->jntToCart(m_curQ, pos);
+
+	//COBOT_LOG.info() << "Robot state update: "
+	//	<< "X," << pos[0] << ";"
+	//	<< "Y," << pos[1] << ";"
+	//	<< "Z," << pos[2] << ";"
+	//	<< "r," << pos[3] << ";"
+	//	<< "p," << pos[4] << ";"
+	//	<< "y," << pos[5] << ";"
+	//	<<".";
 }
 
 
