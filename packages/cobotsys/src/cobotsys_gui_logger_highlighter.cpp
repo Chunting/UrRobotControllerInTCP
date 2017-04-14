@@ -41,7 +41,8 @@ void gui::LoggerHighlighter::loadDefaultLoggerStyle(gui::LoggerHighlighter* high
         highlighter->getFormat(s).entry.setForeground(Qt::darkYellow);
         highlighter->getFormat(s).entry.setFontWeight(QFont::Bold);
         highlighter->getFormat(s).entry.setFontItalic(true);
-        highlighter->getFormat(s).text.setForeground(Qt::darkYellow);
+        highlighter->getFormat(s).text.setForeground(QColor(0xfbb11700));
+        highlighter->getFormat(s).text.setFontWeight(QFont::Bold);
     };
 
     auto set_success = [=](const QString& s) {
