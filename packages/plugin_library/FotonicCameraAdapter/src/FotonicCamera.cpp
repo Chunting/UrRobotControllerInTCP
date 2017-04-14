@@ -23,6 +23,10 @@ FotonicCamera::~FotonicCamera() {
     OpenNI::shutdown();
 }
 
+bool FotonicCamera::isOpened() const {
+    return m_device.isValid();
+}
+
 bool FotonicCamera::open(int deviceId) {
     if (m_deviceList.getSize() <= deviceId) {
         COBOT_LOG.info() << "The Device " <<  deviceId << " is not find...";

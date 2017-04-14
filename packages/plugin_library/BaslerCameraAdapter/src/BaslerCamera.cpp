@@ -17,6 +17,13 @@ BaslerCamera::~BaslerCamera() {
     close();
 }
 
+bool BaslerCamera::isOpened() const {
+    if (m_camera && m_camera->IsOpen())
+        return true;
+    else
+        return false;
+}
+
 bool BaslerCamera::open(int deviceId) {
     if (m_devices.size() <= deviceId) {
         COBOT_LOG.info() << "The Device " <<  deviceId << " is not find...";

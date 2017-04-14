@@ -38,6 +38,7 @@ public:
     BaslerCamera();
     virtual ~BaslerCamera();
 
+    virtual bool isOpened() const;
     virtual bool open(int deviceId = 0);
     virtual void close(); ///  @note 最好不要在回调函数里调用close函数。
     virtual void attach(const shared_ptr<cobotsys::CameraStreamObserver>& observer);
