@@ -80,7 +80,7 @@ bool FotonicCamera::open(int deviceId) {
         }
     }
 
-    m_device.setImageRegistrationMode(openni::IMAGE_REGISTRATION_DEPTH_TO_COLOR);
+    //m_device.setImageRegistrationMode(openni::IMAGE_REGISTRATION_DEPTH_TO_COLOR);
     return true;
 }
 
@@ -101,6 +101,9 @@ void FotonicCamera::attach(const shared_ptr<cobotsys::CameraStreamObserver>& obs
 
 bool FotonicCamera::capture(int waitMs) {
     std::lock_guard<std::mutex> lock(m_ioMutex);
+
+    if (!m_device.isValid())
+        return false;
 
     VideoFrameRef colorFrame;
     VideoFrameRef depthFrame;
@@ -140,7 +143,7 @@ bool FotonicCamera::capture(int waitMs) {
     COBOT_LOG.info() << "depthFrame---Height:" << depthFrame.getHeight() << "   m_depthframe---Width:" << depthFrame.getWidth() << "   SIZE:" << depthFrame.getDataSize() ;
 
 
-    cobotsys::ImageFrame c_color = {cobotsys::ImageType::Color, raw_depth};
+    cobotsys::ImageFrame c_color = {cobotsys::ImageType::Color, raw_color};
     cobotsys::ImageFrame c_depth = {cobotsys::ImageType::Depth, raw_depth};
 
     cobotsys::CameraFrame streamFrames;

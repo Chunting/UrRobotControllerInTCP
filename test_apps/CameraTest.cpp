@@ -1,10 +1,7 @@
 //
-// Created by eleven on 17-4-13.
+// Created by 于天水 on 17-4-13.
 //
 
-//
-// Created by eleven on 17-4-13.
-//
 #include <cobotsys_abstract_camera.h>
 #include <cobotsys_global_object_factory.h>
 #include "highgui.h"
@@ -18,14 +15,23 @@ class FotonicObserver : public cobotsys::CameraStreamObserver {
             std::cout << "cameraFrame.frames.size()  is 0" << std::endl;
 
         std::cout << "cameraFrame.frames.size()  is " << cameraFrame.frames.size() << std::endl;
-        cvNamedWindow("Test1", CV_WINDOW_AUTOSIZE);
-//        for (int i = 0; i < cameraFrame.frames.size(); i++) {
+
+        for (int i = 0; i < cameraFrame.frames.size(); i++) {
             //    DepthPixel* arr = (DepthPixel*)depthFrame.getData();
-    for (int i = 0; i < 640*480; i++)
-        std::cout << i <<":" << cameraFrame.frames[1].data << "  ";
-//            cvShowImage("Test1", &cameraFrame.frames[i].data);
-//            cvWaitKey();
-//        }
+            if (cameraFrame.frames[i].type == cobotsys::ImageType::Depth) {
+                cv::Mat mat = cameraFrame.frames[i].data;
+                cv::imshow("Depth", 64 * mat);
+                cv::waitKey(1);
+            }
+            if (cameraFrame.frames[i].type == cobotsys::ImageType::Color) {
+
+                cv::Mat mat = cameraFrame.frames[i].data;
+                cv::Mat cImageBGR;
+                cv::cvtColor(mat, cImageBGR, CV_RGB2BGR);
+                cv::imshow("Color", cImageBGR);
+                cv::waitKey(1);
+            }
+        }
     }
 };
 
@@ -59,8 +65,11 @@ int main(int argc, char **argv)
 
             std::shared_ptr<FotonicObserver> fo = std::make_shared<FotonicObserver>();
             m_camera->attach(fo);
+            cv::namedWindow("Depth", CV_WINDOW_AUTOSIZE);
+            cv::namedWindow("Color", CV_WINDOW_AUTOSIZE);
+            while (1)
+                m_camera->capture(1000);
 
-            m_camera->capture(1000);
 
             m_camera->close();
         }

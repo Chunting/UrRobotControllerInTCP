@@ -30,7 +30,7 @@ if (Pylon_FOUND)
 
     target_link_libraries(${PROJECT_NAME}
             cobotsys
-            ${Pylon_LIBRARY}
+            ${Pylon_LIBRARIES}
             ${OpenCL_LIBRARY}
             ${OpenCV_LIBRARIES})
 
