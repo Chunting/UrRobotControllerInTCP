@@ -181,6 +181,12 @@ int ChainIkSolverPos_LMA::CartToJnt(const KDL::JntArray& q_init, const KDL::Fram
 	Eigen::Matrix<ScalarType,6,1> delta_pos;
 	Eigen::Matrix<ScalarType,6,1> delta_pos_new;
 
+	//Sail Debug
+	//if (display_information) {
+	//	std::cout 	<< "  weighted jac   = \n" << jac << "\n"
+	//		<< "  proj. on grad. = " << grad << "\n";
+	//	std::cout << std::endl;
+	//}
 
 	q=q_init.data.cast<ScalarType>();
 	compute_fwdpos(q);
@@ -193,20 +199,68 @@ int ChainIkSolverPos_LMA::CartToJnt(const KDL::JntArray& q_init, const KDL::Fram
 		lastDifference  = delta_pos.norm();
 		lastTransDiff   = delta_pos.topRows(3).norm();
 		lastRotDiff     = delta_pos.bottomRows(3).norm();
+		//Sail Debug
+		//if (display_information) {
+		//	std::cout << "------- iteration " << 204 << " ----------------\n"
+		//		<< "  q              = " << q.transpose() << "\n"
+		//		<< "  weighted jac   = \n" << jac << "\n"
+		//		<< "  proj. on grad. = " << grad << "\n";
+		//	std::cout << std::endl;
+		//}
 		svd.compute(jac);
+		////Sail Debug
+		//if (display_information) {
+		//	std::cout << "------- iteration " << 213 << " ----------------\n"
+		//		<< "  q              = " << q.transpose() << "\n"
+		//		<< "  weighted jac   = \n" << jac << "\n"
+		//		<< "  eigenvalues    = " << svd.singularValues().transpose() << "\n"
+		//		<< "  proj. on grad. = " << grad << "\n";
+		//	std::cout << std::endl;
+		//}
 		original_Aii    = svd.singularValues();
 		lastSV          = svd.singularValues();
 		q_out.data      = q.cast<double>();
 		return (error = E_NOERROR);
 	}
+	////Sail Debug
+	//if (display_information) {
+	//	std::cout << "------- iteration " << 227 << " ----------------\n"
+	//		<< "  q              = " << q.transpose() << "\n"
+	//		<< "  weighted jac   = \n" << jac << "\n"
+	//		<< "  proj. on grad. = " << grad << "\n";
+	//	std::cout << std::endl;
+	//}
 	compute_jacobian(q);
 	jac = L.asDiagonal()*jac;
-
+	//Sail Debug
+	//if (display_information) {
+	//	std::cout << "------- iteration " << 237 << " ----------------\n"
+	//		<< "  q              = " << q.transpose() << "\n"
+	//		<< "  weighted jac   = \n" << jac << "\n"
+	//		<< "  proj. on grad. = " << grad << "\n";
+	//	std::cout << std::endl;
+	//}
 	lambda = tau;
 	double dnorm = 1;
 	for (unsigned int i=0;i<maxiter;++i) {
-
+		//Sail Debug
+		//if (display_information) {
+		//	std::cout << "------- iteration 248 " << i << " ----------------\n"
+		//		<< "  q              = " << q.transpose() << "\n"
+		//		<< "  weighted jac   = \n" << jac << "\n"
+		//		<< "  proj. on grad. = " << grad << "\n";
+		//	std::cout << std::endl;
+		//}
 		svd.compute(jac);
+		//Sail Debug
+		//if (display_information) {
+		//	std::cout << "------- iteration " << i << " ----------------\n"
+		//		<< "  q              = " << q.transpose() << "\n"
+		//		<< "  weighted jac   = \n" << jac << "\n"
+		//		<< "  eigenvalues    = " << svd.singularValues().transpose() << "\n"
+		//		<< "  proj. on grad. = " << grad << "\n";
+		//	std::cout << std::endl;
+		//}
 		original_Aii = svd.singularValues();
 		for (unsigned int j=0;j<original_Aii.rows();++j) {
 			original_Aii(j) = original_Aii(j)/( original_Aii(j)*original_Aii(j)+lambda);
@@ -215,6 +269,17 @@ int ChainIkSolverPos_LMA::CartToJnt(const KDL::JntArray& q_init, const KDL::Fram
 		tmp = svd.matrixU().transpose()*delta_pos;
 		tmp = original_Aii.cwiseProduct(tmp);
 		diffq = svd.matrixV()*tmp;
+		//Sail Debug
+		//if (display_information) {
+		//	std::cout << "------- iteration " << i << " ----------------\n"
+		//		<< "  q              = " << q.transpose() << "\n"
+		//		<< "  weighted jac   = \n" << jac << "\n"
+		//		<< "  eigenvalues    = " << svd.singularValues().transpose() << "\n"
+		//		<< "  difference     = " << delta_pos.transpose() << "\n"
+		//		<< "  difference norm= " << delta_pos_norm << "\n"
+		//		<< "  proj. on grad. = " << grad << "\n";
+		//	std::cout << std::endl;
+		//}
 		grad = jac.transpose()*delta_pos;
 		if (display_information) {
 			std::cout << "------- iteration " << i << " ----------------\n"

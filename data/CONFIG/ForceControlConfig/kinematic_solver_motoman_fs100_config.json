@@ -1,0 +1,246 @@
+{
+  "_comment": "运动学求解器配置文件；主要信息为机器人基座相对于世界坐标原点，6自由度机器人每个臂之间以及末端执行器与机器人末段之间的姿态关系；同时，还包括每个运动关节的限位信息，最大速度，最大输出力矩信息。数据的输入暂时不接受参数化输入；不包含动力学参数信息，比如每个臂的质量，转动惯量，关节上的摩擦力，关节阻尼等信息。",
+  "description": "北京力控拖动应用Chain描述",
+  "version": "v1.0",
+  "kinematic_solver_factory": "KinematicSolverFactory, Ver 1.0",
+  "unit": {
+    "angle": "degree",
+    "length": "meter",
+    "velocity": "meter per second",
+    "force": "Newton"
+  },
+  "chain": [
+    {
+      "name": "base",
+      "frame": {
+        "xyz": [
+          0,
+          0,
+          0
+        ],
+        "rpy": [
+          0,
+          0,
+          0
+        ]
+      },
+      "rotation": {
+        "axis_xyz": [
+          0,
+          0,
+          0
+        ],
+        "limit": {
+          "_comment": "lower:角度位置下限；upper：角度位置上限；effort：输出力矩上限；velocity：速度上限",
+          "lower": 0,
+          "upper": 0,
+          "effort": 0,
+          "velocity": 0
+        }
+      }
+    },
+    {
+      "name": "joint_s",
+      "frame": {
+        "xyz": [
+          0,
+          0,
+          0.199
+        ],
+        "rpy": [
+          0,
+          0,
+          0
+        ]
+      },
+      "rotation": {
+        "axis_xyz": [
+          0,
+          0,
+          1
+        ],
+        "limit": {
+          "_comment": "lower:角度位置下限；upper：角度位置上限；effort：输出力矩上限；velocity：速度上限",
+          "lower": -2.9671,
+          "upper": 2.9671,
+          "effort": 100,
+          "velocity": 2.96
+        }
+      }
+    },
+    {
+      "name": "joint_l",
+      "frame": {
+        "xyz": [
+          0.088,
+          0,
+          0.131
+        ],
+        "rpy": [
+          0,
+          0,
+          0
+        ]
+      },
+      "rotation": {
+        "axis_xyz": [
+          0,
+          1,
+          0
+        ],
+        "limit": {
+          "_comment": "lower:角度位置下限；upper：角度位置上限；effort：输出力矩上限；velocity：速度上限",
+          "lower": -1.1345,
+          "upper": 1,
+          "effort": 100,
+          "velocity": 2.96
+        }
+      }
+    },
+    {
+      "name": "joint_u",
+      "frame": {
+        "xyz": [
+          0,
+          0,
+          0.31
+        ],
+        "rpy": [
+          0,
+          0,
+          0
+        ]
+      },
+      "rotation": {
+        "axis_xyz": [
+          0,
+          -1,
+          0
+        ],
+        "limit": {
+          "_comment": "lower:角度位置下限；upper：角度位置上限；effort：输出力矩上限；velocity：速度上限",
+          "lower": -1.0122,
+          "upper": 3.2218,
+          "effort": 100,
+          "velocity": 2.96
+        }
+      }
+    },
+    {
+      "name": "joint_r",
+      "frame": {
+        "xyz": [
+          0.0715,
+          0,
+          0.0399
+        ],
+        "rpy": [
+          0,
+          0,
+          0
+        ]
+      },
+      "rotation": {
+        "axis_xyz": [
+          -1,
+          0,
+          0
+        ],
+        "limit": {
+          "_comment": "lower:角度位置下限；upper：角度位置上限；effort：输出力矩上限；velocity：速度上限",
+          "lower": -1.58,
+          "upper": 1.58,
+          "effort": 100,
+          "velocity": 3.48
+        }
+      }
+    },
+    {
+      "name": "joint_b",
+      "frame": {
+        "xyz": [
+          0.2335,
+          0,
+          0
+        ],
+        "rpy": [
+          0,
+          0,
+          0
+        ]
+      },
+      "rotation": {
+        "axis_xyz": [
+          0,
+          -1,
+          0
+        ],
+        "limit": {
+          "_comment": "lower:角度位置下限；upper：角度位置上限；effort：输出力矩上限；velocity：速度上限",
+          "lower": -2.1817,
+          "upper": 2.1817,
+          "effort": 100,
+          "velocity": 3.48
+        }
+      }
+    },
+    {
+      "name": "joint_t",
+      "frame": {
+        "xyz": [
+          0.08,
+          0,
+          0
+        ],
+        "rpy": [
+          0,
+          0,
+          0
+        ]
+      },
+      "rotation": {
+        "axis_xyz": [
+          -1,
+          0,
+          0
+        ],
+        "limit": {
+          "_comment": "lower:角度位置下限；upper：角度位置上限；effort：输出力矩上限；velocity：速度上限",
+          "lower": -3.14159,
+          "upper": 3.14159,
+          "effort": 100,
+          "velocity": 6.97
+        }
+      }
+    },
+    {
+      "name": "end_effector",
+      "frame": {
+        "xyz": [
+          0,
+          0,
+          0
+        ],
+        "rpy": [
+          0,
+          0,
+          0
+        ]
+      },
+      "rotation": {
+        "axis_xyz": [
+          0,
+          0,
+          0
+        ],
+        "limit": {
+          "_comment": "lower:角度位置下限；upper：角度位置上限；effort：输出力矩上限；velocity：速度上限",
+          "lower": 0,
+          "upper": 0,
+          "effort": 0,
+          "velocity": 0
+        }
+      }
+    }
+  ]
+}

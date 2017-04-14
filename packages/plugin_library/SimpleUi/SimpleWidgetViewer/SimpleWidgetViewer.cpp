@@ -54,6 +54,11 @@ void SimpleWidgetViewer::refreshWidgetList() {
                 ui.comboBox->addItem(text, data);
             }
         }
+		//Sail for fast select.
+		int index = ui.comboBox->findText("SimpleUiFactory, Ver 1.0 - RobotXyzWidget");
+		if (index > 0) {
+			ui.comboBox->setCurrentIndex(index);
+		}
     }
     COBOT_LOG.addFilter(this, [=](const std::string& m) { appendText(m); });
 }

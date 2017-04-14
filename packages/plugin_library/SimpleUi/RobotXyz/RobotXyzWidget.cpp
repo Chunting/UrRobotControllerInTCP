@@ -17,6 +17,9 @@ RobotXyzWidget::RobotXyzWidget() {
 	connect(ui.btnCopy, &QPushButton::released, this, &RobotXyzWidget::copyCurXyzRpy);
 	connect(ui.btnGo, &QPushButton::released, this, &RobotXyzWidget::onGoCommand);
 
+	connect(ui.btnCopyJoint, &QPushButton::released, this, &RobotXyzWidget::copyJoint);
+	connect(ui.btnGoJoint, &QPushButton::released, this, &RobotXyzWidget::goJoint);
+
     connect(this, &RobotXyzWidget::jointValueUpdated, this, &RobotXyzWidget::onJointUpdate);
 
     m_dsbJointVals.push_back(ui.dsbRealJoint_1);
@@ -45,6 +48,8 @@ void RobotXyzWidget::stop() {
 
 
 bool RobotXyzWidget::setup(const QString& configFilePath) {
+	initUiComboList();
+	createArmRobotDriver();
     return true;
 }
 
@@ -86,16 +91,18 @@ void RobotXyzWidget::initUiComboList() {
 
 
 void RobotXyzWidget::createArmRobotDriver() {
+	createSolver();
     if (!GlobalObjectFactory::instance()) return;
     if (ui.cboArmRobotList->count() == 0) {
         COBOT_LOG.error() << "No robot driver plugin exist!";
         return;
     }
 
-    QString objConfig = QFileDialog::getOpenFileName(this,
-        tr("Get Robot Config JSON file ..."),
-        QString(FileFinder::getPreDefPath().c_str()),
-        tr("JSON files (*.JSON *.json)"));
+    //QString objConfig = QFileDialog::getOpenFileName(this,
+    //    tr("Get Robot Config JSON file ..."),
+    //    QString(FileFinder::getPreDefPath().c_str()),
+    //    tr("JSON files (*.JSON *.json)"));
+	QString objConfig = FileFinder::find("CONFIG/ForceControlConfig/ur_force_guide_robot_181_config.json").c_str();
     if (objConfig.isEmpty()) {
         COBOT_LOG.notice() << "robot config is empty, robot create fail.";
         return;
@@ -130,10 +137,11 @@ void RobotXyzWidget::createSolver() {
         return;
     }
 
-    QString objConfig = QFileDialog::getOpenFileName(this,
-        tr("Get Solver Config JSON file ..."),
-        QString(FileFinder::getPreDefPath().c_str()),
-        tr("JSON files (*.JSON *.json)"));
+    //QString objConfig = QFileDialog::getOpenFileName(this,
+    //    tr("Get Solver Config JSON file ..."),
+    //    QString(FileFinder::getPreDefPath().c_str()),
+    //    tr("JSON files (*.JSON *.json)"));
+	QString objConfig = FileFinder::find("CONFIG/ForceControlConfig/kinematic_solver_ur3_config.json").c_str();
     if (objConfig.isEmpty()) {
         COBOT_LOG.notice() << "robot config is empty, robot create fail.";
         return;
@@ -193,10 +201,33 @@ void RobotXyzWidget::onJointUpdate() {
         ui.dsbActual_X->setValue(xyzrpy[0] * 1000);
         ui.dsbActual_Y->setValue(xyzrpy[1] * 1000);
         ui.dsbActual_Z->setValue(xyzrpy[2] * 1000);
-        ui.dsbActual_R->setValue(xyzrpy[3] / M_PI * 180);
-        ui.dsbActual_P->setValue(xyzrpy[4] / M_PI * 180);
-        ui.dsbActual_y->setValue(xyzrpy[5] / M_PI * 180);
+        //ui.dsbActual_R->setValue(xyzrpy[3] / M_PI * 180);
+        //ui.dsbActual_P->setValue(xyzrpy[4] / M_PI * 180);
+        //ui.dsbActual_y->setValue(xyzrpy[5] / M_PI * 180);
+		ui.dsbActual_R->setValue(xyzrpy[3] *1000);
+		ui.dsbActual_P->setValue(xyzrpy[4] * 1000);
+		ui.dsbActual_y->setValue(xyzrpy[5] * 1000);
     }
+}
+
+void RobotXyzWidget::copyJoint() {
+	ui.dsbCmd_1->setValue(ui.dsbRealJoint_1->value());
+	ui.dsbCmd_2->setValue(ui.dsbRealJoint_2->value());
+	ui.dsbCmd_3->setValue(ui.dsbRealJoint_3->value());
+	ui.dsbCmd_4->setValue(ui.dsbRealJoint_4->value());
+	ui.dsbCmd_5->setValue(ui.dsbRealJoint_5->value());
+	ui.dsbCmd_6->setValue(ui.dsbRealJoint_6->value());
+}
+
+void RobotXyzWidget::goJoint() {
+	std::vector<double> cmd;
+	cmd.push_back(ui.dsbCmd_1->value() * M_PI / 180);
+	cmd.push_back(ui.dsbCmd_2->value() * M_PI / 180);
+	cmd.push_back(ui.dsbCmd_3->value() * M_PI / 180);
+	cmd.push_back(ui.dsbCmd_4->value() * M_PI / 180);
+	cmd.push_back(ui.dsbCmd_5->value() * M_PI / 180);
+	cmd.push_back(ui.dsbCmd_6->value() * M_PI / 180);
+	m_ptrRobot->move(cmd);
 }
 
 void RobotXyzWidget::copyCurXyzRpy() {
@@ -215,10 +246,12 @@ void RobotXyzWidget::onGoCommand() {
     cmd.push_back(ui.dsbCmd_1->value() / 1000);
     cmd.push_back(ui.dsbCmd_2->value() / 1000);
     cmd.push_back(ui.dsbCmd_3->value() / 1000);
-    cmd.push_back(ui.dsbCmd_4->value() / 180 * M_PI);
+ /*   cmd.push_back(ui.dsbCmd_4->value() / 180 * M_PI);
     cmd.push_back(ui.dsbCmd_5->value() / 180 * M_PI);
-    cmd.push_back(ui.dsbCmd_6->value() / 180 * M_PI);
-
+    cmd.push_back(ui.dsbCmd_6->value() / 180 * M_PI);*/
+	cmd.push_back(ui.dsbCmd_4->value() / 1000);
+	cmd.push_back(ui.dsbCmd_5->value() / 1000);
+	cmd.push_back(ui.dsbCmd_6->value() / 1000);
     // TODO here calc cmd to joints and then move
     //m_ptrSolver->
 
