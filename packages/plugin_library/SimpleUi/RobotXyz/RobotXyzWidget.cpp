@@ -102,7 +102,7 @@ void RobotXyzWidget::createArmRobotDriver() {
     //    tr("Get Robot Config JSON file ..."),
     //    QString(FileFinder::getPreDefPath().c_str()),
     //    tr("JSON files (*.JSON *.json)"));
-	QString objConfig = FileFinder::find("CONFIG/ForceControlConfig/ur_force_guide_robot_181_config.json").c_str();
+	QString objConfig = FileFinder::find("CONFIG/UrRobotConfig/ur3_180_config.json").c_str();
     if (objConfig.isEmpty()) {
         COBOT_LOG.notice() << "robot config is empty, robot create fail.";
         return;
@@ -141,7 +141,7 @@ void RobotXyzWidget::createSolver() {
     //    tr("Get Solver Config JSON file ..."),
     //    QString(FileFinder::getPreDefPath().c_str()),
     //    tr("JSON files (*.JSON *.json)"));
-	QString objConfig = FileFinder::find("CONFIG/ForceControlConfig/kinematic_solver_ur3_config.json").c_str();
+	QString objConfig = FileFinder::find("CONFIG/UrRobotConfig/ur3_180_config.json").c_str();
     if (objConfig.isEmpty()) {
         COBOT_LOG.notice() << "robot config is empty, robot create fail.";
         return;
@@ -201,12 +201,9 @@ void RobotXyzWidget::onJointUpdate() {
         ui.dsbActual_X->setValue(xyzrpy[0] * 1000);
         ui.dsbActual_Y->setValue(xyzrpy[1] * 1000);
         ui.dsbActual_Z->setValue(xyzrpy[2] * 1000);
-        //ui.dsbActual_R->setValue(xyzrpy[3] / M_PI * 180);
-        //ui.dsbActual_P->setValue(xyzrpy[4] / M_PI * 180);
-        //ui.dsbActual_y->setValue(xyzrpy[5] / M_PI * 180);
-		ui.dsbActual_R->setValue(xyzrpy[3] *1000);
-		ui.dsbActual_P->setValue(xyzrpy[4] * 1000);
-		ui.dsbActual_y->setValue(xyzrpy[5] * 1000);
+        ui.dsbActual_R->setValue(xyzrpy[3] / M_PI * 180);
+        ui.dsbActual_P->setValue(xyzrpy[4] / M_PI * 180);
+        ui.dsbActual_y->setValue(xyzrpy[5] / M_PI * 180);
     }
 }
 
@@ -246,16 +243,10 @@ void RobotXyzWidget::onGoCommand() {
     cmd.push_back(ui.dsbCmd_1->value() / 1000);
     cmd.push_back(ui.dsbCmd_2->value() / 1000);
     cmd.push_back(ui.dsbCmd_3->value() / 1000);
- /*   cmd.push_back(ui.dsbCmd_4->value() / 180 * M_PI);
+	cmd.push_back(ui.dsbCmd_4->value() / 180 * M_PI);
     cmd.push_back(ui.dsbCmd_5->value() / 180 * M_PI);
-    cmd.push_back(ui.dsbCmd_6->value() / 180 * M_PI);*/
-	cmd.push_back(ui.dsbCmd_4->value() / 1000);
-	cmd.push_back(ui.dsbCmd_5->value() / 1000);
-	cmd.push_back(ui.dsbCmd_6->value() / 1000);
-    // TODO here calc cmd to joints and then move
-    //m_ptrSolver->
+    cmd.push_back(ui.dsbCmd_6->value() / 180 * M_PI);
 
-	// TODO here forward-kinxxx
 	m_ptrSolver->cartToJnt(m_jointValues, cmd, jcmd);
 
 

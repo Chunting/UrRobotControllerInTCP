@@ -35,16 +35,15 @@ public:
 	* @retval false 无解
 	*/
 	//virtual bool CartToJnt(const vector<double>& currentJoint, const Eigen::Vector3f xyz, const Eigen::Vector3f rpy, vector<double>& targetJoint);
-	virtual bool cartToJnt(const Eigen::VectorXd& initialJoint, const Eigen::Affine3d& targetPos, Eigen::VectorXd& targetJoint);
-	virtual bool jntToCart(const Eigen::VectorXd& targetJoint, Eigen::Affine3d& targetPos);
+	virtual int cartToJnt(const Eigen::VectorXd& initialJoint, const Eigen::Affine3d& targetPos, Eigen::VectorXd& targetJoint);
+	virtual int jntToCart(const Eigen::VectorXd& targetJoint, Eigen::Affine3d& targetPos);
 
-	virtual bool cartToJnt(const std::vector<double>& initialJoint, const std::vector<double>& targetPos, std::vector<double>& targetJoint);
-	virtual bool jntToCart(const std::vector<double>& targetJoint, std::vector<double>& targetPos);
-	KDL::Chain UR3Chain();
+	virtual int cartToJnt(const std::vector<double>& initialJoint, const std::vector<double>& targetPos, std::vector<double>& targetJoint);
+	virtual int jntToCart(const std::vector<double>& targetJoint, std::vector<double>& targetPos);
+	//KDL::Chain UR3Chain();
     virtual bool setup(const QString& configFilePath="CONFIG/force_control/kinematic_solver_config.json");
 
 protected:
-    KDL::Segment segmentParser();
 	QString m_defaultSolverInfo;
     KDL::Chain m_robot_chain;
     std::vector<JointLimits> m_robot_joint_limits;

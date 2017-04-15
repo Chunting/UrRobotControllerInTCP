@@ -1,0 +1,106 @@
+{
+  "_comment": "有可能要需要添加机器人基座和末端执行器信息",
+  "description": "Universal Robot - UR3",
+  "version": "v1.1",
+  "robot_ip": "192.168.1.181",
+  "robot_factory": "URRealTimeDriverFactory, Ver 1.0",
+  "robot_type": "URRealTimeDriver",
+  "servoj_time": 0.008,
+  "servoj_lookahead": 0.15,
+  "servoj_gain": 200,
+  "step_angle": 1,
+  "range_low": -30,
+  "range_high": 30,
+  "param": [
+    {
+      "dh": {
+        "a": 0,
+        "d": 0.1519,
+        "alpha": 1.570796327,
+        "theta": 0
+      },
+      "limits": {
+        "_comment": "lower:角度位置下限；upper：角度位置上限；effort：输出力矩上限；velocity：速度上限",
+        "lower": -6.283185307179586,
+        "upper": 6.283185307179586,
+        "effort": 330,
+        "velocity": 2.16
+      }
+    },
+    {
+      "dh": {
+        "a": -0.24365,
+        "d": 0,
+        "alpha": 0,
+        "theta": 0
+      },
+      "limits": {
+        "_comment": "lower:角度位置下限；upper：角度位置上限；effort：输出力矩上限；velocity：速度上限",
+        "lower": -6.283185307179586,
+        "upper": 6.283185307179586,
+        "effort": 330,
+        "velocity": 2.16
+      }
+    },
+    {
+      "dh": {
+        "a": -0.21325,
+        "d": 0,
+        "alpha": 0,
+        "theta": 0
+      },
+      "limits": {
+        "_comment": "lower:角度位置下限；upper：角度位置上限；effort：输出力矩上限；velocity：速度上限",
+        "lower": -6.283185307179586,
+        "upper": 6.283185307179586,
+        "effort": 150,
+        "velocity": 3.15
+      }
+    },
+    {
+      "dh": {
+        "a": 0,
+        "d": 0.11235,
+        "alpha": 1.570796327,
+        "theta": 0
+      },
+      "limits": {
+        "_comment": "lower:角度位置下限；upper：角度位置上限；effort：输出力矩上限；velocity：速度上限",
+        "lower": -6.283185307179586,
+        "upper": 6.283185307179586,
+        "effort": 54,
+        "velocity": 3.2
+      }
+    },
+    {
+      "dh": {
+        "a": 0,
+        "d": 0.08535,
+        "alpha": -1.570796327,
+        "theta": 0
+      },
+      "limits": {
+        "_comment": "lower:角度位置下限；upper：角度位置上限；effort：输出力矩上限；velocity：速度上限",
+        "lower": -6.283185307179586,
+        "upper": 6.283185307179586,
+        "effort": 54,
+        "velocity": 3.2
+      }
+    },
+    {
+      "dh": {
+        "a": 0,
+        "d": 0.0819,
+        "alpha": 0,
+        "theta": 0
+      },
+      "limits": {
+        "_comment": "lower:角度位置下限；upper：角度位置上限；effort：输出力矩上限；velocity：速度上限",
+        "lower": -6.283185307179586,
+        "upper": 6.283185307179586,
+        "effort": 54,
+        "velocity": 3.2
+      }
+    }
+  ]
+}
