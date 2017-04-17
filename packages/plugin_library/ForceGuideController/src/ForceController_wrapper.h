@@ -14,7 +14,7 @@
 #include "ForceController.h"
 using namespace cobotsys;
 
-class ForceController_wrapper : public  AbstractObject,public ForceControllerModelClass {
+class ForceController_wrapper : public  AbstractObject,public ForceControllerClass {
 public:
 	ForceController_wrapper();
 	virtual ~ForceController_wrapper();
