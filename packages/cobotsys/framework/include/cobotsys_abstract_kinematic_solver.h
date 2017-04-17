@@ -40,6 +40,24 @@ public:
 	*/
 	virtual int jntToCart(const Eigen::VectorXd& targetJoint, Eigen::Affine3d& targetPos)=0;
 	virtual int jntToCart(const std::vector<double>& targetJoint, std::vector<double>& targetPos)=0;
+
+	/**
+	* 用于将世界坐标系中的3维向量转化为机器人末端坐标系中的3维向量。
+	* @param[in] jointArray 机器人的状态(关节角)
+	* @param[in] vector_world 世界坐标系下3维向量
+	* @param[out] vector_ee 机器人末端坐标系(相对于基坐标)中的3维向量。
+	* @retval 0 求解成功，其余为错误码
+	*/
+	virtual int vector_WorldToEE(const Eigen::VectorXd& jointArray, const Eigen::Vector3d& vector_world, Eigen::Vector3d& vector_ee)=0;
+
+	/**
+	* 用于将机器人末端坐标系中的姿态转化为世界坐标系中的姿态。
+	* @param[in] jointArray 机器人的状态(关节角)
+	* @param[in] vector_world 世界坐标系下3维向量
+	* @param[out] vector_ee 机器人末端坐标系(相对于基坐标)中的3维向量。
+	* @retval 0 求解成功，其余为错误码
+	*/
+	virtual int pose_EEToWorld(const Eigen::VectorXd& jointArray, const std::vector<double>& pose_ee, std::vector<double>& pose_world)=0;
 };
 /**
  * @}
