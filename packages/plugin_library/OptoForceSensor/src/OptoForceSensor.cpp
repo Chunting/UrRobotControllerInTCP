@@ -7,14 +7,19 @@
 #include <extra2.h>
 #include <algorithm>
 
-OptoForceSensor::OptoForceSensor() : QObject(nullptr) {
-	m_isWatcherRunning = false;
-	m_isStarted = false;
+OptoForceSensor::OptoForceSensor() :
+	QObject(nullptr),
+	m_upd_driver(nullptr),
+	m_isWatcherRunning(false),
+	m_isStarted(false)
+{
+
 }
 
 OptoForceSensor::~OptoForceSensor() {
 	if (m_isWatcherRunning) {
 		m_isWatcherRunning = false;
+		m_rt_msg_cond.notify_all();
 		m_thread.join();
 	}
 }
@@ -37,14 +42,15 @@ bool OptoForceSensor::start() {
 		COBOT_LOG.info() << "Already start, if want restart, stop first";
 		return false;
 	}
-	m_upd_driver = new OptoforceEthernetUDPDriver(m_attr_sensor_ip.c_str());
-	connect(m_upd_driver, &OptoforceEthernetUDPDriver::onConnect, this, &OptoForceSensor::handleDriverReady);
-	connect(m_upd_driver, &OptoforceEthernetUDPDriver::onDisconnect, this, &OptoForceSensor::handleDriverDisconnect);
+	m_upd_driver = new OptoforceEthernetUDPDriver(m_rt_msg_cond, m_attr_sensor_ip.c_str(), m_attr_sensor_frequency);
+	connect(m_upd_driver, &OptoforceEthernetUDPDriver::sensorconnected, this, &OptoForceSensor::handleDriverReady);
+	connect(m_upd_driver, &OptoforceEthernetUDPDriver::sensordisconnected, this, &OptoForceSensor::handleDriverDisconnect);
 	connect(m_upd_driver, &QObject::destroyed, [=](QObject*) { handleDriverDisconnect(); });
 
-	m_upd_driver->setFrequency(m_attr_sensor_frequency);
+	//m_upd_driver->setFrequency(m_attr_sensor_frequency);
 
 	m_upd_driver->startDriver();
+
 	return true;
 }
 
@@ -81,13 +87,13 @@ void OptoForceSensor::sensorDataWatcher() {
 	auto pStatus = std::make_shared<forcesensor::Wrench>();
 
 	while (m_isWatcherRunning) {
-		//m_rt_msg_cond.wait(lck);
+		m_rt_msg_cond.wait(lck);
 
 		// 计算时间间隔
 		auto time_rdy = std::chrono::high_resolution_clock::now();
 		std::chrono::duration<double> time_diff = time_rdy - time_cur; // 时间间隙
 		time_cur = time_rdy;
-		//COBOT_LOG.info() << "Status Updated: " << time_diff.count();
+		COBOT_LOG.info() << "Status Updated: " << time_diff.count();
 
 		// 抓取当前值
 		if (m_mutex.try_lock()) {
@@ -98,7 +104,8 @@ void OptoForceSensor::sensorDataWatcher() {
 			}
 			m_mutex.unlock();
 		}
-
+		//COBOT_LOG.notice() << " wrench:   force: " << pStatus->force.x << "," << pStatus->force.y << "," << pStatus->force.z << "\r\n"
+		//	<< " \t\t\t torque: " << pStatus->torque.x << "," << pStatus->torque.y << "," << pStatus->torque.z << "\r\n";
 
 		// 通知所有观察者，数据已经更新。
 		if (m_isStarted) {
@@ -135,7 +142,7 @@ void OptoForceSensor::handleDriverReady() {
 
 void OptoForceSensor::handleDriverDisconnect() {
 	COBOT_LOG.info() << "OptoForce Sensor Disconnect";
-	stop();
+	m_isStarted = false;
 	notify([=](std::shared_ptr<ForceSensorStreamObserver>& observer) {
 		observer->onForceSensorDisconnect();
 	});

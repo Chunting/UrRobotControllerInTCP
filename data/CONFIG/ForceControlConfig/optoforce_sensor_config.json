@@ -1,7 +1,7 @@
 {
   "sensor_ip": "192.168.1.1",
-  "protocol":  "UDP",
+  "protocol": "UDP",
   "sensor_factory": "OptoForceSensorFactory, Ver 1.0",
   "sensor_type": "OptoForceSensor",
-  "frequency ": 125
+  "frequency": 1000
 }

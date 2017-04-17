@@ -30,15 +30,18 @@ protected:
 
 	bool _setup(const QString& configFilePath);
 
-	void handleDriverReady();
-	void handleDriverDisconnect();
 	void notify(std::function<void(std::shared_ptr<ForceSensorStreamObserver>& observer)> func);
 
+protected Q_SLOTS:
+	void handleDriverReady();
+	void handleDriverDisconnect();
 protected:
 	std::mutex m_mutex;
 	std::thread m_thread;
 	bool m_isWatcherRunning;
 	bool m_isStarted;
+
+	std::condition_variable m_rt_msg_cond;
 
 	std::string m_attr_sensor_ip;
 	std::string m_protocol;
