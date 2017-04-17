@@ -26,15 +26,12 @@ int KinematicSolver::cartToJnt(const std::vector<double>& initialJoint, const st
 	for (int i = 0; i < initialJoint.size(); i++) {
 		q_init(i) = initialJoint.at(i);
 	}
-	KDL::Frame targetFrame(KDL::Rotation::RPY(targetPos[3], targetPos[4], targetPos[5]),KDL::Vector(targetPos[0], targetPos[1], targetPos[2]));
+	KDL::Frame targetFrame = stdVectortoFrame(targetPos);
 	KDL::JntArray q_out(initialJoint.size());
 	int retval;
 	//COBOT_LOG.notice() << "q_init:( " << q_init(0) <<"," << q_init(1) << "," << q_init(2) << "," << q_init(3) << "," << q_init(4) << "," << q_init(5) << ")";
 	//m_ik_solver->display_information = true;
 	retval = m_ik_solver->CartToJnt(q_init, targetFrame, q_out);
-
-	double x, y, z;
-	targetFrame.M.GetRPY(x, y, z);
 
 	switch (retval) {
 	case 0:
@@ -76,16 +73,29 @@ int KinematicSolver::jntToCart(const std::vector<double>& targetJoint, std::vect
 	KDL::Frame targetFrame;
 	int retval;
 	retval=m_fk_solver->JntToCart(targetJnt, targetFrame);
-	double x, y, z;
-	targetFrame.M.GetRPY(x, y, z);
-	targetPos.push_back(targetFrame.p.x());
-	targetPos.push_back(targetFrame.p.y());
-	targetPos.push_back(targetFrame.p.z());
-	targetPos.push_back(x);
-	targetPos.push_back(y);
-	targetPos.push_back(z);
+	targetPos = frameToStdVector(targetFrame);
 	return retval;
-
+}
+std::vector<double> KinematicSolver::frameToStdVector(KDL::Frame frame) {
+	std::vector<double> vec;
+	double x, y, z;
+	frame.M.GetRPY(x, y, z);
+	vec.push_back(frame.p.x());
+	vec.push_back(frame.p.y());
+	vec.push_back(frame.p.z());
+	vec.push_back(x);
+	vec.push_back(y);
+	vec.push_back(z);
+	return vec;
+}
+KDL::Frame KinematicSolver::stdVectortoFrame(std::vector<double> vec) {
+	if (vec.size()!=6) {
+		COBOT_LOG.error() << "std vector size is not 6";
+		return KDL::Frame();
+	}
+	KDL::Frame frame(KDL::Rotation::RPY(vec[3], vec[4], vec[5]), 
+		KDL::Vector(vec[0], vec[1], vec[2]));
+	return frame;
 }
 int KinematicSolver::jntToCart(const Eigen::VectorXd& targetJoint, Eigen::Affine3d& targetPos){
 	KDL::JntArray targetJnt(targetJoint.size());
@@ -136,10 +146,35 @@ int KinematicSolver::cartToJnt(const Eigen::VectorXd& initialJoint, const Eigen:
 	//}
 	return retval;
 }
+int KinematicSolver::vector_WorldToEE(const Eigen::VectorXd& jointArray, const Eigen::Vector3d& vector_world, Eigen::Vector3d& vector_ee) {
+	KDL::JntArray targetJnt(jointArray.size());
+	targetJnt.data = jointArray;
+	KDL::Frame frame_world2ee;
+	int retval;
+	retval = m_fk_solver->JntToCart(targetJnt, frame_world2ee);
+	KDL::Vector vect_w(vector_world.x(), vector_world.y(), vector_world.z());
+	KDL::Vector vect_ee = frame_world2ee.Inverse().M*vect_w;
+	vector_ee = Eigen::Vector3d(vect_ee.x(), vect_ee.y(), vect_ee.z());
+	return retval;
+}
+int KinematicSolver::pose_EEToWorld(const Eigen::VectorXd& jointArray, const std::vector<double>& pose_ee, std::vector<double>& pose_world) {
+	KDL::JntArray targetJnt(jointArray.size());
+	targetJnt.data = jointArray;
+	KDL::Frame frame_ee=stdVectortoFrame(pose_ee);
+	KDL::Frame frame_world2ee;
+	int retval;
+	retval = m_fk_solver->JntToCart(targetJnt, frame_world2ee);
+	KDL::Frame frame_world = frame_world2ee*frame_ee;
+	pose_world.clear();
+	pose_world = frameToStdVector(frame_world);
+	return retval;
+}
 bool KinematicSolver::setup(const QString& configFilePath) {
 	//auto a = FileFinder::find(configFilePath.toStdString);
     //load model from json file.
     //TODO 后期需要json文件的有效性验证功能。
+	//TODO 做base frame到 world frame的segment。
+	//TODO 做joint6到机器人末端执行器的segmen。
 	COBOT_LOG.info() << "configFilePath" <<configFilePath.toStdString();
     QJsonObject json;
     if (loadJson(json, configFilePath)) {	

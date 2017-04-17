@@ -40,15 +40,19 @@ public:
 
 	virtual int cartToJnt(const std::vector<double>& initialJoint, const std::vector<double>& targetPos, std::vector<double>& targetJoint);
 	virtual int jntToCart(const std::vector<double>& targetJoint, std::vector<double>& targetPos);
+
+	virtual int vector_WorldToEE(const Eigen::VectorXd& jointArray, const Eigen::Vector3d& vector_world, Eigen::Vector3d& vector_ee);
+	virtual int pose_EEToWorld(const Eigen::VectorXd& jointArray, const std::vector<double>& pose_ee, std::vector<double>& pose_world);
 	//KDL::Chain UR3Chain();
     virtual bool setup(const QString& configFilePath="CONFIG/force_control/kinematic_solver_config.json");
-
 protected:
 	QString m_defaultSolverInfo;
     KDL::Chain m_robot_chain;
     std::vector<JointLimits> m_robot_joint_limits;
 	KDL::ChainFkSolverPos_recursive* m_fk_solver;
 	KDL::ChainIkSolverPos_LMA* m_ik_solver;
+	std::vector<double> frameToStdVector(KDL::Frame frame);
+	KDL::Frame stdVectortoFrame(std::vector<double> vec);
 };
 
 namespace tf {
