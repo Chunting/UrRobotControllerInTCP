@@ -14,6 +14,7 @@
 #include <QString>
 #include <QTimer>
 #include <cobotsys_data_types.h>
+#include <condition_variable>
 
 class OptoforceEthernetUDPDriver : public QObject {
 	Q_OBJECT
