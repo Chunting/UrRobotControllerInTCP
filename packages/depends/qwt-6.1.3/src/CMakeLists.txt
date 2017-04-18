@@ -6,6 +6,8 @@ set(CMAKE_AUTOUIC ON)
 file(GLOB qwt_HDRS *.h)
 file(GLOB qwt_SRCS *.cpp)
 
+add_definitions(-DQWT_DLL -DQWT_MAKEDLL)
+set(BUILD_SHARED_LIBS TRUE)
 add_library(qwt SHARED ${qwt_SRCS} ${qwt_HDRS})
 target_link_libraries(qwt
         Qt5::Core
