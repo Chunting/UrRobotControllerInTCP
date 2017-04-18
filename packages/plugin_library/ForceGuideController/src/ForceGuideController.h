@@ -12,6 +12,7 @@
 #include <cobotsys_abstract_arm_robot_realtime_driver.h>
 #include <cobotsys_abstract_force_sensor.h>
 #include <cobotsys_abstract_kinematic_solver.h>
+#include <cobotsys_abstract_forcecontrol_solver.h>
 #include <QObject>
 #include <QString>
 
@@ -33,10 +34,16 @@ public:
 	virtual void onForceSensorDisconnect();
 	virtual void onForceSensorDataStreamUpdate(const std::shared_ptr<forcesensor::Wrench>& ptrWrench);
 
+public:
+	virtual void onArmRobotConnect();
+	virtual void onArmRobotDisconnect();
+	virtual void onArmRobotStatusUpdate(const ArmRobotStatusPtr& ptrRobotStatus);
+
 protected:
 	bool createRobot();
 	bool createForceSensor();
 	bool createKinematicSolver();
+	bool createForceControlSolver();
 
 	void startRobot();
 	void stopRobot();
@@ -46,16 +53,9 @@ protected:
 
 	void guideControlThread();
 
-public:
-	virtual void onArmRobotConnect();
-	virtual void onArmRobotDisconnect();
-	virtual void onArmRobotStatusUpdate(const ArmRobotStatusPtr& ptrRobotStatus);
 
 protected:
 	bool m_bcontrolStart;
-
-	int m_joint_num;
-	std::vector<double> m_curQ;
 
 	QString m_robotFactory;
 	QString m_robotType;
@@ -72,7 +72,7 @@ protected:
 	QString m_solverFactory;
 	QString m_solverType;
 	QString m_solverConfig;
-	std::shared_ptr<AbstractObject> m_ptrSolver;
+	std::shared_ptr<AbstractForceControlSolver> m_ptrForceControlSolver;
 
 	QString m_kinematicFactory;
 	QString m_kinematicType;
@@ -83,7 +83,9 @@ protected:
 
 	std::mutex m_mutex;
 	std::thread m_controlThread;
-
+	
+	int m_joint_num;
+	std::vector<double> m_curQ;
 	cobotsys::forcesensor::Wrench m_wrenchData;
 };
 

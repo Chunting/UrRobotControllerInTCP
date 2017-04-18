@@ -1,5 +1,6 @@
 ﻿//
 // Created by longhuicai on 17-4-10.
+// Copyright (c) 2017 Wuhan Collaborative Robot Technology Co.,Ltd. All rights reserved.
 //
 
 #include "ForceGuideController.h"
@@ -9,7 +10,16 @@
 #include <cobotsys_file_finder.h>
 #include <thread>
 
-ForceGuideController::ForceGuideController() : QObject(nullptr) {
+ForceGuideController::ForceGuideController() : 
+	QObject(nullptr),
+	m_ptrRobot(nullptr),
+	m_ptrSensor(nullptr),
+	m_ptrForceControlSolver(nullptr),
+	m_ptrKinematicSolver(nullptr),
+	m_bcontrolStart(false),
+	m_bRobotConnect(false),
+	m_bSensorConnect(false)
+{
 
 }
 
@@ -18,10 +28,6 @@ ForceGuideController::~ForceGuideController() {
 }
 
 bool ForceGuideController::setup(const QString &configFilePath) {
-	m_bcontrolStart = false;
-	m_bRobotConnect = false;
-	m_bSensorConnect = false;
-
 	bool ret = false;
 	QJsonObject json;
 	if (loadJson(json, configFilePath)) {
@@ -62,6 +68,7 @@ bool ForceGuideController::setup(const QString &configFilePath) {
 		createRobot();
 		createForceSensor();
 		createKinematicSolver();
+		createForceControlSolver();
 
 		ret = true;
 	}
@@ -157,11 +164,46 @@ bool ForceGuideController::createKinematicSolver() {
 	return ret;
 }
 
+bool ForceGuideController::createForceControlSolver() {
+	if (!GlobalObjectFactory::instance()) return false;
+
+	if (m_solverConfig.isEmpty()) {
+		m_solverConfig = QFileDialog::getOpenFileName(Q_NULLPTR,
+			tr("Get Force Control Solver Config JSON file ..."),
+			QString(FileFinder::getPreDefPath().c_str()),
+			tr("JSON files (*.JSON *.json)"));
+		if (m_solverConfig.isEmpty())
+			return false;
+	}
+
+	bool ret = false;
+	auto obj = GlobalObjectFactory::instance()->createObject(m_solverFactory, m_solverType);
+	m_ptrForceControlSolver = std::dynamic_pointer_cast<AbstractForceControlSolver>(obj);
+	if (m_ptrForceControlSolver) {
+		if (m_ptrForceControlSolver->setup(m_solverConfig)) {
+			COBOT_LOG.notice() << "Create and setup success";
+			ret = true;
+		}
+		else {
+			m_ptrForceControlSolver.reset();
+		}
+	}
+	return ret;
+}
+
 void ForceGuideController::guideControlThread() {
 	while (true)
 	{
 		if (m_bcontrolStart) {
-			if (m_bRobotConnect)//&&m_bSensorConnect)
+			if (!m_bRobotConnect) {
+				COBOT_LOG.error() << "robot not connected!";
+				continue;
+			}
+			if (!m_bSensorConnect) {
+				COBOT_LOG.error() << "force sensor not connected!";
+				continue;
+			}
+			if (m_ptrForceControlSolver)
 			{
 				if (m_ptrKinematicSolver) {
 					std::vector<double> pos;
@@ -190,7 +232,7 @@ void ForceGuideController::guideControlThread() {
 				}
 			}
 			else {
-				COBOT_LOG.error() << "robot not connected!";
+				COBOT_LOG.error() << "Force control solver not created!";
 			}
 		}
 	}
@@ -227,26 +269,11 @@ void ForceGuideController::stopForceSensor() {
 }
 
 bool ForceGuideController::start() {
+	bool ret = true;
+	//
+	startRobot();
 	//
 	startForceSensor();
-	return true;
-	//test
-	std::vector<double> src;
-	for (int i = 0; i < m_joint_num; ++i)
-		src.push_back(0);
-	src[0] = 2.04;
-	src[1] = 1.25;
-	src[2] = 1.02;
-	src[3] = 1.02;
-	src[4] = 1.25;
-	src[5] = 1.30;
-	std::vector<double> pos;
-	m_ptrKinematicSolver->jntToCart(src, pos);
-	std::vector<double> result;
-	m_ptrKinematicSolver->cartToJnt(src, pos, result);
-
-	bool ret = true;
-	startRobot();
 	m_bcontrolStart = true;
 	return ret;
 }
@@ -254,9 +281,9 @@ void ForceGuideController::pause() {
 }
 
 void ForceGuideController::stop() {
+	m_bcontrolStart = false;
 	stopForceSensor();
 	stopRobot();
-	m_bcontrolStart = false;
 }
 
 void ForceGuideController::onArmRobotConnect() {
@@ -291,9 +318,13 @@ void ForceGuideController::onArmRobotStatusUpdate(const ArmRobotStatusPtr& ptrRo
 }
 
 void ForceGuideController::onForceSensorConnect() {
+    m_bSensorConnect = true;
+	COBOT_LOG.info() << "Force sensor connected";
 }
 
 void ForceGuideController::onForceSensorDisconnect() {
+	m_bSensorConnect = false;
+	COBOT_LOG.info() << "Force sensor disconnected";
 }
 
 void ForceGuideController::onForceSensorDataStreamUpdate(const std::shared_ptr<forcesensor::Wrench>& ptrWrench) {

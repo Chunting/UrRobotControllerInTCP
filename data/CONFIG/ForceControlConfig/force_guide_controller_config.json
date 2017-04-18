@@ -4,7 +4,7 @@
   "robot_object": {
     "factory": "URRealTimeDriverFactory, Ver 1.0",
     "type": "URRealTimeDriver",
-    "config": "CONFIG/ForceControlConfig/ur_force_guide_robot_config.json"
+    "config": "CONFIG/UrRobotConfig/ur3_181_config.json"
   },
   "sensor_object": {
     "factory": "OptoForceSensorFactory, Ver 1.0",
@@ -19,6 +19,6 @@
   "kinematic_object": {
     "factory": "KinematicSolverFactory, Ver 1.0",
     "type": "KinematicSolver",
-    "config": "CONFIG/force_control/kinematic_solver_ur3_config.json"
+    "config": "CONFIG/UrRobotConfig/ur3_181_config.json"
   }
 }
