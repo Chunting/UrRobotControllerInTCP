@@ -9,6 +9,9 @@ ExponentialFilter::ExponentialFilter(int size, float factor)
 	init(size, factor);
 }
 
+ExponentialFilter::~ExponentialFilter() {
+}
+
 void ExponentialFilter::init(int size, float factor) {
 	m_binit = true;
 	m_size = size;
