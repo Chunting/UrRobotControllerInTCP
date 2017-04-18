@@ -140,7 +140,10 @@ function(build_sample path_to_package)
     endif ()
 endfunction()
 
+
+
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/packages/header_only_libraries)
+add_subdirectory(packages/depends)
 # 这里，后面的package是依赖前面的package的。
 build_package(${CMAKE_CURRENT_SOURCE_DIR}/packages/cobotsys)
 build_package(${CMAKE_CURRENT_SOURCE_DIR}/packages/cobotsys_ros_wrapper)

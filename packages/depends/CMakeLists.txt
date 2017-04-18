@@ -1,0 +1,15 @@
+
+
+MESSAGE("")
+MESSAGE("----------Shared Depends----------------------------------------------")
+FILE(GLOB children *)
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+FOREACH (child ${children})
+    IF (IS_DIRECTORY ${child})
+        if (EXISTS "${child}/CMakeLists.txt")
+            get_filename_component(f_base ${child} NAME_WE)
+            MESSAGE(STATUS "Plugin     : " ${f_base})
+            add_subdirectory(${child})
+        endif ()
+    ENDIF ()
+ENDFOREACH ()
