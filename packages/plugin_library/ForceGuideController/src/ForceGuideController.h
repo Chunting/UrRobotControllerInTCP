@@ -17,7 +17,7 @@
 
 using namespace cobotsys;
 
-class ForceGuideController : public QObject, public AbstractController, public ArmRobotRealTimeStatusObserver {
+class ForceGuideController : public QObject, public AbstractController, public ArmRobotRealTimeStatusObserver, public ForceSensorStreamObserver {
 	Q_OBJECT
 public:
 	ForceGuideController();
@@ -27,6 +27,11 @@ public:
 	virtual bool start();
 	virtual void pause();
 	virtual void stop();
+
+public:
+	virtual void onForceSensorConnect();
+	virtual void onForceSensorDisconnect();
+	virtual void onForceSensorDataStreamUpdate(const std::shared_ptr<forcesensor::Wrench>& ptrWrench);
 
 protected:
 	bool createRobot();
@@ -75,9 +80,11 @@ protected:
 	std::shared_ptr<AbstractKinematicSolver> m_ptrKinematicSolver;
 
 	std::vector<double> m_deltaValue;
+
 	std::mutex m_mutex;
 	std::thread m_controlThread;
 
+	cobotsys::forcesensor::Wrench m_wrenchData;
 };
 
 

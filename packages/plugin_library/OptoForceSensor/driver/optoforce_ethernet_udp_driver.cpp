@@ -1,5 +1,6 @@
 //
 // Created by longhuicai on 2017-4-14.
+// Version 1.0.0 finished by longhuicai on 2017-4-18
 // Copyright (c) 2017 Wuhan Collaborative Robot Technology Co.,Ltd. All rights reserved.
 //
 
@@ -93,17 +94,17 @@ void HSUCommand::pack(uint8_t *buffer) const
 }
 
 
-OptoforceEthernetUDPDriver::OptoforceEthernetUDPDriver(std::condition_variable& rt_msg_cond, QString ip, int hz, QObject* parent) :
+OptoforceEthernetUDPDriver::OptoforceEthernetUDPDriver(std::condition_variable& rt_msg_cond, QObject* parent) :
 	QObject(parent),
 	m_isRecievingData(false),
 	m_isThreadRunning(false),
 	m_isReadyRead(false),
-	m_ipAddress(ip),
+	m_ipAddress("localhost"),
 	m_port(OPTOFORCE_UDP_PORT),
 	m_isConnected(false),
 	m_reconnectDelay(100),
 	m_pMsgCond(&rt_msg_cond),
-	m_frequency(hz),
+	m_frequency(125),
 	m_filter(0),
 	m_packetCount(0),
 	m_forceScale(1.0),
@@ -120,14 +121,6 @@ OptoforceEthernetUDPDriver::OptoforceEthernetUDPDriver(std::condition_variable& 
 	connect(m_socket, &QUdpSocket::connected, this, &OptoforceEthernetUDPDriver::onConnect);
 	connect(m_socket, &QUdpSocket::disconnected, this, &OptoforceEthernetUDPDriver::onDisconnect);
 	connect(m_socket, &QUdpSocket::readyRead, this, &OptoforceEthernetUDPDriver::onReadyRead);
-
-	//socket bind
-	QHostAddress address;
-	address.setAddress(m_ipAddress);
-	m_socket->bind(address, m_port);
-	//socket connect
-	m_socket->open(QIODevice::ReadWrite);
-	m_socket->connectToHost(m_ipAddress, m_port, QIODevice::ReadWrite);
 
 	// Get Force/Torque scale from device webserver
 	double counts_per_force = DEFAULT_FORCE_DIV;
@@ -170,15 +163,17 @@ void OptoforceEthernetUDPDriver::recvThreadFunc() {
 			continue;
 		}
 		if (m_isReadyRead)// m_socket->hasPendingDatagrams())
-		{	
-			m_isReadyRead = false;
+		{
+			char* tmp;
+			int len;
+			{
+				std::lock_guard<std::mutex> lock_guard(m_mutex);
+				m_isReadyRead = false;
 
-			QByteArray datagram;
-			datagram.resize(m_socket->pendingDatagramSize());
-			m_socket->readDatagram(datagram.data(), datagram.size());
-			char* tmp = datagram.data();
-		
-			int len = datagram.size();
+				tmp = m_datagram.data();
+				len = m_datagram.size();
+			}
+
 			if (len != HSURecord::HSU_RECORD_SIZE)
 			{
 				COBOT_LOG.notice() << "Receive size of " << len << " bytes does not match expected size of " << HSURecord::HSU_RECORD_SIZE;
@@ -232,13 +227,6 @@ void OptoforceEthernetUDPDriver::startDriver() {
 		if (waitForNewData())
 			break;
 	}
-	//{
-	//	std::lock_guard<std::mutex> lock_guard(m_mutex);
-	//	if (m_packetCount == 0)
-	//	{
-	//		throw std::runtime_error("No data received from EthernetDAQ device");
-	//	}
-	//}
 
 }
 
@@ -276,7 +264,6 @@ void OptoforceEthernetUDPDriver::startStreaming()
 
 void OptoforceEthernetUDPDriver::stopDriver() {
 	m_isRecievingData = false;
-	m_isThreadRunning = false;
 	m_socket->close();
 }
 
@@ -295,11 +282,17 @@ void OptoforceEthernetUDPDriver::onConnect() {
 
 void OptoforceEthernetUDPDriver::onReadyRead() {
 	m_isReadyRead = true;
-	COBOT_LOG.notice() << "OptoforceEthernetUDPDriver: " << "onReadyRead................................................";
+	//COBOT_LOG.notice() << "OptoforceEthernetUDPDriver: " << "onReadyRead................................................";
+
+	m_datagram.resize(m_socket->pendingDatagramSize());
+	m_socket->readDatagram(m_datagram.data(), m_datagram.size());
+	char* tmp = m_datagram.data();
 }
 
 void OptoforceEthernetUDPDriver::onDisconnect() {
 	m_isConnected = false;
+	m_isRecievingData = false;
+
 	COBOT_LOG.notice() << "OptoforceEthernetUDPDriver: " << "Disconnected";
 	Q_EMIT sensordisconnected();
 

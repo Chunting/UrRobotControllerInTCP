@@ -1,5 +1,6 @@
 //
 // Created by longhuicai on 2017-4-14.
+// Version 1.0.0 finished by longhuicai on 2017-4-18
 // Copyright (c) 2017 Wuhan Collaborative Robot Technology Co.,Ltd. All rights reserved.
 //
 
@@ -24,7 +25,7 @@ public:
 #define	DEFAULT_FORCE_DIV	10000.0  // Default divide value
 #define	DEFAULT_TORQUE_DIV	100000.0 // Default divide value
 
-	OptoforceEthernetUDPDriver(std::condition_variable& rt_msg_cond, QString ip, int hz=125, QObject* parent = nullptr);
+	OptoforceEthernetUDPDriver(std::condition_variable& rt_msg_cond, QObject* parent = nullptr);
 	~OptoforceEthernetUDPDriver();
 
 	void startDriver();
@@ -36,9 +37,10 @@ public:
 	void onDisconnect();
 	void onReadyRead();
 
+	void setIp(QString ip) { m_ipAddress = ip; }
+	QString getIp() { return m_ipAddress; }
 	void setFrequency(int hz) { m_frequency = hz; }
 	int getFrequency() { return m_frequency; }
-	
 	void doUnzero();
 	void doZero();
 
@@ -66,6 +68,7 @@ protected:
 	bool m_isConnected;
 	int m_reconnectDelay;
 	std::condition_variable* m_pMsgCond; //Signals that new vars are available
+	QByteArray m_datagram;
 
 	int m_frequency;
 	unsigned int m_filter;
