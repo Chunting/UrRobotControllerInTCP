@@ -18,5 +18,5 @@ void SuckerBinpickingPlacer::placeObject()
         return;
     }
     
-    m_digitIoDriver->resetIo(DigitIoPort::Port_1);
+//    m_digitIoDriver->resetIo(DigitIoPort::Port_1);//
 }

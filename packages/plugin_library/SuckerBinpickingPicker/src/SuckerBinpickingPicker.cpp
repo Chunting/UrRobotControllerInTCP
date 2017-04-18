@@ -19,5 +19,5 @@ void SuckerBinpickingPicker::pickObject(const binpicking::BinObjGrabPose& binObj
         return;
     }
 
-    m_digitIoDriver->setIo(DigitIoPort::Port_1);
+//    m_digitIoDriver->setIo(DigitIoPort::Port_1);
 }
