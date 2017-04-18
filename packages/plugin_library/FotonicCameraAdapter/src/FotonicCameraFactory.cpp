@@ -2,7 +2,6 @@
 // Created by 于天水 on 17-4-12.
 //
 
-#include <extra2.h>
 #include <cobotsys_abstract_factory_macro.h>
 #include "FotonicCamera.h"
 

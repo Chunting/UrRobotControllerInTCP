@@ -8,6 +8,7 @@
 
 #include "cobotsys_abstract_object.h"
 #include "cobotsys_abstract_digit_io_driver.h"
+#include "cobotsys_abstract_kinematic_solver.h"
 #include <opencv2/opencv.hpp>
 #include <QIODevice>
 
@@ -28,6 +29,7 @@ public:
 
 
 namespace cobotsys {
+    class AbstractArmRobotRealTimeDriver;
 class AbstractArmRobotMoveDriver : public AbstractObject {
 public:
     AbstractArmRobotMoveDriver();
@@ -50,6 +52,17 @@ public:
      * @param[in] observer 观察者对象
      */
     virtual void attach(const std::shared_ptr<ArmRobotMoveStatusObserver>& observer) = 0;
+
+
+    /**
+     * 设置底层驱动
+     */
+    virtual void setRealTimeDriver(const std::shared_ptr<AbstractArmRobotRealTimeDriver>& realTimeDriver) = 0;
+
+    /**
+     * 设置逆运动学对象
+     */
+    virtual void setKinematicSolver(const std::shared_ptr<AbstractKinematicSolver>& kinematicSolver) = 0;
 
 public:
     /**
