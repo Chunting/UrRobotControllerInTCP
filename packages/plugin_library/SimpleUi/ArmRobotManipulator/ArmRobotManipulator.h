@@ -37,6 +37,7 @@ public:
     void startRobot();
     void stopRobot();
 
+    void revertIoPorts();
 
 Q_SIGNALS:
     void updateActualQ();

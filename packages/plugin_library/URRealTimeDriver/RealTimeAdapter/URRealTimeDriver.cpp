@@ -36,7 +36,10 @@ void URRealTimeDriver::move(const std::vector<double>& q) {
 }
 
 std::shared_ptr<AbstractDigitIoDriver> URRealTimeDriver::getDigitIoDriver(int deviceId) {
-    return nullptr;
+    if (deviceId == 0)
+        return m_digitOutput;
+    else
+        return m_digitInput;
 }
 
 void URRealTimeDriver::attach(const shared_ptr<ArmRobotRealTimeStatusObserver>& observer) {
@@ -69,6 +72,12 @@ bool URRealTimeDriver::start() {
     m_urDriver->setServojLookahead(m_attr_servoj_lookahead);
     m_urDriver->setServojGain(m_attr_servoj_gain);
     m_urDriver->startDriver();
+
+    // 这里是数字驱动的部分
+    m_digitInput = make_shared<CobotUrDigitIoAdapter>(*(m_urDriver->m_urRealTimeCommCtrl));
+    m_digitOutput = make_shared<CobotUrDigitIoAdapter>(*(m_urDriver->m_urRealTimeCommCtrl));
+    m_digitInput->m_isInput = true;
+    m_digitOutput->m_isOutput = true;
     return true;
 }
 
@@ -90,7 +99,8 @@ bool URRealTimeDriver::setup(const QString& configFilePath) {
 
     auto success = _setup(configFilePath);
 
-    if (!success) {
+    if (success) {
+    } else {
         m_observers.clear(); // detach all observer
     }
     return success;
@@ -106,9 +116,11 @@ void URRealTimeDriver::robotStatusWatcher() {
     std::vector<std::shared_ptr<ArmRobotRealTimeStatusObserver> > observer_tmp;
     std::vector<double> q_next;
 
-	COBOT_LOG.notice() << "UR Status Watcher is Running.";
+    COBOT_LOG.notice() << "UR Status Watcher is Running.";
     while (m_isWatcherRunning) {
         m_rt_msg_cond.wait(lck);
+
+        _updateDigitIoStatus();
 
         // 计算时间间隔
         auto time_rdy = std::chrono::high_resolution_clock::now();
@@ -145,10 +157,10 @@ void URRealTimeDriver::robotStatusWatcher() {
         // 更新控制驱动数据, 如果没有数据，默认会是当前状态。
         if (m_isStarted && q_next.size() >= CobotUr::JOINT_NUM_) {
             m_urDriver->servoj(q_next);
-			//auto info_log = COBOT_LOG.info();
-			//for (int i = 0; i < (int)q_next.size(); i++) {
-			//	info_log << q_next[i] / M_PI * 180 << ", ";
-			//}
+            //auto info_log = COBOT_LOG.info();
+            //for (int i = 0; i < (int)q_next.size(); i++) {
+            //	info_log << q_next[i] / M_PI * 180 << ", ";
+            //}
         }
     }
 }
@@ -198,5 +210,17 @@ void URRealTimeDriver::notify(std::function<void(std::shared_ptr<ArmRobotRealTim
         for (auto& observer : observer_tmp) {
             func(observer);
         }
+    }
+}
+
+void URRealTimeDriver::_updateDigitIoStatus() {
+    if (m_digitInput && m_isStarted) {
+        auto outBits = m_urDriver->m_urCommCtrl->ur->getRobotState()->getDigitalOutputBits();
+        auto inBits = m_urDriver->m_urCommCtrl->ur->getRobotState()->getDigitalInputBits();
+
+        m_digitInput->m_inputIoStatus = inBits;
+        m_digitOutput->m_outputIoStatus = outBits;
+        m_digitInput->debugIoStatus();
+        m_digitOutput->debugIoStatus();
     }
 }

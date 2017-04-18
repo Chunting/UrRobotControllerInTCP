@@ -18,7 +18,7 @@ CobotUrComm::CobotUrComm(std::condition_variable& cond_msg, QObject* parent)
 
     m_tcpSocket->setSocketOption(QAbstractSocket::LowDelayOption, 1);
 
-    connect(m_tcpSocket, &QTcpSocket::readyRead, this, &CobotUrComm::secReadData);
+    connect(m_tcpSocket, &QTcpSocket::readyRead, this, &CobotUrComm::processData);
     connect(m_tcpSocket, &QTcpSocket::connected, this, &CobotUrComm::secConnectHandle);
     connect(m_tcpSocket, &QTcpSocket::disconnected, this, &CobotUrComm::secDisconnectHandle);
     connect(m_tcpSocket, static_cast<void (QAbstractSocket::*)(QAbstractSocket::SocketError)>(&QAbstractSocket::error),
@@ -51,7 +51,7 @@ void CobotUrComm::setupHost(const QString& host){
 void CobotUrComm::stop(){
 }
 
-void CobotUrComm::secReadData(){
+void CobotUrComm::processData(){
     auto ba = m_tcpSocket->read(2048);
     if (ba.size() > 0) {
         m_robotState->unpack((uint8_t*) ba.constData(), ba.size());

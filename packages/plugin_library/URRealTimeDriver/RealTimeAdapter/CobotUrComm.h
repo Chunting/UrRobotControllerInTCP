@@ -34,7 +34,7 @@ public:
     void stop();
 
 protected:
-    void secReadData();
+    void processData();
     void secConnectHandle();
     void secDisconnectHandle();
     void onSocketError(QAbstractSocket::SocketError socketError);

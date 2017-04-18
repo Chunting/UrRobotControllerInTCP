@@ -15,14 +15,14 @@ class AutoCtx {
 protected:
     bool& m_sign;
 public:
-    AutoCtx(bool& b) : m_sign(b){ m_sign = true; }
+    AutoCtx(bool& b) : m_sign(b) { m_sign = true; }
 
-    ~AutoCtx(){ m_sign = false; }
+    ~AutoCtx() { m_sign = false; }
 };
 #define Q_SLOT_REDUCE(flag) if (flag) {return;} AutoCtx autoctx(flag);
 
 
-ArmRobotManipulator::ArmRobotManipulator(){
+ArmRobotManipulator::ArmRobotManipulator() {
     m_initUIData = 0;
     ui.setupUi(this);
 
@@ -51,12 +51,12 @@ ArmRobotManipulator::ArmRobotManipulator(){
     m_actual.push_back(ui.dsb_real_6);
 
     for (auto& slider : m_sliders) {
-        connect(slider, &QSlider::valueChanged, [=](int){ this->handleSliderChange(); });
+        connect(slider, &QSlider::valueChanged, [=](int) { this->handleSliderChange(); });
     }
 
     for (auto& iter : m_target) {
         connect(iter, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
-                [=](double){ handleTargetChange(); });
+                [=](double) { handleTargetChange(); });
     }
 
     connect(ui.btnCreate, &QPushButton::released, this, &ArmRobotManipulator::createRobot);
@@ -71,6 +71,8 @@ ArmRobotManipulator::ArmRobotManipulator(){
     connect(ui.btnGoPosiB, &QPushButton::released, this, &ArmRobotManipulator::onGoPosiB);
     connect(ui.btnLoopAB, &QPushButton::released, this, &ArmRobotManipulator::onLoopAB);
 
+    connect(ui.btnIoRevert, &QPushButton::released, this, &ArmRobotManipulator::revertIoPorts);
+
     ui.btnStart->setEnabled(false);
     ui.btnStop->setEnabled(false);
 
@@ -78,11 +80,11 @@ ArmRobotManipulator::ArmRobotManipulator(){
     m_loopAB = false;
 }
 
-ArmRobotManipulator::~ArmRobotManipulator(){
+ArmRobotManipulator::~ArmRobotManipulator() {
     INFO_DESTRUCTOR(this);
 }
 
-bool ArmRobotManipulator::setup(const QString& configFilePath){
+bool ArmRobotManipulator::setup(const QString& configFilePath) {
     QJsonObject json;
     if (loadJson(json, configFilePath)) {
         m_joint_num = json["joint_num"].toDouble(6);
@@ -97,12 +99,18 @@ bool ArmRobotManipulator::setup(const QString& configFilePath){
         }
 
         setupCreationList();
-        return true;
+    } else {
+        m_joint_num = 6;
+        m_defaultRobotInfo.clear();
+        for (int i = 0; i < (int) m_sliders.size(); i++) {
+            m_sliders[i]->setRange(-180, 180);
+        }
+        setupCreationList();
     }
-    return false;
+    return true;
 }
 
-void ArmRobotManipulator::handleSliderChange(){
+void ArmRobotManipulator::handleSliderChange() {
     Q_SLOT_REDUCE(m_noHandleChange);
 
     for (size_t i = 0; i < m_sliders.size(); i++) {
@@ -116,7 +124,7 @@ void ArmRobotManipulator::handleSliderChange(){
     updateTargetQ();
 }
 
-void ArmRobotManipulator::handleTargetChange(){
+void ArmRobotManipulator::handleTargetChange() {
     Q_SLOT_REDUCE(m_noHandleChange);
 
     for (size_t i = 0; i < m_target.size(); i++) {
@@ -133,7 +141,7 @@ void ArmRobotManipulator::handleTargetChange(){
     updateTargetQ();
 }
 
-void ArmRobotManipulator::createRobot(){
+void ArmRobotManipulator::createRobot() {
     if (!GlobalObjectFactory::instance()) return;
     if (ui.cboRobotType->count() == 0)
         return;
@@ -167,7 +175,7 @@ void ArmRobotManipulator::createRobot(){
     ui.btnStart->setEnabled(true);
 }
 
-void ArmRobotManipulator::setupCreationList(){
+void ArmRobotManipulator::setupCreationList() {
     if (!GlobalObjectFactory::instance()) return;
 
     bool foundDefault = false;
@@ -203,7 +211,7 @@ void ArmRobotManipulator::setupCreationList(){
     }
 }
 
-void ArmRobotManipulator::startRobot(){
+void ArmRobotManipulator::startRobot() {
     if (m_ptrRobot) {
         ui.btnStart->setEnabled(false);
 
@@ -214,7 +222,7 @@ void ArmRobotManipulator::startRobot(){
     }
 }
 
-void ArmRobotManipulator::stopRobot(){
+void ArmRobotManipulator::stopRobot() {
     if (m_ptrRobot) {
         ui.btnStop->setEnabled(false);
 
@@ -223,15 +231,15 @@ void ArmRobotManipulator::stopRobot(){
     }
 }
 
-void ArmRobotManipulator::onArmRobotConnect(){
+void ArmRobotManipulator::onArmRobotConnect() {
     Q_EMIT robotConnectStateChanged(true);
 }
 
-void ArmRobotManipulator::onArmRobotDisconnect(){
+void ArmRobotManipulator::onArmRobotDisconnect() {
     Q_EMIT robotConnectStateChanged(false);
 }
 
-void ArmRobotManipulator::onArmRobotStatusUpdate(const ArmRobotStatusPtr& ptrRobotStatus){
+void ArmRobotManipulator::onArmRobotStatusUpdate(const ArmRobotStatusPtr& ptrRobotStatus) {
     auto q_actual_size = ptrRobotStatus->q_actual.size();
     if (q_actual_size > 6)
         q_actual_size = 6;
@@ -246,14 +254,14 @@ void ArmRobotManipulator::onArmRobotStatusUpdate(const ArmRobotStatusPtr& ptrRob
     Q_EMIT updateActualQ();
 }
 
-void ArmRobotManipulator::closeEvent(QCloseEvent* event){
+void ArmRobotManipulator::closeEvent(QCloseEvent* event) {
     if (m_ptrRobot) {
         m_ptrRobot->stop();
     }
     QWidget::closeEvent(event);
 }
 
-void ArmRobotManipulator::onActualQUpdate(){
+void ArmRobotManipulator::onActualQUpdate() {
     std::vector<double> tmpq;
     m_mutex.lock();
     tmpq = m_actualValue;
@@ -280,7 +288,7 @@ void ArmRobotManipulator::onActualQUpdate(){
     }
 }
 
-void ArmRobotManipulator::updateTargetQ(){
+void ArmRobotManipulator::updateTargetQ() {
     if (m_initUIData > 0) {
         return;
     }
@@ -290,23 +298,23 @@ void ArmRobotManipulator::updateTargetQ(){
     goTarget(target_q);
 }
 
-void ArmRobotManipulator::onRecTarget(){
+void ArmRobotManipulator::onRecTarget() {
     m_PosiA = getUiTarget();
 }
 
-void ArmRobotManipulator::onGoTarget(){
+void ArmRobotManipulator::onGoTarget() {
     goTarget(m_PosiA);
 }
 
-void ArmRobotManipulator::onPosiB(){
+void ArmRobotManipulator::onPosiB() {
     m_PosiB = getUiTarget();
 }
 
-void ArmRobotManipulator::onGoPosiB(){
+void ArmRobotManipulator::onGoPosiB() {
     goTarget(m_PosiB);
 }
 
-void ArmRobotManipulator::onLoopAB(){
+void ArmRobotManipulator::onLoopAB() {
     m_loopAB = !m_loopAB;
     if (m_loopAB) {
         m_loopQ = m_PosiA;
@@ -318,7 +326,7 @@ void ArmRobotManipulator::onLoopAB(){
     }
 }
 
-std::vector<double> ArmRobotManipulator::getUiTarget(){
+std::vector<double> ArmRobotManipulator::getUiTarget() {
     std::vector<double> target;
     target.resize(m_target.size());
     for (int i = 0; i < (int) target.size(); i++) {
@@ -327,7 +335,7 @@ std::vector<double> ArmRobotManipulator::getUiTarget(){
     return target;
 }
 
-void ArmRobotManipulator::goTarget(const std::vector<double>& targetq){
+void ArmRobotManipulator::goTarget(const std::vector<double>& targetq) {
     m_targetToGo = targetq;
 
     updateTargetQToUi();
@@ -344,7 +352,7 @@ void ArmRobotManipulator::goTarget(const std::vector<double>& targetq){
     }
 }
 
-void ArmRobotManipulator::loopAbProg(){
+void ArmRobotManipulator::loopAbProg() {
     if (m_loopQ.size() != m_qActual.size())
         return;
 
@@ -364,18 +372,32 @@ void ArmRobotManipulator::loopAbProg(){
     }
 }
 
-void ArmRobotManipulator::updateTargetQToUi(){
+void ArmRobotManipulator::updateTargetQToUi() {
     for (int i = 0; i < (int) m_targetToGo.size(); i++) {
         m_target[i]->setValue(m_targetToGo[i] * 180 / CV_PI);
     }
 }
 
-void ArmRobotManipulator::handleRobotState(bool isConnected){
-    if (isConnected){
+void ArmRobotManipulator::handleRobotState(bool isConnected) {
+    if (isConnected) {
         ui.btnStart->setEnabled(false);
         ui.btnStop->setEnabled(true);
     } else {
         ui.btnStart->setEnabled(true);
         ui.btnStop->setEnabled(false);
+    }
+}
+
+void ArmRobotManipulator::revertIoPorts() {
+    static bool io_stat = true;
+    if (m_ptrRobot) {
+        auto ptrIo = m_ptrRobot->getDigitIoDriver();
+
+        if (io_stat) {
+            ptrIo->setIo(DigitIoPort::Port_1, DigitIoStatus::Set);
+        } else {
+            ptrIo->setIo(DigitIoPort::Port_1, DigitIoStatus::Reset);
+        }
+        io_stat = !io_stat;
     }
 }

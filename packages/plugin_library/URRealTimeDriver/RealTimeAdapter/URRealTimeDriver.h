@@ -13,6 +13,7 @@
 #include "CobotUrCommCtrl.h"
 #include "CobotUrRealTimeCommCtrl.h"
 #include "CobotUrDriver.h"
+#include "CobotUrDigitIoAdapter.h"
 
 using namespace cobotsys;
 
@@ -37,6 +38,8 @@ protected:
     void handleDriverReady();
     void handleDriverDisconnect();
     void notify(std::function<void(std::shared_ptr<ArmRobotRealTimeStatusObserver>& observer)> func);
+
+    void _updateDigitIoStatus();
 protected:
     std::mutex m_mutex;
     std::thread m_thread;
@@ -60,6 +63,9 @@ protected:
     CobotUrRealTimeCommCtrl* m_rt_ctrl;
 
     CobotUrDriver* m_urDriver;
+
+    shared_ptr<CobotUrDigitIoAdapter> m_digitInput;
+    shared_ptr<CobotUrDigitIoAdapter> m_digitOutput;
 };
 
 

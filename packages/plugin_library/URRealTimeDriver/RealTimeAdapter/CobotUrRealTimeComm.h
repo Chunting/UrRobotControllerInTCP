@@ -29,6 +29,10 @@ public:
 
     std::shared_ptr<RobotStateRT> getRobotState(){ return m_robotState; }
 
+    /**
+     * 发送给UR的即时脚本命令。
+     * @param ba
+     */
     void writeLine(const QByteArray& ba);
 
     void servoj(const std::vector<double>& j);
