@@ -7,6 +7,7 @@
 #define PROJECT_FORCECONTROLSOLVER_H
 
 #include <mutex>
+#include <cobotsys_abstract_forcecontrol_solver.h>
 #include <cobotsys_abstract_force_sensor.h>
 #include <cobotsys_abstract_arm_robot_realtime_driver.h>
 #include <QObject>
@@ -14,7 +15,7 @@
 
 using namespace cobotsys;
 
-class ForceControlSolver : public QObject, public AbstractObject, public ForceSensorStreamObserver, public ArmRobotRealTimeStatusObserver {
+class ForceControlSolver : public QObject, public AbstractForceControlSolver, public ForceSensorStreamObserver, public ArmRobotRealTimeStatusObserver {
 	Q_OBJECT
 public:
 	ForceControlSolver();
@@ -31,9 +32,14 @@ public:
 	virtual void onArmRobotDisconnect();
 	virtual void onArmRobotStatusUpdate(const ArmRobotStatusPtr& ptrRobotStatus);
 
+public:
+	virtual int solve(const forcesensor::Wrench& wrench, const std::vector<double>& currentQ, std::vector<double>& targetQ);
+	virtual int solve(std::vector<double>& targetQ);
+
 protected:
 	bool m_bcontrol;
-
+	cobotsys::forcesensor::Wrench m_wrenchData;
+	std::vector<double> m_curQ;
 };
 
 
