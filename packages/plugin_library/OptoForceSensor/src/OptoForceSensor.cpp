@@ -83,13 +83,13 @@ void OptoForceSensor::sensorDataWatcher() {
 	while (m_isWatcherRunning) {
 		//m_rt_msg_cond.wait(lck);
 
-		// ¼ÆËãÊ±¼ä¼ä¸ô
+		// è®¡ç®—æ—¶é—´é—´éš”
 		auto time_rdy = std::chrono::high_resolution_clock::now();
-		std::chrono::duration<double> time_diff = time_rdy - time_cur; // Ê±¼ä¼äÏ¶
+		std::chrono::duration<double> time_diff = time_rdy - time_cur; // æ—¶é—´é—´éš™
 		time_cur = time_rdy;
 		//COBOT_LOG.info() << "Status Updated: " << time_diff.count();
 
-		// ×¥È¡µ±Ç°Öµ
+		// æŠ“å–å½“å‰å€¼
 		if (m_mutex.try_lock()) {
 			if (m_upd_driver) {
 				auto state = m_upd_driver->getState();
@@ -100,7 +100,7 @@ void OptoForceSensor::sensorDataWatcher() {
 		}
 
 
-		// Í¨ÖªËùÓĞ¹Û²ìÕß£¬Êı¾İÒÑ¾­¸üĞÂ¡£
+		// é€šçŸ¥æ‰€æœ‰è§‚å¯Ÿè€…ï¼Œæ•°æ®å·²ç»æ›´æ–°ã€‚
 		if (m_isStarted) {
 			notify([=](std::shared_ptr<ForceSensorStreamObserver>& observer) {
 				observer->onForceSensorDataStreamUpdate(pStatus);
