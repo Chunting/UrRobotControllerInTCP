@@ -290,4 +290,21 @@ void ForceGuideController::onArmRobotStatusUpdate(const ArmRobotStatusPtr& ptrRo
 	//	<<".";
 }
 
+void ForceGuideController::onForceSensorConnect() {
+}
+
+void ForceGuideController::onForceSensorDisconnect() {
+}
+
+void ForceGuideController::onForceSensorDataStreamUpdate(const std::shared_ptr<forcesensor::Wrench>& ptrWrench) {
+	m_wrenchData.force.x = ptrWrench->force.x;
+	m_wrenchData.force.y = ptrWrench->force.y;
+	m_wrenchData.force.z = ptrWrench->force.z;
+	m_wrenchData.torque.x = ptrWrench->torque.x;
+	m_wrenchData.torque.y = ptrWrench->torque.y;
+	m_wrenchData.torque.z = ptrWrench->torque.z;
+	//COBOT_LOG.notice() << " wrench:   force: " << m_wrenchData.force.x<<","<< m_wrenchData.force.y<<","<< m_wrenchData.force.z<<"\r\n"
+	//	<<" \t\t\t torque: " << m_wrenchData.torque.x << "," << m_wrenchData.torque.y << "," << m_wrenchData.torque.z << "\r\n";
+}
+
 
