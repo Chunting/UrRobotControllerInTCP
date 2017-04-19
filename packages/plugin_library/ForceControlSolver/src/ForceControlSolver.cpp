@@ -132,6 +132,7 @@ bool ForceControlSolver::setup(const QString& configFilePath) {
 
 		//set
 		setBlockParameters(&m_param);
+		return true;
 	}
 	return false;
 }

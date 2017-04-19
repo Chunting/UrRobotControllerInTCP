@@ -191,7 +191,7 @@ bool ForceGuideController::createForceControlSolver() {
 		if (m_ptrForceControlSolver->setup(m_solverConfig)) {
 			COBOT_LOG.notice() << "Create and setup success";
 			ret = true;
-			if (m_ptrForceControlSolver) {
+			if (m_ptrRobot) {
 				auto obs = std::dynamic_pointer_cast<ArmRobotRealTimeStatusObserver>(m_ptrForceControlSolver);
 				m_ptrRobot->attach(obs);
 			}
