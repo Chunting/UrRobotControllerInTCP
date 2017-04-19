@@ -58,7 +58,7 @@ ENDMACRO()
 
 # 文档生成
 find_package(Doxygen QUIET)
-if (BUILD_DOC AND WIN32)
+if (BUILD_DOC)
     if (DOXYGEN_FOUND)
         # set input and output files
         set(DOXYGEN_IN ${CMAKE_SOURCE_DIR}/docs/Doxyfile.in)
