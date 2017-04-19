@@ -20,6 +20,7 @@ KinematicSolver::KinematicSolver(){
 KinematicSolver::~KinematicSolver(){
 
 }
+
 int KinematicSolver::cartToJnt(const std::vector<double>& initialJoint, const std::vector<double>& targetPos, std::vector<double>& targetJoint) {
 	targetJoint.clear();
 	KDL::JntArray q_init(initialJoint.size());
@@ -65,62 +66,23 @@ int KinematicSolver::cartToJnt(const std::vector<double>& initialJoint, const st
 	return retval;
 }
 
-int KinematicSolver::jntToCart(const std::vector<double>& targetJoint, std::vector<double>& targetPos) {
-	KDL::JntArray targetJnt(targetJoint.size());
-	for (int i = 0; i < targetJoint.size(); i++) {
-		targetJnt(i) = targetJoint.at(i);
-	}
-	KDL::Frame targetFrame;
-	int retval;
-	retval=m_fk_solver->JntToCart(targetJnt, targetFrame);
-	targetPos = frameToStdVector(targetFrame);
-	return retval;
-}
-std::vector<double> KinematicSolver::frameToStdVector(KDL::Frame frame) {
-	std::vector<double> vec;
-	double x, y, z;
-	frame.M.GetRPY(x, y, z);
-	vec.push_back(frame.p.x());
-	vec.push_back(frame.p.y());
-	vec.push_back(frame.p.z());
-	vec.push_back(x);
-	vec.push_back(y);
-	vec.push_back(z);
-	return vec;
-}
-KDL::Frame KinematicSolver::stdVectortoFrame(std::vector<double> vec) {
-	if (vec.size()!=6) {
-		COBOT_LOG.error() << "std vector size is not 6";
-		return KDL::Frame();
-	}
-	KDL::Frame frame(KDL::Rotation::RPY(vec[3], vec[4], vec[5]), 
-		KDL::Vector(vec[0], vec[1], vec[2]));
-	return frame;
-}
-int KinematicSolver::jntToCart(const Eigen::VectorXd& targetJoint, Eigen::Affine3d& targetPos){
-	KDL::JntArray targetJnt(targetJoint.size());
-	targetJnt.data = targetJoint;
-	KDL::Frame targetFrame;
-	int retval;
-	retval=m_fk_solver->JntToCart(targetJnt, targetFrame);
-	tf::transformKDLToEigen(targetFrame, targetPos);
-	return retval;
-}
-int KinematicSolver::cartToJnt(const Eigen::VectorXd& initialJoint, const Eigen::Affine3d& targetPos, Eigen::VectorXd& targetJoint){
-	if (initialJoint.size() != targetJoint.size()) {
-		COBOT_LOG.error() << "Current joint size is not equal to target joint size!";
-		return false;
-	}
-	KDL::JntArray q_init;
+int KinematicSolver::cartToJnt(const Eigen::VectorXd& initialJoint, const std::vector<double>& targetPos, std::vector<double>& targetJoint) {
+	targetJoint.clear();
+	KDL::JntArray q_init(initialJoint.size());
 	q_init.data = initialJoint;
-	KDL::Frame targetFrame;
-	tf::transformEigenToKDL(targetPos, targetFrame);
-	KDL::JntArray q_out(targetJoint.size());
+	KDL::Frame targetFrame = stdVectortoFrame(targetPos);
+	KDL::JntArray q_out(initialJoint.size());
 	int retval;
-	retval=m_ik_solver->CartToJnt(q_init, targetFrame, q_out);
+	//COBOT_LOG.notice() << "q_init:( " << q_init(0) <<"," << q_init(1) << "," << q_init(2) << "," << q_init(3) << "," << q_init(4) << "," << q_init(5) << ")";
+	//m_ik_solver->display_information = true;
+	retval = m_ik_solver->CartToJnt(q_init, targetFrame, q_out);
+
 	switch (retval) {
 	case 0:
-		targetJoint=q_out.data;
+		targetJoint.clear();
+		for (int i = 0; i < q_out.data.size(); i++) {
+			targetJoint.push_back(q_out(i));
+		}
 		break;
 	case -1:
 		COBOT_LOG.error() << "Kinamatic Solver:the gradient of $ E $ towards the joints is to small.";
@@ -146,6 +108,92 @@ int KinematicSolver::cartToJnt(const Eigen::VectorXd& initialJoint, const Eigen:
 	//}
 	return retval;
 }
+
+int KinematicSolver::cartToJnt(const Eigen::VectorXd& initialJoint, const Eigen::Affine3d& targetPos, Eigen::VectorXd& targetJoint) {
+	if (initialJoint.size() != targetJoint.size()) {
+		COBOT_LOG.error() << "Current joint size is not equal to target joint size!";
+		return false;
+	}
+	KDL::JntArray q_init;
+	q_init.data = initialJoint;
+	KDL::Frame targetFrame;
+	tf::transformEigenToKDL(targetPos, targetFrame);
+	KDL::JntArray q_out(targetJoint.size());
+	int retval;
+	retval = m_ik_solver->CartToJnt(q_init, targetFrame, q_out);
+	switch (retval) {
+	case 0:
+		targetJoint = q_out.data;
+		break;
+	case -1:
+		COBOT_LOG.error() << "Kinamatic Solver:the gradient of $ E $ towards the joints is to small.";
+		break;
+	case -2:
+		COBOT_LOG.error() << "Kinamatic Solver:joint position increments are to small.";
+		break;
+	case -3:
+		COBOT_LOG.error() << "Kinamatic Solver:number of iterations is exceeded.";
+		break;
+	}
+	//if (retval != 0) {
+	//	std::cout << "---------Inverse Kinematic Solver failed ----------------------------" << endl;
+	//	COBOT_LOG.error() << "pos " << targetFrame << endl;
+	//	std::cout << "reached pos " << m_ik_solver->T_base_head << endl;
+	//	std::cout << "TF from pos to head \n" << targetFrame.Inverse()*m_ik_solver->T_base_head << endl;
+	//	std::cout << "gradient " << m_ik_solver->grad.transpose() << endl;
+	//	std::cout << "q_out " << q_out.data.transpose() / M_PI*180.0 << endl;
+	//	std::cout << "q_init " << q_init.data.transpose() / M_PI*180.0 << endl;
+	//	std::cout << "return value " << retval << endl;
+	//	std::cout << "last #iter " << m_ik_solver->lastNrOfIter << endl;
+	//	std::cout << "last diff  " << m_ik_solver->lastDifference << endl;
+	//}
+	return retval;
+}
+
+int KinematicSolver::jntToCart(const std::vector<double>& targetJoint, std::vector<double>& targetPos) {
+	KDL::JntArray targetJnt(targetJoint.size());
+	for (int i = 0; i < targetJoint.size(); i++) {
+		targetJnt(i) = targetJoint.at(i);
+	}
+	KDL::Frame targetFrame;
+	int retval;
+	retval=m_fk_solver->JntToCart(targetJnt, targetFrame);
+	targetPos = frameToStdVector(targetFrame);
+	return retval;
+}
+
+int KinematicSolver::jntToCart(const Eigen::VectorXd& targetJoint, Eigen::Affine3d& targetPos) {
+	KDL::JntArray targetJnt(targetJoint.size());
+	targetJnt.data = targetJoint;
+	KDL::Frame targetFrame;
+	int retval;
+	retval = m_fk_solver->JntToCart(targetJnt, targetFrame);
+	tf::transformKDLToEigen(targetFrame, targetPos);
+	return retval;
+}
+
+std::vector<double> KinematicSolver::frameToStdVector(KDL::Frame frame) {
+	std::vector<double> vec;
+	double x, y, z;
+	frame.M.GetRPY(x, y, z);
+	vec.push_back(frame.p.x());
+	vec.push_back(frame.p.y());
+	vec.push_back(frame.p.z());
+	vec.push_back(x);
+	vec.push_back(y);
+	vec.push_back(z);
+	return vec;
+}
+KDL::Frame KinematicSolver::stdVectortoFrame(std::vector<double> vec) {
+	if (vec.size()!=6) {
+		COBOT_LOG.error() << "std vector size is not 6";
+		return KDL::Frame();
+	}
+	KDL::Frame frame(KDL::Rotation::RPY(vec[3], vec[4], vec[5]), 
+		KDL::Vector(vec[0], vec[1], vec[2]));
+	return frame;
+}
+
 int KinematicSolver::vector_WorldToEE(const Eigen::VectorXd& jointArray, const Eigen::Vector3d& vector_world, Eigen::Vector3d& vector_ee) {
 	KDL::JntArray targetJnt(jointArray.size());
 	targetJnt.data = jointArray;
@@ -157,6 +205,20 @@ int KinematicSolver::vector_WorldToEE(const Eigen::VectorXd& jointArray, const E
 	vector_ee = Eigen::Vector3d(vect_ee.x(), vect_ee.y(), vect_ee.z());
 	return retval;
 }
+int KinematicSolver::vector_WorldToEE(const std::vector<double>& jointArray, const Eigen::Vector3d& vector_world, Eigen::Vector3d& vector_ee) {
+	KDL::JntArray targetJnt(jointArray.size());
+	for (int i = 0; i < jointArray.size(); i++) {
+		targetJnt(i) = jointArray[i];
+	}
+	KDL::Frame frame_world2ee;
+	int retval;
+	retval = m_fk_solver->JntToCart(targetJnt, frame_world2ee);
+	KDL::Vector vect_w(vector_world.x(), vector_world.y(), vector_world.z());
+	KDL::Vector vect_ee = frame_world2ee.Inverse().M*vect_w;
+	vector_ee = Eigen::Vector3d(vect_ee.x(), vect_ee.y(), vect_ee.z());
+	return retval;
+}
+
 int KinematicSolver::pose_EEToWorld(const Eigen::VectorXd& jointArray, const std::vector<double>& pose_ee, std::vector<double>& pose_world) {
 	KDL::JntArray targetJnt(jointArray.size());
 	targetJnt.data = jointArray;
@@ -169,6 +231,21 @@ int KinematicSolver::pose_EEToWorld(const Eigen::VectorXd& jointArray, const std
 	pose_world = frameToStdVector(frame_world);
 	return retval;
 }
+int KinematicSolver::pose_EEToWorld(const std::vector<double>& jointArray, const std::vector<double>& pose_ee, std::vector<double>& pose_world) {
+	KDL::JntArray targetJnt(jointArray.size());
+	for (int i = 0; i < jointArray.size(); i++) {
+		targetJnt(i)= jointArray[i];
+	}
+	KDL::Frame frame_ee = stdVectortoFrame(pose_ee);
+	KDL::Frame frame_world2ee;
+	int retval;
+	retval = m_fk_solver->JntToCart(targetJnt, frame_world2ee);
+	KDL::Frame frame_world = frame_world2ee*frame_ee;
+	pose_world.clear();
+	pose_world = frameToStdVector(frame_world);
+	return retval;
+}
+
 bool KinematicSolver::setup(const QString& configFilePath) {
 	//auto a = FileFinder::find(configFilePath.toStdString);
     //load model from json file.

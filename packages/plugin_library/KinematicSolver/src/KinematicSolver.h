@@ -36,13 +36,17 @@ public:
 	*/
 	//virtual bool CartToJnt(const vector<double>& currentJoint, const Eigen::Vector3f xyz, const Eigen::Vector3f rpy, vector<double>& targetJoint);
 	virtual int cartToJnt(const Eigen::VectorXd& initialJoint, const Eigen::Affine3d& targetPos, Eigen::VectorXd& targetJoint);
-	virtual int jntToCart(const Eigen::VectorXd& targetJoint, Eigen::Affine3d& targetPos);
-
 	virtual int cartToJnt(const std::vector<double>& initialJoint, const std::vector<double>& targetPos, std::vector<double>& targetJoint);
+	virtual int cartToJnt(const Eigen::VectorXd& initialJoint, const std::vector<double>& targetPos, std::vector<double>& targetJoint);
+	
+	virtual int jntToCart(const Eigen::VectorXd& targetJoint, Eigen::Affine3d& targetPos);
 	virtual int jntToCart(const std::vector<double>& targetJoint, std::vector<double>& targetPos);
-
 	virtual int vector_WorldToEE(const Eigen::VectorXd& jointArray, const Eigen::Vector3d& vector_world, Eigen::Vector3d& vector_ee);
 	virtual int pose_EEToWorld(const Eigen::VectorXd& jointArray, const std::vector<double>& pose_ee, std::vector<double>& pose_world);
+
+	virtual int vector_WorldToEE(const std::vector<double>& jointArray, const Eigen::Vector3d& vector_world, Eigen::Vector3d& vector_ee);
+	virtual int pose_EEToWorld(const std::vector<double>& jointArray, const std::vector<double>& pose_ee, std::vector<double>& pose_world);
+
 	//KDL::Chain UR3Chain();
     virtual bool setup(const QString& configFilePath="CONFIG/force_control/kinematic_solver_config.json");
 protected:
