@@ -88,7 +88,7 @@ void OptoForceSensor::sensorDataWatcher() {
 
 	auto time_cur = std::chrono::high_resolution_clock::now();
 
-	auto pStatus = std::make_shared<forcesensor::Wrench>();
+	auto pStatus = std::make_shared<Wrench>();
 
 	while (m_isWatcherRunning) {
 		m_rt_msg_cond.wait(lck);

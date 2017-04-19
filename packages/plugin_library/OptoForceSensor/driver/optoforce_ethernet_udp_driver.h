@@ -31,7 +31,7 @@ public:
 	void startDriver();
 	void stopDriver();
 
-	cobotsys::forcesensor::Wrench getState();
+	cobotsys::Wrench getState();
 
 	void onConnect();
 	void onDisconnect();
@@ -77,8 +77,8 @@ protected:
 	double m_forceScale;//! Scaling factor for converting raw force values from device into Newtons
 	double m_torqueScale;//! Scaling factor for converting raw torque values into Newton*meters
 
-	cobotsys::forcesensor::Wrench m_newWrench;
-	cobotsys::forcesensor::Wrench m_offsetWrench;
+	cobotsys::Wrench m_newWrench;
+	cobotsys::Wrench m_offsetWrench;
 };
 
 

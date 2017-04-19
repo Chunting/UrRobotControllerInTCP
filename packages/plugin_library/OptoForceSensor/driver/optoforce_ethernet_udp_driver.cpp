@@ -151,7 +151,7 @@ void OptoforceEthernetUDPDriver::initWrenchData() {
 void OptoforceEthernetUDPDriver::recvThreadFunc() {
 	m_isThreadRunning = true;
 	HSURecord hsu_record;
-	cobotsys::forcesensor::Wrench tmp_data;
+	cobotsys::Wrench tmp_data;
 	while (m_isThreadRunning) 
 	{
 		if (!m_isConnected) {
@@ -267,8 +267,8 @@ void OptoforceEthernetUDPDriver::stopDriver() {
 	m_socket->close();
 }
 
-cobotsys::forcesensor::Wrench OptoforceEthernetUDPDriver::getState() {
-	cobotsys::forcesensor::Wrench data;
+cobotsys::Wrench OptoforceEthernetUDPDriver::getState() {
+	cobotsys::Wrench data;
 	std::lock_guard<std::mutex> lock_guard(m_mutex);
 	data = m_newWrench;
 	return data;
