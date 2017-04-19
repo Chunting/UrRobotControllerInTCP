@@ -68,15 +68,15 @@ struct BinObjGrabPose {
 }
 
 
-namespace forcesensor {
-	/**
-	* @brief 六维力传感器的数据
-	*/
-	struct Wrench {
-		cv::Point3d force;
-		cv::Point3d torque;
-	};
-}
+
+/**
+* @brief 六维力数据
+*/
+struct Wrench {
+	cv::Point3d force;
+	cv::Point3d torque;
+};
+
 
 /**
  * @}

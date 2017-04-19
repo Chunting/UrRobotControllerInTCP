@@ -31,6 +31,7 @@ public:
      */
 	virtual int cartToJnt(const Eigen::VectorXd& initialJoint, const Eigen::Affine3d& targetPos, Eigen::VectorXd& targetJoint)=0;
 	virtual int cartToJnt(const std::vector<double>& initialJoint, const std::vector<double>& targetPos, std::vector<double>& targetJoint)=0;
+	virtual int cartToJnt(const Eigen::VectorXd& initialJoint, const std::vector<double>& targetPos, std::vector<double>& targetJoint) = 0;
 	
 	/**
 	* 用于正向运动求解计算，模型文件设置通过 setup() 来指定。
@@ -49,7 +50,8 @@ public:
 	* @retval 0 求解成功，其余为错误码
 	*/
 	virtual int vector_WorldToEE(const Eigen::VectorXd& jointArray, const Eigen::Vector3d& vector_world, Eigen::Vector3d& vector_ee)=0;
-
+	virtual int vector_WorldToEE(const std::vector<double>& jointArray, const Eigen::Vector3d& vector_world, Eigen::Vector3d& vector_ee)=0;
+	
 	/**
 	* 用于将机器人末端坐标系中的姿态转化为世界坐标系中的姿态。
 	* @param[in] jointArray 机器人的状态(关节角)
@@ -58,6 +60,7 @@ public:
 	* @retval 0 求解成功，其余为错误码
 	*/
 	virtual int pose_EEToWorld(const Eigen::VectorXd& jointArray, const std::vector<double>& pose_ee, std::vector<double>& pose_world)=0;
+	virtual int pose_EEToWorld(const std::vector<double>& jointArray, const std::vector<double>& pose_ee, std::vector<double>& pose_world) = 0;
 };
 /**
  * @}

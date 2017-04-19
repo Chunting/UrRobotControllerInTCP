@@ -31,7 +31,7 @@ public:
     virtual ~ForceSensorStreamObserver();
 	virtual void onForceSensorConnect() = 0;
 	virtual void onForceSensorDisconnect() = 0;
-    virtual void onForceSensorDataStreamUpdate(const std::shared_ptr<forcesensor::Wrench>& ptrWrench) = 0;
+    virtual void onForceSensorDataStreamUpdate(const std::shared_ptr<Wrench>& ptrWrench) = 0;
 };
 
 class AbstractForceSensor : public AbstractObject {
