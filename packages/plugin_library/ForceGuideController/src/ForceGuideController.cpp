@@ -65,10 +65,14 @@ bool ForceGuideController::setup(const QString &configFilePath) {
 		int jmin = json["joint_min"].toInt(-180);
 		int jmax = json["joint_max"].toInt(180);
 
-		createRobot();
-		createForceSensor();
+		//solver first
 		createKinematicSolver();
 		createForceControlSolver();
+
+		//robot next
+		createRobot();
+		createForceSensor();
+
 
 		ret = true;
 	}
@@ -97,6 +101,10 @@ bool ForceGuideController::createRobot() {
 	if (m_ptrRobot) {
 		auto ob = std::dynamic_pointer_cast<ArmRobotRealTimeStatusObserver>(shared_from_this());
 		m_ptrRobot->attach(ob);
+		if (m_ptrForceControlSolver) {
+			auto obs = std::dynamic_pointer_cast<ArmRobotRealTimeStatusObserver>(m_ptrForceControlSolver);
+			m_ptrRobot->attach(obs);
+		}
 		if (m_ptrRobot->setup(m_robotConfig)) {
 			COBOT_LOG.notice() << "Create and setup robot success";
 			ret = true;
@@ -183,6 +191,10 @@ bool ForceGuideController::createForceControlSolver() {
 		if (m_ptrForceControlSolver->setup(m_solverConfig)) {
 			COBOT_LOG.notice() << "Create and setup success";
 			ret = true;
+			if (m_ptrForceControlSolver) {
+				auto obs = std::dynamic_pointer_cast<ArmRobotRealTimeStatusObserver>(m_ptrForceControlSolver);
+				m_ptrRobot->attach(obs);
+			}
 		}
 		else {
 			m_ptrForceControlSolver.reset();
