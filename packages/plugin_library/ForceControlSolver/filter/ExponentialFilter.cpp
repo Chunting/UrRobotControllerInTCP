@@ -3,6 +3,9 @@
 //
 
 #include "ExponentialFilter.h"
+#include <stdint.h>
+#include <vector>
+#include <cstddef>
 
 ExponentialFilter::ExponentialFilter(int size, float factor)
 {
