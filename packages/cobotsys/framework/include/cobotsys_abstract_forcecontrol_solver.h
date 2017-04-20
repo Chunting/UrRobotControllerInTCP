@@ -36,7 +36,7 @@ public:
      * @param[out] targetQ 求解结果, 目标位姿， 关节角
      * @retval 0 求解成功，其余为错误码
      */
-	virtual int solve(const forcesensor::Wrench& wrench, const std::vector<double>& currentQ, std::vector<double>& targetQ)=0;
+	virtual int solve(const Wrench& wrench, const std::vector<double>& currentQ, std::vector<double>& targetQ)=0;
 
 	/**
 	* 执行求解功能，根据输入力和位姿数据，计算求解目标位姿.

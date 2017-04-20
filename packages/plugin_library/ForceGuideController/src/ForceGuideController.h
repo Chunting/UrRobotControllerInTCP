@@ -32,7 +32,7 @@ public:
 public:
 	virtual void onForceSensorConnect();
 	virtual void onForceSensorDisconnect();
-	virtual void onForceSensorDataStreamUpdate(const std::shared_ptr<forcesensor::Wrench>& ptrWrench);
+	virtual void onForceSensorDataStreamUpdate(const std::shared_ptr<cobotsys::Wrench>& ptrWrench);
 
 public:
 	virtual void onArmRobotConnect();
@@ -86,7 +86,7 @@ protected:
 	
 	int m_joint_num;
 	std::vector<double> m_curQ;
-	cobotsys::forcesensor::Wrench m_wrenchData;
+	cobotsys::Wrench m_wrenchData;
 };
 
 

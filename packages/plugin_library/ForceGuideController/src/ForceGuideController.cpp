@@ -339,7 +339,7 @@ void ForceGuideController::onForceSensorDisconnect() {
 	COBOT_LOG.info() << "Force sensor disconnected";
 }
 
-void ForceGuideController::onForceSensorDataStreamUpdate(const std::shared_ptr<forcesensor::Wrench>& ptrWrench) {
+void ForceGuideController::onForceSensorDataStreamUpdate(const std::shared_ptr<cobotsys::Wrench>& ptrWrench) {
 	m_wrenchData.force.x = ptrWrench->force.x;
 	m_wrenchData.force.y = ptrWrench->force.y;
 	m_wrenchData.force.z = ptrWrench->force.z;
