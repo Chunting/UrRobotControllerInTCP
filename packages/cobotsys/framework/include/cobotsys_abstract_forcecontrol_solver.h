@@ -45,6 +45,11 @@ public:
 	* @retval 0 求解成功，其余为错误码
 	*/
 	virtual int solve(std::vector<double>& targetQ) = 0;
+
+	void setKinematicSolver(const shared_ptr<AbstractKinematicSolver>& kinSolver) { m_ptrKinematicSolver = kinSolver; }
+
+protected:
+	shared_ptr<AbstractKinematicSolver> m_ptrKinematicSolver;
 };
 /**
  * @}

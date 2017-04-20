@@ -65,9 +65,14 @@ bool ForceGuideController::setup(const QString &configFilePath) {
 		int jmin = json["joint_min"].toInt(-180);
 		int jmax = json["joint_max"].toInt(180);
 
-		//solver first
+		//kinematic solver first
 		createKinematicSolver();
+		//force control solver second
 		createForceControlSolver();
+		//set kinematic solver
+		if (m_ptrForceControlSolver&&m_ptrKinematicSolver) {
+			m_ptrForceControlSolver->setKinematicSolver(m_ptrKinematicSolver);
+		}
 
 		//robot next
 		createRobot();
@@ -220,7 +225,7 @@ void ForceGuideController::guideControlThread() {
 		auto time_rdy = std::chrono::high_resolution_clock::now();
 		std::chrono::duration<double> time_diff = time_rdy - time_cur; // 时间间隙
 		time_cur = time_rdy;
-		COBOT_LOG.info() << "control period: " << time_diff.count();
+		//COBOT_LOG.info() << "control period: " << time_diff.count();
 
 		if (m_bcontrolStart) {
 			if (!m_bRobotConnect) {
@@ -234,16 +239,8 @@ void ForceGuideController::guideControlThread() {
 			if (m_ptrForceControlSolver)
 			{
 				if (m_ptrKinematicSolver) {
-					std::vector<double> pos;
-					m_ptrKinematicSolver->jntToCart(m_curQ, pos);
-
-					int dir = 1;
-					if (pos[2] < 0.2)
-						dir = 1;
-					else if (pos[2] > 0.4)
-						dir = -1;
-
-					pos[2] += 0.01*(dir);
+					std::vector<double> offset;
+					m_ptrForceControlSolver->solve(offset);
 
 					std::vector<double> targetQ;
 					m_ptrKinematicSolver->cartToJnt(m_curQ, pos, targetQ);

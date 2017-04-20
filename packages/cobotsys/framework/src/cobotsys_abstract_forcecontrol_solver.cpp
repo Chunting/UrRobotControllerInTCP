@@ -7,7 +7,7 @@
 
 
 namespace cobotsys {
-	AbstractForceControlSolver::AbstractForceControlSolver() {
+	AbstractForceControlSolver::AbstractForceControlSolver() : m_ptrKinematicSolver(nullptr){
 }
 
 	AbstractForceControlSolver::~AbstractForceControlSolver() {

@@ -65,7 +65,8 @@ void ::ForceControlSolver::calcForceEE() {
 	{
 		m_forceEE[i] -= m_biasRepair[i];
 	}
-	//todo transform
+	//todo transform from sensor to ee
+
 }
 
 bool ForceControlSolver::setup(const QString& configFilePath) {
@@ -154,13 +155,22 @@ void ForceControlSolver::onArmRobotStatusUpdate(const ArmRobotStatusPtr& ptrRobo
 }
 
 void ForceControlSolver::calGravityEE() {
-	//todo transform
+	//force ee repair
+	std::vector<double> eeGravity;
+	if (m_ptrKinematicSolver) {
+		m_ptrKinematicSolver->vector_WorldToEE(m_curQ, m_gravity, eeGravity);
+	}
+	else {
+		COBOT_LOG.error() << "kinematic solver not created!";
+	}
 	for (size_t i = 0; i < 3; i++) {
-		m_gravityEE[i] = m_gravity[i];
+		m_gravityEE[i] = eeGravity[i];
 	}
-	for (size_t i = 3; i < 6; i++) {
-		m_gravityEE[i] = m_gcenter[i-3];
-	}
+	// torque ee repair
+	m_gravityEE[3] = m_gcenter[0] * (eeGravity[1] + eeGravity[2]);
+	m_gravityEE[4] = m_gcenter[1] * (eeGravity[2] + eeGravity[0]);
+	m_gravityEE[5] = m_gcenter[2] * (eeGravity[0] + eeGravity[1]);
+
 }
 
 int ForceControlSolver::solve(std::vector<double>& targetQ) {
@@ -187,14 +197,24 @@ int ForceControlSolver::solve(const cobotsys::Wrench& wrench, const std::vector<
 	{
 		force[i] -= m_biasRepair[i];
 	}
-	//todo wrench transform ee
-	//todo gravity transform ee
+	//todo transform from sensor to ee
+
+	// gravity 
+	//force ee repair
+	std::vector<double> eeGravity;
+	if (m_ptrKinematicSolver) {
+		m_ptrKinematicSolver->vector_WorldToEE(currentQ, m_gravity, eeGravity);
+	}
+	else {
+		COBOT_LOG.error() << "kinematic solver not created!";
+	}
 	for (size_t i = 0; i < 3; i++) {
-		gravity[i] = m_gravity[i];
+		gravity[i] = eeGravity[i];
 	}
-	for (size_t i = 3; i < 6; i++) {
-		gravity[i] = m_gcenter[i - 3];
-	}
+	// torque ee repair
+	gravity[3] = m_gcenter[0] * (eeGravity[1] + eeGravity[2]);
+	gravity[4] = m_gcenter[1] * (eeGravity[2] + eeGravity[0]);
+	gravity[5] = m_gcenter[2] * (eeGravity[0] + eeGravity[1]);
 
 	//solve
 	step(force, gravity, offset);
