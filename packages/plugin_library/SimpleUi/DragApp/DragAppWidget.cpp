@@ -7,6 +7,7 @@
 
 DragAppWidget::DragAppWidget() {
 	m_ptrForceController.reset(new ForceControllerClass());
+	m_jointValues.resize(6);
     ui.setupUi(this);
 
 	    connect(ui.btnStart, &QPushButton::released, this, &DragAppWidget::start);
@@ -120,7 +121,7 @@ void DragAppWidget::createArmRobotDriver() {
     //    tr("Get Robot Config JSON file ..."),
     //    QString(FileFinder::getPreDefPath().c_str()),
     //    tr("JSON files (*.JSON *.json)"));
-	QString objConfig = FileFinder::find("CONFIG/UrRobotConfig/ur3_180_config.json").c_str();
+	QString objConfig = FileFinder::find("CONFIG/UrRobotConfig/ur3_181_config.json").c_str();
     if (objConfig.isEmpty()) {
         COBOT_LOG.notice() << "robot config is empty, robot create fail.";
         return;
