@@ -201,6 +201,8 @@ void DragAppWidget::createForceSensor() {
 	m_ptrForceSensor = std::dynamic_pointer_cast<AbstractForceSensor>(obj);
 	//TOTO 既然一般来说，json文件中已经包含了factory和typen的信息，何不提供一个接口，让createObject的参数可以直接依据json中的信息来创建。
 	if (m_ptrForceSensor) {
+		auto ob = std::dynamic_pointer_cast<ForceSensorStreamObserver>(shared_from_this());
+		m_ptrForceSensor->attach(ob);
 		if (m_ptrForceSensor->setup(objConfig)) {
 			COBOT_LOG.notice() << "Create Setup force sensor Success";
 		}
