@@ -6,10 +6,10 @@
 #include "DragAppWidget.h"
 
 DragAppWidget::DragAppWidget() {
+	m_ptrForceController.reset(new ForceControllerClass());
     ui.setupUi(this);
 
-
-    connect(ui.btnStart, &QPushButton::released, this, &DragAppWidget::start);
+	    connect(ui.btnStart, &QPushButton::released, this, &DragAppWidget::start);
     connect(ui.btnStop, &QPushButton::released, this, &DragAppWidget::stop);
     connect(ui.btnInit, &QPushButton::released, this, &DragAppWidget::initUiComboList);
     connect(ui.btnCreateArmRobot, &QPushButton::released, this, &DragAppWidget::createArmRobotDriver);
@@ -37,7 +37,9 @@ DragAppWidget::~DragAppWidget() {
 }
 
 void DragAppWidget::start() {
-	m_ptrForceController->initialize();
+	if (m_ptrForceController) {
+		m_ptrForceController->initialize();
+	}
 	if (m_ptrRobot) {
 		m_ptrRobot->start();
 	}
