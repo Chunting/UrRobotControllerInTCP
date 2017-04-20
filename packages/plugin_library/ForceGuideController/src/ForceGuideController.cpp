@@ -212,8 +212,16 @@ bool ForceGuideController::createForceControlSolver() {
 }
 
 void ForceGuideController::guideControlThread() {
+	auto time_cur = std::chrono::high_resolution_clock::now();
 	while (true)
 	{
+		std::chrono::duration<double> dur(0.008);
+		std::this_thread::sleep_until(time_cur + dur);
+		auto time_rdy = std::chrono::high_resolution_clock::now();
+		std::chrono::duration<double> time_diff = time_rdy - time_cur; // 时间间隙
+		time_cur = time_rdy;
+		COBOT_LOG.info() << "control period: " << time_diff.count();
+
 		if (m_bcontrolStart) {
 			if (!m_bRobotConnect) {
 				COBOT_LOG.error() << "robot not connected!";
@@ -242,9 +250,9 @@ void ForceGuideController::guideControlThread() {
 
 					m_ptrRobot->move(targetQ);
 
-					//sleep for loop
-					std::chrono::milliseconds timespan(10); 
-					std::this_thread::sleep_for(timespan);
+					////sleep for loop
+					//std::chrono::milliseconds timespan(10); 
+					//std::this_thread::sleep_for(timespan);
 
 				}
 				else {
