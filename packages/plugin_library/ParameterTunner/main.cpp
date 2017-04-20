@@ -11,8 +11,11 @@
 #include <qgl.h>
 #endif
 
-int main( int argc, char **argv )
-{
+int main(int argc, char** argv) {
+
+    QApplication a(argc, argv);
+    cobotsys::init_library(argc, argv);
+    cobotsys::FileFinder::addSearchPath("UI");
 #if USE_OPENGL
     // on my box QPaintEngine::OpenGL2 has serious problems, f.e:
     // the lines of a simple drawRect are wrong.
@@ -20,11 +23,10 @@ int main( int argc, char **argv )
     QGL::setPreferredPaintEngine( QPaintEngine::OpenGL );
 #endif
 
-    QApplication a( argc, argv );
-
+    cobotsys::GlobalObjectFactory globalObjectFactory;
+    globalObjectFactory.loadLibrarys();
     MainWindow mainWindow;
     mainWindow.resize( 600, 400 );
     mainWindow.show();
-
     return a.exec();
 }

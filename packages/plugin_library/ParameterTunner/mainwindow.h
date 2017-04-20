@@ -2,6 +2,9 @@
 #define _MAIN_WINDOW_H_
 
 #include <qmainwindow.h>
+#include "DragController.h"
+#include <cobotsys_abstract_widget.h>
+
 
 class Plot;
 class Panel;
@@ -18,11 +21,15 @@ public:
 
 private Q_SLOTS:
     void applySettings( const Settings & );
-
+public Q_SLOTS:
+    void onJointUpdated(const StdVector &joints);
+    void onPoseUpdated(const StdVector &xyzrpy);
+    void onForceUpdated(const MyWrench &ptrWrench);
 private:
     Plot *d_plot;
     Panel *d_panel;
     QLabel *d_frameCount;
+    std::shared_ptr<DragController> m_dragController;
 };
 
 #endif

@@ -30,6 +30,21 @@ MainWindow::MainWindow( QWidget *parent ):
 
     connect( d_panel, SIGNAL( settingsChanged( const Settings & ) ),
         this, SLOT( applySettings( const Settings & ) ) );
+
+    m_dragController.reset(new DragController());
+
+    qRegisterMetaType<StdVector>("StdVector");
+    qRegisterMetaType<MyWrench >("MyWrench");
+
+//    connect(ui.btnStart, &QPushButton::released, m_dragController.get(), &DragController::onStartDrag);
+//    connect(ui.btnStop, &QPushButton::released, m_dragController.get(), &DragController::onStopDrag);
+
+
+    connect(m_dragController.get(), SIGNAL(jointUpdated(StdVector)), this, SLOT(onJointUpdated(StdVector)));
+    connect(m_dragController.get(), SIGNAL(poseUpdated(StdVector)), this, SLOT(onPoseUpdated(StdVector)));
+    connect(m_dragController.get(), SIGNAL(forceUpdated(MyWrench)), this, SLOT(onForceUpdated(MyWrench)));
+
+    m_dragController->setup("CONFIG/UrRobotConfig/ur3_181_config.json");
 }
 
 bool MainWindow::eventFilter( QObject *object, QEvent *event )
@@ -73,4 +88,16 @@ void MainWindow::applySettings( const Settings &settings )
     // the canvas might have been recreated
     d_plot->canvas()->removeEventFilter( this );
     d_plot->canvas()->installEventFilter( this );
+}
+
+void MainWindow::onJointUpdated(const StdVector &joints) {
+
+}
+void MainWindow::onPoseUpdated(const StdVector &xyzrpy){
+    // Update to UI
+
+}
+void MainWindow::onForceUpdated(const Wrench &ptrWrench) {
+    // Update to UI
+
 }
