@@ -10,8 +10,7 @@
 #include <extra2.h>
 
 #include "ui_DragAppWidget.h"
-#include "ForceController.h"
-
+#include "DragController.h"
 #include <cobotsys_global_object_factory.h>
 #include <cobotsys_file_finder.h>
 
@@ -32,30 +31,22 @@
 using namespace cobotsys;
 
 class DragAppWidget :
-	public AbstractWidget,
-	public ArmRobotRealTimeStatusObserver,
-	public ForceSensorStreamObserver{
+	public AbstractWidget{
     Q_OBJECT
 public:
 	DragAppWidget();
     virtual ~DragAppWidget();
 
-    void start();
-    void stop();
-
-
     void initUiComboList();
-
-    void createArmRobotDriver();
-    void createSolver();
-	void createForceSensor();
 	void copyCurXyzRpy();
-
 	void copyJoint();
 	void goJoint();
 
-Q_SIGNALS:
-    void jointValueUpdated();
+
+public Q_SLOTS:
+    void onJointUpdated(std::vector<double> joints);
+    void onPoseUpdated(std::vector<double> xyzrpy);
+    void onForceUpdated(Wrench& ptrWrench);
 
 protected:
     virtual void closeEvent(QCloseEvent* event);
@@ -63,36 +54,13 @@ public:
     virtual bool setup(const QString& configFilePath);
 
 
-public:
-    virtual void onArmRobotConnect();
-    virtual void onArmRobotDisconnect();
-    virtual void onArmRobotStatusUpdate(const ArmRobotStatusPtr& ptrRobotStatus);
-
-	virtual void onForceSensorConnect();
-	virtual void onForceSensorDisconnect();
-	virtual void onForceSensorDataStreamUpdate(const std::shared_ptr<Wrench>& ptrWrench);
-
 protected:
-    void onJointUpdate();
     void onGoCommand();
-	void onTimer();
 
-	void onMoveFinish(uint32_t moveId);
 protected:
     Ui::DragAppWidget ui;
     std::vector<QDoubleSpinBox*> m_dsbJointVals;
-
-    std::shared_ptr<AbstractArmRobotRealTimeDriver> m_ptrRobot;
-    std::shared_ptr<AbstractKinematicSolver> m_ptrSolver;
-	std::shared_ptr<AbstractForceSensor> m_ptrForceSensor;
-	std::shared_ptr<ForceControllerClass> m_ptrForceController;
-
-	QTimer *m_timer;
-	QMutex m_mutex;
-
-    std::vector<double> m_jointValues;
-	Wrench m_forceValues;
-	Wrench m_loadGravity;
+	DragController* m_dragController;
 };
 
 

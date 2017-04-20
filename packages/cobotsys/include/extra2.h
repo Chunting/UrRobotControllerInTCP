@@ -20,6 +20,11 @@
 #include <cobotsys.h>
 #define _USE_MATH_DEFINES
 #include <math.h>
+#include <iostream>
+#include <iomanip>        // std::put_time
+#include <thread>         // std::this_thread::sleep_until
+#include <chrono>         // std::chrono::system_clock
+#include <ctime>          // std::time_t, std::tm, std::localtime, std::mktime
 void qt_ba_to_cobot_log(QByteArray& ba);
 void kill_process_childs(int pid, int ppid, std::function<void(int, int)> killMethod);
 QStringList gen_ros_internal_args(const std::map<QString, QString>& arg_map);
