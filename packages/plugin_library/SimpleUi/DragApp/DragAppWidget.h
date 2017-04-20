@@ -33,7 +33,7 @@ using namespace cobotsys;
 
 class DragAppWidget :
 	public AbstractWidget,
-	public ArmRobotMoveStatusObserver,
+	public ArmRobotRealTimeStatusObserver,
 	public ForceSensorStreamObserver{
     Q_OBJECT
 public:
