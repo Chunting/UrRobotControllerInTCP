@@ -3,5 +3,5 @@
   "protocol": "UDP",
   "sensor_factory": "OptoForceSensorFactory, Ver 1.0",
   "sensor_type": "OptoForceSensor",
-  "frequency": 1000
+  "frequency": 125
 }
