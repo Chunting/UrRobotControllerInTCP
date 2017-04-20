@@ -21,6 +21,8 @@ ForceControlSolver::ForceControlSolver() : QObject(nullptr) {
 		m_gravityEE[i] = 0;
 		m_offsetEE[i] = 0;
 	}
+	//construct ForceControllerClass
+	ForceControllerClass();
 }
 
 ForceControlSolver::~ForceControlSolver() {
@@ -67,6 +69,9 @@ void ::ForceControlSolver::calcForceEE() {
 }
 
 bool ForceControlSolver::setup(const QString& configFilePath) {
+	//init ForceControllerClass
+	this->initialize();
+	//
 	QJsonObject json;
 	if (loadJson(json, configFilePath)) {
 		//parser json file
