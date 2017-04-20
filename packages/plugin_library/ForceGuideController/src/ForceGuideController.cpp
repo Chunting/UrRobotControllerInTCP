@@ -134,6 +134,10 @@ bool ForceGuideController::createForceSensor() {
 	if (m_ptrSensor) {
 		auto ob = std::dynamic_pointer_cast<ForceSensorStreamObserver>(shared_from_this());
 		m_ptrSensor->attach(ob);
+		if (m_ptrForceControlSolver) {
+			auto obs = std::dynamic_pointer_cast<ForceSensorStreamObserver>(m_ptrForceControlSolver);
+			m_ptrSensor->attach(obs);
+		}
 		if (m_ptrSensor->setup(m_sensorConfig)) {
 			COBOT_LOG.notice() << "Create and setup force sensor success";
 			ret = true;
@@ -194,6 +198,10 @@ bool ForceGuideController::createForceControlSolver() {
 			if (m_ptrRobot) {
 				auto obs = std::dynamic_pointer_cast<ArmRobotRealTimeStatusObserver>(m_ptrForceControlSolver);
 				m_ptrRobot->attach(obs);
+			}
+			if (m_ptrSensor) {
+				auto obs = std::dynamic_pointer_cast<ForceSensorStreamObserver>(m_ptrForceControlSolver);
+				m_ptrSensor->attach(obs);
 			}
 		}
 		else {
