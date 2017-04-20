@@ -102,7 +102,7 @@ void RobotXyzWidget::createArmRobotDriver() {
     //    tr("Get Robot Config JSON file ..."),
     //    QString(FileFinder::getPreDefPath().c_str()),
     //    tr("JSON files (*.JSON *.json)"));
-	QString objConfig = FileFinder::find("CONFIG/UrRobotConfig/ur3_180_config.json").c_str();
+	QString objConfig = FileFinder::find("CONFIG/UrRobotConfig/ur3_181_config.json").c_str();
     if (objConfig.isEmpty()) {
         COBOT_LOG.notice() << "robot config is empty, robot create fail.";
         return;
@@ -141,7 +141,7 @@ void RobotXyzWidget::createSolver() {
     //    tr("Get Solver Config JSON file ..."),
     //    QString(FileFinder::getPreDefPath().c_str()),
     //    tr("JSON files (*.JSON *.json)"));
-	QString objConfig = FileFinder::find("CONFIG/UrRobotConfig/ur3_180_config.json").c_str();
+	QString objConfig = FileFinder::find("CONFIG/UrRobotConfig/ur3_181_config.json").c_str();
     if (objConfig.isEmpty()) {
         COBOT_LOG.notice() << "robot config is empty, robot create fail.";
         return;
