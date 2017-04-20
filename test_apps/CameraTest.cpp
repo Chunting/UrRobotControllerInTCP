@@ -20,7 +20,7 @@ class FotonicObserver : public cobotsys::CameraStreamObserver {
             //    DepthPixel* arr = (DepthPixel*)depthFrame.getData();
             if (cameraFrame.frames[i].type == cobotsys::ImageType::Depth) {
                 cv::Mat mat = cameraFrame.frames[i].data;
-                cv::imshow("Depth", 64 * mat);
+                cv::imshow("Depth", 64*mat);
                 cv::waitKey(1);
             }
             if (cameraFrame.frames[i].type == cobotsys::ImageType::Color) {

@@ -71,7 +71,7 @@ bool FotonicCamera::open(int deviceId) {
             rc = m_depthStream.start();
             if (rc != STATUS_OK)
             {
-                COBOT_LOG.info() << "Couldn't start the color stream " << OpenNI::getExtendedError() ;
+                COBOT_LOG.info() << "Couldn't start the depth stream " << OpenNI::getExtendedError() ;
             }
         }
         else
@@ -79,6 +79,24 @@ bool FotonicCamera::open(int deviceId) {
             COBOT_LOG.info() << "Couldn't create depth stream " << OpenNI::getExtendedError() ;
         }
     }
+
+//    if (m_device.getSensorInfo(SENSOR_IR) != NULL)
+//    {
+//        rc = m_depthStream.create(m_device, SENSOR_IR);
+//        if (rc == STATUS_OK)
+//        {
+//            rc = m_depthStream.start();
+//            if (rc != STATUS_OK)
+//            {
+//                COBOT_LOG.info() << "Couldn't start the ir stream " << OpenNI::getExtendedError() ;
+//            }
+//        }
+//        else
+//        {
+//            COBOT_LOG.info() << "Couldn't create ir stream " << OpenNI::getExtendedError() ;
+//        }
+//    }
+
 
     //m_device.setImageRegistrationMode(openni::IMAGE_REGISTRATION_DEPTH_TO_COLOR);
     return true;
@@ -125,21 +143,28 @@ bool FotonicCamera::capture(int waitMs) {
             case 0:
                 // Depth
                 m_depthStream.readFrame(&depthFrame);
-                COBOT_LOG.info() << "m_depth.readFrame:" << depthFrame.getData() ;
+//                COBOT_LOG.info() << "m_depth.readFrame:" << depthFrame.getData() ;
                 break;
             case 1:
                 // Color
                 m_colorStream.readFrame(&colorFrame);
-                COBOT_LOG.info() << "m_color.readFrame:" << colorFrame.getData() ;
+//                COBOT_LOG.info() << "m_color.readFrame:" << colorFrame.getData() ;
                 break;
             default:
                 COBOT_LOG.info() << "Unxpected stream..." ;
         }
     }
 
-    cv::Mat raw_color = cv::Mat(colorFrame.getHeight(), colorFrame.getWidth(), CV_8UC3, (uint8_t*)colorFrame.getData());
-    cv::Mat raw_depth = cv::Mat(depthFrame.getHeight(), depthFrame.getWidth(), CV_16UC1, (DepthPixel*)depthFrame.getData());
+    cv::Mat raw_color(colorFrame.getHeight(), colorFrame.getWidth(), CV_8UC3, (uint8_t*)colorFrame.getData());
+    cv::Mat raw_depth(depthFrame.getHeight(), depthFrame.getWidth(), CV_16UC1, (DepthPixel*)depthFrame.getData());
 
+    int pColorX, pColorY;
+    CoordinateConverter::convertDepthToColor(m_depthStream, m_colorStream, 10, 10, raw_depth.at<uint16_t>(10, 10), &pColorX, &pColorY);
+    COBOT_LOG.info() << "convertDepthToColor---x:" << pColorX << "     y:" << pColorY;
+
+    float pWorldX, pWorldY, pWorldZ;
+    CoordinateConverter::convertDepthToWorld(m_depthStream, 10, 10, raw_color.at<uint16_t>(10, 10), &pWorldX, &pWorldY, &pWorldZ);
+    COBOT_LOG.info() << "convertDepthToWorld---x:" << pWorldX << "     y:" << pWorldY << "     z:" << pWorldZ;
     COBOT_LOG.info() << "depthFrame---Height:" << depthFrame.getHeight() << "   m_depthframe---Width:" << depthFrame.getWidth() << "   SIZE:" << depthFrame.getDataSize() ;
 
 
