@@ -33,7 +33,7 @@ void ForceControlSolver::onForceSensorConnect() {
 void ForceControlSolver::onForceSensorDisconnect() {
 }
 
-void ForceControlSolver::onForceSensorDataStreamUpdate(const std::shared_ptr<forcesensor::Wrench>& ptrWrench) {
+void ForceControlSolver::onForceSensorDataStreamUpdate(const std::shared_ptr<cobotsys::Wrench>& ptrWrench) {
 	m_wrenchData.force.x = ptrWrench->force.x;
 	m_wrenchData.force.y = ptrWrench->force.y;
 	m_wrenchData.force.z = ptrWrench->force.z;
@@ -167,7 +167,7 @@ int ForceControlSolver::solve(std::vector<double>& targetQ) {
 	return 0;
 }
 
-int ForceControlSolver::solve(const forcesensor::Wrench& wrench, const std::vector<double>& currentQ, std::vector<double>& targetQ) {
+int ForceControlSolver::solve(const cobotsys::Wrench& wrench, const std::vector<double>& currentQ, std::vector<double>& targetQ) {
 	double force[6];
 	double gravity[6];
 	double offset[6];

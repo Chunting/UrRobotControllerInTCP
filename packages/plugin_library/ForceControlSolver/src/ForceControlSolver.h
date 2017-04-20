@@ -26,7 +26,7 @@ public:
 
 	virtual void onForceSensorConnect();
 	virtual void onForceSensorDisconnect();
-	virtual void onForceSensorDataStreamUpdate(const std::shared_ptr<forcesensor::Wrench>& ptrWrench);
+	virtual void onForceSensorDataStreamUpdate(const std::shared_ptr<cobotsys::Wrench>& ptrWrench);
 
 public:
 	virtual void onArmRobotConnect();
@@ -34,7 +34,7 @@ public:
 	virtual void onArmRobotStatusUpdate(const ArmRobotStatusPtr& ptrRobotStatus);
 
 public:
-	virtual int solve(const forcesensor::Wrench& wrench, const std::vector<double>& currentQ, std::vector<double>& targetQ);
+	virtual int solve(const cobotsys::Wrench& wrench, const std::vector<double>& currentQ, std::vector<double>& targetQ);
 	virtual int solve(std::vector<double>& targetQ);
 
 protected:
@@ -42,7 +42,7 @@ protected:
 	void calcForceEE();
 protected:
 	bool m_bcontrol;
-	cobotsys::forcesensor::Wrench m_wrenchData;
+	cobotsys::Wrench m_wrenchData;
 	std::vector<double> m_curQ;
 	P_ForceController_T m_param;
 	double m_gravity[3];
