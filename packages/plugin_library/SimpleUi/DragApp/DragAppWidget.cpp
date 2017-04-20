@@ -6,10 +6,15 @@
 #include "DragAppWidget.h"
 
 DragAppWidget::DragAppWidget() {
-    m_dragController=new DragController();
+    //m_dragController=new DragController();
+    m_dragController.reset(new DragController());
     ui.setupUi(this);
-	connect(ui.btnStart, &QPushButton::released, m_dragController, &DragController::onStartDrag);
-    connect(ui.btnStop, &QPushButton::released, m_dragController, &DragController::onStopDrag);
+
+    qRegisterMetaType<StdVector>("StdVector");
+    qRegisterMetaType<MyWrench >("MyWrench");
+
+	connect(ui.btnStart, &QPushButton::released, m_dragController.get(), &DragController::onStartDrag);
+    connect(ui.btnStop, &QPushButton::released, m_dragController.get(), &DragController::onStopDrag);
     connect(ui.btnInit, &QPushButton::released, this, &DragAppWidget::initUiComboList);
 	connect(ui.btnCopy, &QPushButton::released, this, &DragAppWidget::copyCurXyzRpy);
 	connect(ui.btnGo, &QPushButton::released, this, &DragAppWidget::onGoCommand);
@@ -17,9 +22,9 @@ DragAppWidget::DragAppWidget() {
 	connect(ui.btnCopyJoint, &QPushButton::released, this, &DragAppWidget::copyJoint);
 	connect(ui.btnGoJoint, &QPushButton::released, this, &DragAppWidget::goJoint);
 
-    connect(m_dragController, &DragController::jointUpdated, this, &DragAppWidget::onJointUpdated);
-    connect(m_dragController, &DragController::poseUpdated, this, &DragAppWidget::onPoseUpdated);
-    connect(m_dragController, &DragController::forceUpdated, this, &DragAppWidget::onForceUpdated);
+    connect(m_dragController.get(), SIGNAL(jointUpdated(StdVector)), this, SLOT(onJointUpdated(StdVector)));
+    connect(m_dragController.get(), SIGNAL(poseUpdated(StdVector)), this, SLOT(onPoseUpdated(StdVector)));
+    connect(m_dragController.get(), SIGNAL(forceUpdated(MyWrench)), this, SLOT(onForceUpdated(MyWrench)));
 
 	
     m_dsbJointVals.push_back(ui.dsbRealJoint_1);
@@ -76,12 +81,12 @@ void DragAppWidget::initUiComboList() {
     }
 }
 
-void DragAppWidget::onJointUpdated(std::vector<double> joints) {
+void DragAppWidget::onJointUpdated(const StdVector &joints) {
     for (size_t i = 0; i < joints.size(); i++) {
         m_dsbJointVals[i]->setValue(joints[i] / M_PI * 180);
     }
 }
-void DragAppWidget::onPoseUpdated(std::vector<double> xyzrpy){
+void DragAppWidget::onPoseUpdated(const StdVector &xyzrpy){
     // Update to UI
     if (xyzrpy.size() == 6) {
         ui.dsbActual_X->setValue(xyzrpy[0] * 1000);
@@ -92,7 +97,7 @@ void DragAppWidget::onPoseUpdated(std::vector<double> xyzrpy){
         ui.dsbActual_y->setValue(xyzrpy[5] / M_PI * 180);
     }
 }
-void DragAppWidget::onForceUpdated(Wrench& ptrWrench) {
+void DragAppWidget::onForceUpdated(const Wrench &ptrWrench) {
     // Update to UI
     ui.dsbFx->setValue(ptrWrench.force.x);
     ui.dsbFy->setValue(ptrWrench.force.y);

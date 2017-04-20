@@ -30,6 +30,9 @@
 //TODO 或可以提出去到XApplication
 using namespace cobotsys;
 
+
+
+
 class DragAppWidget :
 	public AbstractWidget{
     Q_OBJECT
@@ -44,9 +47,9 @@ public:
 
 
 public Q_SLOTS:
-    void onJointUpdated(std::vector<double> joints);
-    void onPoseUpdated(std::vector<double> xyzrpy);
-    void onForceUpdated(Wrench& ptrWrench);
+    void onJointUpdated(const StdVector &joints);
+    void onPoseUpdated(const StdVector &xyzrpy);
+    void onForceUpdated(const MyWrench &ptrWrench);
 
 protected:
     virtual void closeEvent(QCloseEvent* event);
@@ -60,7 +63,8 @@ protected:
 protected:
     Ui::DragAppWidget ui;
     std::vector<QDoubleSpinBox*> m_dsbJointVals;
-	DragController* m_dragController;
+	//DragController* m_dragController;
+	std::shared_ptr<DragController> m_dragController;
 };
 
 

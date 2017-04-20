@@ -28,7 +28,7 @@ int main(int argc, char** argv) {
     auto pObject = globalObjectFactory.createObject("SimpleUiFactory, Ver 1.0", "DragAppWidget");
     auto pWidget = std::dynamic_pointer_cast<QWidget>(pObject);
     if (pWidget) {
-        pObject->setup("");
+        pObject->setup("CONFIG/UrRobotConfig/ur3_181_config.json");
         pWidget->show();
         return a.exec();
     }

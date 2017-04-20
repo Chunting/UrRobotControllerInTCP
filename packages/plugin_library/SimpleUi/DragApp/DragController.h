@@ -30,9 +30,12 @@
 #include <QThread>
 //TODO 或可以提出去到XApplication
 using namespace cobotsys;
+typedef std::vector<double> StdVector;
+typedef Wrench MyWrench;
 
 class DragController :
 	public QThread,
+	public AbstractObject,
 	public ArmRobotRealTimeStatusObserver,
 	public ForceSensorStreamObserver{
     Q_OBJECT
@@ -40,8 +43,8 @@ public:
 	DragController();
     virtual ~DragController();
 
-    bool createArmRobotDriver();
-    bool createSolver();
+    bool createArmRobotDriver(const QString& configFilePath);
+    bool createSolver(const QString& configFilePath);
     bool createForceSensor();
 
     virtual bool setup(const QString& configFilePath);
@@ -54,9 +57,9 @@ public:
     virtual void onForceSensorDataStreamUpdate(const std::shared_ptr<Wrench>& ptrWrench);
 
 Q_SIGNALS:
-    void jointUpdated(std::vector<double> joints);
-    void poseUpdated(std::vector<double> xyzrpy);
-    void forceUpdated(Wrench& ptrWrench);
+    void jointUpdated(const StdVector &joints);
+    void poseUpdated(const StdVector &xyzrpy);
+    void forceUpdated(const MyWrench $ptrWrench);
 public Q_SLOTS:
     void onStartDrag();
     void onStopDrag();

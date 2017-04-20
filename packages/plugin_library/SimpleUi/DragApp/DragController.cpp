@@ -44,15 +44,15 @@ void DragController::onStopDrag() {
 
 bool DragController::setup(const QString& configFilePath) {
 	bool result=true;
-	result&=createArmRobotDriver();
-	result&=createSolver();
+	result&=createArmRobotDriver(configFilePath);
+	result&=createSolver(configFilePath);
 	result&=createForceSensor();
     return result;
 }
 
-bool DragController::createArmRobotDriver() {
+bool DragController::createArmRobotDriver(const QString& configFilePath) {
     if (!GlobalObjectFactory::instance()) return false;
-	QString objConfig = FileFinder::find("CONFIG/UrRobotConfig/ur3_181_config.json").c_str();
+	QString objConfig = FileFinder::find(configFilePath.toStdString()).c_str();
     if (objConfig.isEmpty()) {
         COBOT_LOG.notice() << "robot config is empty, robot create fail.";
         return false;
@@ -60,8 +60,7 @@ bool DragController::createArmRobotDriver() {
     auto obj = GlobalObjectFactory::instance()->createObject("URRealTimeDriverFactory, Ver 1.0", "URRealTimeDriver");
     m_ptrRobot = std::dynamic_pointer_cast<AbstractArmRobotRealTimeDriver>(obj);
     if (m_ptrRobot) {
-		//auto ob = std::dynamic_pointer_cast<ArmRobotRealTimeStatusObserver>(shared_from_this());
-		auto ob = std::dynamic_pointer_cast<ArmRobotRealTimeStatusObserver>(m_ptrRobot);
+		auto ob = std::dynamic_pointer_cast<ArmRobotRealTimeStatusObserver>(shared_from_this());
         m_ptrRobot->attach(ob);
         if (m_ptrRobot->setup(objConfig)) {
             COBOT_LOG.notice() << "Create and setup success";
@@ -74,10 +73,10 @@ bool DragController::createArmRobotDriver() {
 }
 
 
-bool DragController::createSolver() {
+bool DragController::createSolver(const QString& configFilePath) {
     if (!GlobalObjectFactory::instance()) return false;
 
-	QString objConfig = FileFinder::find("CONFIG/UrRobotConfig/ur3_180_config.json").c_str();
+	QString objConfig = FileFinder::find(configFilePath.toStdString()).c_str();
     if (objConfig.isEmpty()) {
         COBOT_LOG.notice() << "robot config is empty, robot create fail.";
         return false;
@@ -110,8 +109,7 @@ bool DragController::createForceSensor() {
 	m_ptrForceSensor = std::dynamic_pointer_cast<AbstractForceSensor>(obj);
 	//TOTO 既然一般来说，json文件中已经包含了factory和typen的信息，何不提供一个接口，让createObject的参数可以直接依据json中的信息来创建。
 	if (m_ptrForceSensor) {
-		//auto ob = std::dynamic_pointer_cast<ForceSensorStreamObserver>(shared_from_this());
-		auto ob = std::dynamic_pointer_cast<ForceSensorStreamObserver>(m_ptrForceSensor);
+		auto ob = std::dynamic_pointer_cast<ForceSensorStreamObserver>(shared_from_this());
 		m_ptrForceSensor->attach(ob);
 		if (m_ptrForceSensor->setup(objConfig)) {
 			COBOT_LOG.notice() << "Create Setup force sensor Success";
@@ -168,7 +166,7 @@ void DragController::onMoveFinish(uint32_t moveId) {
 void DragController::run() {
 	//2ms执行一次
 	//chrono
-
+    //static long time=0;
 	static real_T force_ee[6] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
 	static real_T gravity_ee[6] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
 	static real_T poseOffset_ee[6] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
@@ -212,6 +210,10 @@ void DragController::run() {
         m_ptrSolver->cartToJnt(currentJoints, pose_world, targetJoint);
         m_ptrRobot->move(targetJoint);
         //将控制周期严格限制为2ms。
+//        time+=2;
+//        if(time%1000==0){
+//            COBOT_LOG.notice()<<"time:"<<time;
+//        }
         std::this_thread::sleep_until(timeout);
     }
 }
