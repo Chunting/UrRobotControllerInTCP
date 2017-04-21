@@ -163,6 +163,8 @@ void CameraCalibrationWidget::closeEvent(QCloseEvent* event) {
 }
 
 void CameraCalibrationWidget::calibration() {
+    if (!m_camera->isOpened())
+        return ;
     //图片宽高
     m_cameraCalibration = std::make_shared<CameraCalibration>(cv::Size(boardSizeWidth, boardSizeHeight), caliResultFile);
     //开始标定，则每两秒抓取一次图像

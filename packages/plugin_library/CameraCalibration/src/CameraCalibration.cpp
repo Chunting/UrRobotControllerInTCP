@@ -143,6 +143,11 @@ double CameraCalibration::computeReprojectionErrors(
                       distCoeffs,                                          //【5】摄像机畸变向量(径向畸变,切向畸变k1,k2,k3,p1,p2)
                       imagePoints2);                                       //【6】对于摄像机三维物理坐标框架下的位置,我们计算出来的该三维点在成像仪中的坐标(像素坐标)
 
+        COBOT_LOG.info() <<  "///×××××××××××××××××××××××××××××××××××××××××××××××";
+        COBOT_LOG.info() << imagePoints[i];
+        COBOT_LOG.info() <<  "×××××××××××××××××××××××××××××××××××××××××××××××";
+        COBOT_LOG.info() << imagePoints2;
+        COBOT_LOG.info() <<  "×××××××××××××××××××××××××××××××××××××××××××××××///";
         err              = norm(Mat(imagePoints[i]), Mat(imagePoints2), CV_L2);//【7】两个数组对应元素差值平方的累加和
         int n            = (int)objectPoints[i].size();                        //【8】Vector向量的成员函数--resize(),size(),push_back(),pop_back()
         perViewErrors[i] = (float)std::sqrt(err*err/n);                        //【9】单个三维点的投影误差
@@ -217,7 +222,6 @@ bool CameraCalibration::runCalibration( vector<vector<Point2f> > imagePoints,
                                  tvecs);             //【7】tanslation_vectors--------平移矩阵
 //                                 flags|CV_CALIB_FIX_K4|CV_CALIB_FIX_K5);          ///*|CV_CALIB_FIX_K3*/|CV_CALIB_FIX_K4|CV_CALIB_FIX_K5);
 
-    COBOT_LOG.info() << "RMS error reported by calibrateCamera: " << rms;
 
     bool ok = checkRange(cameraMatrix) && checkRange(distCoeffs);                  //【6】checkRange()函数---用于检查矩阵中的每一个元素是否在指定的一个数值区间之内
 
