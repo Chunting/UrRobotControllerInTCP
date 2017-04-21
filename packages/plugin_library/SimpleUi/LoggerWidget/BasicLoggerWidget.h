@@ -14,12 +14,17 @@
 #include <QTimer>
 #include <QStringList>
 #include "cobotsys_logger.h"
+#include <cobotsys_abstract_widget.h>
 
-class BasicLoggerWidget : public QWidget {
+using cobotsys::AbstractWidget;
+
+class BasicLoggerWidget : public AbstractWidget {
 Q_OBJECT
 public:
-    BasicLoggerWidget(QWidget* parent = nullptr);
+    BasicLoggerWidget();
     ~BasicLoggerWidget();
+
+    virtual bool setup(const QString& configFilePath);
 
 protected:
     void updateTextToUI();

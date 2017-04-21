@@ -29,8 +29,11 @@ void MainWindow::setupUi() {
     connect(ui.action_Show_Logger, &QAction::triggered, this, &MainWindow::onViewLogger);
 
     /// Logger
-    m_basicLoggerWidget = new BasicLoggerWidget(this);
-    m_basicLoggerWidget->setWindowFlags(Qt::Window);
+    if (GlobalObjectFactory::instance()) {
+        auto obj = GlobalObjectFactory::instance()->createObject("SimpleUiFactory, Ver 1.0", "BasicLoggerWidget");
+        m_loggerWidget = std::dynamic_pointer_cast<QWidget>(obj);
+        m_loggerWidget->setWindowFlags(Qt::Window);
+    }
 }
 
 void MainWindow::onStart() {
@@ -43,9 +46,11 @@ void MainWindow::onStop() {
 }
 
 void MainWindow::onViewLogger() {
-    if (ui.action_Show_Logger->isChecked()) {
-        m_basicLoggerWidget->show();
-    } else {
-        m_basicLoggerWidget->hide();
+    if (m_loggerWidget) {
+        if (ui.action_Show_Logger->isChecked()) {
+            m_loggerWidget->show();
+        } else {
+            m_loggerWidget->hide();
+        }
     }
 }

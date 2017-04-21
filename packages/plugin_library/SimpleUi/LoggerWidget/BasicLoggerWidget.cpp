@@ -5,14 +5,18 @@
 
 #include <cobotsys.h>
 #include <cobotsys_gui_logger_highlighter.h>
-#include "basic_logger_widget.h"
+#include "BasicLoggerWidget.h"
 
-BasicLoggerWidget::BasicLoggerWidget(QWidget* parent) : QWidget(parent) {
+BasicLoggerWidget::BasicLoggerWidget() {
     setupUi();
 }
 
 BasicLoggerWidget::~BasicLoggerWidget() {
     COBOT_LOG.clrFilter(this);
+}
+
+bool BasicLoggerWidget::setup(const QString& configFilePath) {
+    return true;
 }
 
 void BasicLoggerWidget::updateTextToUI() {
