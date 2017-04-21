@@ -9,6 +9,7 @@
 #include "cobotsys.h"
 #include <vector>
 #include "cobotsys_abstract_object.h"
+#include "cobotsys_abstract_kinematic_solver.h"
 #include "cobotsys_data_types.h"
 
 namespace cobotsys {
@@ -33,10 +34,10 @@ public:
      * 执行求解功能，根据输入力和位姿数据，计算求解目标位姿.
      * @param[in] wrench 当前力的数据
      * @param[in] currentQ 当前位姿， 关节角
-     * @param[out] targetQ 求解结果, 目标位姿， 关节角
+     * @param[out] offset 求解结果, 目标位姿， xyz,rx,ry,rz
      * @retval 0 求解成功，其余为错误码
      */
-	virtual int solve(const Wrench& wrench, const std::vector<double>& currentQ, std::vector<double>& targetQ)=0;
+	virtual int solve(const Wrench& wrench, const std::vector<double>& currentQ, std::vector<double>& offset)=0;
 
 	/**
 	* 执行求解功能，根据输入力和位姿数据，计算求解目标位姿.

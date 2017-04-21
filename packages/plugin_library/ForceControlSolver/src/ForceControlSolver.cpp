@@ -156,9 +156,14 @@ void ForceControlSolver::onArmRobotStatusUpdate(const ArmRobotStatusPtr& ptrRobo
 
 void ForceControlSolver::calGravityEE() {
 	//force ee repair
-	std::vector<double> eeGravity;
+	Eigen::Vector3d vgravity(m_gravity);
+	//vgravity.x() = m_gravity[0];
+	//vgravity.y() = m_gravity[1];
+	//vgravity.z() = m_gravity[2];
+
+	Eigen::Vector3d eeGravity;
 	if (m_ptrKinematicSolver) {
-		m_ptrKinematicSolver->vector_WorldToEE(m_curQ, m_gravity, eeGravity);
+		m_ptrKinematicSolver->vector_WorldToEE(m_curQ, vgravity, eeGravity);
 	}
 	else {
 		COBOT_LOG.error() << "kinematic solver not created!";
@@ -167,25 +172,25 @@ void ForceControlSolver::calGravityEE() {
 		m_gravityEE[i] = eeGravity[i];
 	}
 	// torque ee repair
-	m_gravityEE[3] = m_gcenter[0] * (eeGravity[1] + eeGravity[2]);
-	m_gravityEE[4] = m_gcenter[1] * (eeGravity[2] + eeGravity[0]);
-	m_gravityEE[5] = m_gcenter[2] * (eeGravity[0] + eeGravity[1]);
+	m_gravityEE[3] = m_gcenter[0] * (eeGravity.y() + eeGravity.z());
+	m_gravityEE[4] = m_gcenter[1] * (eeGravity.z() + eeGravity.x());
+	m_gravityEE[5] = m_gcenter[2] * (eeGravity.x() + eeGravity.y());
 
 }
 
-int ForceControlSolver::solve(std::vector<double>& targetQ) {
-	targetQ.clear();
+int ForceControlSolver::solve(std::vector<double>& offset) {
+	offset.clear();
 	for (int i = 0; i < 6; i++)
 	{
-		targetQ.push_back(m_offsetEE[i]);
+		offset.push_back(m_offsetEE[i]);
 	}
 	return 0;
 }
 
-int ForceControlSolver::solve(const cobotsys::Wrench& wrench, const std::vector<double>& currentQ, std::vector<double>& targetQ) {
+int ForceControlSolver::solve(const cobotsys::Wrench& wrench, const std::vector<double>& currentQ, std::vector<double>& offset) {
 	double force[6];
 	double gravity[6];
-	double offset[6];
+	double roffset[6];
 	force[0] = wrench.force.x;
 	force[1] = wrench.force.y;
 	force[2] = wrench.force.z;
@@ -201,29 +206,34 @@ int ForceControlSolver::solve(const cobotsys::Wrench& wrench, const std::vector<
 
 	// gravity 
 	//force ee repair
-	std::vector<double> eeGravity;
+	Eigen::Vector3d vgravity(m_gravity);
+	//vgravity.x() = m_gravity[0];
+	//vgravity.y() = m_gravity[1];
+	//vgravity.z() = m_gravity[2];
+
+	Eigen::Vector3d eeGravity;
 	if (m_ptrKinematicSolver) {
-		m_ptrKinematicSolver->vector_WorldToEE(currentQ, m_gravity, eeGravity);
+		m_ptrKinematicSolver->vector_WorldToEE(m_curQ, vgravity, eeGravity);
 	}
 	else {
 		COBOT_LOG.error() << "kinematic solver not created!";
 	}
 	for (size_t i = 0; i < 3; i++) {
-		gravity[i] = eeGravity[i];
+		m_gravityEE[i] = eeGravity[i];
 	}
 	// torque ee repair
-	gravity[3] = m_gcenter[0] * (eeGravity[1] + eeGravity[2]);
-	gravity[4] = m_gcenter[1] * (eeGravity[2] + eeGravity[0]);
-	gravity[5] = m_gcenter[2] * (eeGravity[0] + eeGravity[1]);
+	m_gravityEE[3] = m_gcenter[0] * (eeGravity.y() + eeGravity.z());
+	m_gravityEE[4] = m_gcenter[1] * (eeGravity.z() + eeGravity.x());
+	m_gravityEE[5] = m_gcenter[2] * (eeGravity.x() + eeGravity.y());
 
 	//solve
-	step(force, gravity, offset);
+	step(force, gravity, roffset);
 
 	//output
-	targetQ.clear();
+	offset.clear();
 	for (int i = 0; i < 6; i++)
 	{
-		targetQ.push_back(offset[i]);
+		offset.push_back(roffset[i]);
 	}
 	return 0;
 }

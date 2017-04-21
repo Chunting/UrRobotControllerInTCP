@@ -242,9 +242,14 @@ void ForceGuideController::guideControlThread() {
 					std::vector<double> offset;
 					m_ptrForceControlSolver->solve(offset);
 
+					std::vector<double> offset_ee;
+					for (int i = 0; i < 6; i++) {
+						offset_ee.push_back(offset[i]);
+					}
+					std::vector<double> pos;
+					m_ptrKinematicSolver->pose_EEToWorld(m_curQ, offset_ee, pos);
 					std::vector<double> targetQ;
 					m_ptrKinematicSolver->cartToJnt(m_curQ, pos, targetQ);
-
 					m_ptrRobot->move(targetQ);
 
 					////sleep for loop

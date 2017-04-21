@@ -34,8 +34,8 @@ public:
 	virtual void onArmRobotStatusUpdate(const ArmRobotStatusPtr& ptrRobotStatus);
 
 public:
-	virtual int solve(const cobotsys::Wrench& wrench, const std::vector<double>& currentQ, std::vector<double>& targetQ);
-	virtual int solve(std::vector<double>& targetQ);
+	virtual int solve(const cobotsys::Wrench& wrench, const std::vector<double>& currentQ, std::vector<double>& offset);
+	virtual int solve(std::vector<double>& offset);
 
 protected:
 	void calGravityEE();
