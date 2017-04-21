@@ -4,7 +4,8 @@
 #include <qmainwindow.h>
 #include "DragController.h"
 #include <cobotsys_abstract_widget.h>
-
+#include <qwt_plot.h>
+#include <qwt_plot_curve.h>
 
 class Plot;
 class Panel;
@@ -28,8 +29,10 @@ public Q_SLOTS:
 private:
     void dragAction();
     QPushButton *d_dragButton;
-    Plot *d_plot;
-    Panel *d_panel;
+    QwtPlot *d_plot;
+    QwtPlotCurve *d_curve1;
+    QwtPlotCurve *d_curve2;
+
     QLabel *d_frameCount;
     std::shared_ptr<DragController> m_dragController;
 };

@@ -4,8 +4,6 @@
 #include <qevent.h>
 #include <qdatetime.h>
 #include <qwt_plot_canvas.h>
-#include "panel.h"
-#include "plot.h"
 #include "mainwindow.h"
 
 MainWindow::MainWindow( QWidget *parent ):
@@ -14,12 +12,11 @@ MainWindow::MainWindow( QWidget *parent ):
     QWidget *w = new QWidget( this );
     d_dragButton= new QPushButton("Drag Stoped", w);
 
-    d_panel = new Panel( w );
 
-    d_plot = new Plot( w );
+    d_plot = new QwtPlot(QwtText("Two Curves"), w);
 
     QHBoxLayout *hLayout = new QHBoxLayout( w );
-    hLayout->addWidget( d_panel );
+
     hLayout->addWidget( d_plot, 10 );
     hLayout->addWidget( d_dragButton);
     setCentralWidget( w );
@@ -27,10 +24,8 @@ MainWindow::MainWindow( QWidget *parent ):
     d_frameCount = new QLabel( this );
     statusBar()->addWidget( d_frameCount, 10 );
 
-    applySettings( d_panel->settings() );
 
-    connect( d_panel, SIGNAL( settingsChanged( const Settings & ) ),
-        this, SLOT( applySettings( const Settings & ) ) );
+
 
     m_dragController.reset(new DragController());
 
@@ -94,7 +89,6 @@ bool MainWindow::eventFilter( QObject *object, QEvent *event )
 
 void MainWindow::applySettings( const Settings &settings )
 {
-    d_plot->setSettings( settings );
 
     // the canvas might have been recreated
     d_plot->canvas()->removeEventFilter( this );
