@@ -12,16 +12,13 @@ class Panel;
 class QLabel;
 class Settings;
 
-class MainWindow: public QMainWindow
+class MainWindow: public QWidget
 {
     Q_OBJECT
 
 public:
-    MainWindow( QWidget *parent = NULL );
-    virtual bool eventFilter( QObject *, QEvent * );
+    MainWindow( );
 
-private Q_SLOTS:
-    void applySettings( const Settings & );
 public Q_SLOTS:
     void onJointUpdated(const StdVector &joints);
     void onPoseUpdated(const StdVector &xyzrpy);
@@ -30,9 +27,7 @@ private:
     void dragAction();
     QPushButton *d_dragButton;
     QwtPlot *d_plot;
-    QwtPlotCurve *d_curve1;
-    QwtPlotCurve *d_curve2;
-
+    QVector<QwtPlotCurve*> curves;
     QLabel *d_frameCount;
     std::shared_ptr<DragController> m_dragController;
 };

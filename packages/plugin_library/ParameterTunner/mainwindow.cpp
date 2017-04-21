@@ -6,23 +6,20 @@
 #include <qwt_plot_canvas.h>
 #include "mainwindow.h"
 
-MainWindow::MainWindow( QWidget *parent ):
-    QMainWindow( parent )
+MainWindow::MainWindow()
 {
-    QWidget *w = new QWidget( this );
-    d_dragButton= new QPushButton("Drag Stoped", w);
+    d_dragButton= new QPushButton("Drag Stoped", this);
 
 
-    d_plot = new QwtPlot(QwtText("Two Curves"), w);
+    d_plot = new QwtPlot(QwtText("Two Curves"), this);
 
-    QHBoxLayout *hLayout = new QHBoxLayout( w );
+    QHBoxLayout *hLayout = new QHBoxLayout( this );
 
     hLayout->addWidget( d_plot, 10 );
     hLayout->addWidget( d_dragButton);
-    setCentralWidget( w );
+
 
     d_frameCount = new QLabel( this );
-    statusBar()->addWidget( d_frameCount, 10 );
 
 
 
@@ -52,47 +49,6 @@ void MainWindow::dragAction(){
         m_dragController->onStopDrag();
         d_dragButton->setText("Drag stoped");
     }
-}
-bool MainWindow::eventFilter( QObject *object, QEvent *event )
-{
-    if ( object == d_plot->canvas() && event->type() == QEvent::Paint )
-    {
-        static int counter;
-        static QTime timeStamp;
-
-        if ( !timeStamp.isValid() )
-        {
-            timeStamp.start();
-            counter = 0;
-        }
-        else
-        {
-            counter++;
-
-            const double elapsed = timeStamp.elapsed() / 1000.0;
-            if ( elapsed >= 1 )
-            {
-                QString fps;
-                fps.setNum( qRound( counter / elapsed ) );
-                fps += " Fps";
-
-                d_frameCount->setText( fps );
-
-                counter = 0;
-                timeStamp.start();
-            }
-        }
-    }
-
-    return QMainWindow::eventFilter( object, event );
-}
-
-void MainWindow::applySettings( const Settings &settings )
-{
-
-    // the canvas might have been recreated
-    d_plot->canvas()->removeEventFilter( this );
-    d_plot->canvas()->installEventFilter( this );
 }
 
 void MainWindow::onJointUpdated(const StdVector &joints) {
