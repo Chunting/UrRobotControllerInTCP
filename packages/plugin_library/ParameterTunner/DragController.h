@@ -55,6 +55,7 @@ public:
     virtual void onForceSensorConnect();
     virtual void onForceSensorDisconnect();
     virtual void onForceSensorDataStreamUpdate(const std::shared_ptr<Wrench>& ptrWrench);
+	Eigen::Vector3d gravity_t_ee;//只考虑三个轴向力，不考虑转矩。
 
 Q_SIGNALS:
     void jointUpdated(const StdVector &joints);

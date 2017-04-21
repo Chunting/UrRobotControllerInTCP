@@ -3,9 +3,9 @@
 //
 // Code generated for Simulink model 'ForceController'.
 //
-// Model version                  : 1.137
+// Model version                  : 1.138
 // Simulink Coder version         : 8.11 (R2016b) 25-Aug-2016
-// C/C++ source code generated on : Thu Apr 20 22:16:45 2017
+// C/C++ source code generated on : Fri Apr 21 15:33:20 2017
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: 32-bit Generic
@@ -141,6 +141,7 @@ class ForceControllerClass {
 //-
 //  These blocks were eliminated from the model due to optimizations:
 //
+//  Block '<Root>/Gain' : Eliminated nontunable gain of 1
 //  Block '<Root>/Rate Transition' : Eliminated since input and output rates are identical
 
 

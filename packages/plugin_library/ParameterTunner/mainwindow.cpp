@@ -27,19 +27,28 @@ MainWindow::MainWindow():m_ticks(0.0)
     connect(m_timer, &QTimer::timeout,this,&MainWindow::updatePlot);
     m_dragController->setup("CONFIG/UrRobotConfig/ur3_181_config.json");
     initializePlot();
+    m_joints.clear();
+    m_pose.clear();
+    for(int i=0;i<6;i++){
+        m_joints.push_back(0.0);
+        m_pose.push_back(0.0);
+    }
 }
 void MainWindow::updatePlot(){
     static double ticks=0;
-    if(m_ticks.size()>=500){
+    if(m_ticks.size()>=2000){
         m_ticks.erase(m_ticks.begin());
         m_curve_y1.erase(m_curve_y1.begin());
         m_curve_y2.erase(m_curve_y2.begin());
         m_curve_y3.erase(m_curve_y3.begin());
     }
     m_ticks.push_back(ticks);
-    m_curve_y1.push_back(m_force.force.x);
-    m_curve_y2.push_back(m_force.force.y);
-    m_curve_y3.push_back(m_force.force.z);
+//    m_curve_y1.push_back(m_force.force.x);
+//    m_curve_y2.push_back(m_force.force.y);
+//    m_curve_y3.push_back(m_force.force.z);
+    m_curve_y1.push_back(m_joints[0]);
+    m_curve_y2.push_back(m_joints[1]);
+    m_curve_y3.push_back(m_joints[2]);
     curves[0]->setSamples(m_ticks.data(),m_curve_y1.data(),m_ticks.size());
     curves[1]->setSamples(m_ticks.data(),m_curve_y2.data(),m_ticks.size());
     curves[2]->setSamples(m_ticks.data(),m_curve_y3.data(),m_ticks.size());
@@ -67,7 +76,7 @@ void MainWindow::initializePlot(){
     curves[2]->setSamples(m_ticks.data(),m_curve_y3.data(),m_ticks.size());
     curves[0]->setPen(QPen(Qt::red));
     curves[1]->setPen(QPen(Qt::green));
-    curves[2]->setPen(QPen(Qt::gray));
+    curves[2]->setPen(QPen(Qt::yellow));
     curves[0]->attach(d_plot);
     curves[1]->attach(d_plot);
     curves[2]->attach(d_plot);

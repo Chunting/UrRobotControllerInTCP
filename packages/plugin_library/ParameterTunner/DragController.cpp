@@ -10,6 +10,8 @@ typedef std::chrono::high_resolution_clock::time_point timestamp;
 DragController::DragController() :m_stop(false){
 	m_ptrForceController.reset(new ForceControllerClass());
 	m_jointValues.resize(6);
+    m_loadGravity.force=cv::Point3d(0.0,0.0,1);
+    m_loadGravity.torque=cv::Point3d(0.0,0.0,0.0);
 }
 
 DragController::~DragController() {
@@ -166,7 +168,7 @@ void DragController::onMoveFinish(uint32_t moveId) {
 void DragController::run() {
 	//2ms执行一次
 	//chrono
-    //static long time=0;
+    static long time=0;
 	static real_T force_ee[6] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
 	static real_T gravity_ee[6] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
 	static real_T poseOffset_ee[6] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
@@ -186,9 +188,9 @@ void DragController::run() {
         }
         m_mutex.unlock();
         //计算gravity_ee
-        Wrench m_loadGravity;
+
         //TODO 修改接口为cv向量表示。
-        Eigen::Vector3d gravity_t_ee;//只考虑三个轴向力，不考虑转矩。
+
         m_ptrSolver->vector_WorldToEE(currentJoints,
                                       Eigen::Vector3d(m_loadGravity.force.x, m_loadGravity.force.y, m_loadGravity.force.z),
                                       gravity_t_ee);
@@ -210,10 +212,10 @@ void DragController::run() {
         m_ptrSolver->cartToJnt(currentJoints, pose_world, targetJoint);
         m_ptrRobot->move(targetJoint);
         //将控制周期严格限制为2ms。
-//        time+=2;
-//        if(time%1000==0){
-//            COBOT_LOG.notice()<<"time:"<<time;
-//        }
+        time+=2;
+        if(time%10==0){
+            COBOT_LOG.notice()<<"time:"<<time;
+        }
         std::this_thread::sleep_until(timeout);
     }
 }
