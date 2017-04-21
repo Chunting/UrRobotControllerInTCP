@@ -77,7 +77,7 @@ std::ostream& operator<<(std::ostream& oss, const QJsonObject& obj) {
 
 bool isFixedPitch(const QFont & font) {
     const QFontInfo fi(font);
-    qDebug() << fi.family() << fi.fixedPitch();
+    COBOT_LOG.message() << fi.family() << fi.fixedPitch();
     return fi.fixedPitch();
 }
 

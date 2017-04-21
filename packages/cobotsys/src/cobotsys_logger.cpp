@@ -8,12 +8,12 @@
 
 namespace cobotsys {
 
-Logger::MessageWrapper::MessageWrapper(const MessageWrapper & r)
-    : logger(r.logger) {
+Logger::MessageWrapper::MessageWrapper(const MessageWrapper& r)
+        : logger(r.logger) {
 }
 
-Logger::MessageWrapper::MessageWrapper(const std::string & e, Logger & r, LoggerLevel level)
-    : logger(r) {
+Logger::MessageWrapper::MessageWrapper(const std::string& e, Logger& r, LoggerLevel level)
+        : logger(r) {
     oss << "[";
     oss << std::setw(5) << toString(level);
     oss << "]";
@@ -38,7 +38,6 @@ Logger::MessageWrapper::~MessageWrapper() {
 void Logger::MessageWrapper::endl() {
     oss << std::endl;
 }
-
 
 
 Logger::Logger() {
@@ -119,6 +118,11 @@ Logger::MessageWrapper Logger::info() {
     return message("", LoggerLevel::Info);
 }
 
+
+Logger::MessageWrapper Logger::debug() {
+    return message("", LoggerLevel::Debug);
+}
+
 void Logger::setCurrentInstanceName(const std::string& s) {
     m_current_instance_name = s;
 }
@@ -140,14 +144,21 @@ void Logger::clrFilter(void* obj) {
     m_observers.erase(obj);
 }
 
+
 std::string toString(LoggerLevel level) {
     switch (level) {
-    case cobotsys::LoggerLevel::Debug:  return "DEBUG";  break;
-    case cobotsys::LoggerLevel::Info:   return "INFO";   break;
-    case cobotsys::LoggerLevel::Notice: return "NOTIC";  break;
-    case cobotsys::LoggerLevel::Warning:return "WARN";   break;
-    case cobotsys::LoggerLevel::Error:  return "ERROR";  break;
-    case cobotsys::LoggerLevel::Fatal:  return "FATAL";  break;
+    case cobotsys::LoggerLevel::Debug: return "DEBUG";
+        break;
+    case cobotsys::LoggerLevel::Info: return "INFO";
+        break;
+    case cobotsys::LoggerLevel::Notice: return "NOTIC";
+        break;
+    case cobotsys::LoggerLevel::Warning:return "WARN";
+        break;
+    case cobotsys::LoggerLevel::Error: return "ERROR";
+        break;
+    case cobotsys::LoggerLevel::Fatal: return "FATAL";
+        break;
     }
     return std::string();
 }

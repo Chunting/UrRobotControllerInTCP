@@ -64,6 +64,7 @@ public:
     MessageWrapper notice();
     MessageWrapper info();
     MessageWrapper fatal();
+    MessageWrapper debug();
 
     void setAppendFilter(std::function<void(const std::string& message)> filter);
     void addFilter(void* obj, std::function<void(const std::string& message)> filter);
