@@ -10,7 +10,7 @@
 #include <mutex>
 
 #include <pylon/PylonIncludes.h>
-#define USE_USB 1
+#define USE_GIGE 1
 #if defined(USE_1394)
 #include <pylon/1394/Basler1394InstantCamera.h>
 typedef Pylon::CBasler1394InstantCamera Camera_t;

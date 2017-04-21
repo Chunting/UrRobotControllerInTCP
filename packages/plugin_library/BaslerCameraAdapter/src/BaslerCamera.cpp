@@ -11,6 +11,8 @@ using namespace Pylon;
 
 BaslerCamera::BaslerCamera() {
     CTlFactory::GetInstance().EnumerateDevices(m_devices);
+    m_formatConverter = std::make_shared<Pylon::CImageFormatConverter>();
+    m_formatConverter->OutputPixelFormat = PixelType_BGR8packed;
 }
 
 BaslerCamera::~BaslerCamera() {
@@ -48,6 +50,8 @@ bool BaslerCamera::open(int deviceId) {
     m_camera->Open();
     // Start the grabbing of c_countOfImagesToGrab images.
     m_camera->StartGrabbing();
+
+    return true;
 }
 
 void BaslerCamera::close() {
@@ -89,9 +93,15 @@ bool BaslerCamera::capture(int waitMs) {
     // Retrieve grab results and notify the camera event and image event handlers.
     m_camera->RetrieveResult(waitMs, ptrGrabResult, TimeoutHandling_ThrowException);
 
+    if (!ptrGrabResult.IsValid())
+    {
+        COBOT_LOG.info() << "camera grab RetrieveResult failed";
+        return false;
+    }
 
     CPylonImage pylonImage;
     m_formatConverter->Convert(pylonImage, ptrGrabResult);
+    //COBOT_LOG.info() << "camera ptrGrabResult->GetHeight:" << ptrGrabResult->GetHeight() << "      ptrGrabResult->GetWidth:" << ptrGrabResult->GetWidth();
     cv::Mat raw_color = cv::Mat(ptrGrabResult->GetHeight(),
                                   ptrGrabResult->GetWidth(),
                                   CV_8UC3,
@@ -119,11 +129,11 @@ std::string BaslerCamera::getSerialNumber() const {
 }
 
 int BaslerCamera::getImageWidth(int imageIdx) const {
-    return 0;
+    return 2590;
 }
 
 int BaslerCamera::getImageHeight(int imageIdx ) const {
-    return 0;
+    return 1942;
 }
 
 cobotsys::ImageType BaslerCamera::getImageType(int imageIdx) const {
