@@ -29,7 +29,7 @@ public:
     * 返 回 值：是否标定成功，true表示成功，false表示失败
     * 其它说明：
     */
-    bool calibrateFromCamera(const cv::Mat& view, const cv::Size imageSize);
+    bool calibrateFromCamera(const cv::Mat& view, const cv::Size imageSize, bool showUndistorted = true);
     bool calibrateFromFile();
 
 private:

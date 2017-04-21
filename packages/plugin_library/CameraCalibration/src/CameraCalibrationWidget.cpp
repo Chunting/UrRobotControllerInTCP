@@ -7,9 +7,9 @@
 #include <extra2.h>
 #include <cobotsys_file_finder.h>
 
-static const int boardSizeWidth = 5;  // 标定板宽（角点列数）
-static const int boardSizeHeight = 7;  // 标定板高（角点行数）
-static const string caliResultFile = "caliResult1.xml";
+static const int boardSizeWidth = 7;  // 标定板宽（角点列数）
+static const int boardSizeHeight = 5;  // 标定板高（角点行数）
+static const string caliResultFile = "caliResult.xml";
 
 CameraCalibrationWidget::CameraCalibrationWidget() {
     ui.setupUi(this);
@@ -46,29 +46,27 @@ void CameraCalibrationWidget::onCameraStreamUpdate(const cobotsys::CameraFrame& 
             cv::Mat mat = frame.data;
 
             if (m_depthCalibrating) {
-                if (m_cameraCalibration->calibrateFromCamera(mat,
-                                                             cv::Size(m_camera->getImageWidth(2), m_camera->getImageHeight(2))))
+                if (m_cameraCalibration->calibrateFromCamera(mat, mat.size()))
                     m_depthCalibrating = false;
             }
         }
-
         if (frame.type == cobotsys::ImageType::Color) {
             cv::Mat mat;
-//            if (frame.data.cols > 1920 / 2) {   先不考虑图片宽高问题
-//                cv::pyrDown(frame.data, mat);
-//            } else {
-                mat = frame.data;
-//            }
+            mat = frame.data;
 
             if (m_rgbCalibrating) {
                 //开始标定，开始先寻找角点
-                if (m_cameraCalibration->calibrateFromCamera(mat,
-                                                             cv::Size(m_camera->getImageWidth(0), m_camera->getImageHeight(0))))
+                //COBOT_LOG.warning() << "mat.size().width:" << mat.size().width << "     mat.size().height:" << mat.size().height;
+                if (m_cameraCalibration->calibrateFromCamera(mat, mat.size()))
                     //标定成功，则结束标定
                     m_rgbCalibrating = false;
             }
 
-            m_imageCache.updateImage(mat);
+            cv::Mat showmat;
+            if (frame.data.cols > 1920 / 2) {
+                cv::pyrDown(mat, showmat);
+            }
+            m_imageCache.updateImage(showmat);
             Q_EMIT imageUpdated();
         }
     }

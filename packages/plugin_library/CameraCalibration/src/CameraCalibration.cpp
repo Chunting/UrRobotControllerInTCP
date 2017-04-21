@@ -29,10 +29,8 @@ CameraCalibration::~CameraCalibration()
 
 }
 
-bool CameraCalibration::calibrateFromCamera(const cv::Mat& view, const Size imageSize)
+bool CameraCalibration::calibrateFromCamera(const cv::Mat& view, const Size imageSize, bool showUndistorted)
 {
-//    namedWindow( "Image View", 1 );                                                        //[12]创建一个视频窗口
-
     Mat viewGray;
     vector<Point2f> pointbuf;
     cvtColor(view, viewGray, COLOR_BGR2GRAY);
@@ -73,7 +71,6 @@ bool CameraCalibration::calibrateFromCamera(const cv::Mat& view, const Size imag
                       true,
                       false)) {
             COBOT_LOG.info() << "CameraCalibration success";
-            return true;
         }
         else {
             COBOT_LOG.info() << "CameraCalibration failed";
@@ -84,33 +81,24 @@ bool CameraCalibration::calibrateFromCamera(const cv::Mat& view, const Size imag
         return false;
     }
 
-//    if(showUndistorted )                            //【6】进行图像校正
-//    {
-//        Mat view, rview, map1, map2;
-//
-//        initUndistortRectifyMap(cameraMatrix,
-//                                distCoeffs,
-//                                Mat(),
-//                                getOptimalNewCameraMatrix(cameraMatrix, distCoeffs, imageSize, 1, imageSize, 0),
-//                                imageSize,
-//                                CV_16SC2,
-//                                map1,
-//                                map2);
-//
-//        for( i = 0; i < (int)imageList.size(); i++ )
-//        {
-//            view = imread(imageList[i], 1);
-//            if(!view.data)
-//                continue;
-//            //undistort( view, rview, cameraMatrix, distCoeffs, cameraMatrix );
-//            remap(view, rview, map1, map2, INTER_LINEAR);
-//            imshow("Image View", rview);
-//            int c = 0xff & waitKey();
-//            if( (c & 255) == 27 || c == 'q' || c == 'Q' )
-//                break;
-//        }
-//    }
+    if(showUndistorted)                            //【6】进行图像校正
+    {
+        imwrite("distort.png", view);
+        Mat rview, map1, map2;
 
+        initUndistortRectifyMap(m_cameraMatrix,
+                                m_distCoeffs,
+                                Mat(),
+                                getOptimalNewCameraMatrix(m_cameraMatrix, m_distCoeffs, imageSize, 1, imageSize, 0),
+                                imageSize,
+                                CV_16SC2,
+                                map1,
+                                map2);
+
+        remap(view, rview, map1, map2, INTER_LINEAR);
+        imwrite("undistort.png", rview);
+    }
+    return true;
 }/*  calibrateFromCamera()   */
 
 /*
