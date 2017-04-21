@@ -8,6 +8,12 @@
 
 
 #include <QWidget>
+#include <QPlainTextEdit>
+#include <QVBoxLayout>
+#include <QAction>
+#include <QTimer>
+#include <QStringList>
+#include "cobotsys_logger.h"
 
 class BasicLoggerWidget : public QWidget {
 Q_OBJECT
@@ -15,9 +21,17 @@ public:
     BasicLoggerWidget(QWidget* parent = nullptr);
     ~BasicLoggerWidget();
 
+protected:
+    void updateTextToUI();
+    void appendText(const std::string& message);
+    void setupUi();
 
 protected:
-
+    QPlainTextEdit* m_plainTextEdit;
+    QVBoxLayout* m_boxLayout;
+    QTextCursor m_textCursor;
+    QTimer* m_editUpdateTimer;
+    QString m_cachedMessage;
 };
 
 

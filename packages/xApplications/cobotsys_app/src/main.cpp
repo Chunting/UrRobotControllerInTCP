@@ -3,6 +3,16 @@
 // Copyright (c) 2017 Wuhan Collaborative Robot Technology Co.,Ltd. All rights reserved.
 //
 
-int main(int argc, char** argv){
-    return 0;
+#include <QApplication>
+#include "main_window_widget.h"
+
+int main(int argc, char** argv) {
+    QApplication a(argc, argv);
+    cobotsys::init_library(argc, argv);
+    cobotsys::GlobalObjectFactory globalObjectFactory;
+    globalObjectFactory.loadLibrarys();
+
+    MainWindow w;
+    w.show();
+    return a.exec();
 }

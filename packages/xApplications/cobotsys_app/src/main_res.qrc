@@ -1,0 +1,8 @@
+<RCC>
+  <qresource prefix="icons">
+    <file>resources/console_64px_1170180_easyicon.net.png</file>
+    <file>resources/Pause_Pressed_64px_560490_easyicon.net.png</file>
+    <file>resources/start.png</file>
+    <file>resources/Stop_Pressed_64px_560471_easyicon.net.png</file>
+  </qresource>
+</RCC>
