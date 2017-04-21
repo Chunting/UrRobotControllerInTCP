@@ -12,6 +12,7 @@ MainWindow::MainWindow( QWidget *parent ):
     QMainWindow( parent )
 {
     QWidget *w = new QWidget( this );
+    d_dragButton= new QPushButton("Drag Stoped", w);
 
     d_panel = new Panel( w );
 
@@ -20,7 +21,7 @@ MainWindow::MainWindow( QWidget *parent ):
     QHBoxLayout *hLayout = new QHBoxLayout( w );
     hLayout->addWidget( d_panel );
     hLayout->addWidget( d_plot, 10 );
-
+    hLayout->addWidget( d_dragButton);
     setCentralWidget( w );
 
     d_frameCount = new QLabel( this );
@@ -35,8 +36,8 @@ MainWindow::MainWindow( QWidget *parent ):
 
     qRegisterMetaType<StdVector>("StdVector");
     qRegisterMetaType<MyWrench >("MyWrench");
-
-//    connect(ui.btnStart, &QPushButton::released, m_dragController.get(), &DragController::onStartDrag);
+    connect(d_dragButton, &QPushButton::released, this, &MainWindow::dragAction);
+   // connect(ui.btnStart, &QPushButton::released, m_dragController.get(), &DragController::onStartDrag);
 //    connect(ui.btnStop, &QPushButton::released, m_dragController.get(), &DragController::onStopDrag);
 
 
@@ -46,7 +47,17 @@ MainWindow::MainWindow( QWidget *parent ):
 
     m_dragController->setup("CONFIG/UrRobotConfig/ur3_181_config.json");
 }
-
+void MainWindow::dragAction(){
+    static bool runStatus=false;
+    runStatus=!runStatus;
+    if(runStatus){
+        m_dragController->onStartDrag();
+        d_dragButton->setText("Drag running");
+    }else{
+        m_dragController->onStopDrag();
+        d_dragButton->setText("Drag stoped");
+    }
+}
 bool MainWindow::eventFilter( QObject *object, QEvent *event )
 {
     if ( object == d_plot->canvas() && event->type() == QEvent::Paint )

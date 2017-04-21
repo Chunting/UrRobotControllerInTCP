@@ -26,6 +26,8 @@ public Q_SLOTS:
     void onPoseUpdated(const StdVector &xyzrpy);
     void onForceUpdated(const MyWrench &ptrWrench);
 private:
+    void dragAction();
+    QPushButton *d_dragButton;
     Plot *d_plot;
     Panel *d_panel;
     QLabel *d_frameCount;
