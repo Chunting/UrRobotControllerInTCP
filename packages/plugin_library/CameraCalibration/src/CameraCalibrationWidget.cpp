@@ -163,7 +163,7 @@ void CameraCalibrationWidget::closeEvent(QCloseEvent* event) {
 }
 
 void CameraCalibrationWidget::calibration() {
-    if (!m_camera->isOpened())
+    if (!m_camera || !m_camera->isOpened())
         return ;
     //图片宽高
     m_cameraCalibration = std::make_shared<CameraCalibration>(cv::Size(boardSizeWidth, boardSizeHeight), caliResultFile);
