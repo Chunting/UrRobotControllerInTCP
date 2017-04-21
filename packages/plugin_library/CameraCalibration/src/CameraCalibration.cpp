@@ -4,6 +4,8 @@
 
 #include "CameraCalibration.h"
 #include "cobotsys_logger.h"
+
+using std::vector;
 /*  
 * 函数名称：CameraCalibration 
 * 函数功能：类构造函数  

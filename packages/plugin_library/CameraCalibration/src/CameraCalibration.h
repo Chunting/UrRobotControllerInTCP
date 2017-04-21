@@ -6,8 +6,11 @@
 #define COBOTSYS_CAMERACALIBRATION_H
 
 #include <opencv2/opencv.hpp>
+#include <string>
 
 using namespace cv;
+using std::vector;
+using std::string;
 
 enum Pattern { CHESSBOARD, CIRCLES_GRID, ASYMMETRIC_CIRCLES_GRID };
 
