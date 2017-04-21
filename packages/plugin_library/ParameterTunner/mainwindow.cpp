@@ -30,7 +30,7 @@ MainWindow::MainWindow():m_ticks(0.0)
 }
 void MainWindow::updatePlot(){
     static double ticks=0;
-    if(m_ticks.size()>=5000){
+    if(m_ticks.size()>=500){
         m_ticks.erase(m_ticks.begin());
         m_curve_y1.erase(m_curve_y1.begin());
         m_curve_y2.erase(m_curve_y2.begin());
@@ -43,6 +43,12 @@ void MainWindow::updatePlot(){
     curves[0]->setSamples(m_ticks.data(),m_curve_y1.data(),m_ticks.size());
     curves[1]->setSamples(m_ticks.data(),m_curve_y2.data(),m_ticks.size());
     curves[2]->setSamples(m_ticks.data(),m_curve_y3.data(),m_ticks.size());
+
+
+    if (m_ticks.size() > 2) {
+        d_plot->setAxisScale(QwtPlot::Axis::xBottom, m_ticks.front(), m_ticks.back());
+    }
+
     ticks+=0.01;
     d_plot->replot();
 }
@@ -59,6 +65,9 @@ void MainWindow::initializePlot(){
     curves[0]->setSamples(m_ticks.data(),m_curve_y1.data(),m_ticks.size());
     curves[1]->setSamples(m_ticks.data(),m_curve_y2.data(),m_ticks.size());
     curves[2]->setSamples(m_ticks.data(),m_curve_y3.data(),m_ticks.size());
+    curves[0]->setPen(QPen(Qt::red));
+    curves[1]->setPen(QPen(Qt::green));
+    curves[2]->setPen(QPen(Qt::gray));
     curves[0]->attach(d_plot);
     curves[1]->attach(d_plot);
     curves[2]->attach(d_plot);
