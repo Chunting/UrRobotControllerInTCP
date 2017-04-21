@@ -4,6 +4,7 @@ function RTW_SidParentMap() {
     this.sidParentMap["ForceController:45"] = "ForceController";
     this.sidParentMap["ForceController:16"] = "ForceController";
     this.sidParentMap["ForceController:4"] = "ForceController";
+    this.sidParentMap["ForceController:54"] = "ForceController";
     this.sidParentMap["ForceController:47"] = "ForceController";
     this.sidParentMap["ForceController:17"] = "ForceController";
     this.sidParentMap["ForceController:46"] = "ForceController";

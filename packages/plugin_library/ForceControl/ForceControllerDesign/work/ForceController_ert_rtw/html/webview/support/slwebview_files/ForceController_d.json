@@ -840,6 +840,64 @@
   }
  },
  {
+  "sid":"ForceController:54",
+  "className":"Simulink.Gain",
+  "icon":"WebViewIcon2",
+  "name":"Gain",
+  "parent":"ForceController",
+  "inspector":{
+   "params":[
+    "Gain",
+    "Multiplication",
+    "OutMin",
+    "OutMax",
+    "OutDataTypeStr",
+    "LockScale",
+    "RndMeth",
+    "SaturateOnIntegerOverflow",
+    "ParamMin",
+    "ParamMax",
+    "ParamDataTypeStr",
+    "SampleTime"
+   ],
+   "values":[
+    "1",
+    "Element-wise(K.*u)",
+    "[]",
+    "[]",
+    "Inherit: Inherit via internal rule",
+    "off",
+    "Floor",
+    "off",
+    "[]",
+    "[]",
+    "Inherit: Inherit via internal rule",
+    "-1"
+   ],
+   "tabs":[
+    "Main",
+    "Signal Attributes",
+    "Parameter Attributes",
+    "-Other"
+   ],
+   "tabs_idx":[
+    0,
+    2,
+    8,
+    11
+   ]
+  },
+  "viewer":{
+   "jshandler":"webview/handlers/ElementHandler"
+  },
+  "obj_viewer":[
+  ],
+  "finder":{
+   "blocktype":"Gain",
+   "masktype":""
+  }
+ },
+ {
   "sid":"ForceController:14#out:1",
   "className":"Simulink.Line",
   "icon":"WebViewIcon3",
@@ -1191,6 +1249,56 @@
  },
  {
   "sid":"ForceController:47#out:1",
+  "className":"Simulink.Line",
+  "icon":"WebViewIcon3",
+  "name":"",
+  "parent":"ForceController",
+  "inspector":{
+   "params":[
+    "SignalNameFromLabel",
+    "MustResolveToSignal",
+    "ShowPropagatedSignal",
+    "DataLogging",
+    "TestPoint",
+    "SignalObjectPackage",
+    "StorageClass",
+    "Description",
+    "documentLink"
+   ],
+   "values":[
+    "",
+    "off",
+    "off",
+    "off",
+    "off",
+    "Simulink",
+    "Auto",
+    "",
+    ""
+   ],
+   "tabs":[
+    "Parameter Attributes",
+    "Logging and Accessibility",
+    "Code Generation",
+    "Documentation"
+   ],
+   "tabs_idx":[
+    0,
+    3,
+    5,
+    7
+   ]
+  },
+  "viewer":{
+   "jshandler":"webview/handlers/ElementHandler"
+  },
+  "obj_viewer":[
+  ],
+  "finder":[
+  ]
+ },
+ {
+  "sid":"ForceController:54#out:1",
   "className":"Simulink.Line",
   "icon":"WebViewIcon3",
   "name":"",

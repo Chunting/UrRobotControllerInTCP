@@ -202,20 +202,26 @@ void DragController::run() {
         gravity_ee[5] = m_loadGravity.torque.z;
 
         m_ptrForceController->step(force_ee, gravity_ee, poseOffset_ee);
-        std::vector<double> pose_ee;
-        for (int i = 0; i < 6; i++) {
-            pose_ee.push_back(poseOffset_ee[i]);
+        if(time%4==0){
+            std::vector<double> pose_ee;
+            for (int i = 0; i < 6; i++) {
+                pose_ee.push_back(poseOffset_ee[i]);
+            }
+            std::vector<double> pose_world;
+            m_ptrSolver->pose_EEToWorld(currentJoints, pose_ee, pose_world);
+            std::vector<double> targetJoint;
+            //timestamp t1=std::chrono::high_resolution_clock::now();
+            m_ptrSolver->cartToJnt(currentJoints, pose_world, targetJoint);
+            //timestamp t2=std::chrono::high_resolution_clock::now();
+            //std::chrono::duration<double> dur=t2-t1;
+            //COBOT_LOG.notice()<<"cartToJnt Execute time:"<<dur.count();
+            m_ptrRobot->move(targetJoint);
         }
-        std::vector<double> pose_world;
-        m_ptrSolver->pose_EEToWorld(currentJoints, pose_ee, pose_world);
-        std::vector<double> targetJoint;
-        m_ptrSolver->cartToJnt(currentJoints, pose_world, targetJoint);
-        m_ptrRobot->move(targetJoint);
         //将控制周期严格限制为2ms。
-        time+=2;
-        if(time%10==0){
-            COBOT_LOG.notice()<<"time:"<<time;
-        }
+//        time+=1;
+//        if(time%1000==0){
+//            COBOT_LOG.notice()<<"time:"<<time;
+//        }
         std::this_thread::sleep_until(timeout);
     }
 }

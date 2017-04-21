@@ -10,7 +10,7 @@ find_package(Qt5Core REQUIRED)
 find_package(Qt5Gui REQUIRED)
 find_package(Qt5Widgets REQUIRED) # Fuck, 如果要使用autouic那么必须引用这个Qt5Widgets.
 
-get_filename_component(proj_dir_name ${CMAKE_CURRENT_SOURCE_DIR} NAME_WE)
+get_filename_component(proj_dir_name . NAME_WE)
 
 file(GLOB src *.cpp *.h)
 

@@ -7,9 +7,11 @@ function RTW_Sid2UrlHash() {
 	/* <Root>/Dead Zone */
 	this.urlHashMap["ForceController:16"] = "msg=rtwMsg_notTraceable&block=ForceController:16";
 	/* <Root>/Discrete PID Controller */
-	this.urlHashMap["ForceController:4"] = "ForceController.h:162";
+	this.urlHashMap["ForceController:4"] = "ForceController.h:163";
+	/* <Root>/Gain */
+	this.urlHashMap["ForceController:54"] = "ForceController.h:144";
 	/* <Root>/Rate Transition */
-	this.urlHashMap["ForceController:47"] = "ForceController.h:144";
+	this.urlHashMap["ForceController:47"] = "ForceController.h:145";
 	/* <Root>/Saturation */
 	this.urlHashMap["ForceController:17"] = "msg=rtwMsg_notTraceable&block=ForceController:17";
 	/* <Root>/Sum2 */
@@ -52,6 +54,8 @@ function RTW_rtwnameSIDMap() {
 	this.sidHashMap["ForceController:16"] = {rtwname: "<Root>/Dead Zone"};
 	this.rtwnameHashMap["<Root>/Discrete PID Controller"] = {sid: "ForceController:4"};
 	this.sidHashMap["ForceController:4"] = {rtwname: "<Root>/Discrete PID Controller"};
+	this.rtwnameHashMap["<Root>/Gain"] = {sid: "ForceController:54"};
+	this.sidHashMap["ForceController:54"] = {rtwname: "<Root>/Gain"};
 	this.rtwnameHashMap["<Root>/Rate Transition"] = {sid: "ForceController:47"};
 	this.sidHashMap["ForceController:47"] = {rtwname: "<Root>/Rate Transition"};
 	this.rtwnameHashMap["<Root>/Saturation"] = {sid: "ForceController:17"};

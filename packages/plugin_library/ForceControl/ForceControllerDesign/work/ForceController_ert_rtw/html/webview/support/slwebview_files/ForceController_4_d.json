@@ -202,42 +202,44 @@
   "parent":"ForceController:4",
   "inspector":{
    "params":[
-    "OutDataTypeStr",
-    "ParamDataTypeStr",
     "Gain",
-    "LockScale",
     "Multiplication",
-    "OutMax",
     "OutMin",
-    "ParamMax",
-    "ParamMin",
+    "OutMax",
+    "OutDataTypeStr",
+    "LockScale",
     "RndMeth",
-    "SampleTime",
-    "SaturateOnIntegerOverflow"
+    "SaturateOnIntegerOverflow",
+    "ParamMin",
+    "ParamMax",
+    "ParamDataTypeStr",
+    "SampleTime"
    ],
    "values":[
-    "Inherit: Inherit via internal rule",
-    "Inherit: Inherit via internal rule",
     "P",
-    "off",
     "Element-wise(K.*u)",
-    "POutMax",
     "POutMin",
-    "PParamMax",
-    "PParamMin",
+    "POutMax",
+    "Inherit: Inherit via internal rule",
+    "off",
     "Floor",
-    "SampleTime",
-    "off"
+    "off",
+    "PParamMin",
+    "PParamMax",
+    "Inherit: Inherit via internal rule",
+    "SampleTime"
    ],
    "tabs":[
+    "Main",
     "Signal Attributes",
     "Parameter Attributes",
     "-Other"
    ],
    "tabs_idx":[
     0,
-    1,
-    2
+    2,
+    8,
+    11
    ]
   },
   "viewer":{
@@ -258,42 +260,44 @@
   "parent":"ForceController:4",
   "inspector":{
    "params":[
-    "OutDataTypeStr",
-    "ParamDataTypeStr",
     "Gain",
-    "LockScale",
     "Multiplication",
-    "OutMax",
     "OutMin",
-    "ParamMax",
-    "ParamMin",
+    "OutMax",
+    "OutDataTypeStr",
+    "LockScale",
     "RndMeth",
-    "SampleTime",
-    "SaturateOnIntegerOverflow"
+    "SaturateOnIntegerOverflow",
+    "ParamMin",
+    "ParamMax",
+    "ParamDataTypeStr",
+    "SampleTime"
    ],
    "values":[
-    "Inherit: Inherit via internal rule",
-    "Inherit: Inherit via internal rule",
     "I",
-    "off",
     "Element-wise(K.*u)",
-    "IOutMax",
     "IOutMin",
-    "IParamMax",
-    "IParamMin",
+    "IOutMax",
+    "Inherit: Inherit via internal rule",
+    "off",
     "Floor",
-    "SampleTime",
-    "off"
+    "off",
+    "IParamMin",
+    "IParamMax",
+    "Inherit: Inherit via internal rule",
+    "SampleTime"
    ],
    "tabs":[
+    "Main",
     "Signal Attributes",
     "Parameter Attributes",
     "-Other"
    ],
    "tabs_idx":[
     0,
-    1,
-    2
+    2,
+    8,
+    11
    ]
   },
   "viewer":{
@@ -314,42 +318,44 @@
   "parent":"ForceController:4",
   "inspector":{
    "params":[
-    "OutDataTypeStr",
-    "ParamDataTypeStr",
     "Gain",
-    "LockScale",
     "Multiplication",
-    "OutMax",
     "OutMin",
-    "ParamMax",
-    "ParamMin",
+    "OutMax",
+    "OutDataTypeStr",
+    "LockScale",
     "RndMeth",
-    "SampleTime",
-    "SaturateOnIntegerOverflow"
+    "SaturateOnIntegerOverflow",
+    "ParamMin",
+    "ParamMax",
+    "ParamDataTypeStr",
+    "SampleTime"
    ],
    "values":[
-    "Inherit: Inherit via internal rule",
-    "Inherit: Inherit via internal rule",
     "D",
-    "off",
     "Element-wise(K.*u)",
-    "DOutMax",
     "DOutMin",
-    "DParamMax",
-    "DParamMin",
+    "DOutMax",
+    "Inherit: Inherit via internal rule",
+    "off",
     "Floor",
-    "SampleTime",
-    "off"
+    "off",
+    "DParamMin",
+    "DParamMax",
+    "Inherit: Inherit via internal rule",
+    "SampleTime"
    ],
    "tabs":[
+    "Main",
     "Signal Attributes",
     "Parameter Attributes",
     "-Other"
    ],
    "tabs_idx":[
     0,
-    1,
-    2
+    2,
+    8,
+    11
    ]
   },
   "viewer":{
@@ -532,42 +538,44 @@
   "parent":"ForceController:4",
   "inspector":{
    "params":[
-    "OutDataTypeStr",
-    "ParamDataTypeStr",
     "Gain",
-    "LockScale",
     "Multiplication",
-    "OutMax",
     "OutMin",
-    "ParamMax",
-    "ParamMin",
+    "OutMax",
+    "OutDataTypeStr",
+    "LockScale",
     "RndMeth",
-    "SampleTime",
-    "SaturateOnIntegerOverflow"
+    "SaturateOnIntegerOverflow",
+    "ParamMin",
+    "ParamMax",
+    "ParamDataTypeStr",
+    "SampleTime"
    ],
    "values":[
-    "Inherit: Inherit via internal rule",
-    "Inherit: Inherit via internal rule",
     "N",
-    "off",
     "Element-wise(K.*u)",
-    "NOutMax",
     "NOutMin",
-    "NParamMax",
-    "NParamMin",
+    "NOutMax",
+    "Inherit: Inherit via internal rule",
+    "off",
     "Floor",
-    "SampleTime",
-    "off"
+    "off",
+    "NParamMin",
+    "NParamMax",
+    "Inherit: Inherit via internal rule",
+    "SampleTime"
    ],
    "tabs":[
+    "Main",
     "Signal Attributes",
     "Parameter Attributes",
     "-Other"
    ],
    "tabs_idx":[
     0,
-    1,
-    2
+    2,
+    8,
+    11
    ]
   },
   "viewer":{

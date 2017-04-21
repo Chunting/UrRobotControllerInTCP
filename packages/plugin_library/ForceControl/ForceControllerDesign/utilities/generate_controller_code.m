@@ -19,7 +19,7 @@ project = simulinkproject;
 projectRoot = project.RootFolder;
 srcPath=[projectRoot '/work/ForceController_ert_rtw'];
 cd(projectRoot);
-endPath='../../ParameterTunner';
+endPath='../../../xApplications/ParameterTunner';
 %copyfile([srcPath '/ert_main.cpp'],endPath);
 copyfile([srcPath '/ForceController.cpp'],endPath);
 copyfile([srcPath '/ForceController.h'],endPath);
