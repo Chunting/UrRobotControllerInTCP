@@ -40,8 +40,6 @@ std::shared_ptr<AbstractDigitIoDriver> URRealTimeDriver::getDigitIoDriver(int de
         return m_digitOutput;
     if (deviceId == 1)
         return m_digitInput;
-    if (deviceId == 2)
-        return m_toolInput;
     return nullptr;
 }
 
@@ -78,9 +76,7 @@ bool URRealTimeDriver::start() {
 
     // 这里是数字驱动的部分
     m_digitInput = make_shared<CobotUrDigitIoAdapter>(*(m_urDriver->m_urRealTimeCommCtrl));
-    m_toolInput = make_shared<CobotUrDigitIoAdapter>(*(m_urDriver->m_urRealTimeCommCtrl));
     m_digitOutput = make_shared<CobotUrDigitIoAdapter>(*(m_urDriver->m_urRealTimeCommCtrl));
-    m_toolInput->m_isInput = true;
     m_digitInput->m_isInput = true;
     m_digitOutput->m_isOutput = true;
     return true;
@@ -223,11 +219,9 @@ void URRealTimeDriver::_updateDigitIoStatus() {
         auto outBits = m_urDriver->m_urCommCtrl->ur->getRobotState()->getDigitalOutputBits();
         auto inBits = m_urDriver->m_urCommCtrl->ur->getRobotState()->getDigitalInputBits();
 
-        m_toolInput->m_inputIoStatus = (inBits >> 16) && 0x0ff;
         m_digitInput->m_inputIoStatus = inBits;
         m_digitOutput->m_outputIoStatus = outBits;
 
-        m_toolInput->debugIoStatus();
         m_digitInput->debugIoStatus();
         m_digitOutput->debugIoStatus();
     }

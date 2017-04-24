@@ -34,7 +34,7 @@ void CobotUrDigitIoAdapter::setIo(DigitIoPorts ioPorts, DigitIoStatus ioStatus) 
 
 DigitIoStatus CobotUrDigitIoAdapter::getIoStatus(DigitIoPort ioPort) {
     if (m_isInput) {
-        if ((m_inputIoStatus << 1) & (int) ioPort) {
+        if (m_inputIoStatus & (int) ioPort) {
             return DigitIoStatus::Set;
         }
     }

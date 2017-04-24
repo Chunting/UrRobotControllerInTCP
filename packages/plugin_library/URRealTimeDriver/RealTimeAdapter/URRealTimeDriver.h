@@ -66,7 +66,6 @@ protected:
 
     shared_ptr<CobotUrDigitIoAdapter> m_digitInput;
     shared_ptr<CobotUrDigitIoAdapter> m_digitOutput;
-    shared_ptr<CobotUrDigitIoAdapter> m_toolInput;
 };
 
 
