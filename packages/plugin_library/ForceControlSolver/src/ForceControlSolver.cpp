@@ -21,6 +21,11 @@ ForceControlSolver::ForceControlSolver() : QObject(nullptr) {
 		m_gravityEE[i] = 0;
 		m_offsetEE[i] = 0;
 	}
+
+	m_jntSize = 6;
+	m_posEfFactor = 0.1;
+	m_posEf.init(m_jntSize, m_posEfFactor);
+
 	//construct ForceControllerClass
 	ForceControllerClass();
 }
@@ -201,10 +206,13 @@ void ForceControlSolver::calGravityEE() {
 
 int ForceControlSolver::solve(std::vector<double>& offset) {
 	offset.clear();
+	std::vector<double> src;
 	for (int i = 0; i < 6; i++)
 	{
-		offset.push_back(m_offsetEE[i]);
+		src.push_back(m_offsetEE[i]);
 	}
+
+	m_posEf.doFilter(src, offset);
 	return 0;
 }
 

@@ -13,6 +13,7 @@
 #include "../solver/ForceController.h"
 #include <QObject>
 #include <QString>
+#include "../filter/ExponentialFilter.h"
 
 using namespace cobotsys;
 
@@ -53,6 +54,10 @@ protected:
 	double m_forceEE[6];
 	double m_gravityEE[6];
 	double m_offsetEE[6];
+
+	ExponentialFilter m_posEf;
+	int m_jntSize;
+	double m_posEfFactor;
 };
 
 
