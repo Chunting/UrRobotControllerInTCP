@@ -18,27 +18,27 @@ enum class DigitIoStatus {
 };
 
 enum class DigitIoPort {
-    Port_0,
-    Port_1,
-    Port_2,
-    Port_3,
-    Port_4,
-    Port_5,
-    Port_6,
-    Port_7,
+    Port_0 = 1UL << 0,
+    Port_1 = 1UL << 1,
+    Port_2 = 1UL << 2,
+    Port_3 = 1UL << 3,
+    Port_4 = 1UL << 4,
+    Port_5 = 1UL << 5,
+    Port_6 = 1UL << 6,
+    Port_7 = 1UL << 7,
 
-    Port_8,
-    Port_9,
-    Port_10,
-    Port_11,
-    Port_12,
-    Port_13,
-    Port_14,
-    Port_15,
+    Port_8 = 1UL << 8,
+    Port_9 = 1UL << 9,
+    Port_10 = 1UL << 10,
+    Port_11 = 1UL << 11,
+    Port_12 = 1UL << 12,
+    Port_13 = 1UL << 13,
+    Port_14 = 1UL << 14,
+    Port_15 = 1UL << 15,
 
-    Port_16,
+    Port_16 = 1UL << 16,
     Port_Ur_Tool_In_0 = (int) Port_16,
-    Port_17
+    Port_17 = 1UL << 17
 };
 
 Q_DECLARE_FLAGS(DigitIoPorts, DigitIoPort);
