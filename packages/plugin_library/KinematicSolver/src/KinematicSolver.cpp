@@ -50,6 +50,9 @@ int KinematicSolver::cartToJnt(const std::vector<double>& initialJoint, const st
 	case -3:
 		COBOT_LOG.error() << "Kinamatic Solver:number of iterations is exceeded.";
 		break;
+	default:
+		COBOT_LOG.error() << "Kinamatic Solver:  unknown error.";
+		break;
 	}
 	//if (retval != 0) {
 	//	std::cout << "---------Inverse Kinematic Solver failed ----------------------------" << endl;
@@ -93,6 +96,9 @@ int KinematicSolver::cartToJnt(const Eigen::VectorXd& initialJoint, const std::v
 	case -3:
 		COBOT_LOG.error() << "Kinamatic Solver:number of iterations is exceeded.";
 		break;
+	default:
+		COBOT_LOG.error() << "Kinamatic Solver:  unknown error.";
+		break;
 	}
 	//if (retval != 0) {
 	//	std::cout << "---------Inverse Kinematic Solver failed ----------------------------" << endl;
@@ -133,6 +139,9 @@ int KinematicSolver::cartToJnt(const Eigen::VectorXd& initialJoint, const Eigen:
 		break;
 	case -3:
 		COBOT_LOG.error() << "Kinamatic Solver:number of iterations is exceeded.";
+		break;
+	default:
+		COBOT_LOG.error() << "Kinamatic Solver:  unknown error.";
 		break;
 	}
 	//if (retval != 0) {
