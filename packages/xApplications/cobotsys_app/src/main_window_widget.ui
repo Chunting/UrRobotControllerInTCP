@@ -27,6 +27,7 @@
     <property name="title">
      <string>&amp;File</string>
     </property>
+    <addaction name="action_New"/>
     <addaction name="action_Quit"/>
    </widget>
    <widget class="QMenu" name="menu_View">
@@ -71,9 +72,6 @@
    </property>
   </action>
   <action name="action_Show_Logger">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
    <property name="icon">
     <iconset resource="main_res.qrc">
      <normaloff>:/icons/resources/console_64px_1170180_easyicon.net.png</normaloff>:/icons/resources/console_64px_1170180_easyicon.net.png</iconset>
@@ -116,6 +114,11 @@
    </property>
    <property name="text">
     <string>&amp;Stop</string>
+   </property>
+  </action>
+  <action name="action_New">
+   <property name="text">
+    <string>&amp;New</string>
    </property>
   </action>
  </widget>

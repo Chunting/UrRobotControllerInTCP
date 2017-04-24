@@ -19,6 +19,7 @@ file(GLOB ${PROJECT_NAME}_files
         SimpleWidgetViewer/*
         DragApp/*
         LoggerWidget/*
+        Widgets/*
         )
 
 add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_files})
