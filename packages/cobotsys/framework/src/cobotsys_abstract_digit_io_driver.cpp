@@ -12,4 +12,8 @@ AbstractDigitIoDriver::AbstractDigitIoDriver() {
 
 AbstractDigitIoDriver::~AbstractDigitIoDriver() {
 }
+
+bool AbstractDigitIoDriver::setToolVoltage(double v) {
+    return false;
+}
 }
