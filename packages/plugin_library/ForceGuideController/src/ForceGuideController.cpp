@@ -218,6 +218,7 @@ bool ForceGuideController::createForceControlSolver() {
 
 void ForceGuideController::guideControlThread() {
 	auto time_cur = std::chrono::high_resolution_clock::now();
+	int nc = 0;
 	while (true)
 	{
 		std::chrono::duration<double> dur(0.008);
@@ -225,20 +226,33 @@ void ForceGuideController::guideControlThread() {
 		auto time_rdy = std::chrono::high_resolution_clock::now();
 		std::chrono::duration<double> time_diff = time_rdy - time_cur; // 时间间隙
 		time_cur = time_rdy;
+		nc++;
 		//COBOT_LOG.info() << "control period: " << time_diff.count();
 
 		if (m_bcontrolStart) {
 			if (!m_bRobotConnect) {
-				COBOT_LOG.error() << "robot not connected!";
+				if (nc == 100) {
+					COBOT_LOG.error() << "robot not connected!";
+					nc = 0;
+				}
 				continue;
 			}
 			if (!m_bSensorConnect) {
-				COBOT_LOG.error() << "force sensor not connected!";
+				if (nc == 100) {
+					COBOT_LOG.error() << "force sensor not connected!";
+					nc = 0;
+				}
 				continue;
 			}
 			auto ioStatus = m_ptrRobot->getDigitIoDriver(1);
-			
+			//setToolVoltage
+			ioStatus->setToolVoltage(6.0);
+
 			if (ioStatus->getIoStatus(DigitIoPort::Port_Ur_Tool_In_0) == DigitIoStatus::Set) {
+				if (nc == 100) {
+					COBOT_LOG.error() << "io button not pressed!";
+					nc = 0;
+				}
 				continue;
 			}
 			if (m_ptrForceControlSolver)
@@ -263,13 +277,19 @@ void ForceGuideController::guideControlThread() {
 
 				}
 				else {
-					COBOT_LOG.error() << "kinematic solver not created!";
+					if (nc == 100) {
+						COBOT_LOG.error() << "kinematic solver not created!";
+					}
 				}
 			}
 			else {
-				COBOT_LOG.error() << "Force control solver not created!";
+				if (nc == 100) {
+					COBOT_LOG.error() << "Force control solver not created!";
+				}
 			}
 		}
+		if (nc == 100)
+			nc = 0;
 	}
 }
 

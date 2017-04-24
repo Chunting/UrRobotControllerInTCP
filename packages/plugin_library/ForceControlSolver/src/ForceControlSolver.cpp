@@ -49,8 +49,8 @@ void ForceControlSolver::onForceSensorDataStreamUpdate(const std::shared_ptr<cob
 
 	//
 	step(m_forceEE, m_gravityEE, m_offsetEE);
-	COBOT_LOG.notice() << " offset:   transition: " << m_offsetEE [0]<<","<< m_offsetEE [1]<<","<< m_offsetEE [2]<<"\r\n"
-		<<" \t\t\t rotation: " << m_offsetEE[3] << "," << m_offsetEE[4] << "," << m_offsetEE[5] << "\r\n";
+	/*COBOT_LOG.notice() << " offset:   transition: " << m_offsetEE [0]<<","<< m_offsetEE [1]<<","<< m_offsetEE [2]<<"\r\n"
+		<<" \t\t\t rotation: " << m_offsetEE[3] << "," << m_offsetEE[4] << "," << m_offsetEE[5] << "\r\n";*/
 }
 
 void ::ForceControlSolver::calcForceEE() {
