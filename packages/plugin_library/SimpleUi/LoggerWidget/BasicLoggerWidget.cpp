@@ -39,7 +39,10 @@ void BasicLoggerWidget::appendText(const std::string& message) {
 void BasicLoggerWidget::setupUi() {
     resize(1024, 600);
     setWindowTitle(tr("Logger"));
+
     m_plainTextEdit = new QPlainTextEdit(this);
+    m_plainTextEdit->setContextMenuPolicy(Qt::CustomContextMenu);
+
     m_boxLayout = new QVBoxLayout;
 
     m_boxLayout->setContentsMargins(QMargins());
@@ -60,5 +63,17 @@ void BasicLoggerWidget::setupUi() {
     connect(m_editUpdateTimer, &QTimer::timeout, this, &BasicLoggerWidget::updateTextToUI);
     m_editUpdateTimer->start();
 
+    connect(m_plainTextEdit, &QWidget::customContextMenuRequested, this, &BasicLoggerWidget::customMenu);
+
     COBOT_LOG.addFilter(this, [=](const std::string& m) { appendText(m); });
+}
+
+void BasicLoggerWidget::customMenu() {
+    auto menu = m_plainTextEdit->createStandardContextMenu();
+    menu->addSeparator();
+
+    auto action = menu->addAction(tr("Clear"));
+    connect(action, &QAction::triggered, [=]() { m_plainTextEdit->clear(); });
+
+    menu->exec(QCursor::pos());
 }

@@ -12,6 +12,7 @@
 #include <QVBoxLayout>
 #include <QAction>
 #include <QTimer>
+#include <QMenu>
 #include <QStringList>
 #include "cobotsys_logger.h"
 #include <cobotsys_abstract_widget.h>
@@ -31,6 +32,7 @@ protected:
     void appendText(const std::string& message);
     void setupUi();
 
+    void customMenu();
 protected:
     QPlainTextEdit* m_plainTextEdit;
     QVBoxLayout* m_boxLayout;
