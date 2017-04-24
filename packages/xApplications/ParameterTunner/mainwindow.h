@@ -69,6 +69,7 @@ private:
     int m_paramGroupIndex;
     std::vector<QComboBox*> d_cboSignal;//3
     QComboBox* d_cboParam;
+    std::shared_ptr<QWidget> m_loggerWidget;
 };
 
 #endif

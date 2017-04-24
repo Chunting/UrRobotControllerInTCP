@@ -55,6 +55,13 @@ MainWindow::MainWindow() : m_ticks(0.0) {
         d_sldBox[i]->setNum(*m_param[i]);
        d_sldBox[i]->d_slider->setValue(*m_param[i]);
     }
+    if (GlobalObjectFactory::instance()) {
+        auto obj = GlobalObjectFactory::instance()->createObject("SimpleUiFactory, Ver 1.0", "BasicLoggerWidget");
+        m_loggerWidget = std::dynamic_pointer_cast<QWidget>(obj);
+        m_loggerWidget->setWindowFlags(Qt::Window);
+    }
+    v1Layout->addWidget(m_loggerWidget.get());
+
     m_paramGroupIndex=0;
     d_cboSignal[0]->setCurrentIndex(0);
     d_cboSignal[1]->setCurrentIndex(1);
