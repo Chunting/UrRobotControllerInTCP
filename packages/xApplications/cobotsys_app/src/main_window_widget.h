@@ -14,6 +14,7 @@
 #include "ui_main_window_widget.h"
 #include "SharedObjectEnumerator.h"
 #include <QActionGroup>
+#include <QCloseEvent>
 
 using namespace cobotsys;
 
@@ -37,6 +38,10 @@ protected:
     void onNewWidget();
 
     void setWidget(std::shared_ptr<AbstractObject>& shared_obj);
+
+
+protected:
+    virtual void closeEvent(QCloseEvent* event);
 
 protected:
     std::shared_ptr<AbstractObject> m_widgetObject;

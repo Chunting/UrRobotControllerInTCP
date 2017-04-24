@@ -108,3 +108,8 @@ void MainWindow::setWidget(std::shared_ptr<AbstractObject>& shared_obj) {
         m_uiCtrlActionGroup->setEnabled(false);
     }
 }
+
+void MainWindow::closeEvent(QCloseEvent* event) {
+    m_loggerWidget->close();
+    QWidget::closeEvent(event);
+}
