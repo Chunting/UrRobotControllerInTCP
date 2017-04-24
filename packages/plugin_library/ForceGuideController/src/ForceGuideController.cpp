@@ -9,6 +9,7 @@
 #include <QtWidgets/QFileDialog>
 #include <cobotsys_file_finder.h>
 #include <thread>
+#include "../../URRealTimeDriver/RealTimeAdapter/CobotUrDigitIoAdapter.h"
 
 ForceGuideController::ForceGuideController() : 
 	QObject(nullptr),
@@ -246,7 +247,8 @@ void ForceGuideController::guideControlThread() {
 			}
 			auto ioStatus = m_ptrRobot->getDigitIoDriver(1);
 			//setToolVoltage
-			ioStatus->setToolVoltage(6.0);
+			std::shared_ptr<CobotUrDigitIoAdapter> pIO = std::dynamic_pointer_cast<CobotUrDigitIoAdapter>(ioStatus);
+			pIO->setToolVoltage(6.0);
 
 			if (ioStatus->getIoStatus(DigitIoPort::Port_Ur_Tool_In_0) == DigitIoStatus::Set) {
 				if (nc == 100) {
@@ -265,10 +267,15 @@ void ForceGuideController::guideControlThread() {
 					for (int i = 0; i < 6; i++) {
 						offset_ee.push_back(offset[i]);
 					}
+
+					m_mutex.lock();
+					std::vector<double> curQ = m_curQ;
+					m_mutex.unlock();
+
 					std::vector<double> pos;
-					m_ptrKinematicSolver->pose_EEToWorld(m_curQ, offset_ee, pos);
+					m_ptrKinematicSolver->pose_EEToWorld(curQ, offset_ee, pos);
 					std::vector<double> targetQ;
-					m_ptrKinematicSolver->cartToJnt(m_curQ, pos, targetQ);
+					m_ptrKinematicSolver->cartToJnt(curQ, pos, targetQ);
 					m_ptrRobot->move(targetQ);
 
 					////sleep for loop
@@ -325,10 +332,13 @@ void ForceGuideController::stopForceSensor() {
 
 bool ForceGuideController::start() {
 	bool ret = true;
-	//
-	startRobot();
+
 	//
 	startForceSensor();
+
+	//
+	startRobot();
+
 	m_bcontrolStart = true;
 	return ret;
 }
@@ -357,7 +367,9 @@ void ForceGuideController::onArmRobotStatusUpdate(const ArmRobotStatusPtr& ptrRo
 		return;
 	}
 
+	m_mutex.lock();
 	m_curQ = ptrRobotStatus->q_actual;
+	m_mutex.unlock();
 
 	//std::vector<double> pos;
 	//m_ptrKinematicSolver->jntToCart(m_curQ, pos);
@@ -383,12 +395,14 @@ void ForceGuideController::onForceSensorDisconnect() {
 }
 
 void ForceGuideController::onForceSensorDataStreamUpdate(const std::shared_ptr<cobotsys::Wrench>& ptrWrench) {
+	m_mutex.lock();
 	m_wrenchData.force.x = ptrWrench->force.x;
 	m_wrenchData.force.y = ptrWrench->force.y;
 	m_wrenchData.force.z = ptrWrench->force.z;
 	m_wrenchData.torque.x = ptrWrench->torque.x;
 	m_wrenchData.torque.y = ptrWrench->torque.y;
 	m_wrenchData.torque.z = ptrWrench->torque.z;
+	m_mutex.unlock();
 	//COBOT_LOG.notice() << " wrench:   force: " << m_wrenchData.force.x<<","<< m_wrenchData.force.y<<","<< m_wrenchData.force.z<<"\r\n"
 	//	<<" \t\t\t torque: " << m_wrenchData.torque.x << "," << m_wrenchData.torque.y << "," << m_wrenchData.torque.z << "\r\n";
 }
