@@ -236,6 +236,11 @@ void ForceGuideController::guideControlThread() {
 				COBOT_LOG.error() << "force sensor not connected!";
 				continue;
 			}
+			auto ioStatus = m_ptrRobot->getDigitIoDriver(1);
+			
+			if (ioStatus->getIoStatus(DigitIoPort::Port_Ur_Tool_In_0) == DigitIoStatus::Set) {
+				continue;
+			}
 			if (m_ptrForceControlSolver)
 			{
 				if (m_ptrKinematicSolver) {
