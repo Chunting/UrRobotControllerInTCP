@@ -110,6 +110,7 @@ void MainWindow::setWidget(std::shared_ptr<AbstractObject>& shared_obj) {
 }
 
 void MainWindow::closeEvent(QCloseEvent* event) {
+    takeCentralWidget();
     m_loggerWidget->close();
     QWidget::closeEvent(event);
 }
