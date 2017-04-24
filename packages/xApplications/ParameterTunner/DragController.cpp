@@ -164,13 +164,13 @@ void DragController::onForceSensorDataStreamUpdate(const std::shared_ptr<Wrench>
 void DragController::onMoveFinish(uint32_t moveId) {
 
 }
-void DragController::setFlag(DragController::Controller_Status status){
-    m_statuFlag=status;
+void DragController::setControllerStatus(DragController::Controller_Status status){
+    m_controllerStatus=status;
 }
 void DragController::run() {
 
     while(!m_stop){
-        switch (m_statuFlag)
+        switch (m_controllerStatus)
         {
             case IDLE:
                 break;
@@ -268,6 +268,8 @@ void DragController::GravityCalib(){
     m_Optoforce_Offset.torque.x=(upForce.torque.x+downForce.torque.x)/2.0;
     m_Optoforce_Offset.torque.y=(upForce.torque.y+downForce.torque.y)/2.0;
     m_Optoforce_Offset.torque.z=(upForce.torque.z+downForce.torque.z)/2.0;
+
+    m_controllerStatus=IDLE;
 }
 void DragController::DragPhase() {
     //2ms执行一次

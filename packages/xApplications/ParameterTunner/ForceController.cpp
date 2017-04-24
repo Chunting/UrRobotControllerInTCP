@@ -3,9 +3,9 @@
 //
 // Code generated for Simulink model 'ForceController'.
 //
-// Model version                  : 1.144
+// Model version                  : 1.146
 // Simulink Coder version         : 8.11 (R2016b) 25-Aug-2016
-// C/C++ source code generated on : Mon Apr 24 11:05:39 2017
+// C/C++ source code generated on : Mon Apr 24 16:46:02 2017
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: 32-bit Generic
@@ -17,6 +17,24 @@
 
 // Exported block signals
 real_T force_error[6];                 // '<Root>/Sum2'
+
+// Exported block parameters
+real_T PID_D[6] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 } ;// Variable: D
+                                                    //  Referenced by: '<S1>/Derivative Gain'
+
+
+real_T PID_I[6] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 } ;// Variable: I
+                                                    //  Referenced by: '<S1>/Integral Gain'
+
+
+real_T PID_N[6] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 } ;// Variable: N
+                                                    //  Referenced by: '<S1>/Filter Coefficient'
+
+
+real_T PID_P[6] = { 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 } ;// Variable: P
+                                                    //  Referenced by: '<S1>/Proportional Gain'
+
+
 static void rate_scheduler(RT_MODEL_ForceController_T *const ForceController_M);
 
 //
@@ -41,6 +59,7 @@ void ForceControllerClass::step(const real_T (&force_ee)[6], const real_T
   (&gravity_ee)[6], real_T (&poseOffset_ee)[6])
 {
   int32_T i;
+  real_T rtb_Gain;
   real_T rtb_FilterCoefficient;
   if ((&ForceController_M)->Timing.TaskCounters.TID[1] == 0) {
     for (i = 0; i < 6; i++) {
@@ -50,28 +69,29 @@ void ForceControllerClass::step(const real_T (&force_ee)[6], const real_T
 
       force_error[i] = force_ee[i] - gravity_ee[i];
 
+      // Gain: '<Root>/Gain'
+      rtb_Gain = 0.001 * force_error[i];
+
       // Gain: '<S1>/Filter Coefficient' incorporates:
       //   DiscreteIntegrator: '<S1>/Filter'
       //   Gain: '<S1>/Derivative Gain'
       //   Sum: '<S1>/SumD'
 
-      rtb_FilterCoefficient = (ForceController_P.D[i] * force_error[i] -
-        ForceController_DW.Filter_DSTATE[i]) * ForceController_P.N[i];
+      rtb_FilterCoefficient = (PID_D[i] * rtb_Gain -
+        ForceController_DW.Filter_DSTATE[i]) * PID_N[i];
 
       // Outport: '<Root>/poseOffset_ee' incorporates:
       //   DiscreteIntegrator: '<S1>/Integrator'
       //   Gain: '<S1>/Proportional Gain'
       //   Sum: '<S1>/Sum'
 
-      ForceController_Y.poseOffset_ee[i] = (ForceController_P.P[i] *
-        force_error[i] + ForceController_DW.Integrator_DSTATE[i]) +
-        rtb_FilterCoefficient;
+      ForceController_Y.poseOffset_ee[i] = (PID_P[i] * rtb_Gain +
+        ForceController_DW.Integrator_DSTATE[i]) + rtb_FilterCoefficient;
 
       // Update for DiscreteIntegrator: '<S1>/Integrator' incorporates:
       //   Gain: '<S1>/Integral Gain'
 
-      ForceController_DW.Integrator_DSTATE[i] += ForceController_P.I[i] *
-        force_error[i] * 0.008;
+      ForceController_DW.Integrator_DSTATE[i] += PID_I[i] * rtb_Gain * 0.008;
 
       // Update for DiscreteIntegrator: '<S1>/Filter'
       ForceController_DW.Filter_DSTATE[i] += 0.008 * rtb_FilterCoefficient;
@@ -121,30 +141,6 @@ void ForceControllerClass::terminate()
 // Constructor
 ForceControllerClass::ForceControllerClass()
 {
-  static const P_ForceController_T ForceController_P_temp = {
-    //  Variable: D
-    //  Referenced by: '<S1>/Derivative Gain'
-
-    { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
-
-    //  Variable: I
-    //  Referenced by: '<S1>/Integral Gain'
-
-    { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
-
-    //  Variable: N
-    //  Referenced by: '<S1>/Filter Coefficient'
-
-    { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
-
-    //  Variable: P
-    //  Referenced by: '<S1>/Proportional Gain'
-
-    { 0.001, 0.001, 0.001, 0.001, 0.001, 0.001 }
-  };                                   // Modifiable parameters
-
-  // Initialize tunable parameters
-  ForceController_P = ForceController_P_temp;
 }
 
 // Destructor

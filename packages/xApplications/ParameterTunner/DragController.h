@@ -46,7 +46,7 @@ public:
     bool createArmRobotDriver(const QString& configFilePath);
     bool createSolver(const QString& configFilePath);
     bool createForceSensor();
-	void setFlag(DragController::Controller_Status status);
+	void setControllerStatus(DragController::Controller_Status status);
     virtual bool setup(const QString& configFilePath);
     virtual void onArmRobotConnect();
     virtual void onArmRobotDisconnect();
@@ -83,7 +83,7 @@ protected:
 	Wrench m_forceValues;
 	Wrench m_Optoforce_Offset;
 	Wrench m_loadGravity;
-	Controller_Status m_statuFlag;
+	Controller_Status m_controllerStatus;
 };
 
 

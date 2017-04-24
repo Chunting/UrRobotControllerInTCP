@@ -12,13 +12,14 @@ class SliderBox: public QWidget
 public:
     SliderBox( int sliderType, QWidget *parent = NULL );
 
-private Q_SLOTS:
+    QwtSlider *d_slider;
+public Q_SLOTS:
     void setNum( double v );
 
 private:
     QwtSlider *createSlider( int sliderType ) const;
 
-    QwtSlider *d_slider;
+
     QLabel *d_label;
 };
 

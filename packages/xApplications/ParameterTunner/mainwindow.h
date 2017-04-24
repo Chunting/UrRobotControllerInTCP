@@ -2,6 +2,7 @@
 #define _MAIN_WINDOW_H_
 
 #include "DragController.h"
+#include "sliderbox.h"
 #include <cobotsys_abstract_widget.h>
 #include <qwt_plot.h>
 #include <qwt_plot_curve.h>
@@ -23,10 +24,30 @@ public Q_SLOTS:
     void onJointUpdated(const StdVector &joints);
     void onPoseUpdated(const StdVector &xyzrpy);
     void onForceUpdated(const MyWrench &ptrWrench);
+    void onParamGroupChanged(int index);
+    void onSignal1Changed(int index);
+    void onSignal2Changed(int index);
+    void onSignal3Changed(int index);
+
+    void onSlide1ValueChanged(double value);
+    void onSlide2ValueChanged(double value);
+    void onSlide3ValueChanged(double value);
+    void onSlide4ValueChanged(double value);
+    void onSlide5ValueChanged(double value);
+    void onSlide6ValueChanged(double value);
+
+
 private:
-    void dragAction();
+    void onConnectDevice();
+    void onSettingCalib();
+    void onDragStart();
     void updatePlot();
     void initializePlot();
+
+
+
+    QPushButton *d_connButton;
+    QPushButton *d_calibButton;
     QPushButton *d_dragButton;
     QwtPlot *d_plot;
     QVector<QwtPlotCurve*> curves;
@@ -40,18 +61,13 @@ private:
     std::vector<double> m_curve_y2;
     std::vector<double> m_curve_y3;
 
-    QLabel* d_lblSig1;
-    QLabel* d_lblSig2;
-    QLabel* d_lblSig3;
 
-    double* m_sig1;
-    double* m_sig2;
-    double* m_sig3;
-
-    QComboBox* d_cboSignal1;
-    QComboBox* d_cboSignal2;
-    QComboBox* d_cboSignal3;
-
+    std::vector<QLabel*> d_lblSig;//3
+    std::vector<double*> m_sig;//3
+    std::vector<SliderBox*> d_sldBox;//6
+    std::vector<double*> m_param;//6
+    int m_paramGroupIndex;
+    std::vector<QComboBox*> d_cboSignal;//3
     QComboBox* d_cboParam;
 };
 
