@@ -11,7 +11,7 @@
 #include <thread>
 #include "../../URRealTimeDriver/RealTimeAdapter/CobotUrDigitIoAdapter.h"
 
-ForceGuideController::ForceGuideController() : 
+ForceGuideController::ForceGuideController() :
 	QObject(nullptr),
 	m_ptrRobot(nullptr),
 	m_ptrSensor(nullptr),
@@ -19,9 +19,10 @@ ForceGuideController::ForceGuideController() :
 	m_ptrKinematicSolver(nullptr),
 	m_bcontrolStart(false),
 	m_bRobotConnect(false),
-	m_bSensorConnect(false)
+	m_bSensorConnect(false),
+	m_posReady(false)
 {
-
+	//m_firstMove = true;
 }
 
 ForceGuideController::~ForceGuideController() {
@@ -260,6 +261,16 @@ void ForceGuideController::guideControlThread() {
 			if (m_ptrForceControlSolver)
 			{
 				if (m_ptrKinematicSolver) {
+					if (!m_posReady)
+					{
+						COBOT_LOG.error() << "joint pos not ready!";
+						continue;
+					}
+
+					m_mutex.lock();
+					std::vector<double> curQ = m_curQ;
+					m_mutex.unlock();
+
 					std::vector<double> offset;
 					m_ptrForceControlSolver->solve(offset);
 
@@ -268,15 +279,16 @@ void ForceGuideController::guideControlThread() {
 						offset_ee.push_back(offset[i]);
 					}
 
-					m_mutex.lock();
-					std::vector<double> curQ = m_curQ;
-					m_mutex.unlock();
-
 					std::vector<double> pos;
 					m_ptrKinematicSolver->pose_EEToWorld(curQ, offset_ee, pos);
 					std::vector<double> targetQ;
-					m_ptrKinematicSolver->cartToJnt(curQ, pos, targetQ);
-					m_ptrRobot->move(targetQ);
+					if (m_ptrKinematicSolver->cartToJnt(curQ, pos, targetQ) == 0) {
+						m_ptrRobot->move(targetQ);
+						//if (m_firstMove) {
+						//	m_firstMove = false;
+						//	COBOT_LOG.notice() << "first move: " << targetQ[0] << ", " << targetQ[1] << ", " << targetQ[2] << ", " << targetQ[3] << ", " << targetQ[4] << ", " << targetQ[5];
+						//}
+					}
 
 					////sleep for loop
 					//std::chrono::milliseconds timespan(10); 
@@ -358,6 +370,7 @@ void ForceGuideController::onArmRobotConnect() {
 
 void ForceGuideController::onArmRobotDisconnect() {
 	m_bRobotConnect = false;
+	m_posReady = false;
 	COBOT_LOG.info() << "Robot disconnect";
 }
 
@@ -369,6 +382,7 @@ void ForceGuideController::onArmRobotStatusUpdate(const ArmRobotStatusPtr& ptrRo
 
 	m_mutex.lock();
 	m_curQ = ptrRobotStatus->q_actual;
+	m_posReady = true;
 	m_mutex.unlock();
 
 	//std::vector<double> pos;

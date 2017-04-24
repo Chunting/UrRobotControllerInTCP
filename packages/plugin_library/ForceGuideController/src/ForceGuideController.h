@@ -87,6 +87,9 @@ protected:
 	int m_joint_num;
 	std::vector<double> m_curQ;
 	cobotsys::Wrench m_wrenchData;
+
+	//bool m_firstMove;
+	bool m_posReady;
 };
 
 
