@@ -42,11 +42,11 @@ class DragController :
 public:
 	DragController();
     virtual ~DragController();
-
+	enum Controller_Status{IDLE,CALIB,DRAG};
     bool createArmRobotDriver(const QString& configFilePath);
     bool createSolver(const QString& configFilePath);
     bool createForceSensor();
-
+	void setFlag(DragController::Controller_Status status);
     virtual bool setup(const QString& configFilePath);
     virtual void onArmRobotConnect();
     virtual void onArmRobotDisconnect();
@@ -68,7 +68,8 @@ public Q_SLOTS:
 protected:
 	void run();
 	void onMoveFinish(uint32_t moveId);
-
+	void DragPhase();
+	void GravityCalib();
 protected:
 
     std::shared_ptr<AbstractArmRobotRealTimeDriver> m_ptrRobot;
@@ -80,7 +81,9 @@ protected:
     bool m_stop;
     std::vector<double> m_jointValues;
 	Wrench m_forceValues;
+	Wrench m_Optoforce_Offset;
 	Wrench m_loadGravity;
+	Controller_Status m_statuFlag;
 };
 
 

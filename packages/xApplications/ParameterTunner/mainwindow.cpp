@@ -1,19 +1,87 @@
 #include <QTimer>
 #include <QLayout>
 #include "mainwindow.h"
+#include "sliderbox.h"
 
 MainWindow::MainWindow() : m_ticks(0.0) {
-    d_dragButton = new QPushButton("Drag Stoped", this);
-    d_plot = new QwtPlot(QwtText("Two Curves"), this);
 
+
+    d_dragButton = new QPushButton("Drag Stoped", this);
+    d_plot = new QwtPlot(QwtText("Drag App Monitor"), this);
     m_timer = new QTimer();
 
     //TODO 了解new方法何时被delete的。
-    QHBoxLayout *hLayout = new QHBoxLayout(this);
+    QHBoxLayout *mainLayout = new QHBoxLayout(this);
 
-    hLayout->addWidget(d_plot, 10);
-    hLayout->addWidget(d_dragButton);
+    QVBoxLayout *v1Layout = new QVBoxLayout(this);
+    v1Layout->addWidget(d_plot, 10);
 
+    QHBoxLayout *v1_h1Layout = new QHBoxLayout(this);
+
+    d_cboSignal1=new QComboBox(this);
+    d_cboSignal2=new QComboBox(this);
+    d_cboSignal3=new QComboBox(this);
+
+    d_lblSig1=new QLabel(this);
+    d_lblSig2=new QLabel(this);
+    d_lblSig3=new QLabel(this);
+    QStringList signalList;//Add the signal that you want to monitor.
+    signalList.push_back("Optoforce force x");
+    signalList.push_back("Optoforce force y");
+    signalList.push_back("Optoforce force z");
+    signalList.push_back("Optoforce torque x");
+    signalList.push_back("Optoforce torque y");
+    signalList.push_back("Optoforce torque z");
+
+    d_cboSignal1->clear();
+    d_cboSignal1->addItems(signalList);
+    d_lblSig1->setText("0.0");
+
+    m_sig1=&m_force.force.x;
+    m_sig2=&m_force.force.y;
+    m_sig3=&m_force.force.z;
+
+    d_cboSignal2->clear();
+    d_cboSignal2->addItems(signalList);
+    d_lblSig2->setText("0.0");
+
+    d_cboSignal3->clear();
+    d_cboSignal3->addItems(signalList);
+    d_lblSig3->setText("0.0");
+
+    v1_h1Layout->addWidget(d_cboSignal1);
+    v1_h1Layout->addWidget(d_lblSig1);
+    v1_h1Layout->addWidget(d_cboSignal2);
+    v1_h1Layout->addWidget(d_lblSig2);
+    v1_h1Layout->addWidget(d_cboSignal3);
+    v1_h1Layout->addWidget(d_lblSig3);
+    v1Layout->addLayout(v1_h1Layout);
+
+    QHBoxLayout *h1Layout = new QHBoxLayout(this);
+    h1Layout->addWidget( new SliderBox(4));
+    h1Layout->addWidget( new SliderBox(4));
+    h1Layout->addWidget( new SliderBox(4));
+    h1Layout->addWidget( new SliderBox(4));
+    h1Layout->addWidget( new SliderBox(4));
+    h1Layout->addWidget( new SliderBox(4));
+
+    QVBoxLayout *v2Layout = new QVBoxLayout(this);
+    v2Layout->addLayout(h1Layout);
+
+    QStringList parameterList;//Add the signal that you want to monitor.
+    parameterList.push_back("PID.P1-PID.P6");
+    parameterList.push_back("PID.I1-PID.I6");
+    parameterList.push_back("PID.D1-PID.D6");
+    parameterList.push_back("PID.N1-PID.N6");
+
+    d_cboParam=new QComboBox(this);
+    d_cboParam->clear();
+    d_cboParam->addItems(parameterList);
+    v2Layout->addWidget(d_cboParam);
+    v2Layout->addWidget(d_dragButton);
+
+    mainLayout->addLayout(v1Layout);
+    mainLayout->addLayout(v2Layout);
     m_dragController.reset(new DragController());
 
     qRegisterMetaType<StdVector>("StdVector");
@@ -23,6 +91,7 @@ MainWindow::MainWindow() : m_ticks(0.0) {
     connect(m_dragController.get(), SIGNAL(jointUpdated(StdVector)), this, SLOT(onJointUpdated(StdVector)));
     connect(m_dragController.get(), SIGNAL(poseUpdated(StdVector)), this, SLOT(onPoseUpdated(StdVector)));
     connect(m_dragController.get(), SIGNAL(forceUpdated(MyWrench)), this, SLOT(onForceUpdated(MyWrench)));
+    //connect(d_cboParam.&QComboBox:)
     connect(m_timer, &QTimer::timeout, this, &MainWindow::updatePlot);
     m_dragController->setup("CONFIG/UrRobotConfig/ur3_180_config.json");
     initializePlot();
@@ -43,12 +112,10 @@ void MainWindow::updatePlot() {
         m_curve_y3.erase(m_curve_y3.begin());
     }
     m_ticks.push_back(ticks);
-//    m_curve_y1.push_back(m_force.force.x);
-//    m_curve_y2.push_back(m_force.force.y);
-//    m_curve_y3.push_back(m_force.force.z);
-    m_curve_y1.push_back(force_error[0]);
-    m_curve_y2.push_back(force_error[1]);
-    m_curve_y3.push_back(force_error[2]);
+    m_curve_y1.push_back(*m_sig1);
+    m_curve_y2.push_back(*m_sig2);
+    m_curve_y3.push_back(*m_sig3);
+
     curves[0]->setSamples(m_ticks.data(), m_curve_y1.data(), m_ticks.size());
     curves[1]->setSamples(m_ticks.data(), m_curve_y2.data(), m_ticks.size());
     curves[2]->setSamples(m_ticks.data(), m_curve_y3.data(), m_ticks.size());

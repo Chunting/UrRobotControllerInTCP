@@ -26,7 +26,7 @@ int main(int argc, char** argv) {
     cobotsys::GlobalObjectFactory globalObjectFactory;
     globalObjectFactory.loadLibrarys();
     MainWindow mainWindow;
-    mainWindow.resize( 900, 400 );
+    mainWindow.resize( 1200, 600 );
     mainWindow.show();
     return a.exec();
 }

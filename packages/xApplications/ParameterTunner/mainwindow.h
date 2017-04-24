@@ -6,10 +6,12 @@
 #include <qwt_plot.h>
 #include <qwt_plot_curve.h>
 #include <QTimer>
+
+#include <QLabel>
+#include <QComboBox>
+
 class Plot;
-class Panel;
 class QLabel;
-class Settings;
 
 class MainWindow: public QWidget
 {
@@ -37,6 +39,20 @@ private:
     std::vector<double> m_curve_y1;
     std::vector<double> m_curve_y2;
     std::vector<double> m_curve_y3;
+
+    QLabel* d_lblSig1;
+    QLabel* d_lblSig2;
+    QLabel* d_lblSig3;
+
+    double* m_sig1;
+    double* m_sig2;
+    double* m_sig3;
+
+    QComboBox* d_cboSignal1;
+    QComboBox* d_cboSignal2;
+    QComboBox* d_cboSignal3;
+
+    QComboBox* d_cboParam;
 };
 
 #endif
