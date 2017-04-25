@@ -251,7 +251,7 @@ void ForceGuideController::guideControlThread() {
 			std::shared_ptr<CobotUrDigitIoAdapter> pIO = std::dynamic_pointer_cast<CobotUrDigitIoAdapter>(ioStatus);
 			pIO->setToolVoltage(24.0);
 
-			if (ioStatus->getIoStatus(DigitIoPort::Port_Ur_Tool_In_0) == DigitIoStatus::Set) {
+			if (ioStatus->getIoStatus(DigitIoPort::Port_Ur_Tool_In_0) == DigitIoStatus::Reset) {
 				if (nc == 100) {
 					COBOT_LOG.error() << "io button not pressed!";
 					nc = 0;
