@@ -17,7 +17,7 @@ public Q_SLOTS:
     void setNum( double v );
 
 private:
-    QwtSlider *createSlider( int sliderType ) const;
+    QwtSlider *createSlider( int sliderType) const;
 
 
     QLabel *d_label;

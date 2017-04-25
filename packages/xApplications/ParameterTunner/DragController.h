@@ -56,7 +56,7 @@ public:
     virtual void onForceSensorDisconnect();
     virtual void onForceSensorDataStreamUpdate(const std::shared_ptr<Wrench>& ptrWrench);
 	Eigen::Vector3d gravity_t_ee;//只考虑三个轴向力，不考虑转矩。
-
+	double force_ee[6];
 Q_SIGNALS:
     void jointUpdated(const StdVector &joints);
     void poseUpdated(const StdVector &xyzrpy);
@@ -84,6 +84,7 @@ protected:
 	Wrench m_Optoforce_Offset;
 	Wrench m_loadGravity;
 	Controller_Status m_controllerStatus;
+
 };
 
 

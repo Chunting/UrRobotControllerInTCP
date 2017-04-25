@@ -12,6 +12,10 @@ DragController::DragController() :m_stop(false){
 	m_jointValues.resize(6);
     m_loadGravity.force=cv::Point3d(0.0,0.0,1);
     m_loadGravity.torque=cv::Point3d(0.0,0.0,0.0);
+    m_controllerStatus=IDLE;
+    for(int i=0;i<6;i++){
+        force_ee[i] = 0.0;
+    }
 }
 
 DragController::~DragController() {
@@ -29,6 +33,14 @@ void DragController::onStartDrag() {
 		m_ptrForceSensor->start();
 	}
     m_stop=false;
+    std::vector<double> targetJoint;
+    targetJoint.push_back(0.0);
+    targetJoint.push_back(0.0);
+    targetJoint.push_back(0.0);
+    targetJoint.push_back(0.0);
+    targetJoint.push_back(0.0);
+    targetJoint.push_back(0.0);
+    m_ptrRobot->move(targetJoint);
     start();
 }
 
@@ -69,9 +81,13 @@ bool DragController::createArmRobotDriver(const QString& configFilePath) {
 			return true;
         } else {
             m_ptrRobot.reset();
+            return false;
         }
     }
-	return false;
+    else{
+        return false;
+    }
+
 }
 
 
@@ -92,9 +108,11 @@ bool DragController::createSolver(const QString& configFilePath) {
 			return true;
         } else {
             m_ptrSolver.reset();
+            return false;
         }
+    }else{
+        return false;
     }
-	return false;
 }
 
 bool DragController::createForceSensor() {
@@ -158,6 +176,12 @@ void DragController::onForceSensorDataStreamUpdate(const std::shared_ptr<Wrench>
 
 	m_mutex.lock();
 	m_forceValues = *ptrWrench;
+    force_ee[0] = m_forceValues.force.x-m_Optoforce_Offset.force.x;
+    force_ee[1] = m_forceValues.force.y-m_Optoforce_Offset.force.y;
+    force_ee[2] = m_forceValues.force.z-m_Optoforce_Offset.force.z;
+    force_ee[3] = m_forceValues.torque.x-m_Optoforce_Offset.torque.x;
+    force_ee[4] = m_forceValues.torque.y-m_Optoforce_Offset.torque.y;
+    force_ee[5] = m_forceValues.torque.z-m_Optoforce_Offset.torque.z;
 	m_mutex.unlock();
     Q_EMIT forceUpdated(m_forceValues);
 }
@@ -166,10 +190,12 @@ void DragController::onMoveFinish(uint32_t moveId) {
 }
 void DragController::setControllerStatus(DragController::Controller_Status status){
     m_controllerStatus=status;
+    COBOT_LOG.notice()<<"the drag controller status is set to "<< (int)status;
 }
 void DragController::run() {
+    bool stopflag=false;
 
-    while(!m_stop){
+    while(!stopflag){
         switch (m_controllerStatus)
         {
             case IDLE:
@@ -184,6 +210,9 @@ void DragController::run() {
                 COBOT_LOG.error()<<"Undefined controller status";
                 break;
         }
+        m_mutex.lock();
+        stopflag=m_stop;
+        m_mutex.unlock();
     }
 }
 void DragController::GravityCalib(){
@@ -194,17 +223,27 @@ void DragController::GravityCalib(){
         currentJoints(i) = m_jointValues[i];
     }
     m_mutex.unlock();
-    std::vector<double> pose_world;
-    pose_world.push_back(200);
-    pose_world.push_back(200);
-    pose_world.push_back(200);
-    pose_world.push_back(0);
-    pose_world.push_back(0);
-    pose_world.push_back(0);
+//    std::vector<double> pose_world;
+//    pose_world.clear();
+//    pose_world.push_back(200);
+//    pose_world.push_back(200);
+//    pose_world.push_back(200);
+//    pose_world.push_back(0);
+//    pose_world.push_back(0);
+//    pose_world.push_back(0);
     std::vector<double> targetJoint;
-
-    m_ptrSolver->cartToJnt(currentJoints, pose_world, targetJoint);
+    COBOT_LOG.notice()<<"Start gravity calibaration.";
+//    m_ptrSolver->cartToJnt(currentJoints, pose_world, targetJoint);
+    targetJoint.clear();
+    targetJoint.push_back(0);
+    targetJoint.push_back(-M_PI_2);
+    targetJoint.push_back(-M_PI_2);
+    targetJoint.push_back(-M_PI_2);
+    targetJoint.push_back(-M_PI_2);
+    targetJoint.push_back(0);
     m_ptrRobot->move(targetJoint);
+    COBOT_LOG.notice()<<"Moved to up position.";
+
     Wrench upForce;
     upForce.force.x = 0;
     upForce.force.y = 0;
@@ -212,7 +251,7 @@ void DragController::GravityCalib(){
     upForce.torque.x = 0;
     upForce.torque.y = 0;
     upForce.torque.z = 0;
-    sleep(1);
+    sleep(3);
     for(int i=0;i<100;i++){
         sleep(0.01);
         m_mutex.lock();
@@ -224,15 +263,24 @@ void DragController::GravityCalib(){
         upForce.torque.z += m_forceValues.torque.z/100;
         m_mutex.unlock();
     }
-    pose_world.push_back(200);
-    pose_world.push_back(200);
-    pose_world.push_back(200);
-    pose_world.push_back(0);
-    pose_world.push_back(0);
-    pose_world.push_back(M_PI);
-    m_ptrSolver->cartToJnt(currentJoints, pose_world, targetJoint);
+//    pose_world.clear();
+//    pose_world.push_back(200);
+//    pose_world.push_back(200);
+//    pose_world.push_back(200);
+//    pose_world.push_back(0);
+//    pose_world.push_back(0);
+//    pose_world.push_back(M_PI);
+//    m_ptrSolver->cartToJnt(currentJoints, pose_world, targetJoint);
+    targetJoint.clear();
+    targetJoint.push_back(0);
+    targetJoint.push_back(-M_PI_2);
+    targetJoint.push_back(-M_PI_2);
+    targetJoint.push_back(-M_PI_2);
+    targetJoint.push_back(M_PI_2);
+    targetJoint.push_back(0);
     m_ptrRobot->move(targetJoint);
-    sleep(1);
+    COBOT_LOG.notice()<<"Moved to down position.";
+    sleep(3);
 
     Wrench downForce;
     downForce.force.x = 0;
@@ -268,29 +316,25 @@ void DragController::GravityCalib(){
     m_Optoforce_Offset.torque.x=(upForce.torque.x+downForce.torque.x)/2.0;
     m_Optoforce_Offset.torque.y=(upForce.torque.y+downForce.torque.y)/2.0;
     m_Optoforce_Offset.torque.z=(upForce.torque.z+downForce.torque.z)/2.0;
-
+    COBOT_LOG.notice()<<"Calibration done.";
     m_controllerStatus=IDLE;
 }
 void DragController::DragPhase() {
     //2ms执行一次
     //chrono
     static long time=0;
-    static real_T force_ee[6] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+
     static real_T gravity_ee[6] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
     static real_T poseOffset_ee[6] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+    static real_T force_ee_t[6]={ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
     Eigen::VectorXd currentJoints(6);
 
     timestamp timenow=std::chrono::high_resolution_clock::now();
     timestamp timeout = timenow + std::chrono::milliseconds(2);
     m_mutex.lock();
-    force_ee[0] = m_forceValues.force.x;
-    force_ee[1] = m_forceValues.force.y;
-    force_ee[2] = m_forceValues.force.z;
-    force_ee[3] = m_forceValues.torque.x;
-    force_ee[4] = m_forceValues.torque.y;
-    force_ee[5] = m_forceValues.torque.z;
     for (int i = 0; i < 6; i++) {
         currentJoints(i) = m_jointValues[i];
+        force_ee_t[i]=force_ee[i];
     }
     m_mutex.unlock();
     //计算gravity_ee
@@ -307,7 +351,7 @@ void DragController::DragPhase() {
     gravity_ee[4] = m_loadGravity.torque.y;
     gravity_ee[5] = m_loadGravity.torque.z;
 
-    m_ptrForceController->step(force_ee, gravity_ee, poseOffset_ee);
+    m_ptrForceController->step(force_ee_t, gravity_ee, poseOffset_ee);
     if(time%4==0){
         std::vector<double> pose_ee;
         for (int i = 0; i < 6; i++) {
@@ -321,7 +365,10 @@ void DragController::DragPhase() {
         //timestamp t2=std::chrono::high_resolution_clock::now();
         //std::chrono::duration<double> dur=t2-t1;
         //COBOT_LOG.notice()<<"cartToJnt Execute time:"<<dur.count();
-        m_ptrRobot->move(targetJoint);
+        auto ioStatus = m_ptrRobot->getDigitIoDriver(1);
+        if (ioStatus->getIoStatus(DigitIoPort::Port_Ur_Tool_In_0) != DigitIoStatus::Set) {
+            m_ptrRobot->move(targetJoint);
+        }
     }
     //将控制周期严格限制为2ms。
 //        time+=1;

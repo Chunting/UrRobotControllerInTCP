@@ -43,8 +43,7 @@ private:
     void onDragStart();
     void updatePlot();
     void initializePlot();
-
-
+    void signalChanged(int index,int SigId);
 
     QPushButton *d_connButton;
     QPushButton *d_calibButton;
@@ -66,7 +65,6 @@ private:
     std::vector<double*> m_sig;//3
     std::vector<SliderBox*> d_sldBox;//6
     std::vector<double*> m_param;//6
-    int m_paramGroupIndex;
     std::vector<QComboBox*> d_cboSignal;//3
     QComboBox* d_cboParam;
     std::shared_ptr<QWidget> m_loggerWidget;

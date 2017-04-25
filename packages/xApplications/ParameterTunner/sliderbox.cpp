@@ -118,9 +118,9 @@ QwtSlider *SliderBox::createSlider( int sliderType ) const
             slider->setScalePosition( QwtSlider::TrailingScale );
             slider->setTrough( false );
             slider->setGroove( true );
-            slider->setScale( 100.0, 0.0 );
+            slider->setScale( 100.0, -100.0 );
             slider->setInvertedControls( true );
-            slider->setTotalSteps( 1000 );
+            slider->setTotalSteps( 2000 );
             slider->setPageSteps( 5 );
             slider->setScaleMaxMinor( 5 );
             break;

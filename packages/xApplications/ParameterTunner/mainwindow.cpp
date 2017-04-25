@@ -1,31 +1,44 @@
 #include <QTimer>
 #include <QLayout>
 #include "mainwindow.h"
-#include "sliderbox.h"
 #include <qwt_slider.h>
 MainWindow::MainWindow() : m_ticks(0.0) {
 
     d_calibButton = new QPushButton("Gravity Calib",this);
     d_connButton = new QPushButton("Device Disconnected", this);
-    d_dragButton = new QPushButton("Stopped",this);
+    d_dragButton = new QPushButton("Drag stop",this);
     d_calibButton->setEnabled(false);
     d_dragButton->setEnabled(false);
     d_plot = new QwtPlot(QwtText("Drag App Monitor"), this);
     m_timer = new QTimer();
     QStringList signalList;//Add the signal that you want to monitor.
-    signalList.push_back("Optoforce force x");
-    signalList.push_back("Optoforce force y");
-    signalList.push_back("Optoforce force z");
-    signalList.push_back("Optoforce torque x");
-    signalList.push_back("Optoforce torque y");
-    signalList.push_back("Optoforce torque z");
+    signalList.push_back("m_force.force.x");
+    signalList.push_back("m_force.force.y");
+    signalList.push_back("m_force.force.z");
+    signalList.push_back("m_force.torque.x");
+    signalList.push_back("m_force.torque.y");
+    signalList.push_back("m_force.torque.z");
+    signalList.push_back("Force ee 0");
+    signalList.push_back("Force ee 1");
+    signalList.push_back("Force ee 2");
+    signalList.push_back("Force ee 3");
+    signalList.push_back("Force ee 4");
+    signalList.push_back("Force ee 5");
+    signalList.push_back("Force error 0");
+    signalList.push_back("Force error 1");
+    signalList.push_back("Force error 2");
+    signalList.push_back("Force error 3");
+    signalList.push_back("Force error 4");
+    signalList.push_back("Force error 5");
+
 
     QStringList parameterList;//Add the signal that you want to monitor.
     parameterList.push_back("PID.P1-PID.P6");
     parameterList.push_back("PID.I1-PID.I6");
     parameterList.push_back("PID.D1-PID.D6");
     parameterList.push_back("PID.N1-PID.N6");
-
+    parameterList.push_back("dead_zone_start");
+    parameterList.push_back("dead_zone_end");
 
     //TODO 了解new方法何时被delete的。
     QHBoxLayout *mainLayout = new QHBoxLayout(this);
@@ -62,7 +75,6 @@ MainWindow::MainWindow() : m_ticks(0.0) {
     }
     v1Layout->addWidget(m_loggerWidget.get());
 
-    m_paramGroupIndex=0;
     d_cboSignal[0]->setCurrentIndex(0);
     d_cboSignal[1]->setCurrentIndex(1);
     d_cboSignal[2]->setCurrentIndex(2);
@@ -124,12 +136,92 @@ MainWindow::MainWindow() : m_ticks(0.0) {
         m_pose.push_back(0.0);
     }
 }
+void MainWindow::signalChanged(int index,int SigId){
+    switch(index){
+        case 0:
+            m_sig[SigId]=&m_force.force.x;
+            COBOT_LOG.notice()<<"Set Signal "<<SigId<<" to m_force.force.x";
+            break;
+        case 1:
+            m_sig[SigId]=&m_force.force.y;
+            COBOT_LOG.notice()<<"Set Signal "<<SigId<<" to fm_force.force.y";
+            break;
+        case 2:
+            m_sig[SigId]=&m_force.force.z;
+            COBOT_LOG.notice()<<"Set Signal "<<SigId<<" to m_force.force.z";
+            break;
+        case 3:
+            m_sig[SigId]=&m_force.torque.x;
+            COBOT_LOG.notice()<<"Set Signal "<<SigId<<" to m_force.torque.x";
+            break;
+        case 4:
+            m_sig[SigId]=&m_force.torque.y;
+            COBOT_LOG.notice()<<"Set Signal "<<SigId<<" to m_force.torque.y";
+            break;
+        case 5:
+            m_sig[SigId]=&m_force.torque.z;
+            COBOT_LOG.notice()<<"Set Signal "<<SigId<<" to m_force.torque.z";
+            break;
+        case 6://force error 0
+            m_sig[SigId]=m_dragController->force_ee;
+            COBOT_LOG.notice()<<"Set Signal "<<SigId<<" to force ee 0";
+            break;
+        case 7://force error 1
+            m_sig[SigId]=m_dragController->force_ee+1;
+            COBOT_LOG.notice()<<"Set Signal "<<SigId<<" to force ee 1";
+            break;
+        case 8://force error 2
+            m_sig[SigId]=m_dragController->force_ee+2;
+            COBOT_LOG.notice()<<"Set Signal "<<SigId<<" to force ee 2";
+            break;
+        case 9://force error 3
+            m_sig[SigId]=m_dragController->force_ee+3;
+            COBOT_LOG.notice()<<"Set Signal "<<SigId<<" to force ee 3";
+            break;
+        case 10://force error 4
+            m_sig[SigId]=m_dragController->force_ee+4;
+            COBOT_LOG.notice()<<"Set Signal "<<SigId<<" to force ee 4";
+            break;
+        case 11://force error 5
+            m_sig[SigId]=m_dragController->force_ee+5;
+            COBOT_LOG.notice()<<"Set Signal "<<SigId<<" to force ee 5";
+            break;
+        case 12://force error 0
+            m_sig[SigId]=force_error;
+            COBOT_LOG.notice()<<"Set Signal "<<SigId<<" to force error 0";
+            break;
+        case 13://force error 1
+            m_sig[SigId]=force_error+1;
+            COBOT_LOG.notice()<<"Set Signal "<<SigId<<" to force error 1";
+            break;
+        case 14://force error 2
+            m_sig[SigId]=force_error+2;
+            COBOT_LOG.notice()<<"Set Signal "<<SigId<<" to force error 2";
+            break;
+        case 15://force error 3
+            m_sig[SigId]=force_error+3;
+            COBOT_LOG.notice()<<"Set Signal "<<SigId<<" to force error 3";
+            break;
+        case 16://force error 4
+            m_sig[SigId]=force_error+4;
+            COBOT_LOG.notice()<<"Set Signal "<<SigId<<" to force error 4";
+            break;
+        case 17://force error 5
+            m_sig[SigId]=force_error+5;
+            COBOT_LOG.notice()<<"Set Signal "<<SigId<<" to force error 5";
+            break;
+        default:
+            COBOT_LOG.notice()<<"Signal "<<SigId<<" selected ee.";
+            break;
+    }
+}
 void MainWindow::onParamGroupChanged(int index){
 //    parameterList.push_back("PID.P1-PID.P6");
 //    parameterList.push_back("PID.I1-PID.I6");
 //    parameterList.push_back("PID.D1-PID.D6");
 //    parameterList.push_back("PID.N1-PID.N6");
-    m_paramGroupIndex=index;
+//    parameterList.push_back("dead_zone_start");
+//    parameterList.push_back("dead_zone_end");
     switch(index){
         case 0://PID.P1-PID.P6
 
@@ -171,6 +263,26 @@ void MainWindow::onParamGroupChanged(int index){
             }
             COBOT_LOG.notice()<<"PID.N1-PID.N6 selected.";
             break;
+        case 4://dead_zone_start
+
+            for(int i=0;i<6;i++)
+            {
+                m_param[i]=dead_zone_start+i;
+                d_sldBox[i]->setNum(*m_param[i]);
+                d_sldBox[i]->d_slider->setValue(*m_param[i]);
+            }
+            COBOT_LOG.notice()<<"PID.N1-PID.N6 selected.";
+            break;
+        case 5://dead_zone_end
+
+            for(int i=0;i<6;i++)
+            {
+                m_param[i]=dead_zone_end+i;
+                d_sldBox[i]->setNum(*m_param[i]);
+                d_sldBox[i]->d_slider->setValue(*m_param[i]);
+            }
+            COBOT_LOG.notice()<<"PID.N1-PID.N6 selected.";
+            break;
         default:
             COBOT_LOG.notice()<<"Parameter selected error.";
             break;
@@ -207,121 +319,15 @@ void MainWindow::onSlide6ValueChanged(double value){
 }
 
 void MainWindow::onSignal1Changed(int index){
-//    signalList.push_back("Optoforce force x");
-//    signalList.push_back("Optoforce force y");
-//    signalList.push_back("Optoforce force z");
-//    signalList.push_back("Optoforce torque x");
-//    signalList.push_back("Optoforce torque y");
-//    signalList.push_back("Optoforce torque z");
-
-    switch(index){
-        case 0://Optoforce force x
-            m_sig[0]=&m_force.force.x;
-            COBOT_LOG.notice()<<"Set Signal 1 to Optoforce force x";
-            break;
-        case 1://Optoforce force y
-            m_sig[0]=&m_force.force.y;
-            COBOT_LOG.notice()<<"Set Signal 1 to Optoforce force y";
-            break;
-        case 2://Optoforce force z
-            m_sig[0]=&m_force.force.z;
-            COBOT_LOG.notice()<<"Set Signal 1 to Optoforce force z";
-            break;
-        case 3://Optoforce torque x
-            m_sig[0]=&m_force.torque.z;
-            COBOT_LOG.notice()<<"Set Signal 1 to Optoforce torque x";
-            break;
-        case 4://Optoforce torque y
-            m_sig[0]=&m_force.torque.z;
-            COBOT_LOG.notice()<<"Set Signal 1 to Optoforce torque y";
-            break;
-        case 5://Optoforce torque z
-            m_sig[0]=&m_force.torque.z;
-            COBOT_LOG.notice()<<"Set Signal 1 to Optoforce torque z";
-            break;
-        default:
-            COBOT_LOG.notice()<<"Signal 1 selected error.";
-            break;
-    }
+    signalChanged(index,0);
 }
 
 void MainWindow::onSignal2Changed(int index){
-//    signalList.push_back("Optoforce force x");
-//    signalList.push_back("Optoforce force y");
-//    signalList.push_back("Optoforce force z");
-//    signalList.push_back("Optoforce torque x");
-//    signalList.push_back("Optoforce torque y");
-//    signalList.push_back("Optoforce torque z");
-
-    switch(index){
-        case 0://Optoforce force x
-            m_sig[1]=&m_force.force.x;
-            COBOT_LOG.notice()<<"Set Signal 2 to Optoforce force x";
-            break;
-        case 1://Optoforce force y
-            m_sig[1]=&m_force.force.y;
-            COBOT_LOG.notice()<<"Set Signal 2 to Optoforce force y";
-            break;
-        case 2://Optoforce force z
-            m_sig[1]=&m_force.force.z;
-            COBOT_LOG.notice()<<"Set Signal 2 to Optoforce force z";
-            break;
-        case 3://Optoforce torque x
-            m_sig[1]=&m_force.torque.z;
-            COBOT_LOG.notice()<<"Set Signal 2 to Optoforce torque x";
-            break;
-        case 4://Optoforce torque y
-            m_sig[1]=&m_force.torque.z;
-            COBOT_LOG.notice()<<"Set Signal 2 to Optoforce torque y";
-            break;
-        case 5://Optoforce torque z
-            m_sig[1]=&m_force.torque.z;
-            COBOT_LOG.notice()<<"Set Signal 2 to Optoforce torque z";
-            break;
-        default:
-            COBOT_LOG.notice()<<"Signal 2 selected error.";
-            break;
-    }
+    signalChanged(index,1);
 }
 
 void MainWindow::onSignal3Changed(int index){
-//    signalList.push_back("Optoforce force x");
-//    signalList.push_back("Optoforce force y");
-//    signalList.push_back("Optoforce force z");
-//    signalList.push_back("Optoforce torque x");
-//    signalList.push_back("Optoforce torque y");
-//    signalList.push_back("Optoforce torque z");
-
-    switch(index){
-        case 0://Optoforce force x
-            m_sig[2]=&m_force.force.x;
-            COBOT_LOG.notice()<<"Set Signal 3 to Optoforce force x";
-
-            break;
-        case 1://Optoforce force y
-            m_sig[2]=&m_force.force.y;
-            COBOT_LOG.notice()<<"Set Signal 3 to Optoforce force y";
-            break;
-        case 2://Optoforce force z
-            m_sig[2]=&m_force.force.z;
-            COBOT_LOG.notice()<<"Set Signal 3 to Optoforce force z";
-            break;
-        case 3://Optoforce torque x
-            m_sig[2]=&m_force.torque.x;
-            COBOT_LOG.notice()<<"Set Signal 3 to Optoforce torque x";
-            break;
-        case 4://Optoforce torque y
-            m_sig[2]=&m_force.torque.y;
-            COBOT_LOG.notice()<<"Set Signal 3 to Optoforce torque y";
-            break;
-        case 5://Optoforce torque z
-            m_sig[2]=&m_force.torque.z;
-            COBOT_LOG.notice()<<"Set Signal 3 to Optoforce torque z";
-            break;
-        default:
-            COBOT_LOG.notice()<<"Signal 3 selected error.";
-            break;
-    }
+    signalChanged(index,2);
 }
 
 void MainWindow::updatePlot() {
@@ -347,6 +353,13 @@ void MainWindow::updatePlot() {
     }
 
     ticks += 0.01;
+    if((int)(ticks*100)%50==0){
+        QString text;
+        for(int i=0;i<3;i++){
+            text.setNum( *m_sig[i], 'f', 2 );
+            d_lblSig[i]->setText( text );
+        }
+    }
     d_plot->replot();
 }
 
@@ -375,8 +388,9 @@ void MainWindow::onConnectDevice() {
     static bool runStatus = false;
     runStatus = !runStatus;
     if (runStatus) {
-        m_dragController->onStartDrag();
+
         m_timer->start(10);
+        m_dragController->onStartDrag();
         d_connButton->setText("Device Connected");
         d_calibButton->setEnabled(true);
     } else {
@@ -390,9 +404,19 @@ void MainWindow::onConnectDevice() {
 void MainWindow::onSettingCalib(){
     m_dragController->setControllerStatus(DragController::CALIB);
     d_dragButton->setEnabled(true);//TODO 此处需要在标定完成后，再设置。
+
 }
 void MainWindow::onDragStart(){
-    m_dragController->setControllerStatus(DragController::DRAG);
+    static bool dragStatus=false;
+    dragStatus=!dragStatus;
+    if(dragStatus){
+        m_dragController->setControllerStatus(DragController::DRAG);
+        d_dragButton->setText("Drag start");
+    }else{
+        m_dragController->setControllerStatus(DragController::IDLE);
+        d_dragButton->setText("Drag stop");
+    }
+
 }
 
 void MainWindow::onJointUpdated(const StdVector &joints) {
@@ -425,15 +449,15 @@ void MainWindow::onForceUpdated(const Wrench &ptrWrench) {
     // Update to UI
     m_force = ptrWrench;
     //COBOT_LOG.notice()<<"Force Updated";
-    static int count = 0;
-    count++;
-    if (count % 1000 == 0) {
-        COBOT_LOG.notice() << "Wrench:(" <<
-                           m_force.force.x << ", " <<
-                           m_force.force.y << ", " <<
-                           m_force.force.z << ", " <<
-                           m_force.torque.x << ", " <<
-                           m_force.torque.y << ", " <<
-                           m_force.torque.z << ")";
-    }
+//    static int count = 0;
+//    count++;
+//    if (count % 1000 == 0) {
+//        COBOT_LOG.notice() << "Wrench:(" <<
+//                           m_force.force.x << ", " <<
+//                           m_force.force.y << ", " <<
+//                           m_force.force.z << ", " <<
+//                           m_force.torque.x << ", " <<
+//                           m_force.torque.y << ", " <<
+//                           m_force.torque.z << ")";
+//    }
 }
