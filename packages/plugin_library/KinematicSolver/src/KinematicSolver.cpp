@@ -281,6 +281,8 @@ bool KinematicSolver::setup(const QString& configFilePath) {
 				jointLimits.velocity = segmentObj["limits"].toObject()["velocity"].toDouble();
 				m_robot_joint_limits.push_back(jointLimits);
         }
+		m_robot_chain.addSegment(Segment(Joint(Joint::None),
+            Frame::DH(0.0,0.0,0.01,-M_PI_2)));//to modify end frame.
 		m_fk_solver=new KDL::ChainFkSolverPos_recursive(m_robot_chain);
 		m_ik_solver=new KDL::ChainIkSolverPos_LMA(m_robot_chain);
         return true;

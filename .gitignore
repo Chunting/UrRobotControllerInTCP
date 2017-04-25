@@ -7,4 +7,4 @@ CMakeLists.txt.user
 .gitignore
 *.orig
 packages/plugin_library/ForceControl/ForceControllerDesign/work
-packages/plugin_library/ForceControl/ForceControllerDesign/work/slprj/grt/
+
