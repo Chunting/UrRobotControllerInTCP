@@ -138,7 +138,7 @@ void PhysicalDistributionController::onCameraStreamUpdate(const CameraFrame& cam
     m_numImageCaptured++;
     m_imageUpdated = true;
     for (const auto& iter : cameraFrame.frames) {
-        m_images.push_back({camera->getSerialNumber(), cameraFrame.capture_time, iter.data});
+        m_images.push_back({camera->getSerialNumber(), cameraFrame.capture_time, iter.data, iter.type});
     }
     m_cond.notify_all();
 }

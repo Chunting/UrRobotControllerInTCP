@@ -56,6 +56,7 @@ struct VisionInputImage {
     std::string capture_device;
     std::chrono::high_resolution_clock::time_point capture_time;
     cv::Mat image;
+    ImageType type;
 };
 
 
