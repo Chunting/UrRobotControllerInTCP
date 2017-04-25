@@ -23,8 +23,8 @@ endPath='../../../xApplications/ParameterTunner';
 %copyfile([srcPath '/ert_main.cpp'],endPath);
 copyfile([srcPath '/ForceController.cpp'],endPath);
 copyfile([srcPath '/ForceController.h'],endPath);
-copyfile([srcPath '/ForceController_private.h'],endPath);
-copyfile([srcPath '/ForceController_types.h'],endPath);
+%copyfile([srcPath '/ForceController_private.h'],endPath);
+%copyfile([srcPath '/ForceController_types.h'],endPath);
 copyfile([srcPath '/rtwtypes.h'],endPath);
 
 cd(projectRoot);
@@ -32,8 +32,8 @@ endPath='../../SimpleUi/DragApp/';
 %copyfile([srcPath '/ert_main.cpp'],endPath);
 copyfile([srcPath '/ForceController.cpp'],endPath);
 copyfile([srcPath '/ForceController.h'],endPath);
-copyfile([srcPath '/ForceController_private.h'],endPath);
-copyfile([srcPath '/ForceController_types.h'],endPath);
+%copyfile([srcPath '/ForceController_private.h'],endPath);
+%copyfile([srcPath '/ForceController_types.h'],endPath);
 copyfile([srcPath '/rtwtypes.h'],endPath);
 
 end
