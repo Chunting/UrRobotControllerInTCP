@@ -285,6 +285,16 @@ bool KinematicSolver::setup(const QString& configFilePath) {
             Frame::DH(0.0,0.0,0.01,-M_PI_2)));//to modify end frame.
 		m_fk_solver=new KDL::ChainFkSolverPos_recursive(m_robot_chain);
 		m_ik_solver=new KDL::ChainIkSolverPos_LMA(m_robot_chain);
+
+		//for (int i = 0; i < m_robot_chain.getNrOfSegments();++i) {
+		//	KDL::Segment seg =  m_robot_chain.getSegment(i);
+		//	std::string name = seg.getName();
+		//	KDL::Frame pos = seg.getFrameToTip();
+		//	KDL::Joint jnt = seg.getJoint();
+		//	std::string type = jnt.getTypeName();
+		//	KDL::Vector axis = jnt.JointAxis();
+		//	KDL::Vector org = jnt.JointOrigin();
+		//}
         return true;
     }
     return false;

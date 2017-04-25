@@ -10,16 +10,12 @@ add_subdirectory(orocos_kdl)
 # 貌似如果使用AUTOMOC，需要把Qt5Core这个引用进来。这个find_package是必须的。
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Gui REQUIRED)
-find_package(Qt5Widgets REQUIRED) # Fuck, 如果要使用autouic那么必须引用这个Qt5Widgets.
+find_package(Qt5Widgets REQUIRED) #  如果要使用autouic那么必须引用这个Qt5Widgets.
 
 file(GLOB ${PROJECT_NAME}_files src/*)
 
 add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_files})
 
-#link_directories(C:\Libraries\)
-
-#message("aaaaaa:  ${PROJECT_SOURCE_DIR}/orocos_kdl/")
 target_link_libraries(${PROJECT_NAME} cobotsys orocos-kdl)
 
-
-#install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION plugins)
+install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION plugins RUNTIME DESTINATION plugins)
