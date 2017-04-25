@@ -39,6 +39,10 @@ QImage cv_mat_to_qimage(const cv::Mat &mat){
         QImage image(pSrc, mat.cols, mat.rows, mat.step, QImage::Format_ARGB32);
         return image.copy();
     } else {
+        cv::Mat newMat;
+        mat.convertTo(newMat, CV_8UC1);
+        return cv_mat_to_qimage(newMat);
+
         qDebug() << "ERROR: Mat could not be converted to QImage.";
         return QImage();
     }

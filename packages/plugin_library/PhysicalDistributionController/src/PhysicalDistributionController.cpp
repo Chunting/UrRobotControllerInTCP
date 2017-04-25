@@ -175,7 +175,7 @@ void PhysicalDistributionController::mainLoop() {
         COBOT_LOG.message() << "Image Updated, " << m_numImageCaptured;
         _debugImages();
 
-        // begin vision process
+        // 调用视觉处理函数
         if (m_ptrDetector->processVisionImage(m_images)) {
 
             std::vector<BinObjGrabPose> results;
@@ -209,5 +209,7 @@ void PhysicalDistributionController::setupUi() {
 }
 
 void PhysicalDistributionController::_debugImages() {
-    m_matViewer->getMatMerger().updateMat("preview", m_images[0].image);
+    //m_matViewer->getMatMerger().updateMat("preview", m_images[0].image);
+    m_matViewer->getMatMerger().updateMat("grab_object", m_images[1].image);
+    m_matViewer->getMatMerger().updateMat("Object_flip", m_images[2].image);
 }
