@@ -1,7 +1,5 @@
 {
   "robot_ip": "localhost",
-  "robot_factory": "UrRobotDriverWithRosIKFactory, Ver 1.0",
-  "robot_type": "UrIK",
   "servoj_time": 0.008,
   "servoj_lookahead": 0.15,
   "servoj_gain": 200,

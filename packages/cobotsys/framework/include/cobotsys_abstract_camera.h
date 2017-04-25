@@ -15,6 +15,8 @@
 
 
 namespace cobotsys {
+
+class AbstractCamera;
 /**
  * @addtogroup framework
  * @{
@@ -30,7 +32,7 @@ class CameraStreamObserver {
 public:
     CameraStreamObserver();
     virtual ~CameraStreamObserver();
-    virtual void onCameraStreamUpdate(const CameraFrame& cameraFrame) = 0;
+    virtual void onCameraStreamUpdate(const CameraFrame& cameraFrame, AbstractCamera* camera) = 0;
 };
 
 class AbstractCamera : public AbstractObject {

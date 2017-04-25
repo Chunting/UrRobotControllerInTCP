@@ -43,7 +43,7 @@ void CameraColorViewer::stop(){
     }
 }
 
-void CameraColorViewer::onCameraStreamUpdate(const cobotsys::CameraFrame& frames){
+void CameraColorViewer::onCameraStreamUpdate(const cobotsys::CameraFrame& frames, cobotsys::AbstractCamera* camera){
     for (const auto& frame: frames.frames) {
         if (frame.type == cobotsys::ImageType::Color) {
             cv::Mat m;

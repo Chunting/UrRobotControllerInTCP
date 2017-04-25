@@ -93,7 +93,7 @@ void OpenCVCamera::notify() {
         frame.frames.push_back({ImageType::Mono, m_mat});
 
     for (auto& iter :  m_observers) {
-        iter->onCameraStreamUpdate(frame);
+        iter->onCameraStreamUpdate(frame, this);
     }
 }
 

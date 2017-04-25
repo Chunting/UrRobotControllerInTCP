@@ -87,8 +87,10 @@ bool loadJson(QJsonObject& obj, const std::string& baseName) {
 
     auto fullPath = cobotsys::FileFinder::find(baseName);
 
-    if (fullPath.empty())
+    if (fullPath.empty()) {
+        COBOT_LOG.warning() << "No such file: " << baseName;
         return false;
+    }
 
     QFile qFile(fullPath.c_str());
     if (qFile.open(QIODevice::ReadOnly)) {
@@ -98,8 +100,9 @@ bool loadJson(QJsonObject& obj, const std::string& baseName) {
             obj = jDoc.object();
             return true;
         }
-		COBOT_LOG.error() << jsonParseError.errorString();
+        COBOT_LOG.error() << jsonParseError.errorString();
     }
+
     return false;
 }
 

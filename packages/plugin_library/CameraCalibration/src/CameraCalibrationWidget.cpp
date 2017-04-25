@@ -39,8 +39,7 @@ bool CameraCalibrationWidget::setup(const QString& configFilePath) {
     return true;
 }
 
-
-void CameraCalibrationWidget::onCameraStreamUpdate(const cobotsys::CameraFrame& frames) {
+void CameraCalibrationWidget::onCameraStreamUpdate(const cobotsys::CameraFrame& frames, cobotsys::AbstractCamera* camera) {
     for (const auto& frame : frames.frames) {
         if (frame.type == cobotsys::ImageType::Ir) {
             cv::Mat mat = frame.data;

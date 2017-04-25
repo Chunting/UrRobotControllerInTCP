@@ -121,7 +121,11 @@ void URRealTimeDriver::robotStatusWatcher() {
     while (m_isWatcherRunning) {
         m_rt_msg_cond.wait(lck);
 
-        _updateDigitIoStatus();
+        if (m_mutex.try_lock()) {
+            _updateDigitIoStatus();
+            m_mutex.unlock();
+        }
+
 
         // 计算时间间隔
         auto time_rdy = std::chrono::high_resolution_clock::now();
@@ -157,13 +161,17 @@ void URRealTimeDriver::robotStatusWatcher() {
 
         // 更新控制驱动数据, 如果没有数据，默认会是当前状态。
         if (m_isStarted && q_next.size() >= CobotUr::JOINT_NUM_) {
-            m_urDriver->servoj(q_next);
+            if (m_mutex.try_lock()) {
+                m_urDriver->servoj(q_next);
+                m_mutex.unlock();
+            }
             //auto info_log = COBOT_LOG.info();
             //for (int i = 0; i < (int)q_next.size(); i++) {
             //	info_log << q_next[i] / M_PI * 180 << ", ";
             //}
         }
     }
+    COBOT_LOG.notice() << "UR Status Watcher shutdown!";
 }
 
 bool URRealTimeDriver::_setup(const QString& configFilePath) {
@@ -215,7 +223,7 @@ void URRealTimeDriver::notify(std::function<void(std::shared_ptr<ArmRobotRealTim
 }
 
 void URRealTimeDriver::_updateDigitIoStatus() {
-    if (m_digitInput && m_isStarted) {
+    if (m_digitInput && m_isStarted && m_urDriver) {
         auto outBits = m_urDriver->m_urCommCtrl->ur->getRobotState()->getDigitalOutputBits();
         auto inBits = m_urDriver->m_urCommCtrl->ur->getRobotState()->getDigitalInputBits();
 

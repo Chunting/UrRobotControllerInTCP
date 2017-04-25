@@ -44,9 +44,16 @@
     <addaction name="action_Pause"/>
     <addaction name="action_Stop"/>
    </widget>
+   <widget class="QMenu" name="menuApplications">
+    <property name="title">
+     <string>Applications</string>
+    </property>
+    <addaction name="action_BinpickingPhyDist"/>
+   </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_View"/>
    <addaction name="menu_Run"/>
+   <addaction name="menuApplications"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="toolBar">
@@ -119,6 +126,15 @@
   <action name="action_New">
    <property name="text">
     <string>&amp;New</string>
+   </property>
+  </action>
+  <action name="action_BinpickingPhyDist">
+   <property name="icon">
+    <iconset resource="main_res.qrc">
+     <normaloff>:/icons/resources/grab.png</normaloff>:/icons/resources/grab.png</iconset>
+   </property>
+   <property name="text">
+    <string>Binpicking - PhyDist</string>
    </property>
   </action>
  </widget>

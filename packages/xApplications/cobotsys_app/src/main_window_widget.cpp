@@ -23,8 +23,8 @@ void MainWindow::setupUi() {
     m_uiCtrlActionGroup->setEnabled(false);
     ui.toolBar->addActions(m_uiCtrlActionGroup->actions());
     connect(ui.action_Start, &QAction::triggered, this, &MainWindow::onStart);
-    connect(ui.action_Start, &QAction::triggered, this, &MainWindow::onPause);
-    connect(ui.action_Start, &QAction::triggered, this, &MainWindow::onStop);
+    connect(ui.action_Pause, &QAction::triggered, this, &MainWindow::onPause);
+    connect(ui.action_Stop, &QAction::triggered, this, &MainWindow::onStop);
 
     ui.toolBar->addSeparator();
     ui.toolBar->addAction(ui.action_Show_Logger);
@@ -42,15 +42,31 @@ void MainWindow::setupUi() {
     m_objectEnumerator->setWindowFlags(Qt::Dialog);
     m_objectEnumerator->initWidgetList();
     connect(ui.action_New, &QAction::triggered, this, &MainWindow::onNewWidget);
+
+    ui.toolBar->addSeparator();
+    ui.toolBar->addAction(ui.action_BinpickingPhyDist);
+    connect(ui.action_BinpickingPhyDist, &QAction::triggered, this, &MainWindow::onCreateBinpickingPhyDist);
 }
 
 void MainWindow::onStart() {
+    auto pController = std::dynamic_pointer_cast<AbstractController>(m_widgetObject);
+    if (pController) {
+        pController->start();
+    }
 }
 
 void MainWindow::onPause() {
+    auto pController = std::dynamic_pointer_cast<AbstractController>(m_widgetObject);
+    if (pController) {
+        pController->pause();
+    }
 }
 
 void MainWindow::onStop() {
+    auto pController = std::dynamic_pointer_cast<AbstractController>(m_widgetObject);
+    if (pController) {
+        pController->stop();
+    }
 }
 
 void MainWindow::onViewLogger() {
@@ -63,7 +79,14 @@ void MainWindow::onViewLogger() {
     }
 }
 
-void MainWindow::createMainWidget() {
+void MainWindow::onCreateBinpickingPhyDist() {
+    QString factory = "PhysicalDistributionControllerFactory, Ver 1.0";
+    QString type = "PhysicalDistributionController";
+    auto dynObject = GlobalObjectFactory::instance()->createObject(factory, type);
+    QString config = "CONFIG/PhysicalDistribution.json";
+    if (dynObject->setup(config)) {
+        setWidget(dynObject);
+    }
 }
 
 QString getJSONConfig(QWidget* parent = nullptr) {

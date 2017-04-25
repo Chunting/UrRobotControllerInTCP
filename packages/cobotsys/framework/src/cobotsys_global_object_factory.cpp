@@ -239,8 +239,9 @@ bool ObjectGroup::_initImpl(const QJsonObject& jsonConfig) {
 
         /// @note 设置目标对象的基本参数数据。从文件配置来设置。
         if (objConfig.contains("config")) {
-            if (!pObject->setup(objConfig["config"].toString())) {
-                COBOT_LOG.warning() << "Fail to setup: " << factory << ", " << type;
+            auto configPath = objConfig["config"].toString();
+            if (!pObject->setup(configPath)) {
+                COBOT_LOG.warning() << "Fail to setup: " << factory << ", " << type << ", " << configPath;
                 return false;
             }
         }

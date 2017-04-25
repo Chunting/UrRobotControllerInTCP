@@ -50,6 +50,16 @@ struct CameraFrame {
  */
 namespace binpicking {
 /**
+ * @brief 用于算法输入，从相机直接捕获的图像需要进一步的做一点分类处理。
+ */
+struct VisionInputImage {
+    std::string capture_device;
+    std::chrono::high_resolution_clock::time_point capture_time;
+    cv::Mat image;
+};
+
+
+/**
  * @brief 描述在机器人坐标系下，基低坐标系机器人运动的一个状态位置
  */
 struct RobotPose {
@@ -68,13 +78,12 @@ struct BinObjGrabPose {
 }
 
 
-
 /**
 * @brief 六维力数据
 */
 struct Wrench {
-	cv::Point3d force;
-	cv::Point3d torque;
+    cv::Point3d force;
+    cv::Point3d torque;
 };
 
 

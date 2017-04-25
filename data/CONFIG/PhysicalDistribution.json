@@ -1,0 +1,49 @@
+{
+  "Application": "PhysicalDistributionDemo",
+  "objectGroup": [
+    {
+      "objectId": "Robot",
+      "objectKey": "Robot",
+      "factory": "URRealTimeDriverFactory, Ver 1.0",
+      "type": "URRealTimeDriver",
+      "config": "CONFIG/UrRobotConfig/ur_sim_config.json"
+    },
+    {
+      "objectId": "KinematicSolver",
+      "objectKey": "KinematicSolver",
+      "factory": "KinematicSolverFactory, Ver 1.0",
+      "type": "KinematicSolver",
+      "config": "CONFIG/UrRobotConfig/ur10_180_config.json"
+    },
+    {
+      "objectId": "RobotMover",
+      "objectKey": "RobotMover",
+      "factory": "RobotMoveDriverFactory, Ver 1.0",
+      "type": "UR10RobotMoveDriver"
+    },
+    {
+      "objectId": "MasterCamera",
+      "objectKey": "MasterCamera",
+      "factory": "Kinect2CameraFactory, Ver 1.0",
+      "type": "Kinect2Camera"
+    },
+    {
+      "objectId": "VisionDetector",
+      "objectKey": "VisionDetector",
+      "factory": "SampleVisionDetectorFactory, Ver 1.0",
+      "type": "SampleVisionDetector"
+    },
+    {
+      "objectId": "Picker",
+      "objectKey": "Picker",
+      "factory": "BinpickingPickerFactory, Ver 1.0",
+      "type": "SuckerBinpickingPicker"
+    },
+    {
+      "objectId": "Placer",
+      "objectKey": "Placer",
+      "factory": "BinpickingPlacerFactory, Ver 1.0",
+      "type": "SuckerBinpickingPlacer"
+    }
+  ]
+}

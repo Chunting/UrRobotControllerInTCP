@@ -34,7 +34,7 @@ bool CameraColorViewer2::setup(const QString& configFilePath) {
 }
 
 
-void CameraColorViewer2::onCameraStreamUpdate(const cobotsys::CameraFrame& frames) {
+void CameraColorViewer2::onCameraStreamUpdate(const cobotsys::CameraFrame& frames, cobotsys::AbstractCamera* camera) {
     for (const auto& frame : frames.frames) {
         if (frame.type == cobotsys::ImageType::Color) {
             cv::Mat mat;

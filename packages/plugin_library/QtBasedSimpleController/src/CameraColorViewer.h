@@ -26,7 +26,7 @@ public:
     virtual bool setup(const QString& configFilePath);
 
 public:
-    virtual void onCameraStreamUpdate(const cobotsys::CameraFrame& frames);
+    virtual void onCameraStreamUpdate(const cobotsys::CameraFrame& frames, cobotsys::AbstractCamera* camera);
 
     void updateCamera();
 protected:

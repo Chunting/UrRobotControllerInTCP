@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="icons">
+    <file>resources/grab.png</file>
     <file>resources/console_64px_1170180_easyicon.net.png</file>
     <file>resources/Pause_Pressed_64px_560490_easyicon.net.png</file>
     <file>resources/start.png</file>

@@ -34,7 +34,7 @@ protected:
 
     void onViewLogger();
 
-    void createMainWidget();
+    void onCreateBinpickingPhyDist();
     void onNewWidget();
 
     void setWidget(std::shared_ptr<AbstractObject>& shared_obj);
@@ -44,7 +44,8 @@ protected:
     virtual void closeEvent(QCloseEvent* event);
 
 protected:
-    std::shared_ptr<AbstractObject> m_widgetObject;
+    shared_ptr<AbstractObject> m_widgetObject;
+
     Ui::MainWindow ui;
     QActionGroup* m_uiCtrlActionGroup;
     std::shared_ptr<QWidget> m_loggerWidget;

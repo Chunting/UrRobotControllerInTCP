@@ -49,7 +49,7 @@ public:
     void initCreateList();
 
 public:
-    virtual void onCameraStreamUpdate(const cobotsys::CameraFrame& frames);
+    virtual void onCameraStreamUpdate(const cobotsys::CameraFrame& frames, cobotsys::AbstractCamera* camera);
 
 protected:
     virtual void closeEvent(QCloseEvent* event);

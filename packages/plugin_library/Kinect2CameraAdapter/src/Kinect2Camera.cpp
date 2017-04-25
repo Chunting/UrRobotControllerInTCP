@@ -105,40 +105,38 @@ void Kinect2Camera::attach(const shared_ptr<cobotsys::CameraStreamObserver>& obs
 
 bool Kinect2Camera::capture(int waitMs) {
     if (m_listener) {
-        if (m_listener->hasNewFrame()) {
-            libfreenect2::FrameMap frames;
-            auto timeBeforeWait = std::chrono::high_resolution_clock::now();
-            if (m_listener->waitForNewFrame(frames, waitMs)) {
-                auto timeAfterWait = std::chrono::high_resolution_clock::now();
+        libfreenect2::FrameMap frames;
+        auto timeBeforeWait = std::chrono::high_resolution_clock::now();
+        if (m_listener->waitForNewFrame(frames, waitMs)) {
+            auto timeAfterWait = std::chrono::high_resolution_clock::now();
 
-                libfreenect2::Frame* rgb = frames[libfreenect2::Frame::Color];
-                libfreenect2::Frame* ir = frames[libfreenect2::Frame::Ir];
-                libfreenect2::Frame* depth = frames[libfreenect2::Frame::Depth];
+            libfreenect2::Frame* rgb = frames[libfreenect2::Frame::Color];
+            libfreenect2::Frame* ir = frames[libfreenect2::Frame::Ir];
+            libfreenect2::Frame* depth = frames[libfreenect2::Frame::Depth];
 
-                cv::Mat raw_color;
-                cv::Mat raw_depth;
-                cv::Mat raw_ir;
+            cv::Mat raw_color;
+            cv::Mat raw_depth;
+            cv::Mat raw_ir;
 
-                cv::Mat(rgb->height, rgb->width, CV_8UC4, rgb->data).copyTo(raw_color);
-                cv::Mat(ir->height, ir->width, CV_32FC1, ir->data).copyTo(raw_ir);
-                cv::Mat(depth->height, depth->width, CV_32FC1, depth->data).copyTo(raw_depth);
+            cv::Mat(rgb->height, rgb->width, CV_8UC4, rgb->data).copyTo(raw_color);
+            cv::Mat(ir->height, ir->width, CV_32FC1, ir->data).copyTo(raw_ir);
+            cv::Mat(depth->height, depth->width, CV_32FC1, depth->data).copyTo(raw_depth);
 
-                cobotsys::ImageFrame c_color = {cobotsys::ImageType::Color, raw_color};
-                cobotsys::ImageFrame c_depth = {cobotsys::ImageType::Depth, raw_depth};
-                cobotsys::ImageFrame c_ir = {cobotsys::ImageType::Ir, raw_ir};
+            cobotsys::ImageFrame c_color = {cobotsys::ImageType::Color, raw_color};
+            cobotsys::ImageFrame c_depth = {cobotsys::ImageType::Depth, raw_depth};
+            cobotsys::ImageFrame c_ir = {cobotsys::ImageType::Ir, raw_ir};
 
-                cobotsys::CameraFrame streamFrames;
-                streamFrames.capture_time = timeAfterWait;
-                streamFrames.frames.push_back(c_color);
-                streamFrames.frames.push_back(c_depth);
-                streamFrames.frames.push_back(c_ir);
+            cobotsys::CameraFrame streamFrames;
+            streamFrames.capture_time = timeAfterWait;
+            streamFrames.frames.push_back(c_color);
+            streamFrames.frames.push_back(c_depth);
+            streamFrames.frames.push_back(c_ir);
 
-                notify(streamFrames);
+            notify(streamFrames);
 
-                m_listener->release(frames);
-                delayClose();
-                return true;
-            }
+            m_listener->release(frames);
+            delayClose();
+            return true;
         }
     }
     return false;
@@ -156,7 +154,7 @@ void Kinect2Camera::delayClose() {
 void Kinect2Camera::notify(const cobotsys::CameraFrame& cameraFrame) {
     m_isNotifyCalling = true;
     for (auto& observer : m_observers) {
-        observer->onCameraStreamUpdate(cameraFrame);
+        observer->onCameraStreamUpdate(cameraFrame, this);
     }
     m_isNotifyCalling = false;
 }
@@ -194,7 +192,7 @@ libfreenect2::PacketPipeline* Kinect2Camera::createPipeline(int deviceId) {
 
 bool Kinect2Camera::setup(const QString& configFilePath) {
     COBOT_LOG.info() << "This Camera Driver is not finish yet.";
-    return false;
+    return true;
 }
 
 std::string Kinect2Camera::getManufacturer() const {

@@ -10,7 +10,7 @@
 using namespace cobotsys;
 
 class FotonicObserver : public cobotsys::CameraStreamObserver {
-    virtual void onCameraStreamUpdate(const CameraFrame& cameraFrame) {
+    virtual void onCameraStreamUpdate(const CameraFrame& cameraFrame, AbstractCamera* camera) {
         if (cameraFrame.frames.size() == 0)
             std::cout << "cameraFrame.frames.size()  is 0" << std::endl;
 
