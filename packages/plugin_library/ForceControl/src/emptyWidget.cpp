@@ -28,11 +28,13 @@ bool emptyWidget::setup(const QString &configFilePath) {
 	pObject = GlobalObjectFactory::instance()->createObject("ForceGuideControllerFactory, Ver 1.0", "ForceGuideController");
 
 	m_ptrController = std::dynamic_pointer_cast<cobotsys::AbstractController>(pObject);
-
-	QString sConfig = QFileDialog::getOpenFileName(Q_NULLPTR,
-		QObject::tr("Get Robot Config JSON file ..."),
-		QString(FileFinder::getPreDefPath().c_str()),
-		QObject::tr("JSON files (*.JSON *.json)"));
+	QString sConfig = "CONFIG/force_guide_controller_config.json";
+	if (sConfig.isEmpty()) {
+		sConfig = QFileDialog::getOpenFileName(Q_NULLPTR,
+			QObject::tr("Get controller Config JSON file ..."),
+			QString(FileFinder::getPreDefPath().c_str()),
+			QObject::tr("JSON files (*.JSON *.json)"));
+	}
 	if (!sConfig.isEmpty())
 		m_ptrController->setup(sConfig);
 

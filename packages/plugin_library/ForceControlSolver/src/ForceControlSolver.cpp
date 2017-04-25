@@ -54,8 +54,8 @@ void ForceControlSolver::onForceSensorDataStreamUpdate(const std::shared_ptr<cob
 
 	//
 	step(m_forceEE, m_gravityEE, m_offsetEE);
-	/*COBOT_LOG.notice() << " offset:   transition: " << m_offsetEE [0]<<","<< m_offsetEE [1]<<","<< m_offsetEE [2]<<"\r\n"
-		<<" \t\t\t rotation: " << m_offsetEE[3] << "," << m_offsetEE[4] << "," << m_offsetEE[5] << "\r\n";*/
+	//COBOT_LOG.notice() << " offset:   transition: " << m_offsetEE [0]<<","<< m_offsetEE [1]<<","<< m_offsetEE [2]<<"\r\n"
+	//	<<" \t\t\t rotation: " << m_offsetEE[3] << "," << m_offsetEE[4] << "," << m_offsetEE[5] << "\r\n";
 }
 
 void ::ForceControlSolver::calcForceEE() {
@@ -70,26 +70,26 @@ void ::ForceControlSolver::calcForceEE() {
 	{
 		m_forceEE[i] -= m_biasRepair[i];
 	}
-	// transform from sensor to ee
-	Eigen::Vector3d f;
-	f(0) = m_forceEE[0];
-	f(1) = m_forceEE[1];
-	f(2) = m_forceEE[2];
-	Eigen::Vector3d t;
-	t(0) = m_forceEE[3];
-	t(1) = m_forceEE[4];
-	t(2) = m_forceEE[5];
-	Eigen::Matrix3d ft_ee;
-	ft_ee << 0, 1, 0, -1, 0, 0, 0, 0, 1;//todo should be defined in the config, different robot or EE could be different values. 
-	Eigen::Vector3d r;
-	r = ft_ee*f;
-	m_forceEE[0] = r(0);
-	m_forceEE[1] = r(1);
-	m_forceEE[2] = r(2);
-	r = ft_ee*t;
-	m_forceEE[3] = r(0);
-	m_forceEE[4] = r(1);
-	m_forceEE[5] = r(2);
+	//// transform from sensor to ee
+	//Eigen::Vector3d f;
+	//f(0) = m_forceEE[0];
+	//f(1) = m_forceEE[1];
+	//f(2) = m_forceEE[2];
+	//Eigen::Vector3d t;
+	//t(0) = m_forceEE[3];
+	//t(1) = m_forceEE[4];
+	//t(2) = m_forceEE[5];
+	//Eigen::Matrix3d ft_ee;
+	//ft_ee << 0, 1, 0, -1, 0, 0, 0, 0, 1;//todo should be defined in the config, different robot or EE could be different values. 
+	//Eigen::Vector3d r;
+	//r = ft_ee*f;
+	//m_forceEE[0] = r(0);
+	//m_forceEE[1] = r(1);
+	//m_forceEE[2] = r(2);
+	//r = ft_ee*t;
+	//m_forceEE[3] = r(0);
+	//m_forceEE[4] = r(1);
+	//m_forceEE[5] = r(2);
 
 }
 
