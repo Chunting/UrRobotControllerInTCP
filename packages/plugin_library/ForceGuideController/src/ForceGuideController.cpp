@@ -249,7 +249,7 @@ void ForceGuideController::guideControlThread() {
 			auto ioStatus = m_ptrRobot->getDigitIoDriver(1);
 			//setToolVoltage
 			std::shared_ptr<CobotUrDigitIoAdapter> pIO = std::dynamic_pointer_cast<CobotUrDigitIoAdapter>(ioStatus);
-			pIO->setToolVoltage(6.0);
+			pIO->setToolVoltage(24.0);
 
 			if (ioStatus->getIoStatus(DigitIoPort::Port_Ur_Tool_In_0) == DigitIoStatus::Set) {
 				if (nc == 100) {
