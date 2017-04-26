@@ -14,7 +14,7 @@ using namespace cobotsys;
 
 class CobotUrDigitIoAdapter : public AbstractDigitIoDriver {
 public:
-    CobotUrDigitIoAdapter(CobotUrRealTimeCommCtrl& realTimeCommCtrl);
+    CobotUrDigitIoAdapter();
     virtual ~CobotUrDigitIoAdapter();
 
     virtual bool setup(const QString& configFilePath);
@@ -27,6 +27,8 @@ public:
     virtual bool setToolVoltage(double v) const;
 
 
+    void setUrRealTimeCtrl(CobotUrRealTimeCommCtrl* realTimeCommCtrl);
+
 
     // 这是一个内部类，没有怎么严格的要求写。
     std::vector<DigitIoStatus> m_ioPortStatus;
@@ -38,7 +40,7 @@ public:
 
     int m_debugIoLastStatus;
 
-    CobotUrRealTimeCommCtrl& m_realTimeCommCtrl;
+    CobotUrRealTimeCommCtrl* m_realTimeCommCtrl;
 
     void debugIoStatus();
 

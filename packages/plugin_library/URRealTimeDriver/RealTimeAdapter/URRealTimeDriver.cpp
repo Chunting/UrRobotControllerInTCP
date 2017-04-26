@@ -17,6 +17,9 @@ URRealTimeDriver::URRealTimeDriver() : QObject(nullptr) {
     m_rt_ctrl = nullptr;
     m_urDriver = nullptr;
     m_curReqQ.clear();
+
+    m_digitInput = make_shared<CobotUrDigitIoAdapter>();
+    m_digitOutput = make_shared<CobotUrDigitIoAdapter>();
 }
 
 URRealTimeDriver::~URRealTimeDriver() {
@@ -75,8 +78,8 @@ bool URRealTimeDriver::start() {
     m_urDriver->startDriver();
 
     // 这里是数字驱动的部分
-    m_digitInput = make_shared<CobotUrDigitIoAdapter>(*(m_urDriver->m_urRealTimeCommCtrl));
-    m_digitOutput = make_shared<CobotUrDigitIoAdapter>(*(m_urDriver->m_urRealTimeCommCtrl));
+    m_digitInput->setUrRealTimeCtrl(m_urDriver->m_urRealTimeCommCtrl);
+    m_digitOutput->setUrRealTimeCtrl(m_urDriver->m_urRealTimeCommCtrl);
     m_digitInput->m_isInput = true;
     m_digitOutput->m_isOutput = true;
     return true;
@@ -92,6 +95,8 @@ void URRealTimeDriver::stop() {
         m_urDriver->stopDriver();
         m_urDriver->deleteLater();
         m_urDriver = nullptr;
+        m_digitInput->setUrRealTimeCtrl(nullptr);
+        m_digitOutput->setUrRealTimeCtrl(nullptr);
     }
 }
 

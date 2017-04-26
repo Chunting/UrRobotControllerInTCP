@@ -6,8 +6,8 @@
 #include <cobotsys_logger.h>
 #include "CobotUrDigitIoAdapter.h"
 
-CobotUrDigitIoAdapter::CobotUrDigitIoAdapter(CobotUrRealTimeCommCtrl& realTimeCommCtrl)
-        : m_realTimeCommCtrl(realTimeCommCtrl) {
+CobotUrDigitIoAdapter::CobotUrDigitIoAdapter() {
+    m_realTimeCommCtrl = nullptr;
     m_isInput = false;
     m_isOutput = false;
 }
@@ -65,15 +65,24 @@ void CobotUrDigitIoAdapter::setDigitOut(int portIndex, bool b) {
     if (portIndex < 8) {
         sprintf(buf, "sec setOut():\n\tset_standard_digital_out(%d, %s)\nend\n",
                 portIndex, b ? "True" : "False");
-        m_realTimeCommCtrl.addCommandToQueue(buf);
+        if (m_realTimeCommCtrl) {
+            m_realTimeCommCtrl->addCommandToQueue(buf);
+        }
     }
 }
 
 bool CobotUrDigitIoAdapter::setToolVoltage(double v) const {
     char buf[256];
-    int voltage = (int)v;
+    int voltage = (int) v;
     sprintf(buf, "sec setOut():\n\tset_tool_voltage(%d)\nend\n", voltage);
-    m_realTimeCommCtrl.addCommandToQueue(buf);
-    return true;
+    if (m_realTimeCommCtrl) {
+        m_realTimeCommCtrl->addCommandToQueue(buf);
+        return true;
+    }
+    return false;
+}
+
+void CobotUrDigitIoAdapter::setUrRealTimeCtrl(CobotUrRealTimeCommCtrl* realTimeCommCtrl) {
+    m_realTimeCommCtrl = realTimeCommCtrl;
 }
 
