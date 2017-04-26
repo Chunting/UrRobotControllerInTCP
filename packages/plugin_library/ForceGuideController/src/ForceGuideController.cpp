@@ -9,7 +9,6 @@
 #include <QtWidgets/QFileDialog>
 #include <cobotsys_file_finder.h>
 #include <thread>
-#include "../../URRealTimeDriver/RealTimeAdapter/CobotUrDigitIoAdapter.h"
 
 ForceGuideController::ForceGuideController() :
 	QObject(nullptr),
@@ -248,8 +247,7 @@ void ForceGuideController::guideControlThread() {
 			}
 			auto ioStatus = m_ptrRobot->getDigitIoDriver(1);
 			//setToolVoltage
-			std::shared_ptr<CobotUrDigitIoAdapter> pIO = std::dynamic_pointer_cast<CobotUrDigitIoAdapter>(ioStatus);
-			pIO->setToolVoltage(24.0);
+			ioStatus->setToolVoltage(24.0);
 
 			if (ioStatus->getIoStatus(DigitIoPort::Port_Ur_Tool_In_0) == DigitIoStatus::Reset) {
 				if (nc == 100) {

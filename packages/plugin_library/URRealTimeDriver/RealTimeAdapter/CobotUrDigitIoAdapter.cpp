@@ -71,7 +71,7 @@ void CobotUrDigitIoAdapter::setDigitOut(int portIndex, bool b) {
     }
 }
 
-bool CobotUrDigitIoAdapter::setToolVoltage(double v) const {
+bool CobotUrDigitIoAdapter::setToolVoltage(double v) {
     char buf[256];
     int voltage = (int) v;
     sprintf(buf, "sec setOut():\n\tset_tool_voltage(%d)\nend\n", voltage);

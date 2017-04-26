@@ -25,7 +25,7 @@ public:
     virtual bool isDigitInput() const;
     virtual bool isDigitOutput() const;
 
-    virtual bool setToolVoltage(double v) const;
+    virtual bool setToolVoltage(double v);
 
 
     void setUrRealTimeCtrl(CobotUrRealTimeCommCtrl* realTimeCommCtrl);

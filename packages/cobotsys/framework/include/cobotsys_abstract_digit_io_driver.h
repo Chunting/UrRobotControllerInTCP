@@ -67,7 +67,7 @@ public:
     virtual bool isDigitInput() const = 0;
     virtual bool isDigitOutput() const = 0;
 
-    virtual bool setToolVoltage(double v);
+    virtual bool setToolVoltage(double v) = 0;
 };
 }
 
