@@ -7,6 +7,7 @@ set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} $ENV{QT5_INSTALL_PATH})   # Qt5
 
 # OpenCV
 find_package(OpenCV REQUIRED)
+find_package(Qt5Core REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
 
 # 辅助宏，用于搜索对应目录所有子目录项
@@ -48,8 +49,13 @@ foreach (file ${children})
             endif ()
         else ()
             message(STATUS "TEST APP   : " ${f_base})
-            add_executable(${f_base} ${file_path_full})
-            target_link_libraries(${f_base} cobotsys qwt)
+            if (WIN32)
+                add_executable(${f_base} WIN32 ${file_path_full})
+                target_link_libraries(${f_base} Qt5::WinMain cobotsys qwt)
+            else ()
+                add_executable(${f_base} ${file_path_full})
+                target_link_libraries(${f_base} cobotsys qwt)
+            endif ()
             install(TARGETS ${f_base} RUNTIME DESTINATION bin)
         endif ()
     endif ()
