@@ -172,7 +172,6 @@ void PhysicalDistributionController::mainLoop() {
             ACTION_STEP(m_cond.wait(uniqueLock));
         }
         ACTION_STEP();
-        COBOT_LOG.message() << "Image Updated, " << m_numImageCaptured;
         _debugImages();
 
         // 调用视觉处理函数
@@ -208,8 +207,29 @@ void PhysicalDistributionController::setupUi() {
     setLayout(boxLayout);
 }
 
+cv::Mat toColor(const cv::Mat& depth) {
+    double vmin, vmax, alpha;
+    cv::Mat color, gray;
+    cv::minMaxLoc(depth, &vmin, &vmax);
+    alpha = 255.0 / (vmax - vmin);
+    depth.convertTo(gray, CV_8UC1, alpha, -vmin * alpha);
+    cv::applyColorMap(gray, color, cv::COLORMAP_JET);
+    return color;
+}
+
+cv::Mat toGray(const cv::Mat& ir) {
+    double vmin, vmax, alpha;
+    cv::Mat gray;
+    cv::minMaxLoc(ir, &vmin, &vmax);
+    alpha = 255.0 / (vmax - vmin);
+    ir.convertTo(gray, CV_8UC1, alpha, -vmin * alpha);
+    return gray;
+}
+
 void PhysicalDistributionController::_debugImages() {
-    //m_matViewer->getMatMerger().updateMat("preview", m_images[0].image);
-    m_matViewer->getMatMerger().updateMat("grab_object", m_images[1].image);
-    m_matViewer->getMatMerger().updateMat("Object_flip", m_images[2].image);
+    //m_matViewer->getMatMerger().updateMat("kin2color", m_images[0].image);
+
+    m_matViewer->getMatMerger().updateMat("depth", toColor(m_images[3].image));
+    m_matViewer->getMatMerger().updateMat("ir", m_images[4].image);
+
 }

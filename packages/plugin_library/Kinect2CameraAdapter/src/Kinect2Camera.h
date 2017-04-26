@@ -12,6 +12,7 @@
 
 #include <libfreenect2/libfreenect2.hpp>
 #include <libfreenect2/frame_listener_impl.h>
+#include <libfreenect2/registration.h>
 #include <mutex>
 #include <cobotsys_logger.h>
 #include <chrono>
@@ -65,6 +66,10 @@ protected:
     bool m_isCloseCallInNotify;
 
     bool m_isOpened;
+
+    libfreenect2::Frame undistorted;
+    libfreenect2::Frame registered;
+    libfreenect2::Registration *registration;
 };
 
 

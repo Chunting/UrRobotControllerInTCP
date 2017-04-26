@@ -10,6 +10,34 @@
                 <height>540</height>
             </_>
             <_>
+                <name>kin2color</name>
+                <x>0</x>
+                <y>424</y>
+                <width>480</width>
+                <height>270</height>
+            </_>
+            <_>
+                <name>kin2depth</name>
+                <x>0</x>
+                <y>424</y>
+                <width>960</width>
+                <height>541</height>
+            </_>
+            <_>
+                <name>depth</name>
+                <x>0</x>
+                <y>0</y>
+                <width>512</width>
+                <height>424</height>
+            </_>
+            <_>
+                <name>ir</name>
+                <x>512</x>
+                <y>0</y>
+                <width>512</width>
+                <height>424</height>
+            </_>
+            <_>
                 <name>grab_object</name>
                 <x>0</x>
                 <y>0</y>

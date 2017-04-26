@@ -7,7 +7,8 @@
 #include "Kinect2Camera.h"
 
 
-Kinect2Camera::Kinect2Camera() {
+Kinect2Camera::Kinect2Camera()
+        : undistorted(512, 424, 4), registered(512, 424, 4) {
     m_freenect2 = new libfreenect2::Freenect2;
     m_freenectDev = nullptr;
     m_devicdId = -1;
@@ -15,6 +16,8 @@ Kinect2Camera::Kinect2Camera() {
     m_isNotifyCalling = false;
     m_isCloseCallInNotify = false;
     m_isOpened = false;
+
+    registration = nullptr;
 }
 
 Kinect2Camera::~Kinect2Camera() {
@@ -65,6 +68,10 @@ bool Kinect2Camera::open(int deviceId) {
     if (m_freenectDev->start()) {
         COBOT_LOG.info() << "device serial  : " << m_freenectDev->getSerialNumber() << endl;
         COBOT_LOG.info() << "device firmware: " << m_freenectDev->getFirmwareVersion() << endl;
+
+        registration = new libfreenect2::Registration(m_freenectDev->getIrCameraParams(),
+                                                      m_freenectDev->getColorCameraParams());
+
         m_isOpened = true;
         return true;
     }
@@ -84,6 +91,11 @@ void Kinect2Camera::close() {
         m_freenectDev->close();
         m_freenectDev = nullptr;
     }
+
+    if (registration) {
+        delete registration;
+    }
+
 
     m_listener = nullptr;
 
@@ -114,23 +126,34 @@ bool Kinect2Camera::capture(int waitMs) {
             libfreenect2::Frame* ir = frames[libfreenect2::Frame::Ir];
             libfreenect2::Frame* depth = frames[libfreenect2::Frame::Depth];
 
+            registration->apply(rgb, depth, &undistorted, &registered);
+
             cv::Mat raw_color;
             cv::Mat raw_depth;
             cv::Mat raw_ir;
+            cv::Mat undistorted_depth;
+            cv::Mat registered_color;
 
-            cv::Mat(rgb->height, rgb->width, CV_8UC4, rgb->data).copyTo(raw_color);
-            cv::Mat(ir->height, ir->width, CV_32FC1, ir->data).copyTo(raw_ir);
-            cv::Mat(depth->height, depth->width, CV_32FC1, depth->data).copyTo(raw_depth);
+            cv::Mat((int) rgb->height, (int) rgb->width, CV_8UC4, rgb->data).copyTo(raw_color);
+            cv::Mat((int) depth->height, (int) depth->width, CV_32FC1, depth->data).copyTo(raw_depth);
+            cv::Mat((int) ir->height, (int) ir->width, CV_32FC1, ir->data).copyTo(raw_ir);
+            cv::Mat((int) undistorted.height, (int) undistorted.width, CV_32FC1, undistorted.data).copyTo(
+                    undistorted_depth);
+            cv::Mat((int) registered.height, (int) registered.width, CV_8UC4, registered.data).copyTo(
+                    registered_color);
 
             cobotsys::ImageFrame c_color = {cobotsys::ImageType::Color, raw_color};
             cobotsys::ImageFrame c_depth = {cobotsys::ImageType::Depth, raw_depth};
             cobotsys::ImageFrame c_ir = {cobotsys::ImageType::Ir, raw_ir};
+
 
             cobotsys::CameraFrame streamFrames;
             streamFrames.capture_time = timeAfterWait;
             streamFrames.frames.push_back(c_color);
             streamFrames.frames.push_back(c_depth);
             streamFrames.frames.push_back(c_ir);
+            streamFrames.frames.push_back({cobotsys::ImageType::Depth, undistorted_depth});
+            streamFrames.frames.push_back({cobotsys::ImageType::Color, registered_color});
 
             notify(streamFrames);
 
