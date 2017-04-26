@@ -52,7 +52,7 @@
     <string/>
    </property>
    <property name="pixmap">
-    <pixmap>../../../../../../Desktop/logo.png</pixmap>
+    <pixmap>../res/logo.png</pixmap>
    </property>
   </widget>
  </widget>
