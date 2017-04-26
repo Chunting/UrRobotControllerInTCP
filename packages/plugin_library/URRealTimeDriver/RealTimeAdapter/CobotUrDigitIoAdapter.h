@@ -19,6 +19,7 @@ public:
 
     virtual bool setup(const QString& configFilePath);
 
+    virtual bool isOpened() const;
     virtual void setIo(DigitIoPorts ioPorts, DigitIoStatus ioStatus);
     virtual DigitIoStatus getIoStatus(DigitIoPort ioPort);
     virtual bool isDigitInput() const;

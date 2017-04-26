@@ -49,6 +49,10 @@ public:
     virtual ~AbstractDigitIoDriver();
 
     /**
+     * 端口状态是否正常的打开了。
+     */
+    virtual bool isOpened() const = 0;
+    /**
      * 用于设置IO口的状态为ON
      * @param ioPorts 可以是 DigitIoPort的组合
      */

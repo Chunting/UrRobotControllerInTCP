@@ -86,3 +86,7 @@ void CobotUrDigitIoAdapter::setUrRealTimeCtrl(CobotUrRealTimeCommCtrl* realTimeC
     m_realTimeCommCtrl = realTimeCommCtrl;
 }
 
+bool CobotUrDigitIoAdapter::isOpened() const {
+    return (m_realTimeCommCtrl != nullptr);
+}
+
