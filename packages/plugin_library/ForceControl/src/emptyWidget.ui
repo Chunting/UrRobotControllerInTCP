@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>323</width>
+    <height>202</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,8 +16,8 @@
   <widget class="QPushButton" name="startButton">
    <property name="geometry">
     <rect>
-     <x>300</x>
-     <y>200</y>
+     <x>230</x>
+     <y>100</y>
      <width>75</width>
      <height>23</height>
     </rect>
@@ -29,8 +29,8 @@
   <widget class="QPushButton" name="stopButton">
    <property name="geometry">
     <rect>
-     <x>300</x>
-     <y>250</y>
+     <x>230</x>
+     <y>140</y>
      <width>75</width>
      <height>23</height>
     </rect>
@@ -44,19 +44,24 @@
     <rect>
      <x>20</x>
      <y>20</y>
-     <width>261</width>
-     <height>241</height>
+     <width>180</width>
+     <height>145</height>
     </rect>
    </property>
    <property name="text">
     <string/>
    </property>
    <property name="pixmap">
-    <pixmap>../res/logo.png</pixmap>
+    <pixmap resource="force.qrc">:/icons/res/logo.png</pixmap>
+   </property>
+   <property name="scaledContents">
+    <bool>true</bool>
    </property>
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
+ <resources>
+  <include location="force.qrc"/>
+ </resources>
  <connections/>
 </ui>

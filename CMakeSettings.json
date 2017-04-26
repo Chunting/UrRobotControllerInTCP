@@ -5,7 +5,7 @@
         "name": "x64-Release",
         "generator": "Visual Studio 14 2015 Win64",
         "configurationType": "Release",
-        "buildRoot": "${env.LOCALAPPDATA}\\CMakeBuild\\${workspaceHash}\\build\\${name}",
+        "buildRoot": "C:\\build\\${workspaceHash}\\build\\${name}",
         "cmakeCommandArgs": "-Wno-dev",
         "buildCommandArgs": "-m -v:minimal"
       }
