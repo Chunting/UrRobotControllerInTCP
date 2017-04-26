@@ -134,15 +134,6 @@ bool PhysicalDistributionController::_setupInternalObjects(ObjectGroup& objectGr
     return true;
 }
 
-void PhysicalDistributionController::onCameraStreamUpdate(const CameraFrame& cameraFrame, AbstractCamera* camera) {
-    m_numImageCaptured++;
-    m_imageUpdated = true;
-    for (const auto& iter : cameraFrame.frames) {
-        m_images.push_back({camera->getSerialNumber(), cameraFrame.capture_time, iter.data, iter.type});
-    }
-    m_cond.notify_all();
-}
-
 
 #define ACTION_STEP(_what) if (m_loop) { _what; } else { break; }
 
@@ -162,17 +153,7 @@ void PhysicalDistributionController::mainLoop() {
         m_jsonServer->api_setupTaskStage(taskInfo, JsonServer::TaskStage::Begin);
 
         // First, capture camera image.
-        m_imageUpdated = false;
-        m_images.clear();
-        if (!m_ptrCameraMaster->capture(1000)) {
-            COBOT_LOG.error() << "Fail to capture image, " << m_numImageCaptured;
-            // TODO, here re-connect camera.
-        }
-        if (!m_imageUpdated) { // Capture is async call, wait until finish
-            ACTION_STEP(m_cond.wait(uniqueLock));
-        }
-        ACTION_STEP();
-        _debugImages();
+        if (!_stepCaptureImage(uniqueLock)) break;
 
         // 调用视觉处理函数
         if (m_ptrDetector->processVisionImage(m_images)) {
@@ -195,6 +176,32 @@ void PhysicalDistributionController::mainLoop() {
         m_jsonServer->api_setupTaskStage(taskInfo, JsonServer::TaskStage::End);
     }
     COBOT_LOG.info() << "Main loop thread finished.";
+}
+
+
+void PhysicalDistributionController::onCameraStreamUpdate(const CameraFrame& cameraFrame, AbstractCamera* camera) {
+    m_numImageCaptured++;
+    m_imageUpdated = true;
+    for (const auto& iter : cameraFrame.frames) {
+        m_images.push_back({camera->getSerialNumber(), cameraFrame.capture_time, iter.data, iter.type});
+    }
+    m_cond.notify_all();
+}
+
+bool PhysicalDistributionController::_stepCaptureImage(std::unique_lock<std::mutex>& uniqueLock) {
+    m_imageUpdated = false;
+    m_images.clear();
+    if (!m_ptrCameraMaster->capture(1000)) {
+        COBOT_LOG.error() << "Fail to capture image, " << m_numImageCaptured;
+        // TODO, here re-connect camera.
+    }
+
+    if (m_imageUpdated) {
+    } else {
+        m_cond.wait(uniqueLock);
+    }
+    _debugImages();
+    return m_loop;
 }
 
 void PhysicalDistributionController::setupUi() {
@@ -231,5 +238,6 @@ void PhysicalDistributionController::_debugImages() {
 
     m_matViewer->getMatMerger().updateMat("depth", toColor(m_images[3].image));
     m_matViewer->getMatMerger().updateMat("ir", m_images[4].image);
-
 }
+
+

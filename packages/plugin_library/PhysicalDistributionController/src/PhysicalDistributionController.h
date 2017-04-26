@@ -56,6 +56,8 @@ protected:
     bool _setupInternalObjects(ObjectGroup& objectGroup);
     void _debugImages();
 
+
+    bool _stepCaptureImage(std::unique_lock<std::mutex>& uniqueLock);
 protected:
     shared_ptr<AbstractArmRobotRealTimeDriver> m_ptrRobot;
     shared_ptr<AbstractKinematicSolver> m_ptrKinematicSolver;
