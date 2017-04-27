@@ -22,9 +22,14 @@ ForceGuideController::ForceGuideController() :
 	m_posReady(false)
 {
 	//m_firstMove = true;
+    m_exit = false;
 }
 
 ForceGuideController::~ForceGuideController() {
+    m_exit = true;
+	if (m_controlThread.joinable()){
+		m_controlThread.join();
+	}
 
 }
 
@@ -220,7 +225,7 @@ bool ForceGuideController::createForceControlSolver() {
 void ForceGuideController::guideControlThread() {
 	auto time_cur = std::chrono::high_resolution_clock::now();
 	int nc = 0;
-	while (true)
+	while (!m_exit)
 	{
 		std::chrono::duration<double> dur(0.008);
 		std::this_thread::sleep_until(time_cur + dur);

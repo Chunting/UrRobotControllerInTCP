@@ -14,7 +14,7 @@ find_package(Qt5Widgets REQUIRED) #  如果要使用autouic那么必须引用这
 
 file(GLOB ${PROJECT_NAME}_files src/*)
 
-add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_files} src/emptyWidget.cpp src/emptyWidget.h)
+add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_files})
 
 target_link_libraries(${PROJECT_NAME} cobotsys)
 

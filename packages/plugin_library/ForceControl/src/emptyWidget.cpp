@@ -7,10 +7,19 @@
 #include <cobotsys_file_finder.h>
 #include "emptyWidget.h"
 #include <QPushButton>
-
+#include <QLayout>
+#include <QVBoxLayout>
 emptyWidget::emptyWidget() {
 	//ui
-	ui.setupUi(this);
+    ui.setupUi(this);
+    if (GlobalObjectFactory::instance()) {
+        auto obj = GlobalObjectFactory::instance()->createObject("SimpleUiFactory, Ver 1.0", "BasicLoggerWidget");
+        m_loggerWidget = std::dynamic_pointer_cast<QWidget>(obj);
+    }
+    auto boxLayout = new QVBoxLayout;
+	boxLayout->setContentsMargins(QMargins());
+	boxLayout->addWidget(m_loggerWidget.get());
+	ui.logger->setLayout(boxLayout);
 
 	connect(ui.startButton, &QPushButton::released, this, &emptyWidget::startController);
 	connect(ui.stopButton, &QPushButton::released, this, &emptyWidget::stopController);

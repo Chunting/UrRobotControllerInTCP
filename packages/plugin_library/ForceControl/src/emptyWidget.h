@@ -11,7 +11,6 @@
 #include <cobotsys_global_object_factory.h>
 #include "ui_emptyWidget.h"
 
-
 using namespace cobotsys;
 
 class emptyWidget: public AbstractWidget  {
@@ -28,6 +27,7 @@ public:
 private:
 	Ui::emptyWidget ui;
 	std::shared_ptr<AbstractController> m_ptrController;
+	std::shared_ptr<QWidget> m_loggerWidget;
 };
 
 

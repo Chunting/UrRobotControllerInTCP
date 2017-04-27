@@ -56,6 +56,7 @@ protected:
 
 protected:
 	bool m_bcontrolStart;
+	bool m_exit;
 
 	QString m_robotFactory;
 	QString m_robotType;
