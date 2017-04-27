@@ -20,6 +20,7 @@
 
 #include "JsonServer.h"
 #include "MatViewer.h"
+#include "RobotStatusViewer.h"
 #include <thread>
 #include <MatMerger.h>
 #include <QVBoxLayout>
@@ -41,6 +42,7 @@ public:
     virtual void pause();
     virtual void stop();
 
+    virtual void clearAttachedObject();
 protected:
     void mainLoop();
     void setupUi();
@@ -82,6 +84,7 @@ protected:
     int m_numImageCaptured;
 
     MatViewer* m_matViewer;
+    std::shared_ptr<RobotStatusViewer> m_ptrViewer;
 
 };
 

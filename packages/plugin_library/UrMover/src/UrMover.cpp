@@ -81,7 +81,6 @@ void UrMover::notify(const UrMover::MoveTarget& moveTarget) {
     }
 }
 
-
 void UrMover::moveProcess() {
     auto timePoint = std::chrono::high_resolution_clock::now();
     std::vector<double> joint;
@@ -146,8 +145,19 @@ void UrMover::moveProcess() {
 }
 
 void UrMover::clearAttachedObject() {
-    std::lock_guard<std::mutex> lockGuard(m_mutex);
+    m_mutex.lock();
+    m_exitLoop = true;
+    m_mutex.unlock();
+
+    if (m_moverThread.joinable()) {
+        m_moverThread.join();
+    }
+
+    m_mutex.lock();
     m_observers.clear();
+    m_kinematicSolver.reset();
+    m_realTimeDriver.reset();
+    m_mutex.unlock();
 }
 
 bool UrMover::pickMoveTarget(UrMover::MoveTarget& moveTarget) {

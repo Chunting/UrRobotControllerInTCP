@@ -41,8 +41,8 @@ protected:
     std::shared_ptr<AbstractArmRobotRealTimeDriver> m_realTimeDriver;
     std::shared_ptr<AbstractKinematicSolver> m_kinematicSolver;
 
-    Eigen::Matrix4d m_cam2base;
-    std::vector<double> m_initialJoint;
+//    Eigen::Matrix4d m_cam2base;
+//    std::vector<double> m_initialJoint;
     std::vector<double> m_curJoint;
     std::mutex m_mutex;
     bool m_robotConnected;

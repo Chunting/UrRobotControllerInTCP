@@ -120,7 +120,9 @@ void MainWindow::onNewWidget() {
 void MainWindow::setWidget(std::shared_ptr<AbstractObject>& shared_obj) {
     auto widget = std::dynamic_pointer_cast<QWidget>(shared_obj);
     if (widget) {
+        takeCentralWidget();
         setCentralWidget(widget.get());
+        detachSharedObject(m_widgetObject);
         m_widgetObject = shared_obj;
     }
 

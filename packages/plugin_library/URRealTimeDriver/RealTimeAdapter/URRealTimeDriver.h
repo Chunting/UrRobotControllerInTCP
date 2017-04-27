@@ -30,6 +30,7 @@ public:
     virtual void stop();
     virtual bool setup(const QString& configFilePath);
     virtual QString getRobotUrl();
+    virtual void clearAttachedObject();
 protected:
     void robotStatusWatcher();
 

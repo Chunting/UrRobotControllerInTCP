@@ -53,8 +53,16 @@ public:
  * @{
  */
 typedef std::shared_ptr<cobotsys::AbstractObject> AbstractObjectPtr;
+
 /**
  * @}
  */
+
+template<class T>
+void detachSharedObject(T& t) {
+    if (t) {
+        t->clearAttachedObject();
+    }
+}
 
 #endif //PROJECT_COBOTSYS_ABSTRACT_OBJECT_H

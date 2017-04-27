@@ -239,3 +239,8 @@ void URRealTimeDriver::_updateDigitIoStatus() {
         m_digitOutput->debugIoStatus();
     }
 }
+
+void URRealTimeDriver::clearAttachedObject() {
+    std::lock_guard<std::mutex> lock_guard(m_mutex);
+    m_observers.clear();
+}

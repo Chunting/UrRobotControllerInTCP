@@ -42,6 +42,12 @@ public:
     virtual int getImageHeight(int imageIdx = 0) const;
     virtual ImageType getImageType(int imageIdx = 0) const;
     virtual int getImageCount() const;
+
+    virtual void clearAttachedObject() {
+        std::lock_guard<std::mutex> lock(m_ioMutex);
+        m_observers.clear();
+    }
+
 protected:
     libfreenect2::PacketPipeline* createPipeline(int deviceId);
     void notify(const cobotsys::CameraFrame& cameraFrame);
@@ -69,7 +75,7 @@ protected:
 
     libfreenect2::Frame undistorted;
     libfreenect2::Frame registered;
-    libfreenect2::Registration *registration;
+    libfreenect2::Registration* registration;
 };
 
 

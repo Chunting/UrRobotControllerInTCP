@@ -6,6 +6,7 @@
 #include <extra2.h>
 #include <cobotsys_file_finder.h>
 #include "PhysicalDistributionController.h"
+#include "RobotStatusViewer.h"
 
 
 PhysicalDistributionController::PhysicalDistributionController() {
@@ -19,6 +20,17 @@ PhysicalDistributionController::PhysicalDistributionController() {
 }
 
 PhysicalDistributionController::~PhysicalDistributionController() {
+    if (m_ptrViewer) {
+        layout()->removeWidget(m_ptrViewer.get());
+        m_ptrViewer->setParent(nullptr);
+    }
+    detachSharedObject(m_ptrRobot);
+    detachSharedObject(m_ptrCameraMaster);
+    detachSharedObject(m_ptrKinematicSolver);
+    detachSharedObject(m_ptrMover);
+    detachSharedObject(m_ptrDetector);
+    detachSharedObject(m_ptrPicker);
+    detachSharedObject(m_ptrPlacer);
 }
 
 bool PhysicalDistributionController::setup(const QString& configFilePath) {
@@ -127,13 +139,23 @@ bool PhysicalDistributionController::_setupInternalObjects(ObjectGroup& objectGr
     m_ptrMover->start();
 
     auto _self = shared_from_this();
+
     m_ptrRobot->attach(std::dynamic_pointer_cast<ArmRobotRealTimeStatusObserver>(_self));
+    m_ptrRobot->attach(std::dynamic_pointer_cast<ArmRobotRealTimeStatusObserver>(m_ptrViewer));
+
     m_ptrCameraMaster->attach(std::dynamic_pointer_cast<CameraStreamObserver>(_self));
 
     m_ptrPicker->setRobotDriver(m_ptrMover);
 
     return true;
 }
+
+
+void PhysicalDistributionController::clearAttachedObject() {
+    detachSharedObject(m_ptrRobot);
+    detachSharedObject(m_ptrCameraMaster);
+}
+
 
 
 #define ACTION_STEP(_what) if (m_loop) { _what; } else { break; }
@@ -212,6 +234,10 @@ void PhysicalDistributionController::setupUi() {
     auto boxLayout = new QVBoxLayout;
     boxLayout->setContentsMargins(QMargins());
     boxLayout->addWidget(m_matViewer);
+
+    m_ptrViewer = std::make_shared<RobotStatusViewer>();
+    boxLayout->addWidget(m_ptrViewer.get());
+
     setLayout(boxLayout);
 }
 
