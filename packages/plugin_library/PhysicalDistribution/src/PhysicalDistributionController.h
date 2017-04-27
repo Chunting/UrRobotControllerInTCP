@@ -24,6 +24,8 @@
 #include <thread>
 #include <MatMerger.h>
 #include <QVBoxLayout>
+#include "ui_PhysicalDistributionController.h"
+#include "RobotManipulator.h"
 
 using namespace cobotsys;
 using namespace cobotsys::binpicking;
@@ -85,7 +87,17 @@ protected:
 
     MatViewer* m_matViewer;
     std::shared_ptr<RobotStatusViewer> m_ptrViewer;
+    std::shared_ptr<RobotManipulator> m_ptrManiputor;
 
+    template <class T>
+    void removeSharedWidget(T& t) {
+        if (t) {
+            layout()->removeWidget(t.get());
+        }
+    }
+
+
+    Ui::PhysicalDistributionController ui;
 };
 
 

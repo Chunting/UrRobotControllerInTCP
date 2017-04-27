@@ -10,7 +10,7 @@
 #include "PhysicalDistributionController.h"
 #include "RobotStatusViewer.h"
 
-COBOTSYS_FACTORY_BEGIN(PhysicalDistributionControllerFactory)
+COBOTSYS_FACTORY_BEGIN(PhysicalDistributionFactory)
         COBOTSYS_FACTORY_EXPORT(PhysicalDistributionController)
         COBOTSYS_FACTORY_EXPORT(RobotStatusViewer)
-COBOTSYS_FACTORY_END(PhysicalDistributionControllerFactory, "1.0")
+COBOTSYS_FACTORY_END(PhysicalDistributionFactory, "1.0")

@@ -1,4 +1,4 @@
-project(PhysicalDistributionController)
+project(PhysicalDistribution)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)

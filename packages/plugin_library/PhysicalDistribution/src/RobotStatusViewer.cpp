@@ -3,6 +3,7 @@
 // Copyright (c) 2017 Wuhan Collaborative Robot Technology Co.,Ltd. All rights reserved.
 //
 
+#include <extra2.h>
 #include "RobotStatusViewer.h"
 
 
@@ -20,6 +21,7 @@ RobotStatusViewer::RobotStatusViewer() {
 }
 
 RobotStatusViewer::~RobotStatusViewer() {
+    INFO_DESTRUCTOR(this);
 }
 
 bool RobotStatusViewer::setup(const QString& configFilePath) {

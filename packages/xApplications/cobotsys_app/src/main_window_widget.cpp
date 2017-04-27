@@ -80,7 +80,7 @@ void MainWindow::onViewLogger() {
 }
 
 void MainWindow::onCreateBinpickingPhyDist() {
-    QString factory = "PhysicalDistributionControllerFactory, Ver 1.0";
+    QString factory = "PhysicalDistributionFactory, Ver 1.0";
     QString type = "PhysicalDistributionController";
     auto dynObject = GlobalObjectFactory::instance()->createObject(factory, type);
     QString config = "CONFIG/PhysicalDistribution.json";

@@ -20,10 +20,8 @@ PhysicalDistributionController::PhysicalDistributionController() {
 }
 
 PhysicalDistributionController::~PhysicalDistributionController() {
-    if (m_ptrViewer) {
-        layout()->removeWidget(m_ptrViewer.get());
-        m_ptrViewer->setParent(nullptr);
-    }
+    removeSharedWidget(m_ptrViewer);
+    removeSharedWidget(m_ptrManiputor);
     detachSharedObject(m_ptrRobot);
     detachSharedObject(m_ptrCameraMaster);
     detachSharedObject(m_ptrKinematicSolver);
@@ -31,6 +29,7 @@ PhysicalDistributionController::~PhysicalDistributionController() {
     detachSharedObject(m_ptrDetector);
     detachSharedObject(m_ptrPicker);
     detachSharedObject(m_ptrPlacer);
+    detachSharedObject(m_ptrManiputor);
 }
 
 bool PhysicalDistributionController::setup(const QString& configFilePath) {
@@ -154,6 +153,7 @@ bool PhysicalDistributionController::_setupInternalObjects(ObjectGroup& objectGr
 void PhysicalDistributionController::clearAttachedObject() {
     detachSharedObject(m_ptrRobot);
     detachSharedObject(m_ptrCameraMaster);
+    detachSharedObject(m_ptrManiputor);
 }
 
 
@@ -228,17 +228,16 @@ bool PhysicalDistributionController::_stepCaptureImage(std::unique_lock<std::mut
 }
 
 void PhysicalDistributionController::setupUi() {
+    ui.setupUi(this);
     m_matViewer = new MatViewer(this);
     m_matViewer->getMatMerger().loadMatLayout(FileFinder::find("binpicking_image_layout.xml"));
 
-    auto boxLayout = new QVBoxLayout;
-    boxLayout->setContentsMargins(QMargins());
-    boxLayout->addWidget(m_matViewer);
-
     m_ptrViewer = std::make_shared<RobotStatusViewer>();
-    boxLayout->addWidget(m_ptrViewer.get());
+    m_ptrManiputor = std::make_shared<RobotManipulator>();
 
-    setLayout(boxLayout);
+    ui.vBox->addWidget(m_matViewer);
+    ui.hBox->addWidget(m_ptrViewer.get());
+    ui.hBox->addWidget(m_ptrManiputor.get());
 }
 
 cv::Mat toColor(const cv::Mat& depth) {
