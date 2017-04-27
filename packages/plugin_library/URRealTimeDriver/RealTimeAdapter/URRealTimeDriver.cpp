@@ -31,7 +31,7 @@ URRealTimeDriver::~URRealTimeDriver() {
 }
 
 void URRealTimeDriver::move(const std::vector<double>& q) {
-    std::lock_guard<std::mutex> lock_guard(m_mutex);
+    std::lock_guard<std::mutex> lockGuard(m_mutex);
     if (m_isStarted) {
         m_curReqQ = q;
         m_curReqQValid = true;
@@ -47,7 +47,7 @@ std::shared_ptr<AbstractDigitIoDriver> URRealTimeDriver::getDigitIoDriver(int de
 }
 
 void URRealTimeDriver::attach(const std::shared_ptr<ArmRobotRealTimeStatusObserver>& observer) {
-    std::lock_guard<std::mutex> lock_guard(m_mutex);
+    std::lock_guard<std::mutex> lockGuard(m_mutex);
 
     for (auto& iter : m_observers) {
         if (iter.get() == observer.get()) {
@@ -61,7 +61,7 @@ void URRealTimeDriver::attach(const std::shared_ptr<ArmRobotRealTimeStatusObserv
 }
 
 bool URRealTimeDriver::start() {
-    std::lock_guard<std::mutex> lock_guard(m_mutex);
+    std::lock_guard<std::mutex> lockGuard(m_mutex);
 
     if (m_urDriver) {
         COBOT_LOG.info() << "Already start, if want restart, stop first";
@@ -86,7 +86,7 @@ bool URRealTimeDriver::start() {
 }
 
 void URRealTimeDriver::stop() {
-    std::lock_guard<std::mutex> lock_guard(m_mutex);
+    std::lock_guard<std::mutex> lockGuard(m_mutex);
 
     if (m_urDriver) {
         m_curReqQValid = false;
@@ -101,7 +101,7 @@ void URRealTimeDriver::stop() {
 }
 
 bool URRealTimeDriver::setup(const QString& configFilePath) {
-    std::lock_guard<std::mutex> lock_guard(m_mutex);
+    std::lock_guard<std::mutex> lockGuard(m_mutex);
 
     auto success = _setup(configFilePath);
 
@@ -143,6 +143,7 @@ void URRealTimeDriver::robotStatusWatcher() {
             if (m_urDriver) {
                 auto pState = m_urDriver->m_urRealTimeCommCtrl->ur->getRobotState();
                 q_next = pState->getQActual();
+                m_robotJointQCache = q_next;
             }
             m_mutex.unlock();
         }
@@ -241,6 +242,11 @@ void URRealTimeDriver::_updateDigitIoStatus() {
 }
 
 void URRealTimeDriver::clearAttachedObject() {
-    std::lock_guard<std::mutex> lock_guard(m_mutex);
+    std::lock_guard<std::mutex> lockGuard(m_mutex);
     m_observers.clear();
+}
+
+std::vector<double> URRealTimeDriver::getRobotJointQ() {
+    std::lock_guard<std::mutex> lockGuard(m_mutex);
+    return m_robotJointQCache;
 }

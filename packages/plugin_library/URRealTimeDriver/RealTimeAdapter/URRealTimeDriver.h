@@ -31,6 +31,7 @@ public:
     virtual bool setup(const QString& configFilePath);
     virtual QString getRobotUrl();
     virtual void clearAttachedObject();
+    virtual std::vector<double> getRobotJointQ();
 protected:
     void robotStatusWatcher();
 
@@ -59,6 +60,8 @@ protected:
 
     std::vector<double> m_curReqQ;
     bool m_curReqQValid;
+
+    std::vector<double> m_robotJointQCache;
 
     CobotUrCommCtrl* m_ctrl;
     CobotUrRealTimeCommCtrl* m_rt_ctrl;

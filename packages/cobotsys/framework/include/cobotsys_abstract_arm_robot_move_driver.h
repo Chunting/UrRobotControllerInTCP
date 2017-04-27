@@ -64,7 +64,10 @@ public:
      */
     virtual void setKinematicSolver(const std::shared_ptr<AbstractKinematicSolver>& kinematicSolver) = 0;
 
+    virtual std::shared_ptr<AbstractKinematicSolver>& getKinematicSolver() = 0;
+
     virtual bool start() = 0;
+    virtual void clearAll() = 0; /// 清除当前，以及所有的移动目标
 
 public:
     /**

@@ -51,13 +51,6 @@ void RobotStatusViewer::handleUiConnection(bool bConnected) {
     }
 }
 
-template<class T>
-const T& smaller(const T& a, const T& b) {
-    if (a < b)
-        return a;
-    return b;
-}
-
 void RobotStatusViewer::handleRobotDataUpdate() {
     size_t loop = smaller(m_joint.size(), m_boxs.size());
 

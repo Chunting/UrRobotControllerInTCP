@@ -25,16 +25,16 @@ QT_END_NAMESPACE
 using namespace cobotsys;
 class MotomanRobotObserver {
 public:
-    virtual void onCallbackPosition(const Eigen::Vector3f &position) = 0;
+    virtual void onCallbackPosition(const Eigen::Vector3f& position) = 0;
 };
 
 class MotomanRobotDriver : public QObject, public cobotsys::AbstractArmRobotRealTimeDriver {
 
 Q_OBJECT
 public:
-    MotomanRobotDriver(QObject *parent = 0);
+    MotomanRobotDriver(QObject* parent = 0);
 
-    void setObserver(const std::shared_ptr<MotomanRobotObserver> &observer) {
+    void setObserver(const std::shared_ptr<MotomanRobotObserver>& observer) {
         m_observer = observer;
     }
 
@@ -82,13 +82,18 @@ public:
      */
     virtual QString getRobotUrl();
 
+    // TODO finish this function
+    virtual std::vector<double> getRobotJointQ() { return std::vector<double>(); }
+
     Eigen::Vector3f position();
 
 public:
 
 private:
-    enum ROBOTCMD {CMD_START_UDP,CMD_SERVO_ON,CMD_SERVO_OFF};
-    bool sendCmd(QByteArray &cmd);
+    enum ROBOTCMD {
+        CMD_START_UDP, CMD_SERVO_ON, CMD_SERVO_OFF
+    };
+    bool sendCmd(QByteArray& cmd);
     bool executeCmd(const ROBOTCMD CmdID);
     inline QByteArray IntToArray(qint32 source);
     void MoveTread();

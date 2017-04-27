@@ -8,6 +8,9 @@
 
 #include <cobotsys_abstract_widget.h>
 #include "ui_RobotManipulator.h"
+#include <QDoubleSpinBox>
+#include <cobotsys_abstract_arm_robot_move_driver.h>
+#include <cobotsys_abstract_arm_robot_realtime_driver.h>
 
 using namespace cobotsys;
 
@@ -19,8 +22,27 @@ public:
 
     virtual bool setup(const QString& configFilePath);
     virtual void clearAttachedObject();
+
+
+    virtual void setRobotMover(const std::shared_ptr<AbstractArmRobotRealTimeDriver>& robot,
+                       const std::shared_ptr<AbstractArmRobotMoveDriver>& mover);
+
+
+
+    void onButtonResetJoint();
+    void onButtonGo();
+
+
+    bool isBaseUnitType() const;
+
+    std::vector<double> convertJoint(const std::vector<double>& joint);
+    std::vector<double> getUiTargetValue() const;
 protected:
     Ui::RobotManipulator ui;
+    std::vector<QDoubleSpinBox*> m_spinValues;
+
+    std::shared_ptr<AbstractArmRobotMoveDriver> m_ptrMover;
+    std::shared_ptr<AbstractArmRobotRealTimeDriver> m_ptrRobot;
 };
 
 

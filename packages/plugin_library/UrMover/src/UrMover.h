@@ -26,6 +26,8 @@ public:
     virtual void setRealTimeDriver(const std::shared_ptr<AbstractArmRobotRealTimeDriver>& realTimeDriver);
     virtual void setKinematicSolver(const std::shared_ptr<AbstractKinematicSolver>& kinematicSolver);
 
+    virtual std::shared_ptr<AbstractKinematicSolver>& getKinematicSolver() { return m_kinematicSolver; }
+
     virtual void onArmRobotConnect();
     virtual void onArmRobotDisconnect();
     virtual void onArmRobotStatusUpdate(const ArmRobotStatusPtr& ptrRobotStatus);
@@ -35,6 +37,7 @@ public:
     void moveProcess();
 
     virtual bool start();
+    virtual void clearAll();
 
 protected:
     std::vector<std::shared_ptr<ArmRobotMoveStatusObserver> > m_observers;
@@ -54,6 +57,7 @@ protected:
         cv::Vec3d rpy;
     };
     std::deque<MoveTarget> m_targets;
+    bool m_clearMoveTarget;
 
     bool pickMoveTarget(MoveTarget& moveTarget);
 

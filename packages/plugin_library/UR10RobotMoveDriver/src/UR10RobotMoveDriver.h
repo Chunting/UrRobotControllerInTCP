@@ -28,9 +28,14 @@ public:
         m_kinematicSolver = kinematicSolver;
     }
 
+    virtual std::shared_ptr<AbstractKinematicSolver>& getKinematicSolver() { return m_kinematicSolver; }
+
     virtual bool setup(const QString& configFilePath);
 
     virtual bool start() { return true; };
+
+    virtual void clearAll() {}
+
 protected:
     void notify(uint32_t moveId);
 

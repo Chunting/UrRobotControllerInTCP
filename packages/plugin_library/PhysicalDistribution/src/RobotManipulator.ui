@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>404</width>
+    <width>402</width>
     <height>246</height>
    </rect>
   </property>
@@ -34,36 +34,23 @@
      <property name="title">
       <string>Target</string>
      </property>
-     <layout class="QGridLayout" name="gridLayout">
-      <property name="leftMargin">
-       <number>6</number>
-      </property>
-      <property name="topMargin">
-       <number>6</number>
-      </property>
-      <property name="rightMargin">
-       <number>6</number>
-      </property>
-      <property name="bottomMargin">
-       <number>6</number>
-      </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
       <property name="spacing">
        <number>2</number>
       </property>
-      <item row="3" column="0">
-       <widget class="QDoubleSpinBox" name="doubleSpinBox_4">
-        <property name="buttonSymbols">
-         <enum>QAbstractSpinBox::NoButtons</enum>
-        </property>
-        <property name="minimum">
-         <double>-999999.000000000000000</double>
-        </property>
-        <property name="maximum">
-         <double>999999.000000000000000</double>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
+      <property name="leftMargin">
+       <number>5</number>
+      </property>
+      <property name="topMargin">
+       <number>5</number>
+      </property>
+      <property name="rightMargin">
+       <number>5</number>
+      </property>
+      <property name="bottomMargin">
+       <number>5</number>
+      </property>
+      <item>
        <widget class="QDoubleSpinBox" name="doubleSpinBox_1">
         <property name="buttonSymbols">
          <enum>QAbstractSpinBox::NoButtons</enum>
@@ -76,20 +63,7 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="0">
-       <widget class="QDoubleSpinBox" name="doubleSpinBox_3">
-        <property name="buttonSymbols">
-         <enum>QAbstractSpinBox::NoButtons</enum>
-        </property>
-        <property name="minimum">
-         <double>-999999.000000000000000</double>
-        </property>
-        <property name="maximum">
-         <double>999999.000000000000000</double>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
+      <item>
        <widget class="QDoubleSpinBox" name="doubleSpinBox_2">
         <property name="buttonSymbols">
          <enum>QAbstractSpinBox::NoButtons</enum>
@@ -102,7 +76,33 @@
         </property>
        </widget>
       </item>
-      <item row="4" column="0">
+      <item>
+       <widget class="QDoubleSpinBox" name="doubleSpinBox_3">
+        <property name="buttonSymbols">
+         <enum>QAbstractSpinBox::NoButtons</enum>
+        </property>
+        <property name="minimum">
+         <double>-999999.000000000000000</double>
+        </property>
+        <property name="maximum">
+         <double>999999.000000000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QDoubleSpinBox" name="doubleSpinBox_4">
+        <property name="buttonSymbols">
+         <enum>QAbstractSpinBox::NoButtons</enum>
+        </property>
+        <property name="minimum">
+         <double>-999999.000000000000000</double>
+        </property>
+        <property name="maximum">
+         <double>999999.000000000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QDoubleSpinBox" name="doubleSpinBox_5">
         <property name="buttonSymbols">
          <enum>QAbstractSpinBox::NoButtons</enum>
@@ -115,7 +115,7 @@
         </property>
        </widget>
       </item>
-      <item row="5" column="0">
+      <item>
        <widget class="QDoubleSpinBox" name="doubleSpinBox_6">
         <property name="buttonSymbols">
          <enum>QAbstractSpinBox::NoButtons</enum>
@@ -127,6 +127,48 @@
          <double>999999.000000000000000</double>
         </property>
        </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QPushButton" name="btnReset">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>40</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Reset</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btnGo">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>40</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Go</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
      </layout>
     </widget>
@@ -196,9 +238,9 @@
        </widget>
       </item>
       <item row="9" column="0">
-       <widget class="QPushButton" name="btnGo">
+       <widget class="QPushButton" name="btnGoList">
         <property name="text">
-         <string>Go</string>
+         <string>Go List</string>
         </property>
        </widget>
       </item>

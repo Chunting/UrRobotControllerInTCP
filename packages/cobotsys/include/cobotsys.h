@@ -83,4 +83,11 @@ std::ostream& operator<<(std::ostream& oss, const QString& str);
 std::ostream& operator<<(std::ostream& oss, const QJsonObject& obj);
 QFont getMonospaceFont();
 
+template<class T>
+const T& smaller(const T& a, const T& b) {
+    if (a < b)
+        return a;
+    return b;
+}
+
 #endif //PROJECT_COBOTSYS_H

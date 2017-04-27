@@ -93,6 +93,7 @@ void UrMover::moveProcess() {
     bool noMoveTarget = true;
 
     double actual_pose_diff;
+    double pose_err_last = 0;
 
     COBOT_LOG.notice() << "UrMover is running.";
     while (!m_exitLoop) {
@@ -104,12 +105,20 @@ void UrMover::moveProcess() {
 
         m_kinematicSolver->jntToCart(joint, curPose);
 
+        if (m_clearMoveTarget) {
+            m_clearMoveTarget = false;
+            noMoveTarget = true;
+            moveFinished = true;
+            COBOT_LOG.notice() << "Mover Target has canceled, " << jointNum;
+        }
+
         if (jointNum > jointNumOld) {
             // Pick target
             if (noMoveTarget) {
                 if (pickMoveTarget(moveTarget)) {
                     moveFinished = false;
                     noMoveTarget = false;
+                    COBOT_LOG.notice() << "Mover Target: " << moveTarget.pos << ", " << moveTarget.rpy;
                 }
             }
 
@@ -118,7 +127,11 @@ void UrMover::moveProcess() {
                 auto pose = toVector(moveTarget);
                 actual_pose_diff = poseDiff(pose, curPose); // 目标与实际的位置误差
 
-                if (actual_pose_diff < 0.001) {
+                auto error_prev = fabs(actual_pose_diff - pose_err_last);
+
+                COBOT_LOG.debug() << "Mover Error: " << actual_pose_diff << ", " << error_prev;
+                if (actual_pose_diff < 0.005 ||
+                    (actual_pose_diff < 1 && error_prev < 0.001)) {
                     if (!moveFinished) {
                         moveFinished = true;
                         noMoveTarget = true;
@@ -132,11 +145,12 @@ void UrMover::moveProcess() {
                     // TODO smooth target joint commands
                     m_realTimeDriver->move(targetJoint);
                 }
+                pose_err_last = actual_pose_diff;
             }
-            auto debugger = COBOT_LOG.debug();
-            auto jnt = joint;
-            for (int i = 0; i < jnt.size(); i++) jnt[i] *= 180 / M_PI;
-            debugger << "tcp: " << curPose << ", Jnt " << jnt;
+//            auto debugger = COBOT_LOG.debug();
+//            auto jnt = joint;
+//            for (int i = 0; i < jnt.size(); i++) jnt[i] *= 180 / M_PI;
+////            debugger << "tcp: " << curPose << ", Jnt " << jnt;
         }
         jointNumOld = jointNum;
         std::this_thread::sleep_until(timePoint);
@@ -187,7 +201,11 @@ double UrMover::poseDiff(const std::vector<double>& a, const std::vector<double>
         std::vector<double> diff(a.size(), 0);
         for (size_t i = 0; i < a.size(); i++) {
             diff[i] = a[i] - b[i];
+            if (i >= 3) {
+                diff[i] = diff[i] * 180 / M_PI;
+            }
             diff[i] = diff[i] * diff[i];
+
             diff_sum += diff[i];
         }
     }
@@ -201,4 +219,10 @@ bool UrMover::start() {
         return true;
     }
     return false;
+}
+
+void UrMover::clearAll() {
+    std::lock_guard<std::mutex> lockGuard(m_mutex);
+    m_targets.clear();
+    m_clearMoveTarget = true;
 }

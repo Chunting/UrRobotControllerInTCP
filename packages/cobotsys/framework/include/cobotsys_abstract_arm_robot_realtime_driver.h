@@ -116,6 +116,11 @@ public:
      * @return 机器人当前的URL地址
      */
     virtual QString getRobotUrl() = 0;
+
+    /**
+     * 获取当前机器人的关节角数据，这个是给UI使用的。数据值并不是最新的。
+     */
+    virtual std::vector<double> getRobotJointQ() = 0;
 };
 /**
  * @}

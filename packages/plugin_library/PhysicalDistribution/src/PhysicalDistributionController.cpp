@@ -77,6 +77,10 @@ void PhysicalDistributionController::stop() {
     if (m_ptrCameraMaster) {
         m_ptrCameraMaster->close();
     }
+
+    if (m_ptrMover) {
+        m_ptrMover->clearAll();
+    }
 }
 
 void PhysicalDistributionController::onArmRobotConnect() {
@@ -146,6 +150,8 @@ bool PhysicalDistributionController::_setupInternalObjects(ObjectGroup& objectGr
 
     m_ptrPicker->setRobotDriver(m_ptrMover);
 
+    m_ptrManiputor->setRobotMover(m_ptrRobot, m_ptrMover);
+
     return true;
 }
 
@@ -155,7 +161,6 @@ void PhysicalDistributionController::clearAttachedObject() {
     detachSharedObject(m_ptrCameraMaster);
     detachSharedObject(m_ptrManiputor);
 }
-
 
 
 #define ACTION_STEP(_what) if (m_loop) { _what; } else { break; }
