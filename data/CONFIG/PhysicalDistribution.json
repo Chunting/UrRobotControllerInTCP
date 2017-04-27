@@ -13,7 +13,7 @@
       "objectKey": "KinematicSolver",
       "factory": "KinematicSolverFactory, Ver 1.0",
       "type": "KinematicSolver",
-      "config": "CONFIG/UrRobotConfig/ur3_180_config.json"
+      "config": "CONFIG/UrRobotConfig/ur5_180_config.json"
     },
     {
       "objectId": "RobotMover",

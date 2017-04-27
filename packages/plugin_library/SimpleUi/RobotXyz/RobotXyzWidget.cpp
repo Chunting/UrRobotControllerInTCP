@@ -91,22 +91,22 @@ void RobotXyzWidget::initUiComboList() {
 
 
 void RobotXyzWidget::createArmRobotDriver() {
-	createSolver();
+	//createSolver();
     if (!GlobalObjectFactory::instance()) return;
     if (ui.cboArmRobotList->count() == 0) {
         COBOT_LOG.error() << "No robot driver plugin exist!";
         return;
     }
 
-    //QString objConfig = QFileDialog::getOpenFileName(this,
-    //    tr("Get Robot Config JSON file ..."),
-    //    QString(FileFinder::getPreDefPath().c_str()),
-    //    tr("JSON files (*.JSON *.json)"));
-	QString objConfig = FileFinder::find("CONFIG/UrRobotConfig/ur3_181_config.json").c_str();
-    if (objConfig.isEmpty()) {
-        COBOT_LOG.notice() << "robot config is empty, robot create fail.";
-        return;
-    }
+    QString objConfig = QFileDialog::getOpenFileName(this,
+        tr("Get Robot Config JSON file ..."),
+        QString(FileFinder::getPreDefPath().c_str()),
+        tr("JSON files (*.JSON *.json)"));
+//	QString objConfig = FileFinder::find("CONFIG/UrRobotConfig/ur5_181_config.json").c_str();
+//    if (objConfig.isEmpty()) {
+//        COBOT_LOG.notice() << "robot config is empty, robot create fail.";
+//        return;
+//    }
 
     QStringList obj_info = ui.cboArmRobotList->currentData().toStringList();
     QString factory = obj_info.front();
@@ -141,7 +141,7 @@ void RobotXyzWidget::createSolver() {
     //    tr("Get Solver Config JSON file ..."),
     //    QString(FileFinder::getPreDefPath().c_str()),
     //    tr("JSON files (*.JSON *.json)"));
-	QString objConfig = FileFinder::find("CONFIG/UrRobotConfig/ur3_181_config.json").c_str();
+	QString objConfig = FileFinder::find("CONFIG/UrRobotConfig/ur5_180_config.json").c_str();
     if (objConfig.isEmpty()) {
         COBOT_LOG.notice() << "robot config is empty, robot create fail.";
         return;
