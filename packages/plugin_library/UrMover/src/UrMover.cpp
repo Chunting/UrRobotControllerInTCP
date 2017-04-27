@@ -4,6 +4,7 @@
 //
 
 #include "UrMover.h"
+#include <extra2.h>
 
 UrMover::UrMover() {
     m_robotConnected = true;
