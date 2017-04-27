@@ -15,6 +15,9 @@
 #include <deque>
 #include <mutex>
 #include <vector>
+#include <chrono>
+#include <ctime>
+#include <boost/format.hpp>
 
 std::ostream& operator<<(std::ostream& oss, const std::vector<double>& vals);
 namespace cobotsys {
@@ -84,6 +87,7 @@ public:
     }
 
     void setCurrentInstanceName(const std::string& s);
+
 protected:
     std::deque<std::string> m_logs;
     std::function<void(const std::string&)> m_append_filter;
