@@ -18,6 +18,9 @@ RobotManipulator::RobotManipulator() {
 
     connect(ui.btnReset, &QPushButton::released, this, &RobotManipulator::onButtonResetJoint);
     connect(ui.btnGo, &QPushButton::released, this, &RobotManipulator::onButtonGo);
+    connect(ui.btnSetHome, &QPushButton::released, this, &RobotManipulator::onButtonSetHome);
+    connect(ui.btnSetWaypoint, &QPushButton::released, this, &RobotManipulator::onButtonSetWaypoint);
+    connect(ui.btnGoHome, &QPushButton::released, this, &RobotManipulator::onButtonGoHome);
 }
 
 RobotManipulator::~RobotManipulator() {
@@ -118,4 +121,64 @@ std::vector<double> RobotManipulator::getUiTargetValue() const {
         }
     }
     return retval;
+}
+
+void RobotManipulator::onButtonSetHome() {
+    QTreeWidgetItem* pHomeTreeItem = nullptr;
+    if (ui.treeWidget->topLevelItemCount()) { // Already add Home Item
+        auto homeItems = ui.treeWidget->findItems("Home", Qt::MatchExactly);
+        if (homeItems.size()) {
+            pHomeTreeItem = homeItems.front();
+        } else { // Not find Home
+            pHomeTreeItem = new QTreeWidgetItem();
+            ui.treeWidget->insertTopLevelItem(0, pHomeTreeItem);
+        }
+    } else { // No items
+        pHomeTreeItem = new QTreeWidgetItem();
+        ui.treeWidget->addTopLevelItem(pHomeTreeItem);
+    }
+
+    if (pHomeTreeItem && m_ptrRobot) {
+        cv::Vec6d vec;
+        auto j = m_ptrRobot->getRobotJointQ();
+        auto len = smaller((size_t) 6, j.size());
+
+        QList<QVariant> data;
+        for (size_t i = 0; i < len; i++) {
+            vec[i] = j[i] * 180 / M_PI;
+            data.push_back(j[i]);
+        }
+
+        std::ostringstream oss;
+        oss << vec;
+
+        pHomeTreeItem->setText(0, "Home");
+        pHomeTreeItem->setText(1, oss.str().c_str());
+        pHomeTreeItem->setData(1, Qt::UserRole, data);
+    }
+}
+
+void RobotManipulator::onButtonSetWaypoint() {
+}
+
+void RobotManipulator::onButtonGoHome() {
+    QTreeWidgetItem* pHomeTreeItem = nullptr;
+    if (ui.treeWidget->topLevelItemCount()) { // Already add Home Item
+        auto homeItems = ui.treeWidget->findItems("Home", Qt::MatchExactly);
+        if (homeItems.size()) {
+            pHomeTreeItem = homeItems.front();
+
+            auto list = pHomeTreeItem->data(1, Qt::UserRole).toList();
+
+            std::vector<double> target;
+            for (auto& iter : list) {
+                target.push_back(iter.toDouble());
+            }
+            if (m_ptrMover) {
+                std::vector<double> t;
+                m_ptrMover->getKinematicSolver()->jntToCart(target, t);
+                m_ptrMover->move(m_ptrMover->generateMoveId(), {t[0], t[1], t[2]}, {t[3], t[4], t[5]});
+            }
+        }
+    }
 }

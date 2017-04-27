@@ -11,6 +11,8 @@
 #include <QDoubleSpinBox>
 #include <cobotsys_abstract_arm_robot_move_driver.h>
 #include <cobotsys_abstract_arm_robot_realtime_driver.h>
+#include <QTreeWidgetItem>
+#include <QTreeWidget>
 
 using namespace cobotsys;
 
@@ -31,6 +33,9 @@ public:
 
     void onButtonResetJoint();
     void onButtonGo();
+    void onButtonSetHome();
+    void onButtonSetWaypoint();
+    void onButtonGoHome();
 
 
     bool isBaseUnitType() const;

@@ -96,6 +96,7 @@ void UrMover::moveProcess() {
     double pose_err_last = 0;
 
     COBOT_LOG.notice() << "UrMover is running.";
+    auto hres_start = std::chrono::high_resolution_clock::now();
     while (!m_exitLoop) {
         timePoint = timePoint + std::chrono::milliseconds(1);
         m_mutex.lock();
@@ -110,15 +111,18 @@ void UrMover::moveProcess() {
             noMoveTarget = true;
             moveFinished = true;
             COBOT_LOG.notice() << "Mover Target has canceled, " << jointNum;
+            hres_start = std::chrono::high_resolution_clock::now();
         }
 
         if (jointNum > jointNumOld) {
             // Pick target
             if (noMoveTarget) {
                 if (pickMoveTarget(moveTarget)) {
+                    hres_start = std::chrono::high_resolution_clock::now();
                     moveFinished = false;
                     noMoveTarget = false;
-                    COBOT_LOG.notice() << "Mover Target: " << moveTarget.pos << ", " << moveTarget.rpy;
+                    COBOT_LOG.notice() << std::setw(5) << moveTarget.moveId
+                                       << " Mover Target: " << moveTarget.pos << ", " << moveTarget.rpy;
                 }
             }
 
@@ -129,14 +133,19 @@ void UrMover::moveProcess() {
 
                 auto error_prev = fabs(actual_pose_diff - pose_err_last);
 
-                COBOT_LOG.debug() << "Mover Error: " << actual_pose_diff << ", " << error_prev;
+//                COBOT_LOG.debug() << "Mover Error: " << actual_pose_diff << ", " << error_prev;
                 if (actual_pose_diff < 0.005 ||
                     (actual_pose_diff < 1 && error_prev < 0.001)) {
                     if (!moveFinished) {
+                        auto hres_cur = std::chrono::high_resolution_clock::now();
+                        std::chrono::duration<double> time_diff = hres_cur - hres_start;
                         moveFinished = true;
                         noMoveTarget = true;
 
                         notify(moveTarget);
+                        COBOT_LOG.notice() << std::setw(5) << moveTarget.moveId
+                                           << " Mover Target: " << moveTarget.pos << ", " << moveTarget.rpy
+                                           << " Finished. Time: " << time_diff.count() * 1000 << "ms";
                     }
                 } else {
                     // Calc move joint
@@ -203,6 +212,8 @@ double UrMover::poseDiff(const std::vector<double>& a, const std::vector<double>
             diff[i] = a[i] - b[i];
             if (i >= 3) {
                 diff[i] = diff[i] * 180 / M_PI;
+            } else {
+                diff[i] = diff[i] * 1000;
             }
             diff[i] = diff[i] * diff[i];
 
