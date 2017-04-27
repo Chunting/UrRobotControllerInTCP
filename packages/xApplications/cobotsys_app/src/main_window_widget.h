@@ -44,7 +44,7 @@ protected:
     virtual void closeEvent(QCloseEvent* event);
 
 protected:
-    shared_ptr<AbstractObject> m_widgetObject;
+    std::shared_ptr<AbstractObject> m_widgetObject;
 
     Ui::MainWindow ui;
     QActionGroup* m_uiCtrlActionGroup;

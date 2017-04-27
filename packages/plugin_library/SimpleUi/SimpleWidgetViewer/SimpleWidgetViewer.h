@@ -39,7 +39,7 @@ protected:
 
 protected:
     Ui::SimpleWidgetViewer ui;
-    shared_ptr<AbstractObject> m_pWidget;
+    std::shared_ptr<AbstractObject> m_pWidget;
     WidgetCloser* m_closer;
 
 

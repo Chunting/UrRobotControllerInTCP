@@ -82,7 +82,7 @@ void MotomanRobotDriver::readPendingDatagrams(){
     //TODO parse information needed.
     COBOT_LOG.notice() << "readPendingDatagrams";
 }
-shared_ptr<AbstractDigitIoDriver> MotomanRobotDriver::getDigitIoDriver(int deviceId) {
+std::shared_ptr<AbstractDigitIoDriver> MotomanRobotDriver::getDigitIoDriver(int deviceId) {
     if (deviceId == 0)
         return m_digitOutput;
     if (deviceId == 1)

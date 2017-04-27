@@ -64,8 +64,8 @@ protected:
 
     CobotUrDriver* m_urDriver;
 
-    shared_ptr<CobotUrDigitIoAdapter> m_digitInput;
-    shared_ptr<CobotUrDigitIoAdapter> m_digitOutput;
+    std::shared_ptr<CobotUrDigitIoAdapter> m_digitInput;
+    std::shared_ptr<CobotUrDigitIoAdapter> m_digitOutput;
 };
 
 

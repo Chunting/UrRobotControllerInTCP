@@ -50,7 +50,7 @@ public:
 	void setKinematicSolver(const std::shared_ptr<AbstractKinematicSolver>& kinSolver) { m_ptrKinematicSolver = kinSolver; }
 
 protected:
-	shared_ptr<AbstractKinematicSolver> m_ptrKinematicSolver;
+	std::shared_ptr<AbstractKinematicSolver> m_ptrKinematicSolver;
 };
 /**
  * @}

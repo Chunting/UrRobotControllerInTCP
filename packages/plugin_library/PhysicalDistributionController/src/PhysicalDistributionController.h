@@ -59,13 +59,13 @@ protected:
 
     bool _stepCaptureImage(std::unique_lock<std::mutex>& uniqueLock);
 protected:
-    shared_ptr<AbstractArmRobotRealTimeDriver> m_ptrRobot;
-    shared_ptr<AbstractKinematicSolver> m_ptrKinematicSolver;
-    shared_ptr<AbstractArmRobotMoveDriver> m_ptrMover;
-    shared_ptr<AbstractCamera> m_ptrCameraMaster;
-    shared_ptr<AbstractBinpickingVisionDetector> m_ptrDetector;
-    shared_ptr<AbstractBinpickingPicker> m_ptrPicker;
-    shared_ptr<AbstractBinpickingPlacer> m_ptrPlacer;
+    std::shared_ptr<AbstractArmRobotRealTimeDriver> m_ptrRobot;
+    std::shared_ptr<AbstractKinematicSolver> m_ptrKinematicSolver;
+    std::shared_ptr<AbstractArmRobotMoveDriver> m_ptrMover;
+    std::shared_ptr<AbstractCamera> m_ptrCameraMaster;
+    std::shared_ptr<AbstractBinpickingVisionDetector> m_ptrDetector;
+    std::shared_ptr<AbstractBinpickingPicker> m_ptrPicker;
+    std::shared_ptr<AbstractBinpickingPlacer> m_ptrPlacer;
 
     std::mutex m_mutex;
     bool m_robotConnected;

@@ -39,7 +39,7 @@ public:
 protected:
     void notify();
 protected:
-    std::vector<shared_ptr<CameraStreamObserver> > m_observers;
+    std::vector<std::shared_ptr<CameraStreamObserver> > m_observers;
     std::mutex m_mutex;
     VideoCapture m_videoCapture;
     Mat m_mat;

@@ -86,7 +86,7 @@ public:
      * @param[in] deviceId
      * @return
      */
-    virtual shared_ptr<AbstractDigitIoDriver> getDigitIoDriver(int deviceId = 0) = 0;
+    virtual std::shared_ptr<AbstractDigitIoDriver> getDigitIoDriver(int deviceId = 0) = 0;
 
     /**
      * 向机器人注册观察者，当机器人事件发生后，会通过观察者接口API来通知所有已注册对象。
