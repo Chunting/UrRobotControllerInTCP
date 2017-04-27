@@ -94,6 +94,7 @@ void Kinect2Camera::close() {
 
     if (registration) {
         delete registration;
+        registration = nullptr;
     }
 
 
