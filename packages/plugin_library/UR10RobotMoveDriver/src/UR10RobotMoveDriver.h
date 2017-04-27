@@ -24,12 +24,13 @@ public:
 
     virtual void setRealTimeDriver(const std::shared_ptr<AbstractArmRobotRealTimeDriver>& realTimeDriver);
 
-    virtual void setKinematicSolver(const std::shared_ptr<AbstractKinematicSolver>& kinematicSolver)
-    {
+    virtual void setKinematicSolver(const std::shared_ptr<AbstractKinematicSolver>& kinematicSolver) {
         m_kinematicSolver = kinematicSolver;
     }
 
     virtual bool setup(const QString& configFilePath);
+
+    virtual bool start() { return true; };
 protected:
     void notify(uint32_t moveId);
 

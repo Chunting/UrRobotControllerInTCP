@@ -13,13 +13,14 @@
       "objectKey": "KinematicSolver",
       "factory": "KinematicSolverFactory, Ver 1.0",
       "type": "KinematicSolver",
-      "config": "CONFIG/UrRobotConfig/ur10_180_config.json"
+      "config": "CONFIG/UrRobotConfig/ur3_180_config.json"
     },
     {
       "objectId": "RobotMover",
       "objectKey": "RobotMover",
-      "factory": "RobotMoveDriverFactory, Ver 1.0",
-      "type": "UR10RobotMoveDriver"
+      "factory": "UrMoverFactory, Ver 1.0",
+      "type": "UrMover",
+      "config": ""
     },
     {
       "objectId": "MasterCamera",

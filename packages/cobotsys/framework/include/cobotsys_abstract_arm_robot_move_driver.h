@@ -29,7 +29,7 @@ public:
 
 
 namespace cobotsys {
-    class AbstractArmRobotRealTimeDriver;
+class AbstractArmRobotRealTimeDriver;
 class AbstractArmRobotMoveDriver : public AbstractObject {
 public:
     AbstractArmRobotMoveDriver();
@@ -63,6 +63,8 @@ public:
      * 设置逆运动学对象
      */
     virtual void setKinematicSolver(const std::shared_ptr<AbstractKinematicSolver>& kinematicSolver) = 0;
+
+    virtual bool start() = 0;
 
 public:
     /**

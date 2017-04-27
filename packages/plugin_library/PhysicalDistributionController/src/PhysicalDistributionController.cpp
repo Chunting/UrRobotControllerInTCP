@@ -86,7 +86,7 @@ using std::dynamic_pointer_cast;
 bool PhysicalDistributionController::_setupInternalObjects(ObjectGroup& objectGroup) {
     m_ptrRobot = dynamic_pointer_cast<AbstractArmRobotRealTimeDriver>(objectGroup.getObject("Robot"));
     m_ptrKinematicSolver = dynamic_pointer_cast<AbstractKinematicSolver>(objectGroup.getObject("KinematicSolver"));
-    m_ptrRobotXyz = dynamic_pointer_cast<AbstractArmRobotMoveDriver>(objectGroup.getObject("RobotMover"));
+    m_ptrMover = dynamic_pointer_cast<AbstractArmRobotMoveDriver>(objectGroup.getObject("RobotMover"));
     m_ptrCameraMaster = dynamic_pointer_cast<AbstractCamera>(objectGroup.getObject("MasterCamera"));
     m_ptrDetector = dynamic_pointer_cast<AbstractBinpickingVisionDetector>(objectGroup.getObject("VisionDetector"));
     m_ptrPicker = dynamic_pointer_cast<AbstractBinpickingPicker>(objectGroup.getObject("Picker"));
@@ -102,7 +102,7 @@ bool PhysicalDistributionController::_setupInternalObjects(ObjectGroup& objectGr
         return false;
     }
 
-    if (m_ptrRobotXyz == nullptr) {
+    if (m_ptrMover == nullptr) {
         COBOT_LOG.error() << "fail to init robot mover.";
         return false;
     }
@@ -122,14 +122,15 @@ bool PhysicalDistributionController::_setupInternalObjects(ObjectGroup& objectGr
         return false;
     }
 
-    m_ptrRobotXyz->setKinematicSolver(m_ptrKinematicSolver);
-    m_ptrRobotXyz->setRealTimeDriver(m_ptrRobot);
+    m_ptrMover->setKinematicSolver(m_ptrKinematicSolver);
+    m_ptrMover->setRealTimeDriver(m_ptrRobot);
+    m_ptrMover->start();
 
     auto _self = shared_from_this();
     m_ptrRobot->attach(std::dynamic_pointer_cast<ArmRobotRealTimeStatusObserver>(_self));
     m_ptrCameraMaster->attach(std::dynamic_pointer_cast<CameraStreamObserver>(_self));
 
-    m_ptrPicker->setRobotDriver(m_ptrRobotXyz);
+    m_ptrPicker->setRobotDriver(m_ptrMover);
 
     return true;
 }

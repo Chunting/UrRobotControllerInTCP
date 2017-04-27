@@ -5,7 +5,7 @@
 
 #include <highgui.h>
 #include "MatMerger.h"
-#include <opencv2\opencv.hpp>
+#include <opencv2/opencv.hpp>
 
 QImage cv_mat_to_qimage(const cv::Mat &mat){
     // 8-bits unsigned, NO. OF CHANNELS = 1

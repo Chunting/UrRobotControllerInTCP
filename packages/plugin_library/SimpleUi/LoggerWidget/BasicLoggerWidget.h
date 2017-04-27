@@ -16,6 +16,7 @@
 #include <QStringList>
 #include "cobotsys_logger.h"
 #include <cobotsys_abstract_widget.h>
+#include <mutex>
 
 using cobotsys::AbstractWidget;
 
@@ -39,6 +40,7 @@ protected:
     QTextCursor m_textCursor;
     QTimer* m_editUpdateTimer;
     QString m_cachedMessage;
+    std::mutex m_mutex;
 };
 
 

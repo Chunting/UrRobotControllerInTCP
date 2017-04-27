@@ -20,6 +20,7 @@ bool BasicLoggerWidget::setup(const QString& configFilePath) {
 }
 
 void BasicLoggerWidget::updateTextToUI() {
+    std::lock_guard<std::mutex> lockGuard(m_mutex);
     if (m_cachedMessage.size()) {
         m_textCursor.movePosition(QTextCursor::End, QTextCursor::MoveAnchor);
         m_textCursor.insertText(m_cachedMessage);
@@ -30,6 +31,7 @@ void BasicLoggerWidget::updateTextToUI() {
 }
 
 void BasicLoggerWidget::appendText(const std::string& message) {
+    std::lock_guard<std::mutex> lockGuard(m_mutex);
     static QRegularExpression reg("^\\[\\s*([-A-Za-z_0-9]*)\\s*\\](.*)");
 
     QString final_message = QString::fromLocal8Bit(message.c_str());

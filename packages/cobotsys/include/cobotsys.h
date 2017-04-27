@@ -24,6 +24,8 @@
 #include <QFontInfo>
 #include <QDebug>
 
+#include <opencv2/opencv.hpp>
+
 using std::shared_ptr;
 using std::make_shared;
 

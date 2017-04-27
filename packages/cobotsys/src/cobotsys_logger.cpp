@@ -6,7 +6,18 @@
 #include "cobotsys_logger.h"
 
 
+std::ostream& operator<<(std::ostream& oss, const std::vector<double>& vals) {
+    for (size_t i = 0; i < vals.size(); i++) {
+        oss << vals[i];
+        if (i + 1 < vals.size()) {
+            oss << ", ";
+        }
+    }
+    return oss;
+}
+
 namespace cobotsys {
+
 
 Logger::MessageWrapper::MessageWrapper(const MessageWrapper& r)
         : logger(r.logger) {

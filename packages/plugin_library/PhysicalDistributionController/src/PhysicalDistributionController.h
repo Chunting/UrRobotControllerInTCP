@@ -61,7 +61,7 @@ protected:
 protected:
     shared_ptr<AbstractArmRobotRealTimeDriver> m_ptrRobot;
     shared_ptr<AbstractKinematicSolver> m_ptrKinematicSolver;
-    shared_ptr<AbstractArmRobotMoveDriver> m_ptrRobotXyz;
+    shared_ptr<AbstractArmRobotMoveDriver> m_ptrMover;
     shared_ptr<AbstractCamera> m_ptrCameraMaster;
     shared_ptr<AbstractBinpickingVisionDetector> m_ptrDetector;
     shared_ptr<AbstractBinpickingPicker> m_ptrPicker;

@@ -14,7 +14,9 @@
 #include <functional>
 #include <deque>
 #include <mutex>
+#include <vector>
 
+std::ostream& operator<<(std::ostream& oss, const std::vector<double>& vals);
 namespace cobotsys {
 
 enum class LoggerLevel {
