@@ -46,7 +46,7 @@ std::shared_ptr<AbstractDigitIoDriver> URRealTimeDriver::getDigitIoDriver(int de
     return nullptr;
 }
 
-void URRealTimeDriver::attach(const shared_ptr<ArmRobotRealTimeStatusObserver>& observer) {
+void URRealTimeDriver::attach(const std::shared_ptr<ArmRobotRealTimeStatusObserver>& observer) {
     std::lock_guard<std::mutex> lock_guard(m_mutex);
 
     for (auto& iter : m_observers) {

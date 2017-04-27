@@ -30,7 +30,7 @@ void OpenCVCamera::close() {
     m_videoCapture.release();
 }
 
-void OpenCVCamera::attach(const shared_ptr<CameraStreamObserver>& observer) {
+void OpenCVCamera::attach(const std::shared_ptr<CameraStreamObserver>& observer) {
     std::lock_guard<std::mutex> lockGuard(m_mutex);
 
     if (observer) {

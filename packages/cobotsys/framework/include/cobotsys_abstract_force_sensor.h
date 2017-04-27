@@ -41,7 +41,7 @@ public:
 
     virtual bool start() = 0;
     virtual void stop() = 0;
-    virtual void attach(const shared_ptr<ForceSensorStreamObserver>& observer) = 0;
+    virtual void attach(const std::shared_ptr<ForceSensorStreamObserver>& observer) = 0;
 
 };
 

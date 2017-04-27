@@ -47,7 +47,7 @@ public:
 	*/
 	virtual int solve(std::vector<double>& targetQ) = 0;
 
-	void setKinematicSolver(const shared_ptr<AbstractKinematicSolver>& kinSolver) { m_ptrKinematicSolver = kinSolver; }
+	void setKinematicSolver(const std::shared_ptr<AbstractKinematicSolver>& kinSolver) { m_ptrKinematicSolver = kinSolver; }
 
 protected:
 	shared_ptr<AbstractKinematicSolver> m_ptrKinematicSolver;

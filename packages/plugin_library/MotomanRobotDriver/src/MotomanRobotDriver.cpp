@@ -142,7 +142,7 @@ QString MotomanRobotDriver::getRobotUrl() {
     return QString();
 }
 
-void MotomanRobotDriver::attach(const shared_ptr<ArmRobotRealTimeStatusObserver> &observer) {
+void MotomanRobotDriver::attach(const std::shared_ptr<ArmRobotRealTimeStatusObserver> &observer) {
 
 }
 

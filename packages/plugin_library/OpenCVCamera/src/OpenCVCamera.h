@@ -23,7 +23,7 @@ public:
     virtual bool isOpened() const;
     virtual bool open(int deviceId = 0);
     virtual void close();
-    virtual void attach(const shared_ptr<CameraStreamObserver>& observer);
+    virtual void attach(const std::shared_ptr<CameraStreamObserver>& observer);
     virtual bool capture(int waitMs = -1); /// @note 控制相机进行一次图像捕获
 
     virtual std::string getManufacturer() const;

@@ -68,7 +68,7 @@ void BaslerCamera::close() {
     m_camera.reset();
 }
 
-void BaslerCamera::attach(const shared_ptr<cobotsys::CameraStreamObserver>& observer) {
+void BaslerCamera::attach(const std::shared_ptr<cobotsys::CameraStreamObserver>& observer) {
     if (observer && find(m_observers.begin(), m_observers.end(), observer) == m_observers.end())
         m_observers.push_back(observer);
 }

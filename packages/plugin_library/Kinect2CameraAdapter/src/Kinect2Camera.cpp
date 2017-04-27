@@ -104,7 +104,7 @@ void Kinect2Camera::close() {
     m_isOpened = false;
 }
 
-void Kinect2Camera::attach(const shared_ptr<cobotsys::CameraStreamObserver>& observer) {
+void Kinect2Camera::attach(const std::shared_ptr<cobotsys::CameraStreamObserver>& observer) {
     for (auto& o : m_observers) {
         if (o == observer)
             return;

@@ -112,7 +112,7 @@ void FotonicCamera::close() {
     m_device.close();
 }
 
-void FotonicCamera::attach(const shared_ptr<cobotsys::CameraStreamObserver>& observer) {
+void FotonicCamera::attach(const std::shared_ptr<cobotsys::CameraStreamObserver>& observer) {
     if (observer && find(m_observers.begin(), m_observers.end(), observer) == m_observers.end())
         m_observers.push_back(observer);
 }

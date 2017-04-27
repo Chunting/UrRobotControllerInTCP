@@ -25,7 +25,7 @@ public:
 	virtual bool setup(const QString& configFilePath);
 	virtual bool start();
 	virtual void stop();
-	virtual void attach(const shared_ptr<ForceSensorStreamObserver>& observer);
+	virtual void attach(const std::shared_ptr<ForceSensorStreamObserver>& observer);
 protected:
 	void sensorDataWatcher();
 

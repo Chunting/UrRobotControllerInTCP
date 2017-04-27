@@ -68,7 +68,7 @@ void OptoForceSensor::stop() {
 	}
 }
 
-void OptoForceSensor::attach(const shared_ptr<ForceSensorStreamObserver>& observer) {
+void OptoForceSensor::attach(const std::shared_ptr<ForceSensorStreamObserver>& observer) {
 	std::lock_guard<std::mutex> lock_guard(m_mutex);
 
 	for (auto& iter : m_observers) {

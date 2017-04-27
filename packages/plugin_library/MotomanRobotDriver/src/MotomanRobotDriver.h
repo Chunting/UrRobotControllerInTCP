@@ -59,7 +59,7 @@ public:
      * 已经实现线程安全
      * @param observer
      */
-    virtual void attach(const shared_ptr<ArmRobotRealTimeStatusObserver>& observer);
+    virtual void attach(const std::shared_ptr<ArmRobotRealTimeStatusObserver>& observer);
 
     /**
      * 启动机器人控制。仅仅只是发送命令过程没有问题。实际上需要
