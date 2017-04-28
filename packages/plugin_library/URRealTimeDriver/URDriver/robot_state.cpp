@@ -24,6 +24,7 @@ RobotState::RobotState(std::condition_variable& msg_cond) {
     version_msg_.minor_version = 0;
     new_data_available_ = false;
     pMsg_cond_ = &msg_cond;
+    memset(&mb_data_, 0, sizeof(mb_data_));
     RobotState::setDisconnected();
     robot_mode_running_ = robotStateTypeV30::ROBOT_MODE_RUNNING;
 }
