@@ -22,8 +22,8 @@
         + include                   其他的基础头文件
         + src                       实现文件
           CMakeLists.txt            cobotsys工程CMake文件
-    + cobotsys_ros_wrapper          对ROS的一个简易封装。如果有依赖ROS的部分，依赖这个库就好。
-    + cobotsys_ros_extend           基于ROS的应用动态库。ROS有个BUG，不支持dlopen dlclose.程序退出的时候会崩溃
+    + depends                       插件及主程序里依赖的第三方库（源码）
+    + head_only_libraries           插件及主程序里依赖的第三方库, 但是只有头文件
     + plugin_library                扩展支持插件，对cobotsys里各种抽象对象的具体实现
         + Kinect2CameraAdapter      Kinect2相机的适配驱动
         + QtBasedSimpleController   Kinect2相机的简易UI
@@ -31,6 +31,7 @@
         + ...                       如果有，其它
     + xApplications                 实际的应用程序
         + binpicking2               老版本的无序分拣的UI实现
+        + cobotsys_app              新版本的程序框架。仅仅只是一个外壳，会把Plugin里实现的每一个Widget当作小程序
 + samples                           测试例子
 + test_apps                         测试小程序
   CMakeLists.txt                    工程主要的CMakeLists.txt
@@ -51,3 +52,5 @@
 `data/test_ui_json`目录下的任意一下JSON文件。
 
 程序会根据JSON的描述，来创建共享库里的Widget应用。
+
+
