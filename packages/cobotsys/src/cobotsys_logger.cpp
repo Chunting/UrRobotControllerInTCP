@@ -15,6 +15,7 @@ std::ostream& operator<<(std::ostream& oss, const std::vector<double>& vals) {
     }
     return oss;
 }
+
 namespace cobotsys {
 
 
@@ -26,34 +27,32 @@ Logger::MessageWrapper::MessageWrapper(const std::string& e, Logger& r, LoggerLe
         : logger(r) {
     //添加当前时间信息。
     std::tm tm = {0};
-    auto tp = std::chrono::system_clock::now();
+    auto tp = std::chrono::system_clock::now() + std::chrono::hours(8);
     auto tt = std::chrono::system_clock::to_time_t(tp);
     gmtime_r(&tt, &tm);
     std::chrono::duration<double> sec = tp - std::chrono::system_clock::from_time_t(tt) +
                                         std::chrono::seconds(tm.tm_sec);
     double secDisp;
-    if (sec.count() < 10){
-        secDisp=0;
-    }else{
-        secDisp=sec.count();
-    }
-
+    secDisp = sec.count();
 
     oss << "[";
     oss << std::setw(5) << toString(level);
     oss << "]";
+
+
+    oss << " " << tm.tm_year + 1900 << "-"
+        << std::setfill('0') << std::setw(2) << tm.tm_mon + 1 << "-"
+        << std::setw(2) << tm.tm_mday << " "
+        << std::setw(2) << tm.tm_hour << ":"
+        << std::setw(2) << tm.tm_min << ":"
+        << std::fixed << std::setprecision(3) << std::setw(6) << secDisp << " "
+        << std::setfill(' ');
+
     if (e.size()) {
         oss << "[";
         oss << std::setw(logger.prefixWidth()) << e;
         oss << "]";
     }
-
-    oss << " "<< tm.tm_year+1900<<"-"
-        <<std::setfill('0') <<std::setw(2)<<tm.tm_mon+1<<"-"
-        <<std::setw(2)<<tm.tm_mday<<" "
-        <<std::setw(2)<<tm.tm_hour<<":"
-        <<std::setw(2)<<tm.tm_min<<":"
-        <<boost::format("%2.3f") % secDisp<<std::setfill(' ') <<" ";
 }
 
 Logger::MessageWrapper::~MessageWrapper() {
@@ -176,8 +175,7 @@ void Logger::clrFilter(void* obj) {
 }
 
 
-
-    std::string toString(LoggerLevel level) {
+std::string toString(LoggerLevel level) {
     switch (level) {
     case cobotsys::LoggerLevel::Debug: return "DEBUG";
         break;
