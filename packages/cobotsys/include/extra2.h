@@ -18,8 +18,7 @@
 #include <QImage>
 #include <opencv2/opencv.hpp>
 #include <cobotsys.h>
-#define _USE_MATH_DEFINES
-#include <math.h>
+#include <qmath.h>
 #include <iostream>
 #include <iomanip>        // std::put_time
 #include <thread>         // std::this_thread::sleep_until

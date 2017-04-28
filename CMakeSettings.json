@@ -1,13 +1,21 @@
 {
     // 请参阅 https://go.microsoft.com//fwlink//?linkid=834763 了解有关此文件的详细信息。
-    "configurations": [
-      {
-        "name": "x64-Release",
-        "generator": "Visual Studio 14 2015 Win64",
-        "configurationType": "Release",
-        "buildRoot": "C:\\build\\${workspaceHash}\\build\\${name}",
-        "cmakeCommandArgs": "-Wno-dev",
-        "buildCommandArgs": "-m -v:minimal"
-      }
-    ]
+  "configurations": [
+    {
+      "name": "x64-Release",
+      "generator": "Visual Studio 14 2015 Win64",
+      "configurationType": "Release",
+      "buildRoot": "C:\\build\\${workspaceHash}\\build\\${name}",
+      "cmakeCommandArgs": "-Wno-dev",
+      "buildCommandArgs": "-m -v:minimal"
+    },
+    {
+      "name": "x64-Debug",
+      "generator": "Visual Studio 14 2015 Win64",
+      "configurationType": "Debug",
+      "buildRoot": "C:\\build\\${workspaceHash}\\build\\${name}",
+      "cmakeCommandArgs": "-Wno-dev",
+      "buildCommandArgs": "-m -v:minimal"
+    }
+  ]
 }
