@@ -29,7 +29,13 @@ Logger::MessageWrapper::MessageWrapper(const std::string& e, Logger& r, LoggerLe
     std::tm tm = {0};
     auto tp = std::chrono::system_clock::now() + std::chrono::hours(8);
     auto tt = std::chrono::system_clock::to_time_t(tp);
+
+#ifdef WIN32
+    tm = *gmtime(&tt);
+#else
     gmtime_r(&tt, &tm);
+#endif
+
     std::chrono::duration<double> sec = tp - std::chrono::system_clock::from_time_t(tt) +
                                         std::chrono::seconds(tm.tm_sec);
     double secDisp;
