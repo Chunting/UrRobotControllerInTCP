@@ -284,6 +284,8 @@ void PhysicalDistributionController::setupUi() {
 
     connect(ui.btnTESTPicker, &QPushButton::released, this, &PhysicalDistributionController::onButtonTestPicker);
     connect(ui.btnTESTPlacer, &QPushButton::released, this, &PhysicalDistributionController::onButtonTestPlacer);
+    connect(this, &PhysicalDistributionController::debugImageUpdated,
+            this, &PhysicalDistributionController::rendererDebugImage);
 }
 
 void PhysicalDistributionController::onButtonTestPicker() {
@@ -327,6 +329,13 @@ void PhysicalDistributionController::_debugImages() {
 
     m_matViewer->getMatMerger().updateMat("depth", toColor(m_images[3].image));
     m_matViewer->getMatMerger().updateMat("ir", m_images[4].image);
+
+    m_ptrDetector->debugMat("sss", m_images[4].image);
+    Q_EMIT debugImageUpdated();
+}
+
+void PhysicalDistributionController::rendererDebugImage() {
+    m_ptrDetector->debugRenderer();
 }
 
 

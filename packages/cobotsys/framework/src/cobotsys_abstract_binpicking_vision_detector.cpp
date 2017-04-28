@@ -13,5 +13,24 @@ AbstractBinpickingVisionDetector::AbstractBinpickingVisionDetector() {
 
 AbstractBinpickingVisionDetector::~AbstractBinpickingVisionDetector() {
 }
+
+void AbstractBinpickingVisionDetector::debugMat(const std::string& winName, const cv::Mat& mat) {
+    std::lock_guard<std::recursive_mutex> lockGuard(m_mutex);
+    auto& iter = m_debugImages[winName];
+    iter.isUpdated = true;
+    iter.winName = winName;
+    iter.matData = mat;
+}
+
+void AbstractBinpickingVisionDetector::debugRenderer() {
+    std::lock_guard<std::recursive_mutex> lockGuard(m_mutex);
+    for (auto& iter : m_debugImages) {
+        if (iter.second.isUpdated) {
+            iter.second.isUpdated = false;
+            cv::imshow(iter.second.winName,
+                       iter.second.matData);
+        }
+    }
+}
 }
 }

@@ -9,6 +9,9 @@
 #include "cobotsys_abstract_object.h"
 #include "cobotsys_data_types.h"
 #include <opencv2/opencv.hpp>
+#include <map>
+#include <string>
+#include <mutex>
 
 namespace cobotsys {
 namespace binpicking {
@@ -26,6 +29,18 @@ public:
     virtual bool processVisionImage(const std::vector<VisionInputImage>& images) = 0;
 
     virtual bool getPickObjects(std::vector<BinObjGrabPose>& result) const = 0;
+
+    void debugMat(const std::string& winName, const cv::Mat& mat);
+
+    void debugRenderer();
+protected:
+    struct DebugMatData {
+        std::string winName;
+        bool isUpdated;
+        cv::Mat matData;
+    };
+    std::map<std::string, DebugMatData> m_debugImages;
+    std::recursive_mutex m_mutex;
 };
 }
 }

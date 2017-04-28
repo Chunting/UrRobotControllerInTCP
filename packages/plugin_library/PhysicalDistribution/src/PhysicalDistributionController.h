@@ -45,12 +45,18 @@ public:
     virtual void stop();
 
     virtual void clearAttachedObject();
+
+Q_SIGNALS:
+    void debugImageUpdated();
+
 protected:
     void mainLoop();
     void setupUi();
 
     void onButtonTestPicker();
     void onButtonTestPlacer();
+
+    void rendererDebugImage();
 
 protected:
     virtual void onArmRobotConnect();
@@ -92,7 +98,7 @@ protected:
     std::shared_ptr<RobotStatusViewer> m_ptrViewer;
     std::shared_ptr<RobotManipulator> m_ptrManiputor;
 
-    template <class T>
+    template<class T>
     void removeSharedWidget(T& t) {
         if (t) {
             layout()->removeWidget(t.get());
