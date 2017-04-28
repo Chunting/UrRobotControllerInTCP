@@ -84,6 +84,11 @@ bool CobotUrDigitIoAdapter::setToolVoltage(double v) {
 
 void CobotUrDigitIoAdapter::setUrRealTimeCtrl(CobotUrRealTimeCommCtrl* realTimeCommCtrl) {
     m_realTimeCommCtrl = realTimeCommCtrl;
+    if (m_realTimeCommCtrl == nullptr) {
+        m_inputIoStatus = 0;
+        m_outputIoStatus = 0;
+    }
+
 }
 
 bool CobotUrDigitIoAdapter::isOpened() const {
