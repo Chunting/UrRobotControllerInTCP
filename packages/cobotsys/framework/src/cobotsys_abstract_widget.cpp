@@ -14,4 +14,11 @@ AbstractWidget::AbstractWidget() : QWidget(nullptr) {
 AbstractWidget::~AbstractWidget() {
     INFO_DESTRUCTOR(this);
 }
+
+AbstractManipulator::AbstractManipulator() {
+}
+
+AbstractManipulator::~AbstractManipulator() {
+    INFO_DESTRUCTOR(this);
+}
 }

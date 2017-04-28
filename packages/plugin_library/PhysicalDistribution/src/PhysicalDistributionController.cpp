@@ -12,6 +12,9 @@
 PhysicalDistributionController::PhysicalDistributionController() {
     m_robotConnected = false;
     m_loop = false;
+    m_taskEmptyPrint = true;
+    m_taskEmpty = true;
+    m_taskEmptyDebugAction = false;
     m_jsonServer = new JsonServer(this);
     connect(m_jsonServer, &JsonServer::reqStart, this, &PhysicalDistributionController::start);
     connect(m_jsonServer, &JsonServer::reqStop, this, &PhysicalDistributionController::stop);
@@ -149,6 +152,7 @@ bool PhysicalDistributionController::_setupInternalObjects(ObjectGroup& objectGr
     m_ptrCameraMaster->attach(std::dynamic_pointer_cast<CameraStreamObserver>(_self));
 
     m_ptrPicker->setRobotDriver(m_ptrMover);
+    m_ptrPicker->setDigitIoDriver(m_ptrRobot->getDigitIoDriver());
 
     m_ptrManiputor->setRobotMover(m_ptrRobot, m_ptrMover);
 
@@ -170,12 +174,29 @@ void PhysicalDistributionController::mainLoop() {
     std::unique_lock<std::mutex> uniqueLock(loopmutex);
     JsonServer::TaskInfo taskInfo;
 
+    m_taskEmptyPrint = true;
+
     while (m_loop) {
         ACTION_STEP();
         if (!m_jsonServer->api_pickTask(taskInfo)) { // No task in server queue.
+            m_taskEmpty = true;
+            if (m_taskEmptyPrint) {
+                m_taskEmptyPrint = false;
+                COBOT_LOG.notice() << "No Task In Queue.";
+            }
+            if (m_taskEmptyDebugAction) {
+                _doTestActions();
+                m_taskEmptyDebugAction = false;
+            }
+
+            // Try to preview image;
+            _stepCaptureImage(uniqueLock);
+
+            // Sleep, and Continue
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
             continue;
         }
+        m_taskEmptyPrint = true;
 
         // Notify Task, To WebSocket Interface.
         m_jsonServer->api_setupTaskStage(taskInfo, JsonServer::TaskStage::Begin);
@@ -184,15 +205,21 @@ void PhysicalDistributionController::mainLoop() {
         if (!_stepCaptureImage(uniqueLock)) break;
 
         // 调用视觉处理函数
-        if (m_ptrDetector->processVisionImage(m_images)) {
+        bool visionSuccess = m_ptrDetector->processVisionImage(m_images);
+        if (visionSuccess) {
 
             std::vector<BinObjGrabPose> results;
             ACTION_STEP(m_ptrDetector->getPickObjects(results));
 
             for (auto& obj : results) {
                 // Pick, 这里是带有路径规划的抓取
-                ACTION_STEP(m_ptrPicker->pickObject(obj));
-                m_jsonServer->api_setupTaskStage(taskInfo, JsonServer::TaskStage::PickFinish);
+                if (m_ptrPicker->pickObject(obj)) { // 抓取成功，则发送信息
+                    m_jsonServer->api_setupTaskStage(taskInfo, JsonServer::TaskStage::PickFinish);
+                } else {
+                    // TODO 这里的流程控制需要做更多的工作。与外部系统集成
+                    COBOT_LOG.error() << "Picker fail, lookup log for more information.";
+                }
+                ACTION_STEP();
 
                 // Place, 目的地，控制机器人移动到任务指定的目的地。然后放下物体。
                 ACTION_STEP(m_ptrPlacer->placeObject());
@@ -206,6 +233,17 @@ void PhysicalDistributionController::mainLoop() {
     COBOT_LOG.info() << "Main loop thread finished.";
 }
 
+
+void PhysicalDistributionController::_doTestActions() {
+    if (m_doTestPicker) {
+        m_doTestPicker = false;
+        if (m_ptrPicker) {
+            m_ptrPicker->pickObject(m_testPickerPose);
+        }
+    } else if (m_doTestPlacer) {
+        m_doTestPlacer = false;
+    }
+}
 
 void PhysicalDistributionController::onCameraStreamUpdate(const CameraFrame& cameraFrame, AbstractCamera* camera) {
     m_numImageCaptured++;
@@ -243,6 +281,26 @@ void PhysicalDistributionController::setupUi() {
     ui.vBox->addWidget(m_matViewer);
     ui.hBox->addWidget(m_ptrViewer.get());
     ui.hBox->addWidget(m_ptrManiputor.get());
+
+    connect(ui.btnTESTPicker, &QPushButton::released, this, &PhysicalDistributionController::onButtonTestPicker);
+    connect(ui.btnTESTPlacer, &QPushButton::released, this, &PhysicalDistributionController::onButtonTestPlacer);
+}
+
+void PhysicalDistributionController::onButtonTestPicker() {
+    if (m_taskEmpty) {
+        m_doTestPicker = true;
+        m_testPickerPose.target_info = "TEST";
+        m_testPickerPose.position = {100 / 1000.0, -100 / 1000.0, 500 / 1000.0};
+        m_testPickerPose.rotation = {0, 0, 0};
+        m_taskEmptyDebugAction = true;
+    }
+}
+
+void PhysicalDistributionController::onButtonTestPlacer() {
+    if (m_taskEmpty) {
+        m_doTestPlacer = true;
+        m_taskEmptyDebugAction = true;
+    }
 }
 
 cv::Mat toColor(const cv::Mat& depth) {
@@ -270,5 +328,6 @@ void PhysicalDistributionController::_debugImages() {
     m_matViewer->getMatMerger().updateMat("depth", toColor(m_images[3].image));
     m_matViewer->getMatMerger().updateMat("ir", m_images[4].image);
 }
+
 
 

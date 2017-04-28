@@ -45,9 +45,9 @@ void RobotStatusViewer::onArmRobotStatusUpdate(const ArmRobotStatusPtr& ptrRobot
 
 void RobotStatusViewer::handleUiConnection(bool bConnected) {
     if (bConnected) {
-        ui.labelStatus->setText(tr("Robot Connected"));
+        ui.labelStatus->setText(tr("Connected"));
     } else {
-        ui.labelStatus->setText(tr("Robot Disconnected"));
+        ui.labelStatus->setText(tr("Disconnected"));
     }
 }
 

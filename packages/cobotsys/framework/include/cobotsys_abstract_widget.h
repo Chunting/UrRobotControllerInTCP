@@ -6,9 +6,10 @@
 #ifndef PROJECT_COBOTSYS_ABSTRACT_WIDGET_H
 #define PROJECT_COBOTSYS_ABSTRACT_WIDGET_H
 
-
-#include <cobotsys_abstract_object.h>
 #include <QWidget>
+#include <cobotsys_abstract_object.h>
+#include "cobotsys_abstract_arm_robot_realtime_driver.h"
+#include "cobotsys_abstract_arm_robot_move_driver.h"
 
 namespace cobotsys {
 /**
@@ -25,6 +26,15 @@ class AbstractWidget : public QWidget, public AbstractObject {
 public:
     AbstractWidget();
     virtual ~AbstractWidget();
+};
+
+class AbstractManipulator {
+public:
+    AbstractManipulator();
+    virtual ~AbstractManipulator();
+
+    virtual void setRobotMover(const std::shared_ptr<AbstractArmRobotRealTimeDriver>& robot,
+                               const std::shared_ptr<AbstractArmRobotMoveDriver>& mover) = 0;
 };
 /**
  * @}

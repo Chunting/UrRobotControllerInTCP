@@ -17,7 +17,7 @@ SuckerBinpickingPicker::SuckerBinpickingPicker()
 
 bool SuckerBinpickingPicker::pickObject(const binpicking::BinObjGrabPose& binObjGrabPose) {
     std::mutex localmutex;
-    std::unique_lock<std::mutex> uniqueLock;
+    std::unique_lock<std::mutex> uniqueLock(localmutex);
 
     if (!m_digitIoDriver) {
         COBOT_LOG.error() << "The digitIoDriver is NULL";
@@ -29,14 +29,18 @@ bool SuckerBinpickingPicker::pickObject(const binpicking::BinObjGrabPose& binObj
         return false;
     }
 
+    m_digitIoDriver->setIo(m_suckerPortIndex, DigitIoStatus::Reset);
+
     // First move to target
     m_moveId = m_ptrMover->generateMoveId();
     m_ptrMover->move(m_moveId, binObjGrabPose.position, binObjGrabPose.rotation);
     m_msg.wait(uniqueLock);
 
+
     // Pick Object
     if (m_moveResult == MoveResult::Success) {
         m_digitIoDriver->setIo(m_suckerPortIndex, DigitIoStatus::Set);
+        COBOT_LOG.debug() << "Move: " << std::setw(3) << m_moveId << " Success";
     } else {
         COBOT_LOG.error() << "Robot Move Fail";
         return false;

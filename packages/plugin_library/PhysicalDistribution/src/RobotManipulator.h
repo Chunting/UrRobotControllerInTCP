@@ -16,7 +16,9 @@
 
 using namespace cobotsys;
 
-class RobotManipulator : public AbstractWidget {
+class RobotManipulator :
+        public AbstractWidget,
+        public AbstractManipulator {
 Q_OBJECT
 public:
     RobotManipulator();
@@ -27,8 +29,7 @@ public:
 
 
     virtual void setRobotMover(const std::shared_ptr<AbstractArmRobotRealTimeDriver>& robot,
-                       const std::shared_ptr<AbstractArmRobotMoveDriver>& mover);
-
+                               const std::shared_ptr<AbstractArmRobotMoveDriver>& mover);
 
 
     void onButtonResetJoint();

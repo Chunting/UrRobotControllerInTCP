@@ -25,7 +25,6 @@ public:
     virtual void onArmRobotDisconnect();
     virtual void onArmRobotStatusUpdate(const ArmRobotStatusPtr& ptrRobotStatus);
 
-
 Q_SIGNALS:
     void robotConnectionChanged(bool connected);
     void robotDataChanged();

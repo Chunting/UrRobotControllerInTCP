@@ -276,7 +276,7 @@ bool JsonServer::api_pickTask(JsonServer::TaskInfo& taskInfo) {
     taskInfo.objFrom = "a";
     taskInfo.objTo = "b";
     taskInfo.objInfo = "test";
-    return true;
+    return false;
 }
 
 void JsonServer::api_setupTaskStage(const JsonServer::TaskInfo& taskInfo, JsonServer::TaskStage taskStage) {

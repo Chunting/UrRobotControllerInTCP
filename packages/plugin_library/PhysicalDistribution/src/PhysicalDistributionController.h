@@ -49,6 +49,9 @@ protected:
     void mainLoop();
     void setupUi();
 
+    void onButtonTestPicker();
+    void onButtonTestPlacer();
+
 protected:
     virtual void onArmRobotConnect();
     virtual void onArmRobotDisconnect();
@@ -95,6 +98,15 @@ protected:
             layout()->removeWidget(t.get());
         }
     }
+
+    bool m_taskEmptyPrint;
+    bool m_taskEmpty;
+
+    bool m_taskEmptyDebugAction;
+    bool m_doTestPicker;
+    bool m_doTestPlacer;
+    BinObjGrabPose m_testPickerPose;
+    void _doTestActions();
 
 
     Ui::PhysicalDistributionController ui;

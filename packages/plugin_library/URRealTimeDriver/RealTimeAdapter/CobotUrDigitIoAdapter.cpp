@@ -21,14 +21,14 @@ bool CobotUrDigitIoAdapter::setup(const QString& configFilePath) {
 
 void CobotUrDigitIoAdapter::setIo(DigitIoPorts ioPorts, DigitIoStatus ioStatus) {
     if (m_isOutput) {
-        if (ioPorts & DigitIoPort::Port_1) setDigitOut(0, ioStatus == DigitIoStatus::Set);
-        if (ioPorts & DigitIoPort::Port_2) setDigitOut(1, ioStatus == DigitIoStatus::Set);
-        if (ioPorts & DigitIoPort::Port_3) setDigitOut(2, ioStatus == DigitIoStatus::Set);
-        if (ioPorts & DigitIoPort::Port_4) setDigitOut(3, ioStatus == DigitIoStatus::Set);
-        if (ioPorts & DigitIoPort::Port_5) setDigitOut(4, ioStatus == DigitIoStatus::Set);
-        if (ioPorts & DigitIoPort::Port_6) setDigitOut(5, ioStatus == DigitIoStatus::Set);
-        if (ioPorts & DigitIoPort::Port_7) setDigitOut(6, ioStatus == DigitIoStatus::Set);
-        if (ioPorts & DigitIoPort::Port_8) setDigitOut(7, ioStatus == DigitIoStatus::Set);
+        if (ioPorts & DigitIoPort::Port_0) setDigitOut(0, ioStatus == DigitIoStatus::Set);
+        if (ioPorts & DigitIoPort::Port_1) setDigitOut(1, ioStatus == DigitIoStatus::Set);
+        if (ioPorts & DigitIoPort::Port_2) setDigitOut(2, ioStatus == DigitIoStatus::Set);
+        if (ioPorts & DigitIoPort::Port_3) setDigitOut(3, ioStatus == DigitIoStatus::Set);
+        if (ioPorts & DigitIoPort::Port_4) setDigitOut(4, ioStatus == DigitIoStatus::Set);
+        if (ioPorts & DigitIoPort::Port_5) setDigitOut(5, ioStatus == DigitIoStatus::Set);
+        if (ioPorts & DigitIoPort::Port_6) setDigitOut(6, ioStatus == DigitIoStatus::Set);
+        if (ioPorts & DigitIoPort::Port_7) setDigitOut(7, ioStatus == DigitIoStatus::Set);
     }
 }
 

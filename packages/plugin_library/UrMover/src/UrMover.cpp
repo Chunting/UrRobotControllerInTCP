@@ -106,13 +106,15 @@ void UrMover::moveProcess() {
 
         m_kinematicSolver->jntToCart(joint, curPose);
 
-        if (m_clearMoveTarget && !noMoveTarget) {
+        if (m_clearMoveTarget) {
             m_clearMoveTarget = false;
-            noMoveTarget = true;
-            moveFinished = true;
-            COBOT_LOG.notice() << "Mover Target has canceled, " << jointNum;
-            hres_start = std::chrono::high_resolution_clock::now();
-            notify(moveTarget, MoveResult::Cancled);
+            if (!noMoveTarget) {
+                noMoveTarget = true;
+                moveFinished = true;
+                COBOT_LOG.notice() << "Mover Target has canceled, " << jointNum;
+                hres_start = std::chrono::high_resolution_clock::now();
+                notify(moveTarget, MoveResult::Cancled);
+            }
         }
 
         if (jointNum > jointNumOld) {
@@ -155,7 +157,8 @@ void UrMover::moveProcess() {
                         // TODO smooth target joint commands
                         m_realTimeDriver->move(targetJoint);
                     } else {
-                        COBOT_LOG.error() << "Can't go target!";
+                        COBOT_LOG.error() << "Target: " << moveTarget.pos << ", " << moveTarget.rpy
+                                          << " Can Not Reached!";
                         notify(moveTarget, MoveResult::InvalidMoveTarget);
                         clearAll();
                     }
