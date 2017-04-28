@@ -122,7 +122,8 @@ void UR10RobotMoveDriver::setRealTimeDriver(const std::shared_ptr<AbstractArmRob
 
 void UR10RobotMoveDriver::notify(uint32_t moveId)
 {
+    // TODO
     for (auto& observer : m_observers) {
-        observer->onMoveFinish(moveId);
+        observer->onMoveFinish(moveId, MoveResult::Success);
     }
 }

@@ -14,6 +14,13 @@
 
 
 namespace cobotsys {
+
+enum class MoveResult {
+    Success,
+    InvalidMoveTarget,
+    Cancled,
+};
+
 class ArmRobotMoveStatusObserver {
 public:
     ArmRobotMoveStatusObserver();
@@ -23,7 +30,7 @@ public:
      * AbstractArmRobotMoveDriver::move() 函数操作完成后，会调用此函数
      * @param moveId
      */
-    virtual void onMoveFinish(uint32_t moveId) = 0;
+    virtual void onMoveFinish(uint32_t moveId, MoveResult moveResult) = 0;
 };
 }
 

@@ -47,7 +47,7 @@ protected:
 //    Eigen::Matrix4d m_cam2base;
 //    std::vector<double> m_initialJoint;
     std::vector<double> m_curJoint;
-    std::mutex m_mutex;
+    std::recursive_mutex m_mutex;
     bool m_robotConnected;
     uint64_t m_curJointNum;
 
@@ -61,7 +61,7 @@ protected:
 
     bool pickMoveTarget(MoveTarget& moveTarget);
 
-    void notify(const MoveTarget& moveTarget);
+    void notify(const MoveTarget& moveTarget, MoveResult moveResult);
 
     static std::vector<double> toVector(const MoveTarget& moveTarget);
     static double poseDiff(const std::vector<double>& a, const std::vector<double>& b);

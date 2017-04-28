@@ -18,7 +18,7 @@ public:
     AbstractBinpickingPicker();
     virtual ~AbstractBinpickingPicker();
 
-    virtual void pickObject(const BinObjGrabPose& binObjGrabPose) = 0;
+    virtual bool pickObject(const BinObjGrabPose& binObjGrabPose) = 0;
     virtual void setRobotDriver(std::shared_ptr<AbstractArmRobotMoveDriver> robotDriver) = 0;
     virtual void setDigitIoDriver(std::shared_ptr<AbstractDigitIoDriver> digitIoDriver) = 0;
 };

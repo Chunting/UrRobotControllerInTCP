@@ -24,7 +24,7 @@ bool UrMover::setup(const QString& configFilePath) {
 }
 
 bool UrMover::move(uint32_t moveId, const cv::Point3d& pos, const cv::Vec3d& rpy) {
-    std::lock_guard<std::mutex> lockGuard(m_mutex);
+    std::lock_guard<std::recursive_mutex> lockGuard(m_mutex);
     if (m_robotConnected) {
         m_targets.push_back({moveId, pos, rpy});
         return true;
@@ -33,7 +33,7 @@ bool UrMover::move(uint32_t moveId, const cv::Point3d& pos, const cv::Vec3d& rpy
 }
 
 void UrMover::attach(const std::shared_ptr<ArmRobotMoveStatusObserver>& observer) {
-    std::lock_guard<std::mutex> lockGuard(m_mutex);
+    std::lock_guard<std::recursive_mutex> lockGuard(m_mutex);
     for (auto& iter : m_observers) {
         if (iter == observer) {
             return;
@@ -53,22 +53,22 @@ void UrMover::setKinematicSolver(const std::shared_ptr<AbstractKinematicSolver>&
 
 
 void UrMover::onArmRobotConnect() {
-    std::lock_guard<std::mutex> lockGuard(m_mutex);
+    std::lock_guard<std::recursive_mutex> lockGuard(m_mutex);
     m_robotConnected = true;
 }
 
 void UrMover::onArmRobotDisconnect() {
-    std::lock_guard<std::mutex> lockGuard(m_mutex);
+    std::lock_guard<std::recursive_mutex> lockGuard(m_mutex);
     m_robotConnected = false;
 }
 
 void UrMover::onArmRobotStatusUpdate(const ArmRobotStatusPtr& ptrRobotStatus) {
-    std::lock_guard<std::mutex> lockGuard(m_mutex);
+    std::lock_guard<std::recursive_mutex> lockGuard(m_mutex);
     m_curJoint = ptrRobotStatus->q_actual;
     m_curJointNum++;
 }
 
-void UrMover::notify(const UrMover::MoveTarget& moveTarget) {
+void UrMover::notify(const UrMover::MoveTarget& moveTarget, MoveResult moveResult) {
     std::vector<std::shared_ptr<ArmRobotMoveStatusObserver> > observers;
     m_mutex.lock();
     observers = m_observers;
@@ -76,7 +76,7 @@ void UrMover::notify(const UrMover::MoveTarget& moveTarget) {
 
     for (auto& ob : observers) {
         if (ob) {
-            ob->onMoveFinish(moveTarget.moveId);
+            ob->onMoveFinish(moveTarget.moveId, moveResult);
         }
     }
 }
@@ -106,12 +106,13 @@ void UrMover::moveProcess() {
 
         m_kinematicSolver->jntToCart(joint, curPose);
 
-        if (m_clearMoveTarget) {
+        if (m_clearMoveTarget && !noMoveTarget) {
             m_clearMoveTarget = false;
             noMoveTarget = true;
             moveFinished = true;
             COBOT_LOG.notice() << "Mover Target has canceled, " << jointNum;
             hres_start = std::chrono::high_resolution_clock::now();
+            notify(moveTarget, MoveResult::Cancled);
         }
 
         if (jointNum > jointNumOld) {
@@ -142,17 +143,22 @@ void UrMover::moveProcess() {
                         moveFinished = true;
                         noMoveTarget = true;
 
-                        notify(moveTarget);
+                        notify(moveTarget, MoveResult::Success);
                         COBOT_LOG.notice() << std::setw(5) << moveTarget.moveId
                                            << " Mover Target: " << moveTarget.pos << ", " << moveTarget.rpy
                                            << " Finished. Time: " << time_diff.count() * 1000 << "ms";
                     }
                 } else {
                     // Calc move joint
-                    m_kinematicSolver->cartToJnt(joint, pose, targetJoint);
+                    if (m_kinematicSolver->cartToJnt(joint, pose, targetJoint) == 0) {
 
-                    // TODO smooth target joint commands
-                    m_realTimeDriver->move(targetJoint);
+                        // TODO smooth target joint commands
+                        m_realTimeDriver->move(targetJoint);
+                    } else {
+                        COBOT_LOG.error() << "Can't go target!";
+                        notify(moveTarget, MoveResult::InvalidMoveTarget);
+                        clearAll();
+                    }
                 }
                 pose_err_last = actual_pose_diff;
             }
@@ -184,7 +190,7 @@ void UrMover::clearAttachedObject() {
 }
 
 bool UrMover::pickMoveTarget(UrMover::MoveTarget& moveTarget) {
-    std::lock_guard<std::mutex> lockGuard(m_mutex);
+    std::lock_guard<std::recursive_mutex> lockGuard(m_mutex);
     if (m_targets.size()) {
         moveTarget = m_targets.front();
         m_targets.pop_front();
@@ -224,7 +230,7 @@ double UrMover::poseDiff(const std::vector<double>& a, const std::vector<double>
 }
 
 bool UrMover::start() {
-    std::lock_guard<std::mutex> lockGuard(m_mutex);
+    std::lock_guard<std::recursive_mutex> lockGuard(m_mutex);
     if (m_kinematicSolver && m_realTimeDriver) {
         m_moverThread = std::thread(&UrMover::moveProcess, this);
         return true;
@@ -233,7 +239,15 @@ bool UrMover::start() {
 }
 
 void UrMover::clearAll() {
-    std::lock_guard<std::mutex> lockGuard(m_mutex);
+    std::deque<MoveTarget> tmpTargets;
+
+    m_mutex.lock();
+    tmpTargets = m_targets;
     m_targets.clear();
     m_clearMoveTarget = true;
+    m_mutex.unlock();
+
+    for (auto& iter : tmpTargets) {
+        notify(iter, MoveResult::Cancled);
+    }
 }
