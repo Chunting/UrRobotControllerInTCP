@@ -35,6 +35,12 @@ public:
     virtual void onCameraStreamUpdate(const CameraFrame& cameraFrame, AbstractCamera* camera) = 0;
 };
 
+
+/**
+ * @note 凡是有 attach() 方法的类，最好都实现 clearAttachedObject() 方法。
+ *       对象在释放的时候，如果不主动的通过 clearAttachedObject() ，指针的智能释放会失败。
+ *       因为互相引用。
+ */
 class AbstractCamera : public AbstractObject {
 public:
     AbstractCamera();

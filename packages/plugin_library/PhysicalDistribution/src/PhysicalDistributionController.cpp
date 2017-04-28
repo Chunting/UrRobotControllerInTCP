@@ -23,6 +23,8 @@ PhysicalDistributionController::PhysicalDistributionController() {
 }
 
 PhysicalDistributionController::~PhysicalDistributionController() {
+    // 使用shared_ptr管理的对象，在释放的时候，需要主动的从Qt的管理方法里删除。不
+    // 然，会造成两次对象释放，让程序崩溃。
     removeSharedWidget(m_ptrViewer);
     removeSharedWidget(m_ptrManiputor);
     detachSharedObject(m_ptrRobot);
