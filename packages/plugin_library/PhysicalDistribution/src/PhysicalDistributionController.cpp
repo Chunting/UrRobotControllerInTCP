@@ -41,6 +41,9 @@ bool PhysicalDistributionController::setup(const QString& configFilePath) {
     if (loadJson(jsonObject, configFilePath)) {
         if (objectGroup.init(jsonObject)) {
             return _setupInternalObjects(objectGroup);
+        } else {
+            COBOT_LOG.error() << "fail to init all objects";
+            return false;
         }
     }
     COBOT_LOG.error() << "fail to load json config.";
