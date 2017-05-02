@@ -26,11 +26,20 @@ public:
 
     std::shared_ptr<RobotState> getRobotState(){ return m_robotState; }
     std::string getLocalIp();
+
+    /**
+ * 这个函数是专门写来用于异步线程发送命令的，可以直接调用
+ * @param positions
+ * @param flushNow
+ */
+    void asyncServoj(const std::vector<double>& positions, bool flushNow = false);
 Q_SIGNALS:
     void connected();
     void disconnected();
     void connectFail();
     void resendCmd();
+
+    void asyncServojFlushRequired();
 public:
     void start();
     void stop();
@@ -43,7 +52,7 @@ protected:
     void secConnectHandle();
     void secDisconnectHandle();
     void onSocketError(QAbstractSocket::SocketError socketError);
-
+    void asyncServojFlush();
 protected Q_SLOTS:
     void onRensendCmd();
 protected:
@@ -53,6 +62,11 @@ protected:
     std::condition_variable& m_msg_cond;
     std::string localIp_;
     quint8 m_cmdID;//motoman cmd ID
+
+    CobotMotoman::ROBOTCMD m_LastCmdID;
+    std::mutex m_rt_res_mutex;
+    std::vector<double> m_rt_q_required;
+    std::vector<double> m_qTarget;
 };
 
 

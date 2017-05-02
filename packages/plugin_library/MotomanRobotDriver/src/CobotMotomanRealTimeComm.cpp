@@ -20,8 +20,7 @@ CobotMotomanRealTimeComm::CobotMotomanRealTimeComm(std::condition_variable& cond
 
     connect(m_tcpServer, &QTcpServer::newConnection, this, &CobotMotomanRealTimeComm::motomanProgConnect);
 
-    connect(this, &CobotMotomanRealTimeComm::asyncServojFlushRequired,
-            this, &CobotMotomanRealTimeComm::asyncServojFlush, Qt::QueuedConnection);
+
 
     connect(m_SOCKET, static_cast<void (QAbstractSocket::*)(QAbstractSocket::SocketError)>(&QAbstractSocket::error),
             this, &CobotMotomanRealTimeComm::onSocketError);
@@ -59,26 +58,7 @@ void CobotMotomanRealTimeComm::readData(){
 //    if (ba.size()) {
 //        m_robotState->unpack((uint8_t*) ba.constData());
 //    }
-    //todo receive data;
-    asyncServojFlush();
-}
 
-
-void CobotMotomanRealTimeComm::asyncServojFlush(){
-    std::vector<double> tmpq;
-    if (m_rt_res_mutex.try_lock()) {
-        if (m_rt_q_required.size()) {
-            m_qTarget = m_rt_q_required;
-            m_rt_q_required.clear();
-        }
-        m_rt_res_mutex.unlock();
-    }
-
-    if (m_qTarget.size() == 0) {
-        m_qTarget = m_robotState->getQActual();
-    }
-
-    servoj(m_qTarget);
 }
 
 void CobotMotomanRealTimeComm::writeLine(const QByteArray& ba){
@@ -152,17 +132,7 @@ void CobotMotomanRealTimeComm::onRealTimeDisconnect(){
     Q_EMIT realTimeProgDisconnect();
 }
 
-void CobotMotomanRealTimeComm::asyncServoj(const std::vector<double>& positions, bool flushNow){
-    m_rt_res_mutex.lock();
-    m_rt_q_required = positions;
-    m_rt_res_mutex.unlock();
 
-//    COBOT_LOG.info() << positions[0];
-
-    if (flushNow) {
-        Q_EMIT asyncServojFlushRequired();
-    }
-}
 
 void CobotMotomanRealTimeComm::onSocketError(QAbstractSocket::SocketError socketError){
     COBOT_LOG.error() << "CobotMotomanRealTimeComm: " << m_SOCKET->errorString();

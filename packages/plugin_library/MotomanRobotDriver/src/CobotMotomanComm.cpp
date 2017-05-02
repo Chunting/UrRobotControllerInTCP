@@ -10,7 +10,7 @@
 #include <cobotsys.h>
 
 CobotMotomanComm::CobotMotomanComm(std::condition_variable& cond_msg, QObject* parent)
-        : QObject(parent), m_msg_cond(cond_msg),m_cmdID(0){
+        : QObject(parent), m_msg_cond(cond_msg),m_cmdID(0),m_LastCmdID(CobotMotoman::CMD_SERVO_OFF){
 
     m_robotState = std::make_shared<RobotState>(m_msg_cond);
 
@@ -25,6 +25,9 @@ CobotMotomanComm::CobotMotomanComm(std::condition_variable& cond_msg, QObject* p
             this, &CobotMotomanComm::onSocketError);
 
     connect(this,&CobotMotomanComm::onRensendCmd,this,&CobotMotomanComm::onRensendCmd);
+
+    connect(this, &CobotMotomanComm::asyncServojFlushRequired,
+            this, &CobotMotomanComm::asyncServojFlush, Qt::QueuedConnection);
 }
 
 CobotMotomanComm::~CobotMotomanComm(){
@@ -76,6 +79,8 @@ void CobotMotomanComm::processData(){
         Q_EMIT resendCmd();
         return;
     }
+    //todo receive data;
+    asyncServojFlush();
 }
 
 void CobotMotomanComm::secConnectHandle(){
@@ -98,7 +103,8 @@ void CobotMotomanComm::onSocketError(QAbstractSocket::SocketError socketError){
     Q_EMIT connectFail();
 }
 void CobotMotomanComm::executeCmd(const CobotMotoman::ROBOTCMD CmdID,bool resendFlag) {
-    static CobotMotoman::ROBOTCMD LastCmdID=CobotMotoman::CMD_SERVO_OFF;
+    std::vector<double> angleIncrement;
+    angleIncrement.resize(6,0.0);
     CobotMotoman::ROBOTCMD Cmd2send;
     if(resendFlag){
         if(m_cmdID>0){
@@ -106,13 +112,13 @@ void CobotMotomanComm::executeCmd(const CobotMotoman::ROBOTCMD CmdID,bool resend
         }else {
             m_cmdID = 255;
         }
-        Cmd2send=LastCmdID;
+        Cmd2send=m_LastCmdID;
     }else{
         Cmd2send=CmdID;
     }
-
+    m_LastCmdID=Cmd2send;
     QByteArray cmd;
-    cmd.resize(CobotMotoman::FRAME_LENGTH_);
+    cmd.resize(5);
     QByteArray IP=IntToArray(m_tcpSocket->localAddress().toIPv4Address());
     switch (Cmd2send){
         case CobotMotoman::CMD_START_UDP:
@@ -134,10 +140,45 @@ void CobotMotomanComm::executeCmd(const CobotMotoman::ROBOTCMD CmdID,bool resend
             cmd[ 2] = 0x00;
             cmd[ 3] = 0x00;
             break;
+        case CobotMotoman::CMD_MOVE_ANGLE:
+            cmd[0]=0xc1;
+            cmd[1]=0x0a;
+            //cmd[2]=0x80;
+            cmd[2]=0x81;
+            for(int i=0;i<6;i++){
+                //或许这里要做成比例式的。
+                if(m_robotState.get()->getQActual()[i]-m_qTarget[i]>CobotMotoman::MAX_ANGLE_INCREMENT_){
+                    angleIncrement[i]=CobotMotoman::MAX_ANGLE_INCREMENT_;
+                }else if(m_robotState.get()->getQActual()[i]-m_qTarget[i]<-CobotMotoman::MAX_ANGLE_INCREMENT_){
+                    angleIncrement[i]=-CobotMotoman::MAX_ANGLE_INCREMENT_;
+                }else{
+                    angleIncrement[i]=m_robotState.get()->getQActual()[i]-m_qTarget[i];
+                }
+                cmd.push_back(IntToArray(angleIncrement[i]));
+                //TODO No speed and accel control now.
+            }
+            break;
+        case CobotMotoman::CMD_MOVE_IMPULSE:
+            cmd[0]=0xc1;
+            cmd[1]=0x0a;
+            cmd[2]=0x80;
+            for(int i=0;i<6;i++){
+                //或许这里要做成比例式的。
+                if(m_robotState.get()->getQActual()[i]-m_qTarget[i]>CobotMotoman::MAX_ANGLE_INCREMENT_){
+                    angleIncrement[i]=CobotMotoman::MAX_ANGLE_INCREMENT_;
+                }else if(m_robotState.get()->getQActual()[i]-m_qTarget[i]<-CobotMotoman::MAX_ANGLE_INCREMENT_){
+                    angleIncrement[i]=-CobotMotoman::MAX_ANGLE_INCREMENT_;
+                }else{
+                    angleIncrement[i]=m_robotState.get()->getQActual()[i]-m_qTarget[i];
+                }
+                cmd.push_back(IntToArray(angleIncrement[i]));
+                //TODO No speed and accel control now.
+            }
+            break;
         default:
             COBOT_LOG.error()<<"Undefined command.";
     }
-
+    cmd.resize(CobotMotoman::FRAME_LENGTH_);
     sendCmd(cmd);
 }
 
@@ -166,4 +207,31 @@ void CobotMotomanComm::sendCmd(QByteArray &cmd) {
 
 void CobotMotomanComm::onRensendCmd() {
     executeCmd(CobotMotoman::CMD_SERVO_OFF,true);
+}
+void CobotMotomanComm::asyncServoj(const std::vector<double>& positions, bool flushNow){
+    m_rt_res_mutex.lock();
+    m_rt_q_required = positions;
+    m_rt_res_mutex.unlock();
+
+//    COBOT_LOG.info() << positions[0];
+
+    if (flushNow) {
+        Q_EMIT asyncServojFlushRequired();
+    }
+}
+
+void CobotMotomanComm::asyncServojFlush(){
+    std::vector<double> tmpq;
+    if (m_rt_res_mutex.try_lock()) {
+        if (m_rt_q_required.size()) {
+            m_qTarget = m_rt_q_required;
+            m_rt_q_required.clear();
+        }
+        m_rt_res_mutex.unlock();
+    }
+
+    if (m_qTarget.size() == 0) {
+        m_qTarget = m_robotState->getQActual();
+    }
+    executeCmd(CobotMotoman::CMD_MOVE_ANGLE);
 }

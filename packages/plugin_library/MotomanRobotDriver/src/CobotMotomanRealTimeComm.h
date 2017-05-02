@@ -40,12 +40,7 @@ public:
 
     void stopProg();
 
-    /**
-     * 这个函数是专门写来用于异步线程发送命令的，可以直接调用
-     * @param positions
-     * @param flushNow
-     */
-    void asyncServoj(const std::vector<double>& positions, bool flushNow = false);
+
 
 
 Q_SIGNALS:
@@ -56,12 +51,9 @@ Q_SIGNALS:
     void realTimeProgConnected();
     void realTimeProgDisconnect();
 
-    void asyncServojFlushRequired();
-
 protected:
     void motomanProgConnect();
     void onRealTimeDisconnect();
-    void asyncServojFlush();
     void onSocketError(QAbstractSocket::SocketError socketError);
 
 
@@ -73,13 +65,6 @@ protected:
 
     QTcpServer* m_tcpServer;
     QTcpSocket* m_rtSOCKET;
-
-    std::mutex m_rt_res_mutex;
-    std::vector<double> m_rt_q_required;
-
-    std::vector<double> m_qTarget;
-
-
 
 public:
     const int MULT_JOINTSTATE_ = 1000000;

@@ -16,7 +16,7 @@
 class CobotMotoman {
 public:
     enum ROBOTCMD {
-        CMD_START_UDP, CMD_SERVO_ON, CMD_SERVO_OFF
+        CMD_START_UDP, CMD_SERVO_ON, CMD_SERVO_OFF, CMD_MOVE_ANGLE, CMD_MOVE_IMPULSE
     };
     static const int MAX_SOCKET_WAIT_ = 1000;
     static const size_t JOINT_NUM_ = 6;

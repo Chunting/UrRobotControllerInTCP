@@ -136,7 +136,7 @@ void CobotMotomanDriver::handleRTProgDisconnect(){
 }
 
 void CobotMotomanDriver::servoj(const std::vector<double>& positions){
-    if (m_motomanRealTimeCommCtrl) {
-        m_motomanRealTimeCommCtrl->motoman->asyncServoj(positions);
+    if (m_motomanCommCtrl) {
+        m_motomanCommCtrl->motoman->asyncServoj(positions);
     }
 }
