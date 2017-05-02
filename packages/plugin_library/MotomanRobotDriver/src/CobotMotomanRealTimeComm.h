@@ -47,8 +47,6 @@ public:
      */
     void asyncServoj(const std::vector<double>& positions, bool flushNow = false);
 
-    void sendCmd(QByteArray& cmd);
-    void executeCmd(const CobotMotoman::ROBOTCMD CmdID);
 
 Q_SIGNALS:
     void connected();
@@ -81,7 +79,7 @@ protected:
 
     std::vector<double> m_qTarget;
 
-    quint8 m_cmdID;//motoman cmd ID
+
 
 public:
     const int MULT_JOINTSTATE_ = 1000000;

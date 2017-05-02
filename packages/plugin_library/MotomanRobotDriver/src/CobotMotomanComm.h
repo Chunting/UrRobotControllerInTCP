@@ -35,6 +35,9 @@ public:
     void start();
     void stop();
 
+    void sendCmd(QByteArray& cmd);
+    void executeCmd(const CobotMotoman::ROBOTCMD CmdID);
+
 protected:
     void processData();
     void secConnectHandle();
@@ -47,6 +50,7 @@ protected:
     std::shared_ptr<RobotState> m_robotState;
     std::condition_variable& m_msg_cond;
     std::string localIp_;
+    quint8 m_cmdID;//motoman cmd ID
 };
 
 

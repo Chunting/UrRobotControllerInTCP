@@ -8,7 +8,7 @@
 #include <cobotsys.h>
 
 CobotMotomanRealTimeComm::CobotMotomanRealTimeComm(std::condition_variable& cond_msg, const QString& robotIp, QObject* parent)
-        : QObject(parent), m_msg_cond(cond_msg),m_cmdID(0){
+        : QObject(parent), m_msg_cond(cond_msg){
     m_robotState = std::make_shared<RobotState>(m_msg_cond);
     m_tcpServer = new QTcpServer(this);
     m_robotIp = robotIp;
@@ -168,58 +168,7 @@ void CobotMotomanRealTimeComm::onSocketError(QAbstractSocket::SocketError socket
     COBOT_LOG.error() << "CobotMotomanRealTimeComm: " << m_SOCKET->errorString();
     Q_EMIT connectFail();
 }
-void CobotMotomanRealTimeComm::executeCmd(const CobotMotoman::ROBOTCMD CmdID) {
-    QByteArray cmd;
-    cmd.resize(CobotMotoman::FRAME_LENGTH_);
-    QByteArray IP=IntToArray(m_SOCKET->localAddress().toIPv4Address());
-    switch (CmdID){
-        case CobotMotoman::CMD_START_UDP:
-            cmd[ 0] = 0xc0;
-            cmd[ 1] = IP[0];
-            cmd[ 2] = IP[1];
-            cmd[ 3] = IP[2];
-            cmd[ 4] = IP[3];
-            break;
-        case CobotMotoman::CMD_SERVO_ON:
-            cmd[ 0] = 0xc2;
-            cmd[ 1] = 0xff;
-            cmd[ 2] = 0xff;
-            cmd[ 3] = 0x00;
-            break;
-        case CobotMotoman::CMD_SERVO_OFF:
-            cmd[ 0] = 0xc2;
-            cmd[ 1] = 0xff;
-            cmd[ 2] = 0x00;
-            cmd[ 3] = 0x00;
-            break;
-        default:
-            COBOT_LOG.error()<<"Undefined command.";
-    }
-    sendCmd(cmd);
-}
 
-void CobotMotomanRealTimeComm::sendCmd(QByteArray &cmd) {
-    if(cmd.size()!=CobotMotoman::FRAME_LENGTH_){
-        COBOT_LOG.error()<<"The size of tcp frame length is not "<<CobotMotoman::FRAME_LENGTH_;
-        return;
-    }
-    if(m_cmdID<255){
-        m_cmdID++;
-    }else {
-        m_cmdID = 0;
-    }
-    cmd[CobotMotoman::FRAME_LENGTH_-2]=m_cmdID;
-    cmd[CobotMotoman::FRAME_LENGTH_-1] = 0xff;
-    if(m_SOCKET->state() == QAbstractSocket::ConnectedState)
-    {
-        m_SOCKET->write(cmd); //write the data itself
-    }
-    else{
-        COBOT_LOG.error()<<"TCP socket state is QAbstractSocket::UnconnectedState.";
-        return;
-    }
-
-}
 
 
 

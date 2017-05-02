@@ -120,8 +120,8 @@ void CobotMotomanDriver::onConnectSuccess(){
     m_isConnected = true;
     ip_addr_ = m_motomanCommCtrl->motoman->getLocalIp();
     COBOT_LOG.info() << "Local Ip: " << ip_addr_;
-    m_motomanRealTimeCommCtrl->motoman->executeCmd(CobotMotoman::CMD_SERVO_ON);
-    m_motomanRealTimeCommCtrl->motoman->executeCmd(CobotMotoman::CMD_START_UDP);
+    m_motomanCommCtrl->motoman->executeCmd(CobotMotoman::CMD_SERVO_ON);
+    m_motomanCommCtrl->motoman->executeCmd(CobotMotoman::CMD_START_UDP);
     Q_EMIT driverStartSuccess();
 }
 
