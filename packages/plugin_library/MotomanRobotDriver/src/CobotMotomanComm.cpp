@@ -23,6 +23,8 @@ CobotMotomanComm::CobotMotomanComm(std::condition_variable& cond_msg, QObject* p
     connect(m_tcpSocket, &QTcpSocket::disconnected, this, &CobotMotomanComm::secDisconnectHandle);
     connect(m_tcpSocket, static_cast<void (QAbstractSocket::*)(QAbstractSocket::SocketError)>(&QAbstractSocket::error),
             this, &CobotMotomanComm::onSocketError);
+
+    connect(this,&CobotMotomanComm::onRensendCmd,this,&CobotMotomanComm::onRensendCmd);
 }
 
 CobotMotomanComm::~CobotMotomanComm(){
@@ -53,12 +55,26 @@ void CobotMotomanComm::stop(){
 }
 
 void CobotMotomanComm::processData(){
-    auto ba = m_tcpSocket->read(2048);
-    if (ba.size() > 0) {
-        m_robotState->unpack((uint8_t*) ba.constData(), ba.size());
-    } else {
+    QByteArray msg = m_tcpSocket->readAll();
+    if (msg.size() <=0) {
         m_robotState->setDisconnected();
         m_tcpSocket->close();
+        Q_EMIT resendCmd();
+        return;
+    }
+    if(msg.size()!=2){
+        COBOT_LOG.error()<<"The size of received Motoman TCP message is not 2 bytes.";
+        Q_EMIT resendCmd();
+        return;
+    }
+    if((quint8)msg[0]!=m_cmdID){
+        COBOT_LOG.error()<<"Received Motoman TCP message ID error.";
+        Q_EMIT resendCmd();
+        return;
+    }
+    if((qint8)msg[1]!=0){
+        Q_EMIT resendCmd();
+        return;
     }
 }
 
@@ -81,11 +97,24 @@ void CobotMotomanComm::onSocketError(QAbstractSocket::SocketError socketError){
     COBOT_LOG.error() << "CobotMotomanComm: " << m_tcpSocket->errorString();
     Q_EMIT connectFail();
 }
-void CobotMotomanComm::executeCmd(const CobotMotoman::ROBOTCMD CmdID) {
+void CobotMotomanComm::executeCmd(const CobotMotoman::ROBOTCMD CmdID,bool resendFlag) {
+    static CobotMotoman::ROBOTCMD LastCmdID=CobotMotoman::CMD_SERVO_OFF;
+    CobotMotoman::ROBOTCMD Cmd2send;
+    if(resendFlag){
+        if(m_cmdID>0){
+            m_cmdID--;
+        }else {
+            m_cmdID = 255;
+        }
+        Cmd2send=LastCmdID;
+    }else{
+        Cmd2send=CmdID;
+    }
+
     QByteArray cmd;
     cmd.resize(CobotMotoman::FRAME_LENGTH_);
     QByteArray IP=IntToArray(m_tcpSocket->localAddress().toIPv4Address());
-    switch (CmdID){
+    switch (Cmd2send){
         case CobotMotoman::CMD_START_UDP:
             cmd[ 0] = 0xc0;
             cmd[ 1] = IP[0];
@@ -108,6 +137,7 @@ void CobotMotomanComm::executeCmd(const CobotMotoman::ROBOTCMD CmdID) {
         default:
             COBOT_LOG.error()<<"Undefined command.";
     }
+
     sendCmd(cmd);
 }
 
@@ -132,4 +162,8 @@ void CobotMotomanComm::sendCmd(QByteArray &cmd) {
         return;
     }
 
+}
+
+void CobotMotomanComm::onRensendCmd() {
+    executeCmd(CobotMotoman::CMD_SERVO_OFF,true);
 }

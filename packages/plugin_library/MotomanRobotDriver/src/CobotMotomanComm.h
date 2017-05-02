@@ -30,13 +30,13 @@ Q_SIGNALS:
     void connected();
     void disconnected();
     void connectFail();
-
+    void resendCmd();
 public:
     void start();
     void stop();
 
     void sendCmd(QByteArray& cmd);
-    void executeCmd(const CobotMotoman::ROBOTCMD CmdID);
+    void executeCmd(const CobotMotoman::ROBOTCMD CmdID,bool resendFlag=false);
 
 protected:
     void processData();
@@ -44,6 +44,8 @@ protected:
     void secDisconnectHandle();
     void onSocketError(QAbstractSocket::SocketError socketError);
 
+protected Q_SLOTS:
+    void onRensendCmd();
 protected:
     QTcpSocket* m_tcpSocket;
     QString m_host;
