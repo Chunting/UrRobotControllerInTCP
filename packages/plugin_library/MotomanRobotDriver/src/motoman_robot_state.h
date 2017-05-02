@@ -32,7 +32,7 @@
 #include <netinet/in.h>
 #endif
 
-//TODO DONE
+
 namespace message_types {
 enum message_type {
     ROBOT_STATE = 16, ROBOT_MESSAGE = 20, PROGRAM_STATE_MESSAGE = 25

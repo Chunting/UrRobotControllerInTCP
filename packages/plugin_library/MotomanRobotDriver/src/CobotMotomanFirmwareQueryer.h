@@ -15,7 +15,7 @@
 #include "motoman_robot_state.h"
 class CobotMotomanFirmwareQueryer : public QObject {
 Q_OBJECT
-//TODO DONE
+
 public:
     QString m_host;
 public:

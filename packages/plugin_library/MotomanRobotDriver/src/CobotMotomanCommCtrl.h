@@ -10,7 +10,7 @@
 #include <QThread>
 #include <cobotsys_logger.h>
 #include "CobotMotomanComm.h"
-//TODO DONE
+
 class CobotMotomanCommCtrl : public QObject {
 Q_OBJECT
 protected:

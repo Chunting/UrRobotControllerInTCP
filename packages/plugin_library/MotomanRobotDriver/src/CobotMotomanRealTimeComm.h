@@ -15,7 +15,7 @@
 #include <QSemaphore>
 #include "motoman_robot_state.h"
 #include "CobotMotoman.h"
-//TODO DONE
+
 class CobotMotomanRealTimeComm : public QObject {
 Q_OBJECT
 public:

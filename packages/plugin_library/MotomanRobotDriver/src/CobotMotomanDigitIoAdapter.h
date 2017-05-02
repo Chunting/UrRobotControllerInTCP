@@ -11,7 +11,7 @@
 #include "CobotMotomanRealTimeCommCtrl.h"
 
 using namespace cobotsys;
-//TODO DONE
+
 class CobotMotomanDigitIoAdapter : public AbstractDigitIoDriver {
 public:
     CobotMotomanDigitIoAdapter();

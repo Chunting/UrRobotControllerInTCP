@@ -8,7 +8,7 @@
 #include "MotomanRealTimeDriver.h"
 #include "CobotMotoman.h"
 
-//TODO FINISH
+
 MotomanRealTimeDriver::MotomanRealTimeDriver() : QObject(nullptr) {
     m_isWatcherRunning = false;
     m_isStarted = false;

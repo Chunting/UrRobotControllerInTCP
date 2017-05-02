@@ -15,7 +15,6 @@
 #include "CobotMotoman.h"
 #include "motoman_robot_state.h"
 
-//TODO DONE
 class CobotMotomanComm : public QObject {
 Q_OBJECT
 public:

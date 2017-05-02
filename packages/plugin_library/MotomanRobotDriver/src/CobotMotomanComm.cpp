@@ -43,7 +43,6 @@ void CobotMotomanComm::start(){
         /**
          * Link motoman general message channel
          */
-        //TODO Here
         m_tcpSocket->connectToHost(m_host, CobotMotoman::TCP_PORT);//Motoman tcp port ID is 11000
     } else {
         Q_EMIT connectFail();
@@ -79,8 +78,9 @@ void CobotMotomanComm::processData(){
         Q_EMIT resendCmd();
         return;
     }
-    //todo receive data;
-    asyncServojFlush();
+    if(m_LastCmdID==CobotMotoman::CMD_MOVE_ANGLE){
+        asyncServojFlush();
+    }
 }
 
 void CobotMotomanComm::secConnectHandle(){
@@ -155,7 +155,7 @@ void CobotMotomanComm::executeCmd(const CobotMotoman::ROBOTCMD CmdID,bool resend
                     angleIncrement[i]=m_robotState.get()->getQActual()[i]-m_qTarget[i];
                 }
                 cmd.push_back(IntToArray(angleIncrement[i]));
-                //TODO No speed and accel control now.
+                //Note No speed and accel control now.
             }
             break;
         case CobotMotoman::CMD_MOVE_IMPULSE:
@@ -172,7 +172,7 @@ void CobotMotomanComm::executeCmd(const CobotMotoman::ROBOTCMD CmdID,bool resend
                     angleIncrement[i]=m_robotState.get()->getQActual()[i]-m_qTarget[i];
                 }
                 cmd.push_back(IntToArray(angleIncrement[i]));
-                //TODO No speed and accel control now.
+                //Note No speed and accel control now.
             }
             break;
         default:

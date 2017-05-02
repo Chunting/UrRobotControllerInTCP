@@ -11,7 +11,6 @@
 #include <cstdio>
 #include <QByteArray>
 #include <cobotsys.h>
-//TODO FINISH
 
 class CobotMotoman {
 public:

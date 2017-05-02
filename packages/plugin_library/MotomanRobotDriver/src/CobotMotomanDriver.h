@@ -11,7 +11,6 @@
 #include <QTcpSocket>
 #include "CobotMotomanRealTimeCommCtrl.h"
 #include "CobotMotomanCommCtrl.h"
-//TODO DONE
 class CobotMotomanDriver : public QObject {
 Q_OBJECT
 public:
@@ -48,6 +47,7 @@ protected:
     void handleRTProgConnect();
     void handleRTProgDisconnect();
 
+    bool uploadProg();
     void onConnectSuccess();
 
 protected:
