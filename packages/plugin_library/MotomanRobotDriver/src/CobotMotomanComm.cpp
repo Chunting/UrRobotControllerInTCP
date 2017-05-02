@@ -233,5 +233,6 @@ void CobotMotomanComm::asyncServojFlush(){
     if (m_qTarget.size() == 0) {
         m_qTarget = m_robotState->getQActual();
     }
+    //TODO How to start the loop need to design.
     executeCmd(CobotMotoman::CMD_MOVE_ANGLE);
 }
