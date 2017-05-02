@@ -36,9 +36,10 @@ void CobotMotomanComm::start(){
     CobotMotomanFirmwareQueryer firmQueryer(m_host);
     if (firmQueryer.getVersion(m_robotState)) {
         /**
-         * Link ur general message channel
+         * Link motoman general message channel
          */
-        m_tcpSocket->connectToHost(m_host, 30002);
+        //TODO Here
+        m_tcpSocket->connectToHost(m_host, CobotMotoman::TCP_PORT);//Motoman tcp port ID is 11000
     } else {
         Q_EMIT connectFail();
     }

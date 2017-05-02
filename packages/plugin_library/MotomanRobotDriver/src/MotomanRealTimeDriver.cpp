@@ -8,7 +8,7 @@
 #include "MotomanRealTimeDriver.h"
 #include "CobotMotoman.h"
 
-
+//TODO FINISH
 MotomanRealTimeDriver::MotomanRealTimeDriver() : QObject(nullptr) {
     m_isWatcherRunning = false;
     m_isStarted = false;
@@ -122,7 +122,7 @@ void MotomanRealTimeDriver::robotStatusWatcher() {
     std::vector<std::shared_ptr<ArmRobotRealTimeStatusObserver> > observer_tmp;
     std::vector<double> q_next;
 
-    COBOT_LOG.notice() << "UR Status Watcher is Running.";
+    COBOT_LOG.notice() << "Motoman Status Watcher is Running.";
     while (m_isWatcherRunning) {
         m_rt_msg_cond.wait(lck);
 
@@ -177,11 +177,12 @@ void MotomanRealTimeDriver::robotStatusWatcher() {
             //}
         }
     }
-    COBOT_LOG.notice() << "UR Status Watcher shutdown!";
+    COBOT_LOG.notice() << "Motoman Status Watcher shutdown!";
 }
 
 bool MotomanRealTimeDriver::_setup(const QString& configFilePath) {
     QJsonObject json;
+    //TODO Maybe it need to be modified.(motoman)
     if (loadJson(json, configFilePath)) {
         m_attr_robot_ip = json["robot_ip"].toString("localhost").toStdString();
         m_attr_servoj_time = json["servoj_time"].toDouble(0.08);
@@ -207,7 +208,7 @@ QString MotomanRealTimeDriver::getRobotUrl() {
 }
 
 void MotomanRealTimeDriver::handleDriverDisconnect() {
-    COBOT_LOG.info() << "URRealTimeDriver Disconnect";
+    COBOT_LOG.info() << "MotomanRealTimeDriver Disconnect";
     stop();
     notify([=](std::shared_ptr<ArmRobotRealTimeStatusObserver>& observer) {
         observer->onArmRobotDisconnect();

@@ -14,7 +14,7 @@
 #include <thread>
 #include <QSemaphore>
 #include "motoman_robot_state.h"
-
+#include "CobotMotoman.h"
 //TODO DONE
 class CobotMotomanRealTimeComm : public QObject {
 Q_OBJECT
@@ -47,6 +47,8 @@ public:
      */
     void asyncServoj(const std::vector<double>& positions, bool flushNow = false);
 
+    void sendCmd(QByteArray& cmd);
+    void executeCmd(const CobotMotoman::ROBOTCMD CmdID);
 
 Q_SIGNALS:
     void connected();
@@ -59,12 +61,14 @@ Q_SIGNALS:
     void asyncServojFlushRequired();
 
 protected:
-    void urProgConnect();
+    void motomanProgConnect();
     void onRealTimeDisconnect();
     void asyncServojFlush();
     void onSocketError(QAbstractSocket::SocketError socketError);
+
+
 protected:
-    QString m_hostIp;
+    QString m_robotIp;
     std::shared_ptr<RobotState> m_robotState;
     QTcpSocket* m_SOCKET;
     std::condition_variable& m_msg_cond;
@@ -76,6 +80,8 @@ protected:
     std::vector<double> m_rt_q_required;
 
     std::vector<double> m_qTarget;
+
+    quint8 m_cmdID;//motoman cmd ID
 
 public:
     const int MULT_JOINTSTATE_ = 1000000;

@@ -17,7 +17,7 @@
 #include "CobotMotomanDigitIoAdapter.h"
 
 using namespace cobotsys;
-//TODO DONE
+//TODO FINISH
 class MotomanRealTimeDriver : public QObject, public AbstractArmRobotRealTimeDriver {
 Q_OBJECT
 public:

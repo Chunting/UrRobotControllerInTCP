@@ -48,8 +48,8 @@ protected:
     void handleRTProgConnect();
     void handleRTProgDisconnect();
 
-    bool uploadProg();
     void onConnectSuccess();
+
 protected:
     bool m_noDisconnectedAccept;
 

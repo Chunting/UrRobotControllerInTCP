@@ -12,6 +12,7 @@
 #include <memory>
 #include <thread>
 #include <QSemaphore>
+#include "CobotMotoman.h"
 #include "motoman_robot_state.h"
 
 //TODO DONE

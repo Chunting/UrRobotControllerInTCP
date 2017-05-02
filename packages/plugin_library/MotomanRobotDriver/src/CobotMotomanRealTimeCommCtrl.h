@@ -20,9 +20,9 @@ public:
     CobotMotomanRealTimeComm* motoman;
     std::condition_variable& cond_msg;
 public:
-    CobotMotomanRealTimeCommCtrl(std::condition_variable& msg, const QString& hostIp, QObject* parent = nullptr)
+    CobotMotomanRealTimeCommCtrl(std::condition_variable& msg, const QString& robotIp, QObject* parent = nullptr)
             : QObject(parent), cond_msg(msg){
-        motoman = new CobotMotomanRealTimeComm(msg, hostIp);
+        motoman = new CobotMotomanRealTimeComm(msg, robotIp);
         motoman->moveToThread(&workerThread);
         connect(&workerThread, &QThread::finished, motoman, &QObject::deleteLater);
         connect(this, &CobotMotomanRealTimeCommCtrl::start, motoman, &CobotMotomanRealTimeComm::start);

@@ -6,7 +6,7 @@
 #include "MotomanRealTimeDriver.h"
 #include <extra2.h>
 #include <cobotsys_abstract_factory_macro.h>
-
+//TODO FINISH
 COBOTSYS_FACTORY_BEGIN(MotomanRobotDriverFactory)
         COBOTSYS_FACTORY_EXPORT(MotomanRealTimeDriver)
 COBOTSYS_FACTORY_END(MotomanRobotDriverFactory, "1.0")
