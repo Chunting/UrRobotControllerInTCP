@@ -40,6 +40,9 @@ void FileFinder::loadDataPaths() {
     std::string app_path = QCoreApplication::applicationDirPath().toLocal8Bit().constData();
     addSearchPath(app_path + "/../data", Data);
     addSearchPath(app_path + "/../plugins", Plugin);
+#ifndef WIN32
+    addSearchPath("../../data", Data);
+#endif
 
     COBOT_LOG.message("File Finder") << "Current Path: " << realPathOf(".");
 }

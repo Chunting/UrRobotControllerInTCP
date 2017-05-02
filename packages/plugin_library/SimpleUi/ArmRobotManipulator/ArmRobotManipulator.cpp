@@ -341,13 +341,7 @@ void ArmRobotManipulator::goTarget(const std::vector<double>& targetq) {
     updateTargetQToUi();
 
     if (m_ptrRobot) {
-        auto log = COBOT_LOG.message("Target");
-        for (size_t i = 0; i < m_targetToGo.size(); i++) {
-            log << std::setw(5) << std::setprecision(5) << m_targetToGo[i] / CV_PI * 180;
-            if (i + m_targetToGo.size())
-                log << ", ";
-        }
-
+        COBOT_LOG.message("Target") << putfixedfloats(6, 1, m_targetToGo, 180 / M_PI);
         m_ptrRobot->move(m_targetToGo);
     }
 }

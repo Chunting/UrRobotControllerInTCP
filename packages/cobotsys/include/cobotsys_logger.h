@@ -20,6 +20,50 @@
 #include <boost/format.hpp>
 
 std::ostream& operator<<(std::ostream& oss, const std::vector<double>& vals);
+
+
+struct _Setfixedfloat {
+    int width;
+    int precision;
+};
+
+template<class T>
+struct _Putfixedfloats {
+    int width;
+    int precision;
+    double factor;
+    const std::vector<T>& vals;
+};
+
+inline _Setfixedfloat setfixedfloat(int w, int p) { return {w, p}; }
+
+template<class T>
+_Putfixedfloats<T>
+putfixedfloats(int w, int p, const std::vector<T>& v, double factor = 1) {
+    return {w, p, factor, v};
+}
+
+template<typename _CharT, typename _Traits>
+std::basic_ostream<_CharT, _Traits>& operator<<(std::basic_ostream<_CharT, _Traits>& __os, _Setfixedfloat __f) {
+    __os.setf(std::basic_ostream<_CharT, _Traits>::fixed);
+    __os.precision(__f.precision);
+    __os << std::setw(__f.width);
+    return __os;
+}
+
+template<typename _CharT, typename _Traits, class T>
+std::basic_ostream<_CharT, _Traits>& operator<<(std::basic_ostream<_CharT, _Traits>& __os, _Putfixedfloats<T> __f) {
+    auto old_precision = __os.precision();
+    for (size_t i = 0; i < __f.vals.size(); i++) {
+        __os << setfixedfloat(__f.width, __f.precision) << __f.vals[i] * __f.factor;
+        if (i + 1 < __f.vals.size()) {
+            __os << ", ";
+        }
+    }
+    __os.precision(old_precision);
+    return __os;
+}
+
 namespace cobotsys {
 
 enum class LoggerLevel {
