@@ -6,7 +6,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-add_subdirectory(orocos_kdl)
+
 # 貌似如果使用AUTOMOC，需要把Qt5Core这个引用进来。这个find_package是必须的。
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Gui REQUIRED)

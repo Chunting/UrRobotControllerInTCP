@@ -9,7 +9,7 @@
 #include <extra2.h>
 #include "KinematicSolver.h"
 #include <cobotsys_file_finder.h>
-#include "../orocos_kdl/src/frames_io.hpp"
+#include "frames_io.hpp"
 using namespace cobotsys;
 using namespace std;
 using namespace KDL;

@@ -9,9 +9,9 @@
 
 #include "cobotsys_abstract_kinematic_solver.h"
 #include <QObject>
-#include "../orocos_kdl/src/chain.hpp"
-#include "../orocos_kdl/src/chainiksolverpos_lma.hpp"
-#include "../orocos_kdl/src/chainfksolverpos_recursive.hpp"
+#include "chain.hpp"
+#include "chainiksolverpos_lma.hpp"
+#include "chainfksolverpos_recursive.hpp"
 
 using namespace cobotsys;
 class KinematicSolver : public cobotsys::AbstractKinematicSolver {
