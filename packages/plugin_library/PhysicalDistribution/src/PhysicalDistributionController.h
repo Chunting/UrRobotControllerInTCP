@@ -55,6 +55,8 @@ protected:
 
     void onButtonTestPicker();
     void onButtonTestPlacer();
+    void onButtonTestTask0_1();
+    void onButtonCancelCurrentTask();
 
     void rendererDebugImage();
 
@@ -114,6 +116,7 @@ protected:
     BinObjGrabPose m_testPickerPose;
     void _doTestActions();
 
+    bool m_cancelCurrentTask;
 
     Ui::PhysicalDistributionController ui;
 };

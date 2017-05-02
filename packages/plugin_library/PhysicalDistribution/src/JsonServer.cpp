@@ -17,6 +17,8 @@ JsonServer::JsonServer(QObject* parent)
         COBOT_LOG.info() << "JsonServer listening on port" << 45454;
     }
 
+    connect(this, &JsonServer::apiTaskUpdate, this, &JsonServer::replyTaskStage);
+
     m_acceptCmdKeys.push_back("START");
     m_acceptCmdKeys.push_back("STOP");
     m_acceptCmdKeys.push_back("PUSH_TASK");
@@ -202,13 +204,19 @@ void JsonServer::clearJsonSeq(const QJsonObject& jsonObject) {
 }
 
 bool JsonServer::appendTask(const QJsonObject& jsonObject) {
+    std::lock_guard<std::recursive_mutex> lockGuard(m_mutex);
+
     TaskInfo taskInfo;
     taskInfo.id = jsonObject["ID"].toString();
     taskInfo.objFrom = jsonObject["OBJ_FROM"].toString();
     taskInfo.objTo = jsonObject["OBJ_TO"].toString();
     taskInfo.objInfo = jsonObject["OBJ_INFO"].toString();
 
-    for (auto& iter : m_taskQueue) {
+    auto taskQueue = m_taskQueue;
+    if (m_curTaskValid) {
+        taskQueue.push_back(m_curTask);
+    }
+    for (auto& iter : taskQueue) {
         if (iter.id == taskInfo.id) {
             COBOT_LOG.debug() << "a new Task with same id that already in queue.";
             return false;
@@ -242,6 +250,8 @@ void JsonServer::updateTaskStatus() {
             break;
         case TaskStage::DropFinish:m_curTaskStage = TaskStage::End;
             break;
+        case TaskStage::PickPlaceFailure:m_curTaskStage = TaskStage::PickPlaceFailure;
+            break;
         case TaskStage::End: pickNextTask();
             break;
         }
@@ -262,6 +272,8 @@ void JsonServer::reportCurStatus() {
             break;
         case TaskStage::DropFinish:rjson["STATUS"] = "TASK_DROP_FINISH";
             break;
+        case TaskStage::PickPlaceFailure:rjson["STATUS"] = "TASK_FAIL";
+            break;
         case TaskStage::End:rjson["STATUS"] = "TASK_END";
             break;
         }
@@ -271,16 +283,50 @@ void JsonServer::reportCurStatus() {
 }
 
 bool JsonServer::api_pickTask(JsonServer::TaskInfo& taskInfo) {
-    //TODO finish this function later
-    taskInfo.id = "ass";
-    taskInfo.objFrom = "a";
-    taskInfo.objTo = "b";
-    taskInfo.objInfo = "test";
-    return false;
+    std::lock_guard<std::recursive_mutex> lockGuard(m_mutex);
+
+    pickNextTask();
+    taskInfo = m_curTask;
+    return m_curTaskValid;
 }
 
 void JsonServer::api_setupTaskStage(const JsonServer::TaskInfo& taskInfo, JsonServer::TaskStage taskStage) {
-    //TODO
+    std::lock_guard<std::recursive_mutex> lockGuard(m_mutex);
+
+    Q_EMIT apiTaskUpdate(taskInfo.id, (int) taskStage);
+}
+
+void JsonServer::replyTaskStage(const QString& taskId, int taskStage) {
+    QJsonObject rjson;
+    rjson["TASK_ID"] = taskId;
+    switch ((TaskStage) taskStage) {
+    case TaskStage::Begin:rjson["STATUS"] = "TASK_BEGIN";
+        break;
+    case TaskStage::PickFinish:rjson["STATUS"] = "TASK_PICK_FINISH";
+        break;
+    case TaskStage::DropFinish:rjson["STATUS"] = "TASK_DROP_FINISH";
+        break;
+    case TaskStage::PickPlaceFailure:rjson["STATUS"] = "TASK_FAIL";
+        break;
+    case TaskStage::End:rjson["STATUS"] = "TASK_END";
+        break;
+    }
+    if (rjson.contains("STATUS")) {
+        COBOT_LOG.debug() << "Task :" << std::setw(8) << taskId << ", " << rjson["STATUS"].toString();
+        replyJson(rjson);
+    }
+}
+
+void JsonServer::api_debugTaskOnce(const QString& from_, const QString& to_) {
+    std::lock_guard<std::recursive_mutex> lockGuard(m_mutex);
+
+    QJsonObject task;
+    task["ID"] = "12345678";
+    task["OBJ_FROM"] = from_;
+    task["OBJ_TO"] = to_;
+    task["OBJ_INFO"] = "box";
+
+    appendTask(task);
 }
 
 
