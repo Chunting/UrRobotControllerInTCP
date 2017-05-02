@@ -56,9 +56,9 @@ bool PhysicalDistributionController::start() {
     bool success = false;
     if (m_ptrRobot) {
         success = m_ptrRobot->start();
-        if (success) {
+        if (success && !m_ptrCameraMaster->isOpened()) {
             success = m_ptrCameraMaster->open();
-            if (success) {
+            if (success && !m_mainTaskThread.joinable()) {
                 m_numImageCaptured = 0;
                 m_loop = true;
                 m_mainTaskThread = std::thread(&PhysicalDistributionController::mainLoop, this);
@@ -99,6 +99,7 @@ void PhysicalDistributionController::onArmRobotConnect() {
 void PhysicalDistributionController::onArmRobotDisconnect() {
     std::lock_guard<std::mutex> lockctx(m_mutex);
     m_robotConnected = false;
+    COBOT_LOG.notice() << "Robot Driver Disconnected.";
 }
 
 void PhysicalDistributionController::onArmRobotStatusUpdate(const ArmRobotStatusPtr& ptrRobotStatus) {
@@ -332,10 +333,12 @@ cv::Mat toGray(const cv::Mat& ir) {
 void PhysicalDistributionController::_debugImages() {
     //m_matViewer->getMatMerger().updateMat("kin2color", m_images[0].image);
 
-    m_matViewer->getMatMerger().updateMat("depth", toColor(m_images[3].image));
-    m_matViewer->getMatMerger().updateMat("ir", m_images[4].image);
+    if (m_images.size() >= 5) {
+        m_matViewer->getMatMerger().updateMat("depth", toColor(m_images[3].image));
+        m_matViewer->getMatMerger().updateMat("ir", m_images[4].image);
 
-    m_ptrDetector->debugMat("sss", m_images[4].image);
+        m_ptrDetector->debugMat("sss", m_images[4].image);
+    }
     Q_EMIT debugImageUpdated();
 }
 
