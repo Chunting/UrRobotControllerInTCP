@@ -16,3 +16,5 @@ file(GLOB ${PROJECT_NAME}_files src/* main_res.qrc)
 add_executable(${PROJECT_NAME} ${${PROJECT_NAME}_files})
 
 target_link_libraries(${PROJECT_NAME} cobotsys)
+
+install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION bin RUNTIME DESTINATION bin)
