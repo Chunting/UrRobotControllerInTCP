@@ -215,10 +215,12 @@ bool ObjectGroup::_initImpl(const QJsonObject& jsonConfig) {
         std::string objectId = objConfig["objectId"].toString().toLocal8Bit().constData();
         std::string objectKey = objConfig["objectKey"].toString().toLocal8Bit().constData();
         if (objectId.empty() || objectKey.empty()) {// 对象的ID与Key为空，不合法
+            COBOT_LOG.error() << "Invalid JSON Config: objectId or objectKey !!!EMPTY!!!";
             return false;
         }
 
         if (m_idKeys.find(objectId) != m_idKeys.end()) { // 有相同ID的对象，不合法
+            COBOT_LOG.error() << "Invalid JSON Config: Found Same ID";
             return false;
         }
         m_idKeys[objectId] = objectKey;
@@ -233,7 +235,7 @@ bool ObjectGroup::_initImpl(const QJsonObject& jsonConfig) {
 
         auto pObject = GlobalObjectFactory::instance()->createObject(factory, type);
         if (pObject == nullptr) {
-            COBOT_LOG.warning() << "Fail to create: " << factory << ", " << type;
+            COBOT_LOG.error() << "Fail To Create: " << factory << ", " << type;
             return false;
         }
 
@@ -241,7 +243,7 @@ bool ObjectGroup::_initImpl(const QJsonObject& jsonConfig) {
         if (objConfig.contains("config")) {
             auto configPath = objConfig["config"].toString();
             if (!pObject->setup(configPath)) {
-                COBOT_LOG.warning() << "Fail to setup: " << factory << ", " << type << ", " << configPath;
+                COBOT_LOG.error() << "Fail to setup: " << factory << ", " << type << ", " << configPath;
                 return false;
             }
         }
