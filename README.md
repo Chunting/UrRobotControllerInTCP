@@ -9,6 +9,8 @@
 2. 在环境变量里, `.bashrc`的最后一行加上
     `export QT5_INSTALL_PATH=/opt/Qt5.7.1/5.7/gcc_64`
 3. 如果需要支持Kinect2相机，那么需要编译安装freenect2
+4. Linux下进入编译输出目录，make doc可以生成文档
+5. Linux下进入编译输出目录，make package可以生成安装包(Linux下是解压即可以使用)
 
 
 # 文件目录结构

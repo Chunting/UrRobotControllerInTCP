@@ -778,7 +778,7 @@ RECURSIVE              = YES
 # Note that relative paths are relative to the directory from which doxygen is
 # run.
 
-EXCLUDE                = @CMAKE_SOURCE_DIR@/packages/header_only_libraries @CMAKE_SOURCE_DIR@/packages/KinematicSolver/orocos_kdl
+EXCLUDE                = @CMAKE_SOURCE_DIR@/packages/header_only_libraries @CMAKE_SOURCE_DIR@/packages/KinematicSolver/orocos_kdl @CMAKE_SOURCE_DIR@/packages/depends @CMAKE_SOURCE_DIR@/packages/header_only_libraries
 
 # The EXCLUDE_SYMLINKS tag can be used to select whether or not files or
 # directories that are symbolic links (a Unix file system feature) are excluded

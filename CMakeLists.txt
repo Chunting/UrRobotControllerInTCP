@@ -58,28 +58,24 @@ ENDMACRO()
 
 # 文档生成
 find_package(Doxygen QUIET)
-if (BUILD_DOC)
-    if (DOXYGEN_FOUND)
-        # set input and output files
-        set(DOXYGEN_IN ${CMAKE_SOURCE_DIR}/docs/Doxyfile.in)
-        set(DOXYGEN_OUT ${CMAKE_BINARY_DIR}/Doxyfile)
+if (DOXYGEN_FOUND)
+    # set input and output files
+    set(DOXYGEN_IN ${CMAKE_SOURCE_DIR}/docs/Doxyfile.in)
+    set(DOXYGEN_OUT ${CMAKE_BINARY_DIR}/Doxyfile)
 
-        # request to configure the file
-        configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} @ONLY)
-        message("Doxygen build started")
+    # request to configure the file
+    configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} @ONLY)
+    message("Doxygen build started")
 
-        # note the option ALL which allows to build the docs together with the application
-        add_custom_target(doc_doxygen ALL
-                COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
-                WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-                COMMENT "Generating API documentation with Doxygen"
-                VERBATIM)
-        install(DIRECTORY ${CMAKE_BINARY_DIR}/docs/ DESTINATION docs COMPONENT doc)
-    else ()
-        message("Doxygen need to be installed to generate the doxygen documentation")
-    endif ()
+    # note the option ALL which allows to build the docs together with the application
+    add_custom_target(doc
+            COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+            COMMENT "Generating API documentation with Doxygen"
+            VERBATIM)
+    install(DIRECTORY ${CMAKE_BINARY_DIR}/docs/ DESTINATION docs COMPONENT doc)
 else ()
-    message(STATUS "Document Generation ------------------------------------OFF")
+    message("Doxygen need to be installed to generate the doxygen documentation")
 endif ()
 
 
@@ -139,7 +135,6 @@ function(build_sample path_to_package)
         add_subdirectory(${path_to_package})
     endif ()
 endfunction()
-
 
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/packages/header_only_libraries)
