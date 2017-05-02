@@ -22,9 +22,9 @@ void MainWindow::setupUi() {
     m_uiCtrlActionGroup->addAction(ui.action_Stop);
     m_uiCtrlActionGroup->setEnabled(false);
     ui.toolBar->addActions(m_uiCtrlActionGroup->actions());
-    connect(ui.action_Start, &QAction::triggered, this, &MainWindow::onStart);
-    connect(ui.action_Pause, &QAction::triggered, this, &MainWindow::onPause);
-    connect(ui.action_Stop, &QAction::triggered, this, &MainWindow::onStop);
+    connect(ui.action_Start, &QAction::triggered, [=](bool c) { if (c) onStart(); });
+    connect(ui.action_Pause, &QAction::triggered, [=](bool c) { if (c) onPause(); });
+    connect(ui.action_Stop, &QAction::triggered, [=](bool c) { if (c) onStop(); });
 
     ui.toolBar->addSeparator();
     ui.toolBar->addAction(ui.action_Show_Logger);
@@ -80,6 +80,8 @@ void MainWindow::onViewLogger() {
 }
 
 void MainWindow::onCreateBinpickingPhyDist() {
+    unCheckController();
+    onStop();
     QString factory = "PhysicalDistributionFactory, Ver 1.0";
     QString type = "PhysicalDistributionController";
     auto dynObject = GlobalObjectFactory::instance()->createObject(factory, type);
@@ -138,4 +140,10 @@ void MainWindow::closeEvent(QCloseEvent* event) {
     takeCentralWidget();
     m_loggerWidget->close();
     QWidget::closeEvent(event);
+}
+
+void MainWindow::unCheckController() {
+    ui.action_Stop->setChecked(false);
+    ui.action_Pause->setChecked(false);
+    ui.action_Start->setChecked(false);
 }

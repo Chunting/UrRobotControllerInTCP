@@ -39,6 +39,7 @@ protected:
 
     void setWidget(std::shared_ptr<AbstractObject>& shared_obj);
 
+    void unCheckController();
 
 protected:
     virtual void closeEvent(QCloseEvent* event);
