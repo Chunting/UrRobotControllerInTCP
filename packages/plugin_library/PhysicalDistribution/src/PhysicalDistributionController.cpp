@@ -295,6 +295,10 @@ void PhysicalDistributionController::setupUi() {
 }
 
 void PhysicalDistributionController::onButtonTestPicker() {
+    /**
+     * 这里，全部使用bool标志是为了让移动操作在mainLoop()里进行运动控制
+     * 这里仅仅只是赋值。
+     */
     if (m_taskEmpty) {
         m_doTestPicker = true;
         m_testPickerPose.target_info = "TEST";

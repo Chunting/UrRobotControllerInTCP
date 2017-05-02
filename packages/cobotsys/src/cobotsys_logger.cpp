@@ -43,10 +43,10 @@ Logger::MessageWrapper::MessageWrapper(const std::string& e, Logger& r, LoggerLe
 
     oss << "[";
     oss << std::setw(5) << toString(level);
-    oss << "]";
+    oss << "] ";
 
 
-    oss << " " << tm.tm_year + 1900 << "-"
+    oss << tm.tm_year + 1900 << "-"
         << std::setfill('0') << std::setw(2) << tm.tm_mon + 1 << "-"
         << std::setw(2) << tm.tm_mday << " "
         << std::setw(2) << tm.tm_hour << ":"
@@ -57,7 +57,7 @@ Logger::MessageWrapper::MessageWrapper(const std::string& e, Logger& r, LoggerLe
     if (e.size()) {
         oss << "[";
         oss << std::setw(logger.prefixWidth()) << e;
-        oss << "]";
+        oss << "] ";
     }
 }
 
