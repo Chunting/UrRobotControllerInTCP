@@ -64,6 +64,14 @@ public:
 };
 
 
+class ArmRobotJointTargetFilter {
+public:
+    ArmRobotJointTargetFilter();
+    virtual ~ArmRobotJointTargetFilter();
+
+    virtual void applyFilter(std::vector<double>& target_, const ArmRobotStatusPtr& ptrRobotStatus) = 0;
+};
+
 /**
  *
  * 实时手臂，多关节机器人驱动接口，提供Joint关节脚驱动。
@@ -121,6 +129,13 @@ public:
      * 获取当前机器人的关节角数据，这个是给UI使用的。数据值并不是最新的。
      */
     virtual std::vector<double> getRobotJointQ() = 0;
+
+    /**
+     *
+     * @param filter 指向有Filter接口的对象。
+     * @return false表示当前实现并不支持这个功能
+     */
+    virtual bool setTargetJointFilter(const std::shared_ptr<ArmRobotJointTargetFilter>& filter);
 };
 /**
  * @}

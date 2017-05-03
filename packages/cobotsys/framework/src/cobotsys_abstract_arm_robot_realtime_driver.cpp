@@ -14,10 +14,22 @@ AbstractArmRobotRealTimeDriver::~AbstractArmRobotRealTimeDriver() {
     INFO_DESTRUCTOR(this);
 }
 
+bool AbstractArmRobotRealTimeDriver::setTargetJointFilter(const std::shared_ptr<ArmRobotJointTargetFilter>& filter) {
+    COBOT_LOG.debug() << "setTargetJointFilter is not Implement";
+    return false;
+}
+
 ArmRobotRealTimeStatusObserver::ArmRobotRealTimeStatusObserver() {
 }
 
 ArmRobotRealTimeStatusObserver::~ArmRobotRealTimeStatusObserver() {
+    INFO_DESTRUCTOR(this);
+}
+
+ArmRobotJointTargetFilter::ArmRobotJointTargetFilter() {
+}
+
+ArmRobotJointTargetFilter::~ArmRobotJointTargetFilter() {
     INFO_DESTRUCTOR(this);
 }
 }

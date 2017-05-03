@@ -32,6 +32,7 @@ public:
     virtual QString getRobotUrl();
     virtual void clearAttachedObject();
     virtual std::vector<double> getRobotJointQ();
+    virtual bool setTargetJointFilter(const std::shared_ptr<ArmRobotJointTargetFilter>& filter);
 protected:
     void robotStatusWatcher();
 
@@ -55,7 +56,12 @@ protected:
     double m_attr_servoj_lookahead;
     double m_attr_servoj_gain;
 
+    /**
+     * 这以下变量是外部设置的。在 clearAttachedObject 函数调用里需要删除。
+     */
     std::vector<std::shared_ptr<ArmRobotRealTimeStatusObserver> > m_observers;
+    std::shared_ptr<ArmRobotJointTargetFilter> m_jointTargetFilter;
+    //////////////////////////////////////////////////////////////////
 
     std::vector<double> m_curReqQ;
     bool m_curReqQValid;
@@ -68,6 +74,8 @@ protected:
 
     std::shared_ptr<CobotUrDigitIoAdapter> m_digitInput;
     std::shared_ptr<CobotUrDigitIoAdapter> m_digitOutput;
+
+
 
     std::shared_ptr<bool> m_objectAlive;
 };
