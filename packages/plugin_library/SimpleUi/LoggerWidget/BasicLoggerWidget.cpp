@@ -8,6 +8,7 @@
 #include "BasicLoggerWidget.h"
 
 BasicLoggerWidget::BasicLoggerWidget() {
+    m_autoScrollBottom = true;
     setupUi();
 }
 
@@ -25,7 +26,9 @@ void BasicLoggerWidget::updateTextToUI() {
         m_textCursor.movePosition(QTextCursor::End, QTextCursor::MoveAnchor);
         m_textCursor.insertText(m_cachedMessage);
 
-        m_plainTextEdit->setTextCursor(m_textCursor);
+        if (m_autoScrollBottom) {
+            m_plainTextEdit->setTextCursor(m_textCursor);
+        }
         m_cachedMessage.clear();
     }
 }
@@ -76,6 +79,11 @@ void BasicLoggerWidget::customMenu() {
 
     auto action = menu->addAction(tr("Clear"));
     connect(action, &QAction::triggered, [=]() { m_plainTextEdit->clear(); });
+
+    action = menu->addAction(tr("Auto Scroll Bottom"));
+    action->setCheckable(true);
+    action->setChecked(m_autoScrollBottom);
+    connect(action, &QAction::triggered, [=](bool bChecked) { m_autoScrollBottom = bChecked; });
 
     menu->exec(QCursor::pos());
 }

@@ -15,6 +15,7 @@ PhysicalDistributionController::PhysicalDistributionController() {
     m_taskEmptyPrint = true;
     m_taskEmpty = true;
     m_taskEmptyDebugAction = false;
+    m_cancelCurrentTask = false;
     m_jsonServer = new JsonServer(this);
     connect(m_jsonServer, &JsonServer::reqStart, this, &PhysicalDistributionController::start);
     connect(m_jsonServer, &JsonServer::reqStop, this, &PhysicalDistributionController::stop);
@@ -56,9 +57,12 @@ bool PhysicalDistributionController::start() {
     bool success = false;
     if (m_ptrRobot) {
         success = m_ptrRobot->start();
+        if (!success) COBOT_LOG.error() << "Fail To Start Robot!";
+
         if (success && !m_ptrCameraMaster->isOpened()) {
             success = m_ptrCameraMaster->open();
-            if (success && !m_mainTaskThread.joinable()) {
+            if (!success) COBOT_LOG.error() << "Fail To Start Camera!";
+            if (!m_mainTaskThread.joinable()) {
                 m_numImageCaptured = 0;
                 m_loop = true;
                 m_mainTaskThread = std::thread(&PhysicalDistributionController::mainLoop, this);
@@ -89,6 +93,8 @@ void PhysicalDistributionController::stop() {
     if (m_ptrMover) {
         m_ptrMover->clearAll();
     }
+
+    cv::destroyAllWindows();
 }
 
 void PhysicalDistributionController::onArmRobotConnect() {
@@ -181,39 +187,51 @@ void PhysicalDistributionController::mainLoop() {
     JsonServer::TaskInfo taskInfo;
 
     m_taskEmptyPrint = true;
+    bool visionSuccess = true;
 
+    COBOT_LOG.notice() << "PhysicalDistributionController::mainLoop Started.";
     while (m_loop) {
         ACTION_STEP();
-        if (!m_jsonServer->api_pickTask(taskInfo)) { // No task in server queue.
-            m_taskEmpty = true;
-            if (m_taskEmptyPrint) {
-                m_taskEmptyPrint = false;
-                COBOT_LOG.notice() << "No Task In Queue.";
-            }
-            if (m_taskEmptyDebugAction) {
-                _doTestActions();
-                m_taskEmptyDebugAction = false;
-            }
+        if (visionSuccess) { // 只有前一个任务处理成功，才可以处理下一个任务。
+            if (m_jsonServer->api_pickTask(taskInfo)) {
+                COBOT_LOG.notice() << "Task: " << taskInfo.objFrom << " -> " << taskInfo.objTo;
+            } else { // No task in server queue.
+                m_taskEmpty = true;
+                if (m_taskEmptyPrint) {
+                    m_taskEmptyPrint = false;
+                    COBOT_LOG.notice() << "No Task In Queue.";
+                }
+                if (m_taskEmptyDebugAction) {
+                    _doTestActions();
+                    m_taskEmptyDebugAction = false;
+                }
 
-            // Try to preview image;
-            _stepCaptureImage(uniqueLock);
+                // Try to preview image;
+                _stepCaptureImage(uniqueLock);
 
-            // Sleep, and Continue
-            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+                // Sleep, and Continue
+                std::this_thread::sleep_for(std::chrono::milliseconds(10));
+                continue;
+            }
+            m_taskEmptyPrint = true;
+
+            // Notify Task, To WebSocket Interface.
+            m_jsonServer->api_setupTaskStage(taskInfo, JsonServer::TaskStage::Begin);
+        } else if (m_cancelCurrentTask) { // 终止当前任务
+            m_cancelCurrentTask = false;
+            m_jsonServer->api_setupTaskStage(taskInfo, JsonServer::TaskStage::PickPlaceFailure);
+            m_jsonServer->api_setupTaskStage(taskInfo, JsonServer::TaskStage::End);
+            visionSuccess = true;
             continue;
         }
-        m_taskEmptyPrint = true;
 
-        // Notify Task, To WebSocket Interface.
-        m_jsonServer->api_setupTaskStage(taskInfo, JsonServer::TaskStage::Begin);
 
         // First, capture camera image.
         if (!_stepCaptureImage(uniqueLock)) break;
 
         // 调用视觉处理函数
-        bool visionSuccess = m_ptrDetector->processVisionImage(m_images);
+        visionSuccess = m_ptrDetector->processVisionImage(m_images);
         if (visionSuccess) {
-
             std::vector<BinObjGrabPose> results;
             ACTION_STEP(m_ptrDetector->getPickObjects(results));
 
@@ -232,9 +250,11 @@ void PhysicalDistributionController::mainLoop() {
                 m_jsonServer->api_setupTaskStage(taskInfo, JsonServer::TaskStage::DropFinish);
             }
             ACTION_STEP();
+            m_jsonServer->api_setupTaskStage(taskInfo, JsonServer::TaskStage::End);
+        } else {
+            COBOT_LOG.warning() << "Vision Detector Fail to Compute Target Grab Pose. Retry...";
         }
         ACTION_STEP();
-        m_jsonServer->api_setupTaskStage(taskInfo, JsonServer::TaskStage::End);
     }
     COBOT_LOG.info() << "Main loop thread finished.";
 }
@@ -261,11 +281,20 @@ void PhysicalDistributionController::onCameraStreamUpdate(const CameraFrame& cam
 }
 
 bool PhysicalDistributionController::_stepCaptureImage(std::unique_lock<std::mutex>& uniqueLock) {
+    static int num_print = 0;
     m_imageUpdated = false;
     m_images.clear();
     if (!m_ptrCameraMaster->capture(1000)) {
-        COBOT_LOG.error() << "Fail to capture image, " << m_numImageCaptured;
+        if (num_print < 1) {
+            COBOT_LOG.error() << "Fail to capture image, Num Captured: " << m_numImageCaptured;
+            num_print++;
+        }
+        m_imageUpdated = true; // For Debug Only
+
+
         // TODO, here re-connect camera.
+    } else {
+        num_print = 0;
     }
 
     if (m_imageUpdated) {
@@ -292,6 +321,13 @@ void PhysicalDistributionController::setupUi() {
     connect(ui.btnTESTPlacer, &QPushButton::released, this, &PhysicalDistributionController::onButtonTestPlacer);
     connect(this, &PhysicalDistributionController::debugImageUpdated,
             this, &PhysicalDistributionController::rendererDebugImage);
+
+    connect(ui.btnTESTTask_0_1, &QPushButton::released, this, &PhysicalDistributionController::onButtonTestTask0_1);
+    connect(ui.btnTESTTask_0_2, &QPushButton::released, [=]() { m_jsonServer->api_debugTaskOnce("0", "2"); });
+    connect(ui.btnTESTTask_0_3, &QPushButton::released, [=]() { m_jsonServer->api_debugTaskOnce("0", "3"); });
+    connect(ui.btnTESTTask_0_4, &QPushButton::released, [=]() { m_jsonServer->api_debugTaskOnce("0", "4"); });
+
+    connect(ui.btnTaskCancel, &QPushButton::released, this, &PhysicalDistributionController::onButtonCancelCurrentTask);
 }
 
 void PhysicalDistributionController::onButtonTestPicker() {
@@ -342,12 +378,24 @@ void PhysicalDistributionController::_debugImages() {
         m_matViewer->getMatMerger().updateMat("ir", m_images[4].image);
 
         m_ptrDetector->debugMat("sss", m_images[4].image);
+    } else {
+        if (m_images.size()) {
+            m_ptrDetector->debugMat("Sample", m_images[0].image);
+        }
     }
     Q_EMIT debugImageUpdated();
 }
 
 void PhysicalDistributionController::rendererDebugImage() {
     m_ptrDetector->debugRenderer();
+}
+
+void PhysicalDistributionController::onButtonTestTask0_1() {
+    m_jsonServer->api_debugTaskOnce("0", "1");
+}
+
+void PhysicalDistributionController::onButtonCancelCurrentTask() {
+    m_cancelCurrentTask = true;
 }
 
 

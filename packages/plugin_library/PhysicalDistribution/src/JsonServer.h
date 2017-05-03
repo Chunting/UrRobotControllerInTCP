@@ -16,6 +16,7 @@
 #include <map>
 #include <deque>
 #include <QTimer>
+#include <mutex>
 
 
 QString generateErrorReply(const QString& errmsg);
@@ -34,6 +35,7 @@ public:
         Begin,
         PickFinish,
         DropFinish,
+        PickPlaceFailure,
         End,
     };
 public:
@@ -43,12 +45,17 @@ public:
     bool api_pickTask(TaskInfo& taskInfo);
     void api_setupTaskStage(const TaskInfo& taskInfo, TaskStage taskStage);
 
+    void api_debugTaskOnce(const QString& from_, const QString& to_);
+
 Q_SIGNALS:
     void reqStart();
     void reqStop();
     void reqTask();
 
+    void apiTaskUpdate(const QString& taskId, int taskStatus);
+
 protected:
+    void replyTaskStage(const QString& taskId, int taskStage);
     void onNewConnection();
 
     void processTextMessage(const QString& message);
@@ -90,6 +97,7 @@ protected:
     std::vector<QString> m_acceptCmdKeys;
 
 
+    std::recursive_mutex m_mutex;
 
     std::deque<TaskInfo> m_taskQueue;
     QTimer* m_simulatorTimer;

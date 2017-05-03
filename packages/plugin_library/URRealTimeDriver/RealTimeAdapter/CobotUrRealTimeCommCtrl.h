@@ -9,6 +9,7 @@
 #include <QObject>
 #include <QThread>
 #include <cobotsys_logger.h>
+#include <extra2.h>
 #include "CobotUrRealTimeComm.h"
 
 class CobotUrRealTimeCommCtrl : public QObject {
@@ -18,11 +19,13 @@ protected:
 
 public:
     CobotUrRealTimeComm* ur;
-    std::condition_variable& cond_msg;
+    std::shared_ptr<std::condition_variable> cond_msg;
 public:
-    CobotUrRealTimeCommCtrl(std::condition_variable& msg, const QString& hostIp, QObject* parent = nullptr)
-            : QObject(parent), cond_msg(msg){
-        ur = new CobotUrRealTimeComm(msg, hostIp);
+    CobotUrRealTimeCommCtrl(std::shared_ptr<std::condition_variable>& msg,
+                            const QString& hostIp, QObject* parent = nullptr)
+            : QObject(parent) {
+        cond_msg = msg;
+        ur = new CobotUrRealTimeComm(*cond_msg.get(), hostIp);
         ur->moveToThread(&workerThread);
         connect(&workerThread, &QThread::finished, ur, &QObject::deleteLater);
         connect(this, &CobotUrRealTimeCommCtrl::start, ur, &CobotUrRealTimeComm::start);
@@ -32,21 +35,21 @@ public:
         workerThread.start();
     }
 
-    ~CobotUrRealTimeCommCtrl(){
+    ~CobotUrRealTimeCommCtrl() {
         workerThread.quit();
         workerThread.wait();
-        COBOT_LOG.info() << "CobotUrRealTimeCommCtrl freed";
+        INFO_DESTRUCTOR(this);
     }
 
-    void startComm(){
+    void startComm() {
         Q_EMIT start();
     }
 
-    void addCommandToQueue(const QByteArray& ba){
+    void addCommandToQueue(const QByteArray& ba) {
         Q_EMIT commandReady(ba);
     }
 
-    void requireStopServoj(){
+    void requireStopServoj() {
         Q_EMIT stopServoj();
     }
 

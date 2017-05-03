@@ -1,23 +1,24 @@
 //
-// Created by 潘绪洋 on 17-3-29.
+// Created by 杨帆 on 17-5-2.
 // Copyright (c) 2017 Wuhan Collaborative Robot Technology Co.,Ltd. All rights reserved.
 //
 
-#ifndef PROJECT_COBOTURDRIVER_H
-#define PROJECT_COBOTURDRIVER_H
+#ifndef COBOT_MOTOMAN_DRIVER_H
+#define COBOT_MOTOMAN_DRIVER_H
 
 #include <QObject>
 #include <QTcpServer>
 #include <QTcpSocket>
-#include "CobotUrRealTimeCommCtrl.h"
-#include "CobotUrCommCtrl.h"
-
-class CobotUrDriver : public QObject {
+#include "CobotMotomanRealTimeCommCtrl.h"
+#include "CobotMotomanCommCtrl.h"
+class CobotMotomanDriver : public QObject {
 Q_OBJECT
 public:
-    CobotUrDriver(std::shared_ptr<std::condition_variable>& msg,
-            const QString& robotAddr, QObject* parent = nullptr);
-    ~CobotUrDriver();
+    CobotMotomanDriver(std::condition_variable& rt_msg_cond,
+                  std::condition_variable& msg_cond,
+                  const QString& robotAddr,
+                  QObject* parent = nullptr);
+    ~CobotMotomanDriver();
 
 
     void startDriver();
@@ -36,8 +37,8 @@ Q_SIGNALS:
 
 
 public:
-    CobotUrCommCtrl* m_urCommCtrl;
-    CobotUrRealTimeCommCtrl* m_urRealTimeCommCtrl;
+    CobotMotomanCommCtrl* m_motomanCommCtrl;
+    CobotMotomanRealTimeCommCtrl* m_motomanRealTimeCommCtrl;
 
 protected:
     void handleCommConnected();
@@ -48,6 +49,7 @@ protected:
 
     bool uploadProg();
     void onConnectSuccess();
+
 protected:
     bool m_noDisconnectedAccept;
 
@@ -65,4 +67,4 @@ private:
 };
 
 
-#endif //PROJECT_COBOTURDRIVER_H
+#endif //COBOT_MOTOMAN_DRIVER_H

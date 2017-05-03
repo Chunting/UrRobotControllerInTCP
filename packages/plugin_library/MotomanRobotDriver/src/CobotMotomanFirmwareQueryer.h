@@ -1,32 +1,29 @@
 //
-// Created by 潘绪洋 on 17-3-28.
+// Created by 杨帆 on 17-5-2.
 // Copyright (c) 2017 Wuhan Collaborative Robot Technology Co.,Ltd. All rights reserved.
 //
 
-#ifndef PROJECT_COBOTURFIRMWAREQUERYER_H
-#define PROJECT_COBOTURFIRMWAREQUERYER_H
+#ifndef COBOT_MOTOMAN_FIRMWARE_QUERYER_H
+#define COBOT_MOTOMAN_FIRMWARE_QUERYER_H
 
-#include "../URDriver/robot_state.h"
 #include <QObject>
 #include <memory>
 #include <QTcpSocket>
 #include <cobotsys_logger.h>
-#include "CobotUr.h"
+#include "CobotMotoman.h"
 #include <cobotsys.h>
-#include <extra2.h>
-
-class CobotUrFirmwareQueryer : public QObject {
+#include "motoman_robot_state.h"
+class CobotMotomanFirmwareQueryer : public QObject {
 Q_OBJECT
 
 public:
     QString m_host;
 public:
-    CobotUrFirmwareQueryer(const QString& robotIp = "localhost"){
+    CobotMotomanFirmwareQueryer(const QString& robotIp = "localhost"){
         m_host = robotIp;
     }
 
-    ~CobotUrFirmwareQueryer(){
-        INFO_DESTRUCTOR(this);
+    ~CobotMotomanFirmwareQueryer(){
     }
 
     /**
@@ -39,8 +36,8 @@ public:
         tcpSocket->setSocketOption(QAbstractSocket::LowDelayOption, 1);
         tcpSocket->connectToHost(m_host, 30001);
 
-        if (tcpSocket->waitForConnected(CobotUr::MAX_SOCKET_WAIT_)) {
-            if (tcpSocket->waitForReadyRead(CobotUr::MAX_SOCKET_WAIT_)) {
+        if (tcpSocket->waitForConnected(CobotMotoman::MAX_SOCKET_WAIT_)) {
+            if (tcpSocket->waitForReadyRead(CobotMotoman::MAX_SOCKET_WAIT_)) {
                 auto ba = tcpSocket->read(512);
                 if (robotState) {
                     robotState->unpack((uint8_t*) ba.constData(), ba.size());
@@ -50,10 +47,10 @@ public:
                 return robotState;
             }
         }
-        COBOT_LOG.error() << "CobotUrFirmwareQueryer: " << tcpSocket->errorString();
+        COBOT_LOG.error() << "CobotMotomanFirmwareQueryer: " << tcpSocket->errorString();
         return nullptr;
     }
 };
 
 
-#endif //PROJECT_COBOTURFIRMWAREQUERYER_H
+#endif //COBOT_MOTOMAN_FIRMWARE_QUERYER_H

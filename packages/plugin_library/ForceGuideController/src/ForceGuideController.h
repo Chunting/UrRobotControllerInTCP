@@ -91,6 +91,8 @@ protected:
 
 	//bool m_firstMove;
 	bool m_posReady;
+	bool m_sensorReady;
+	bool m_setVoltage;
 };
 
 

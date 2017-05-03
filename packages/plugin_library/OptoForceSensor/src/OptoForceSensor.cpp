@@ -135,7 +135,7 @@ bool OptoForceSensor::_setup(const QString& configFilePath) {
 }
 
 void OptoForceSensor::handleDriverReady() {
-	COBOT_LOG.info() << "OptoForce Sensor Connect";
+	//COBOT_LOG.info() << "OptoForce Sensor Connect";
 	m_isStarted = true;
 	notify([=](std::shared_ptr<ForceSensorStreamObserver>& observer) {
 		observer->onForceSensorConnect();
@@ -143,7 +143,7 @@ void OptoForceSensor::handleDriverReady() {
 }
 
 void OptoForceSensor::handleDriverDisconnect() {
-	COBOT_LOG.info() << "OptoForce Sensor Disconnect";
+	//COBOT_LOG.info() << "OptoForce Sensor Disconnect";
 	m_isStarted = false;
 	notify([=](std::shared_ptr<ForceSensorStreamObserver>& observer) {
 		observer->onForceSensorDisconnect();

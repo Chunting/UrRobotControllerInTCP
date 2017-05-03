@@ -59,21 +59,34 @@
         <property name="spacing">
          <number>3</number>
         </property>
-        <item row="0" column="0">
+        <item row="6" column="0">
+         <widget class="QPushButton" name="btnTESTTask_0_2">
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>TEST Task 0-2</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
          <widget class="QPushButton" name="btnTESTPicker">
           <property name="text">
            <string>TEST Picker</string>
           </property>
          </widget>
         </item>
-        <item row="1" column="0">
+        <item row="2" column="0">
          <widget class="QPushButton" name="btnTESTPlacer">
           <property name="text">
            <string>TEST Placer</string>
           </property>
          </widget>
         </item>
-        <item row="2" column="0">
+        <item row="3" column="0">
          <spacer name="verticalSpacer">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
@@ -85,6 +98,52 @@
            </size>
           </property>
          </spacer>
+        </item>
+        <item row="8" column="0">
+         <widget class="QPushButton" name="btnTESTTask_0_4">
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>TEST Task 0-4</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="0">
+         <widget class="QPushButton" name="btnTESTTask_0_1">
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>TEST Task 0-1</string>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="0">
+         <widget class="QPushButton" name="btnTESTTask_0_3">
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>TEST Task 0-3</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QPushButton" name="btnTaskCancel">
+          <property name="text">
+           <string>Cancel Task</string>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>

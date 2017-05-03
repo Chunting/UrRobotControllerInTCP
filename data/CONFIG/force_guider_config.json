@@ -1,0 +1,8 @@
+{
+  "robot_object": {
+    "config": "CONFIG/UrRobotConfig/ur5_config.json"
+  },
+  "sensor_object": {
+    "config": "CONFIG/ForceSensorConfig/optoforce_sensor_157_config.json"
+  }
+}

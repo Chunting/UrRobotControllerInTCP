@@ -9,6 +9,7 @@
 #include <QObject>
 #include <QThread>
 #include <cobotsys_logger.h>
+#include <extra2.h>
 #include "CobotUrComm.h"
 
 class CobotUrCommCtrl : public QObject {
@@ -18,9 +19,9 @@ protected:
 
 public:
     CobotUrComm* ur;
-
+    std::condition_variable cond_msg;
 public:
-    CobotUrCommCtrl(std::condition_variable& cond_msg, const QString& hostIp, QObject* parent = nullptr)
+    CobotUrCommCtrl(const QString& hostIp, QObject* parent = nullptr)
             : QObject(parent){
         ur = new CobotUrComm(cond_msg);
         ur->setupHost(hostIp);
@@ -33,7 +34,7 @@ public:
     ~CobotUrCommCtrl(){
         workerThread.quit();
         workerThread.wait();
-        COBOT_LOG.info() << "CobotUrCommCtrl freed";
+        INFO_DESTRUCTOR(this);
     }
 
     void startComm(){

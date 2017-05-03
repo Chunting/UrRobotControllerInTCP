@@ -19,9 +19,10 @@ bool SampleVisionDetector::setup(const QString& configFilePath) {
 
 bool SampleVisionDetector::processVisionImage(const std::vector<VisionInputImage>& images) {
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    return true;
+    return false;
 }
 
 bool SampleVisionDetector::getPickObjects(std::vector<BinObjGrabPose>& result) const {
-    return true;
+    result.clear();
+    return false;
 }

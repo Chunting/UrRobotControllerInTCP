@@ -1,27 +1,25 @@
 //
-// Created by 潘绪洋 on 17-4-18.
+// Created by 杨帆 on 17-5-2.
 // Copyright (c) 2017 Wuhan Collaborative Robot Technology Co.,Ltd. All rights reserved.
 //
 
 #include <cobotsys_logger.h>
-#include "CobotUrDigitIoAdapter.h"
+#include "CobotMotomanDigitIoAdapter.h"
 
-CobotUrDigitIoAdapter::CobotUrDigitIoAdapter() {
+CobotMotomanDigitIoAdapter::CobotMotomanDigitIoAdapter() {
     m_realTimeCommCtrl = nullptr;
     m_isInput = false;
     m_isOutput = false;
-	m_inputIoStatus = 0;
-	m_outputIoStatus = 0;
 }
 
-CobotUrDigitIoAdapter::~CobotUrDigitIoAdapter() {
+CobotMotomanDigitIoAdapter::~CobotMotomanDigitIoAdapter() {
 }
 
-bool CobotUrDigitIoAdapter::setup(const QString& configFilePath) {
+bool CobotMotomanDigitIoAdapter::setup(const QString& configFilePath) {
     return true;
 }
 
-void CobotUrDigitIoAdapter::setIo(DigitIoPorts ioPorts, DigitIoStatus ioStatus) {
+void CobotMotomanDigitIoAdapter::setIo(DigitIoPorts ioPorts, DigitIoStatus ioStatus) {
     if (m_isOutput) {
         if (ioPorts & DigitIoPort::Port_0) setDigitOut(0, ioStatus == DigitIoStatus::Set);
         if (ioPorts & DigitIoPort::Port_1) setDigitOut(1, ioStatus == DigitIoStatus::Set);
@@ -34,7 +32,7 @@ void CobotUrDigitIoAdapter::setIo(DigitIoPorts ioPorts, DigitIoStatus ioStatus) 
     }
 }
 
-DigitIoStatus CobotUrDigitIoAdapter::getIoStatus(DigitIoPort ioPort) {
+DigitIoStatus CobotMotomanDigitIoAdapter::getIoStatus(DigitIoPort ioPort) {
     if (m_isInput) {
         if (m_inputIoStatus & (int) ioPort) {
             return DigitIoStatus::Set;
@@ -43,32 +41,26 @@ DigitIoStatus CobotUrDigitIoAdapter::getIoStatus(DigitIoPort ioPort) {
     return DigitIoStatus::Reset;
 }
 
-bool CobotUrDigitIoAdapter::isDigitInput() const {
+bool CobotMotomanDigitIoAdapter::isDigitInput() const {
     return m_isInput;
 }
 
-bool CobotUrDigitIoAdapter::isDigitOutput() const {
+bool CobotMotomanDigitIoAdapter::isDigitOutput() const {
     return m_isOutput;
 }
 
-void CobotUrDigitIoAdapter::debugIoStatus() {
+void CobotMotomanDigitIoAdapter::debugIoStatus() {
     if (isDigitInput() && m_debugIoLastStatus != m_inputIoStatus) {
-#ifdef DEBUG
         COBOT_LOG.message("Input") << std::hex << setw(8) << m_inputIoStatus;
-#endif // DEBUG
-
         m_debugIoLastStatus = m_inputIoStatus;
     }
     if (isDigitOutput() && m_debugIoLastStatus != m_outputIoStatus) {
-#ifdef DEBUG
         COBOT_LOG.message("Output") << std::hex << setw(8) << m_outputIoStatus;
-#endif // DEBUG
-		
         m_debugIoLastStatus = m_outputIoStatus;
     }
 }
 
-void CobotUrDigitIoAdapter::setDigitOut(int portIndex, bool b) {
+void CobotMotomanDigitIoAdapter::setDigitOut(int portIndex, bool b) {
     char buf[256] = {0};
     if (portIndex < 8) {
         sprintf(buf, "sec setOut():\n\tset_standard_digital_out(%d, %s)\nend\n",
@@ -79,7 +71,7 @@ void CobotUrDigitIoAdapter::setDigitOut(int portIndex, bool b) {
     }
 }
 
-bool CobotUrDigitIoAdapter::setToolVoltage(double v) {
+bool CobotMotomanDigitIoAdapter::setToolVoltage(double v) {
     char buf[256];
     int voltage = (int) v;
     sprintf(buf, "sec setOut():\n\tset_tool_voltage(%d)\nend\n", voltage);
@@ -90,7 +82,7 @@ bool CobotUrDigitIoAdapter::setToolVoltage(double v) {
     return false;
 }
 
-void CobotUrDigitIoAdapter::setUrRealTimeCtrl(CobotUrRealTimeCommCtrl* realTimeCommCtrl) {
+void CobotMotomanDigitIoAdapter::setMotomanRealTimeCtrl(CobotMotomanRealTimeCommCtrl* realTimeCommCtrl) {
     m_realTimeCommCtrl = realTimeCommCtrl;
     if (m_realTimeCommCtrl == nullptr) {
         m_inputIoStatus = 0;
@@ -99,7 +91,7 @@ void CobotUrDigitIoAdapter::setUrRealTimeCtrl(CobotUrRealTimeCommCtrl* realTimeC
 
 }
 
-bool CobotUrDigitIoAdapter::isOpened() const {
+bool CobotMotomanDigitIoAdapter::isOpened() const {
     return (m_realTimeCommCtrl != nullptr);
 }
 

@@ -34,6 +34,7 @@ protected:
     void setupUi();
 
     void customMenu();
+
 protected:
     QPlainTextEdit* m_plainTextEdit;
     QVBoxLayout* m_boxLayout;
@@ -41,6 +42,8 @@ protected:
     QTimer* m_editUpdateTimer;
     QString m_cachedMessage;
     std::mutex m_mutex;
+
+    bool m_autoScrollBottom;
 };
 
 
