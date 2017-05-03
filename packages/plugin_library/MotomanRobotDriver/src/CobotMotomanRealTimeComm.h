@@ -9,6 +9,7 @@
 #include <QObject>
 #include <QString>
 #include <QTcpSocket>
+#include <QUdpSocket>
 #include <QTcpServer>
 #include <memory>
 #include <thread>
@@ -23,24 +24,10 @@ public:
     ~CobotMotomanRealTimeComm();
 
     void start();
-
     void readData();
     void onConnected();
-    void onDisconnected();
 
     std::shared_ptr<RobotState> getRobotState(){ return m_robotState; }
-
-    /**
-     * 发送给UR的即时脚本命令。
-     * @param ba
-     */
-    void writeLine(const QByteArray& ba);
-
-    void servoj(const std::vector<double>& j);
-
-    void stopProg();
-
-
 
 
 Q_SIGNALS:
@@ -52,7 +39,6 @@ Q_SIGNALS:
     void realTimeProgDisconnect();
 
 protected:
-    void motomanProgConnect();
     void onRealTimeDisconnect();
     void onSocketError(QAbstractSocket::SocketError socketError);
 
@@ -60,12 +46,8 @@ protected:
 protected:
     QString m_robotIp;
     std::shared_ptr<RobotState> m_robotState;
-    QTcpSocket* m_SOCKET;
     std::condition_variable& m_msg_cond;
-
-    QTcpServer* m_tcpServer;
-    QTcpSocket* m_rtSOCKET;
-
+    QUdpSocket* m_udpSocket;
 public:
     const int MULT_JOINTSTATE_ = 1000000;
     const int MULT_TIME_ = 1000000;

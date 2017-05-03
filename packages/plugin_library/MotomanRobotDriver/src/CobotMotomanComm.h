@@ -45,7 +45,7 @@ public:
 
     void sendCmd(QByteArray& cmd);
     void executeCmd(const CobotMotoman::ROBOTCMD CmdID,bool resendFlag=false);
-
+    void stopProg();
 protected:
     void processData();
     void secConnectHandle();
@@ -66,6 +66,8 @@ protected:
     std::mutex m_rt_res_mutex;
     std::vector<double> m_rt_q_required;
     std::vector<double> m_qTarget;
+
+    int keepalive;
 };
 
 

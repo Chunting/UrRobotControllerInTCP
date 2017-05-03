@@ -7,7 +7,6 @@
 #include <QtNetwork/QHostAddress>
 #include "CobotMotomanComm.h"
 #include "CobotMotomanFirmwareQueryer.h"
-#include <cobotsys.h>
 
 CobotMotomanComm::CobotMotomanComm(std::condition_variable& cond_msg, QObject* parent)
         : QObject(parent), m_msg_cond(cond_msg),m_cmdID(0),m_LastCmdID(CobotMotoman::CMD_SERVO_OFF){
@@ -235,4 +234,11 @@ void CobotMotomanComm::asyncServojFlush(){
     }
     //TODO How to start the loop need to design.
     executeCmd(CobotMotoman::CMD_MOVE_ANGLE);
+}
+void CobotMotomanComm::stopProg(){
+    if (keepalive) {
+        keepalive = 0;
+        COBOT_LOG.info() << "Stopping Motoman Driver Program";
+        executeCmd(CobotMotoman::CMD_SERVO_OFF);
+    }
 }

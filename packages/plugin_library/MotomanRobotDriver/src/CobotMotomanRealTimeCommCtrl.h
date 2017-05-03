@@ -26,9 +26,7 @@ public:
         motoman->moveToThread(&workerThread);
         connect(&workerThread, &QThread::finished, motoman, &QObject::deleteLater);
         connect(this, &CobotMotomanRealTimeCommCtrl::start, motoman, &CobotMotomanRealTimeComm::start);
-        connect(this, &CobotMotomanRealTimeCommCtrl::commandReady, motoman, &CobotMotomanRealTimeComm::writeLine);
         connect(motoman, &CobotMotomanRealTimeComm::connected, this, &CobotMotomanRealTimeCommCtrl::onRealTimeConnected);
-        connect(this, &CobotMotomanRealTimeCommCtrl::stopServoj, motoman, &CobotMotomanRealTimeComm::stopProg);
         workerThread.start();
     }
 
