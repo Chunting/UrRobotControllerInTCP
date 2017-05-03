@@ -5,7 +5,8 @@
 
 
 #include "Kinect2Camera.h"
-
+#include <thread>
+#include <chrono>
 
 Kinect2Camera::Kinect2Camera()
         : undistorted(512, 424, 4), registered(512, 424, 4) {
@@ -120,7 +121,16 @@ bool Kinect2Camera::capture(int waitMs) {
     if (m_listener) {
         libfreenect2::FrameMap frames;
         auto timeBeforeWait = std::chrono::high_resolution_clock::now();
-        if (m_listener->waitForNewFrame(frames, waitMs)) {
+        auto timeMaxWait = timeBeforeWait + std::chrono::milliseconds(waitMs);
+        bool frameFound = false;
+        while (std::chrono::high_resolution_clock::now() < timeMaxWait) {
+            if (m_listener->hasNewFrame()) {
+                frameFound = true;
+                break;
+            }
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        }
+        if (frameFound && m_listener->waitForNewFrame(frames, 1)) {
             auto timeAfterWait = std::chrono::high_resolution_clock::now();
 
             libfreenect2::Frame* rgb = frames[libfreenect2::Frame::Color];

@@ -90,6 +90,8 @@ void PhysicalDistributionController::stop() {
     if (m_ptrMover) {
         m_ptrMover->clearAll();
     }
+
+    cv::destroyAllWindows();
 }
 
 void PhysicalDistributionController::onArmRobotConnect() {
@@ -278,7 +280,7 @@ bool PhysicalDistributionController::_stepCaptureImage(std::unique_lock<std::mut
     m_imageUpdated = false;
     m_images.clear();
     if (!m_ptrCameraMaster->capture(1000)) {
-        COBOT_LOG.error() << "Fail to capture image, " << m_numImageCaptured;
+        COBOT_LOG.error() << "Fail to capture image, Num Captured: " << m_numImageCaptured;
         // TODO, here re-connect camera.
     }
 
@@ -363,6 +365,10 @@ void PhysicalDistributionController::_debugImages() {
         m_matViewer->getMatMerger().updateMat("ir", m_images[4].image);
 
         m_ptrDetector->debugMat("sss", m_images[4].image);
+    } else {
+        if (m_images.size()) {
+            m_ptrDetector->debugMat("Sample", m_images[0].image);
+        }
     }
     Q_EMIT debugImageUpdated();
 }
