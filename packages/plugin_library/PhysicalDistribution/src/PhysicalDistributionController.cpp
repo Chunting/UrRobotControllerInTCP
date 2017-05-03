@@ -57,9 +57,12 @@ bool PhysicalDistributionController::start() {
     bool success = false;
     if (m_ptrRobot) {
         success = m_ptrRobot->start();
+        if (!success) COBOT_LOG.error() << "Fail To Start Robot!";
+
         if (success && !m_ptrCameraMaster->isOpened()) {
             success = m_ptrCameraMaster->open();
-            if (success && !m_mainTaskThread.joinable()) {
+            if (!success) COBOT_LOG.error() << "Fail To Start Camera!";
+            if (!m_mainTaskThread.joinable()) {
                 m_numImageCaptured = 0;
                 m_loop = true;
                 m_mainTaskThread = std::thread(&PhysicalDistributionController::mainLoop, this);
@@ -186,6 +189,7 @@ void PhysicalDistributionController::mainLoop() {
     m_taskEmptyPrint = true;
     bool visionSuccess = true;
 
+    COBOT_LOG.notice() << "PhysicalDistributionController::mainLoop Started.";
     while (m_loop) {
         ACTION_STEP();
         if (visionSuccess) { // 只有前一个任务处理成功，才可以处理下一个任务。
@@ -277,11 +281,20 @@ void PhysicalDistributionController::onCameraStreamUpdate(const CameraFrame& cam
 }
 
 bool PhysicalDistributionController::_stepCaptureImage(std::unique_lock<std::mutex>& uniqueLock) {
+    static int num_print = 0;
     m_imageUpdated = false;
     m_images.clear();
     if (!m_ptrCameraMaster->capture(1000)) {
-        COBOT_LOG.error() << "Fail to capture image, Num Captured: " << m_numImageCaptured;
+        if (num_print < 1) {
+            COBOT_LOG.error() << "Fail to capture image, Num Captured: " << m_numImageCaptured;
+            num_print++;
+        }
+        m_imageUpdated = true; // For Debug Only
+
+
         // TODO, here re-connect camera.
+    } else {
+        num_print = 0;
     }
 
     if (m_imageUpdated) {
