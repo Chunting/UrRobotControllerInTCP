@@ -292,6 +292,12 @@ void ForceGuideController::guideControlThread() {
 				if (btnLastState) {
 					COBOT_LOG.notice() << "io button released!";
 					btnLastState = false;
+
+                  m_mutex.lock();
+                  std::vector<double> curQ = m_curQ;
+                  m_mutex.unlock();
+
+                  m_ptrRobot->move(curQ);
 				}
 				continue;
 			}
