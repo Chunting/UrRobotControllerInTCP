@@ -35,8 +35,8 @@ public:
         tcpSocket->setSocketOption(QAbstractSocket::LowDelayOption, 1);
         tcpSocket->connectToHost(m_host, 30001);
 
-        if (tcpSocket->waitForConnected(CobotMotoman::MAX_SOCKET_WAIT_)) {
-            if (tcpSocket->waitForReadyRead(CobotMotoman::MAX_SOCKET_WAIT_)) {
+        if (tcpSocket->waitForConnected(MAX_SOCKET_WAIT)) {
+            if (tcpSocket->waitForReadyRead(MAX_SOCKET_WAIT)) {
                 auto ba = tcpSocket->read(512);
                 if (robotState) {
                     //robotState->unpack((uint8_t*) ba.constData(), ba.size());

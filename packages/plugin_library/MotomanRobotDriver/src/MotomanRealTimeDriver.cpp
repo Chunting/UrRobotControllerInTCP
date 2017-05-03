@@ -166,7 +166,7 @@ void MotomanRealTimeDriver::robotStatusWatcher() {
         }
 
         // 更新控制驱动数据, 如果没有数据，默认会是当前状态。
-        if (m_isStarted && q_next.size() >= CobotMotoman::JOINT_NUM_) {
+        if (m_isStarted && q_next.size() >= JOINT_NUM) {
             if (m_mutex.try_lock()) {
                 m_motomanDriver->servoj(q_next);
                 m_mutex.unlock();

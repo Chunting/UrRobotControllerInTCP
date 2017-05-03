@@ -39,11 +39,16 @@ Q_SIGNALS:
 
     void asyncServojFlushRequired();
 public:
+
+    enum ROBOTCMD {
+        CMD_START_UDP, CMD_SERVO_ON, CMD_SERVO_OFF, CMD_MOVE_ANGLE, CMD_MOVE_IMPULSE
+    };
+
     void start();
     void stop();
 
     void sendCmd(QByteArray& cmd);
-    void executeCmd(const CobotMotoman::ROBOTCMD CmdID,bool resendFlag=false);
+    void executeCmd(const ROBOTCMD CmdID,bool resendFlag=false);
     void stopProg();
 protected:
     void processData();
@@ -61,7 +66,7 @@ protected:
     std::string localIp_;
     quint8 m_cmdID;//motoman cmd ID
 
-    CobotMotoman::ROBOTCMD m_LastCmdID;
+    ROBOTCMD m_LastCmdID;
     std::mutex m_rt_res_mutex;
     std::vector<double> m_rt_q_required;
     std::vector<double> m_qTarget;

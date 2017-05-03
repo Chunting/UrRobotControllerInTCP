@@ -4,7 +4,7 @@
 //
 
 #include "CobotMotoman.h"
-const float CobotMotoman::MAX_ANGLE_INCREMENT_=1.0;
+
 using namespace cobotsys;
 QByteArray IntToArray(qint32 source) //Use qint32 to ensure that the number have 4 bytes
 {
@@ -15,9 +15,9 @@ QByteArray IntToArray(qint32 source) //Use qint32 to ensure that the number have
     return temp;
 }
 MotomanRobotState::MotomanRobotState(std::condition_variable& msg_cond) {
-    q_target_.resize(CobotMotoman::JOINT_NUM_,0.0); //Target joint positions
-    q_actual_.resize(CobotMotoman::JOINT_NUM_,0.0); //Actual joint positions
-    digital_input_bits_.resize(CobotMotoman::DIGITAL_INPUT_NUM_,false); //Current state of the digital inputs. NOTE: these are bits encoded as int64_t, e.g. a value of 5 corresponds to bit 0 and bit 2 set high
+    q_target_.resize(JOINT_NUM,0.0); //Target joint positions
+    q_actual_.resize(JOINT_NUM,0.0); //Actual joint positions
+    digital_input_bits_.resize(DIGITAL_INPUT_NUM,false); //Current state of the digital inputs. NOTE: these are bits encoded as int64_t, e.g. a value of 5 corresponds to bit 0 and bit 2 set high
     pos_actual_.resize(6,0.0);;//Actual cartesian position.
     pMsg_cond_ = &msg_cond;
 }
@@ -25,11 +25,11 @@ void MotomanRobotState::unpack(QByteArray &msg) {
     const int RECV_FRAME_LENGTH_=82;
     if(msg.size()==RECV_FRAME_LENGTH_ && (quint8)msg[0]==0xf0 && (quint8)msg[RECV_FRAME_LENGTH_-1]==0xf0){
         for(int i=0;i<6;i++){
-            q_actual_[i]=(double)(msg.mid(49+i*4,4).toLong())/(double)(CobotMotoman::FLOAT_PRECISION);
+            q_actual_[i]=(double)(msg.mid(49+i*4,4).toLong())/FLOAT_PRECISION;
         }
         for(int i=0;i<3;i++){
             pos_actual_[i]=(double)(msg.mid(1+i*4,4).toLong())*0.001;
-            pos_actual_[i+3]=(double)(msg.mid(13+i*4,4).toLong())/(double)(CobotMotoman::FLOAT_PRECISION);
+            pos_actual_[i+3]=(double)(msg.mid(13+i*4,4).toLong())/FLOAT_PRECISION;
         }
         for(int i=0;i<8;i++){
             digital_input_bits_[i]=((quint8)msg[73+i]!=0);

@@ -12,21 +12,16 @@
 #include <QByteArray>
 #include <cobotsys.h>
 #include <condition_variable>
-class CobotMotoman {
-public:
-    enum ROBOTCMD {
-        CMD_START_UDP, CMD_SERVO_ON, CMD_SERVO_OFF, CMD_MOVE_ANGLE, CMD_MOVE_IMPULSE
-    };
-    static const int MAX_SOCKET_WAIT_ = 1000;
-    static const size_t JOINT_NUM_ = 6;
-    static const size_t DIGITAL_INPUT_NUM_=8;
-    static const float MAX_ANGLE_INCREMENT_;
-    static const long FLOAT_PRECISION=10000;//0.0001度
-    static const int FRAME_LENGTH_=80;
-    static const unsigned int TCP_PORT=11000;
-    static const unsigned int UDP_PORT=11001;
 
-};
+#define FRAME_LENGTH 80
+#define UDP_PORT 11001
+#define TCP_PORT 11000
+#define MAX_SOCKET_WAIT 1000
+#define JOINT_NUM 6
+#define DIGITAL_INPUT_NUM 8
+#define MAX_ANGLE_INCREMENT 1.0
+#define FLOAT_PRECISION 10000
+
 class MotomanRobotState{
 public:
     MotomanRobotState(std::condition_variable& msg_cond);

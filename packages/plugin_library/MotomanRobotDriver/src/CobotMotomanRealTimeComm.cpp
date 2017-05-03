@@ -38,10 +38,10 @@ void CobotMotomanRealTimeComm::start(){
     QHostAddress *robotAddress  = new QHostAddress(m_robotIp);
     m_udpSocket->abort();
     //bind and connect to host 哪个在前，哪个在后，有待确定。
-    m_udpSocket->bind(*robotAddress, CobotMotoman::UDP_PORT);
-    m_udpSocket->connectToHost(m_robotIp,CobotMotoman::UDP_PORT);
+    m_udpSocket->bind(*robotAddress, UDP_PORT);
+    m_udpSocket->connectToHost(m_robotIp,UDP_PORT);
     if (!m_udpSocket->waitForConnected()) {
-        COBOT_LOG.error() << "Failed to connect the udp port of Motoman Robot. IP:"<<m_robotIp<<" udp port:"<<CobotMotoman::UDP_PORT;
+        COBOT_LOG.error() << "Failed to connect the udp port of Motoman Robot. IP:"<<m_robotIp<<" udp port:"<<UDP_PORT;
         return;
     }
     Q_EMIT realTimeProgConnected();
