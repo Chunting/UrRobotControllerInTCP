@@ -13,21 +13,22 @@ URRealTimeDriver::URRealTimeDriver() : QObject(nullptr) {
     m_isWatcherRunning = false;
     m_isStarted = false;
 
-    m_ctrl = nullptr;
-    m_rt_ctrl = nullptr;
     m_urDriver = nullptr;
     m_curReqQ.clear();
 
-    m_digitInput = make_shared<CobotUrDigitIoAdapter>();
-    m_digitOutput = make_shared<CobotUrDigitIoAdapter>();
+    m_digitInput = std::make_shared<CobotUrDigitIoAdapter>();
+    m_digitOutput = std::make_shared<CobotUrDigitIoAdapter>();
+    m_objectAlive = std::make_shared<bool>(true);
+    m_urMessage = std::make_shared<std::condition_variable>();
 }
 
 URRealTimeDriver::~URRealTimeDriver() {
     if (m_isWatcherRunning) {
         m_isWatcherRunning = false;
-        m_rt_msg_cond.notify_all();
+        m_urMessage->notify_all();
         m_thread.join();
     }
+    *m_objectAlive = false;
 }
 
 void URRealTimeDriver::move(const std::vector<double>& q) {
@@ -67,11 +68,11 @@ bool URRealTimeDriver::start() {
         COBOT_LOG.info() << "Already start, if want restart, stop first";
         return false;
     }
-    m_urDriver = new CobotUrDriver(m_rt_msg_cond, m_msg_cond, m_attr_robot_ip.c_str());
+    m_urDriver = new CobotUrDriver(m_urMessage, m_attr_robot_ip.c_str());
     connect(m_urDriver, &CobotUrDriver::driverStartSuccess, this, &URRealTimeDriver::handleDriverReady);
     connect(m_urDriver, &CobotUrDriver::driverStartFailed, this, &URRealTimeDriver::handleDriverDisconnect);
     connect(m_urDriver, &CobotUrDriver::driverStopped, this, &URRealTimeDriver::handleDriverDisconnect);
-    connect(m_urDriver, &QObject::destroyed, [=](QObject*) { handleDriverDisconnect(); });
+    connect(m_urDriver, &QObject::destroyed, this, &URRealTimeDriver::handleObjectDestroy);
     m_urDriver->setServojTime(m_attr_servoj_time);
     m_urDriver->setServojLookahead(m_attr_servoj_lookahead);
     m_urDriver->setServojGain(m_attr_servoj_gain);
@@ -114,7 +115,7 @@ bool URRealTimeDriver::setup(const QString& configFilePath) {
 
 void URRealTimeDriver::robotStatusWatcher() {
     std::mutex m;
-    std::unique_lock<std::mutex> lck(m);
+    std::unique_lock<std::mutex> uniqueLock(m);
 
     auto time_cur = std::chrono::high_resolution_clock::now();
 
@@ -124,13 +125,14 @@ void URRealTimeDriver::robotStatusWatcher() {
 
     COBOT_LOG.notice() << "UR Status Watcher is Running.";
     while (m_isWatcherRunning) {
-        m_rt_msg_cond.wait(lck);
+        // Here Wait Ur Status Update
+        m_urMessage->wait(uniqueLock);
 
+        // Update Io Status when Robot Joint Update.
         if (m_mutex.try_lock()) {
             _updateDigitIoStatus();
             m_mutex.unlock();
         }
-
 
         // 计算时间间隔
         auto time_rdy = std::chrono::high_resolution_clock::now();
@@ -249,4 +251,10 @@ void URRealTimeDriver::clearAttachedObject() {
 std::vector<double> URRealTimeDriver::getRobotJointQ() {
     std::lock_guard<std::mutex> lockGuard(m_mutex);
     return m_robotJointQCache;
+}
+
+void URRealTimeDriver::handleObjectDestroy(QObject* object) {
+    if (*m_objectAlive) {
+        handleDriverDisconnect();
+    }
 }

@@ -6,6 +6,7 @@
 #include <cobotsys_logger.h>
 #include "CobotUrRealTimeComm.h"
 #include <cobotsys.h>
+#include <extra2.h>
 
 CobotUrRealTimeComm::CobotUrRealTimeComm(std::condition_variable& cond_msg, const QString& hostIp, QObject* parent)
         : QObject(parent), m_msg_cond(cond_msg){
@@ -47,6 +48,7 @@ CobotUrRealTimeComm::~CobotUrRealTimeComm(){
     if (m_SOCKET) {
         m_SOCKET->close();
     }
+    INFO_DESTRUCTOR(this);
 }
 
 void CobotUrRealTimeComm::start(){

@@ -13,6 +13,7 @@
 #include <cobotsys_logger.h>
 #include "CobotUr.h"
 #include <cobotsys.h>
+#include <extra2.h>
 
 class CobotUrFirmwareQueryer : public QObject {
 Q_OBJECT
@@ -25,6 +26,7 @@ public:
     }
 
     ~CobotUrFirmwareQueryer(){
+        INFO_DESTRUCTOR(this);
     }
 
     /**

@@ -42,14 +42,13 @@ protected:
     void notify(std::function<void(std::shared_ptr<ArmRobotRealTimeStatusObserver>& observer)> func);
 
     void _updateDigitIoStatus();
+
+    void handleObjectDestroy(QObject* object);
 protected:
     std::mutex m_mutex;
     std::thread m_thread;
     bool m_isWatcherRunning;
     bool m_isStarted;
-
-    std::condition_variable m_rt_msg_cond;
-    std::condition_variable m_msg_cond;
 
     std::string m_attr_robot_ip;
     double m_attr_servoj_time;
@@ -63,13 +62,14 @@ protected:
 
     std::vector<double> m_robotJointQCache;
 
-    CobotUrCommCtrl* m_ctrl;
-    CobotUrRealTimeCommCtrl* m_rt_ctrl;
-
     CobotUrDriver* m_urDriver;
+
+    std::shared_ptr<std::condition_variable> m_urMessage;
 
     std::shared_ptr<CobotUrDigitIoAdapter> m_digitInput;
     std::shared_ptr<CobotUrDigitIoAdapter> m_digitOutput;
+
+    std::shared_ptr<bool> m_objectAlive;
 };
 
 

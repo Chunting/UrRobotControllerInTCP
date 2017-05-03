@@ -27,6 +27,7 @@ CobotUrComm::CobotUrComm(std::condition_variable& cond_msg, QObject* parent)
 
 CobotUrComm::~CobotUrComm(){
     m_tcpSocket->close();
+    INFO_DESTRUCTOR(this);
 }
 
 void CobotUrComm::start(){

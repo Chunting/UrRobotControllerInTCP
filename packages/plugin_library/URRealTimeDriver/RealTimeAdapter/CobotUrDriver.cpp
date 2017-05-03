@@ -5,12 +5,10 @@
 
 #include "CobotUrDriver.h"
 
-CobotUrDriver::CobotUrDriver(std::condition_variable& rt_msg_cond,
-                             std::condition_variable& msg_cond,
-                             const QString& robotAddr,
-                             QObject* parent) : QObject(parent){
-    m_urCommCtrl = new CobotUrCommCtrl(msg_cond, robotAddr, this);
-    m_urRealTimeCommCtrl = new CobotUrRealTimeCommCtrl(rt_msg_cond, robotAddr, this);
+CobotUrDriver::CobotUrDriver(std::shared_ptr<std::condition_variable>& msg,
+                             const QString& robotAddr, QObject* parent) : QObject(parent) {
+    m_urCommCtrl = new CobotUrCommCtrl(robotAddr, this);
+    m_urRealTimeCommCtrl = new CobotUrRealTimeCommCtrl(msg, robotAddr, this);
 
     connect(m_urCommCtrl->ur, &CobotUrComm::connected, this, &CobotUrDriver::handleCommConnected);
     connect(m_urRealTimeCommCtrl->ur, &CobotUrRealTimeComm::connected, this, &CobotUrDriver::handleRTCommConnected);
@@ -37,25 +35,26 @@ CobotUrDriver::CobotUrDriver(std::condition_variable& rt_msg_cond,
     m_isConnected = false;
 }
 
-CobotUrDriver::~CobotUrDriver(){
+CobotUrDriver::~CobotUrDriver() {
     stopDriver();
+    INFO_DESTRUCTOR(this);
 }
 
-void CobotUrDriver::handleCommConnected(){
+void CobotUrDriver::handleCommConnected() {
     m_connectTime++;
     if (m_connectTime >= 2) {
         onConnectSuccess();
     }
 }
 
-void CobotUrDriver::handleRTCommConnected(){
+void CobotUrDriver::handleRTCommConnected() {
     m_connectTime++;
     if (m_connectTime >= 2) {
         onConnectSuccess();
     }
 }
 
-void CobotUrDriver::startDriver(){
+void CobotUrDriver::startDriver() {
     m_noDisconnectedAccept = true;
     m_disconnectCount = 0;
     m_connectTime = 0;
@@ -64,7 +63,7 @@ void CobotUrDriver::startDriver(){
     m_urRealTimeCommCtrl->startComm();
 }
 
-void CobotUrDriver::handleDisconnected(){
+void CobotUrDriver::handleDisconnected() {
     m_connectTime = 0;
     m_isConnected = false;
     m_disconnectCount++;
@@ -77,12 +76,12 @@ void CobotUrDriver::handleDisconnected(){
     }
 }
 
-void CobotUrDriver::stopDriver(){
+void CobotUrDriver::stopDriver() {
     m_noDisconnectedAccept = false;
     m_urRealTimeCommCtrl->requireStopServoj();
 }
 
-bool CobotUrDriver::uploadProg(){
+bool CobotUrDriver::uploadProg() {
     std::string cmd_str;
     char buf[128];
     cmd_str = "def driverProg():\n";
@@ -162,7 +161,7 @@ bool CobotUrDriver::uploadProg(){
     return true;
 }
 
-void CobotUrDriver::setServojTime(double t){
+void CobotUrDriver::setServojTime(double t) {
     if (t > 0.008) {
         servoj_time_ = t;
     } else {
@@ -170,7 +169,7 @@ void CobotUrDriver::setServojTime(double t){
     }
 }
 
-void CobotUrDriver::setServojLookahead(double t){
+void CobotUrDriver::setServojLookahead(double t) {
     if (t > 0.03) {
         if (t < 0.2) {
             servoj_lookahead_time_ = t;
@@ -182,7 +181,7 @@ void CobotUrDriver::setServojLookahead(double t){
     }
 }
 
-void CobotUrDriver::setServojGain(double g){
+void CobotUrDriver::setServojGain(double g) {
     if (g > 100) {
         if (g < 2000) {
             servoj_gain_ = g;
@@ -194,7 +193,7 @@ void CobotUrDriver::setServojGain(double g){
     }
 }
 
-void CobotUrDriver::onConnectSuccess(){
+void CobotUrDriver::onConnectSuccess() {
     m_isConnected = true;
     ip_addr_ = m_urCommCtrl->ur->getLocalIp();
     COBOT_LOG.info() << "Local Ip: " << ip_addr_;
@@ -202,17 +201,17 @@ void CobotUrDriver::onConnectSuccess(){
     Q_EMIT driverStartSuccess();
 }
 
-void CobotUrDriver::handleRTProgConnect(){
+void CobotUrDriver::handleRTProgConnect() {
     COBOT_LOG.info() << "Prog Upload Success";
 }
 
-void CobotUrDriver::handleRTProgDisconnect(){
+void CobotUrDriver::handleRTProgDisconnect() {
     if (m_isConnected) {
         Q_EMIT driverStopped();
     }
 }
 
-void CobotUrDriver::servoj(const std::vector<double>& positions){
+void CobotUrDriver::servoj(const std::vector<double>& positions) {
     if (m_urRealTimeCommCtrl) {
         m_urRealTimeCommCtrl->ur->asyncServoj(positions);
     }

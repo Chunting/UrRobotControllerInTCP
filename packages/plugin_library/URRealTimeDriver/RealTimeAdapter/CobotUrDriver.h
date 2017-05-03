@@ -15,10 +15,8 @@
 class CobotUrDriver : public QObject {
 Q_OBJECT
 public:
-    CobotUrDriver(std::condition_variable& rt_msg_cond,
-                  std::condition_variable& msg_cond,
-                  const QString& robotAddr,
-                  QObject* parent = nullptr);
+    CobotUrDriver(std::shared_ptr<std::condition_variable>& msg,
+            const QString& robotAddr, QObject* parent = nullptr);
     ~CobotUrDriver();
 
 
