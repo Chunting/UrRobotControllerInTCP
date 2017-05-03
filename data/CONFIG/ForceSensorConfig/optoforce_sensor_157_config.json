@@ -1,0 +1,11 @@
+{
+  "SN": "157",
+  "sensor_ip": "192.168.1.1",
+  "protocol": "UDP",
+  "frequency": 125,
+  "gravity_repair": {
+    "gravity": [ 0.0, 0.0, -2.88 ],
+    "center": [ 0, 0, 0.04 ]
+  },
+  "bias_repair": [ 0.0, 0.0, -9.0, 0.0, 0.0, 0.0 ]
+}

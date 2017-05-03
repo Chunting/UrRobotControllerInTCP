@@ -10,6 +10,8 @@ CobotUrDigitIoAdapter::CobotUrDigitIoAdapter() {
     m_realTimeCommCtrl = nullptr;
     m_isInput = false;
     m_isOutput = false;
+	m_inputIoStatus = 0;
+	m_outputIoStatus = 0;
 }
 
 CobotUrDigitIoAdapter::~CobotUrDigitIoAdapter() {
@@ -51,11 +53,17 @@ bool CobotUrDigitIoAdapter::isDigitOutput() const {
 
 void CobotUrDigitIoAdapter::debugIoStatus() {
     if (isDigitInput() && m_debugIoLastStatus != m_inputIoStatus) {
+#ifdef DEBUG
         COBOT_LOG.message("Input") << std::hex << setw(8) << m_inputIoStatus;
+#endif // DEBUG
+
         m_debugIoLastStatus = m_inputIoStatus;
     }
     if (isDigitOutput() && m_debugIoLastStatus != m_outputIoStatus) {
+#ifdef DEBUG
         COBOT_LOG.message("Output") << std::hex << setw(8) << m_outputIoStatus;
+#endif // DEBUG
+		
         m_debugIoLastStatus = m_outputIoStatus;
     }
 }

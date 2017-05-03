@@ -176,7 +176,7 @@ void OptoforceEthernetUDPDriver::recvThreadFunc() {
 
 			if (len != HSURecord::HSU_RECORD_SIZE)
 			{
-				COBOT_LOG.notice() << "Receive size of " << len << " bytes does not match expected size of " << HSURecord::HSU_RECORD_SIZE;
+				//COBOT_LOG.notice() << "Receive size of " << len << " bytes does not match expected size of " << HSURecord::HSU_RECORD_SIZE;
 			}
 			else
 			{
@@ -276,7 +276,7 @@ cobotsys::Wrench OptoforceEthernetUDPDriver::getState() {
 
 void OptoforceEthernetUDPDriver::onConnect() {
 	m_isConnected = true;
-	COBOT_LOG.notice() << "OptoforceEthernetUDPDriver: " << "Connected";
+	//COBOT_LOG.notice() << "OptoforceEthernetUDPDriver: " << "Connected";
 	Q_EMIT sensorconnected();
 }
 
@@ -293,7 +293,7 @@ void OptoforceEthernetUDPDriver::onDisconnect() {
 	m_isConnected = false;
 	m_isRecievingData = false;
 
-	COBOT_LOG.notice() << "OptoforceEthernetUDPDriver: " << "Disconnected";
+	//COBOT_LOG.notice() << "OptoforceEthernetUDPDriver: " << "Disconnected";
 	Q_EMIT sensordisconnected();
 
 	//no reconnect

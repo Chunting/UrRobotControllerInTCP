@@ -105,13 +105,15 @@ bool ForceControlSolver::setup(const QString& configFilePath) {
 		//for now, just input the config values
 		//gravity
 		data = json["gravity_repair"].toObject()["gravity"].toArray();
-		for (int i = 0; i < 3; i++) {
-			m_gravity[i] = data.at(i).toDouble();
-		}
+		m_gravity[0] = data.at(0).toDouble(0);
+		m_gravity[1] = data.at(1).toDouble(0);
+		m_gravity[2] = data.at(2).toDouble(-2.88);
+
 		data = json["gravity_repair"].toObject()["center"].toArray();
-		for (int i = 0; i < 3; i++) {
-			m_gcenter[i] = data.at(i).toDouble();
-		}
+		m_gcenter[0] = data.at(0).toDouble(0);
+		m_gcenter[1] = data.at(1).toDouble(0);
+		m_gcenter[2] = data.at(2).toDouble(0.04);
+
 		//bias_repair
 		data = json["bias_repair"].toArray();
 		for (int i = 0; i < 6; i++) {
@@ -119,47 +121,59 @@ bool ForceControlSolver::setup(const QString& configFilePath) {
 		}
 		//filter_param
 		data = json["filter_param"].toObject()["den"].toArray();
-		for (int i = 0; i < 3; i++) {
-			m_param.filter_den[i] = data.at(i).toDouble();
-		}
+		m_param.filter_den[0] = data.at(0).toDouble(1.0);
+		m_param.filter_den[1] = data.at(1).toDouble(0.3815584570930084);
+		m_param.filter_den[2] = data.at(2).toDouble(0.76551678814900237);
+
 		data = json["filter_param"].toObject()["num"].toArray();
-		for (int i = 0; i < 3; i++) {
-			m_param.filter_num[i] = data.at(i).toDouble();
-		}
-		//filter_param
+		m_param.filter_num[0] = data.at(0).toDouble(0.79519990113706318);
+		m_param.filter_num[1] = data.at(1).toDouble(0.1868726045543786);
+		m_param.filter_num[2] = data.at(2).toDouble(0.48976439578823106);
+
+		//pid_factor
 		data = json["pid_factor"].toObject()["P"].toArray();
-		for (int i = 0; i < 6; i++) {
-			m_param.P[i] = data.at(i).toDouble();
-		}
+		m_param.P[0] = data.at(0).toDouble(0.01);
+		m_param.P[1] = data.at(1).toDouble(0.01);
+		m_param.P[2] = data.at(2).toDouble(0.01);
+		m_param.P[3] = data.at(3).toDouble(0.35);
+		m_param.P[4] = data.at(4).toDouble(0.35);
+		m_param.P[5] = data.at(5).toDouble(0.5);
+
 		data = json["pid_factor"].toObject()["I"].toArray();
 		for (int i = 0; i < 6; i++) {
-			m_param.I[i] = data.at(i).toDouble();
+			m_param.I[i] = data.at(i).toDouble(0);
 		}
 		data = json["pid_factor"].toObject()["D"].toArray();
 		for (int i = 0; i < 6; i++) {
-			m_param.D[i] = data.at(i).toDouble();
+			m_param.D[i] = data.at(i).toDouble(0);
 		}
 		data = json["pid_factor"].toObject()["N"].toArray();
 		for (int i = 0; i < 6; i++) {
-			m_param.N[i] = data.at(i).toDouble();
+			m_param.N[i] = data.at(i).toDouble(0);
 		}
 		//dead_zone
 		data = json["dead_zone"].toObject()["start"].toArray();
-		for (int i = 0; i < 6; i++) {
-			m_param.dead_zone_start[i] = data.at(i).toDouble();
+		for (int i = 0; i < 3; i++) {
+			m_param.dead_zone_start[i] = data.at(i).toDouble(-1.5);
+		}
+		for (int i = 3; i < 6; i++) {
+			m_param.dead_zone_start[i] = data.at(i).toDouble(-0.1);
 		}
 		data = json["dead_zone"].toObject()["end"].toArray();
-		for (int i = 0; i < 6; i++) {
-			m_param.dead_zone_end[i] = data.at(i).toDouble();
+		for (int i = 0; i < 3; i++) {
+			m_param.dead_zone_end[i] = data.at(i).toDouble(1.5);
+		}
+		for (int i = 3; i < 6; i++) {
+			m_param.dead_zone_end[i] = data.at(i).toDouble(0.1);
 		}
 		//saturation_limit
 		data = json["saturation_limit"].toObject()["lower"].toArray();
 		for (int i = 0; i < 6; i++) {
-			m_param.saturation_lower_limit[i] = data.at(i).toDouble();
+			m_param.saturation_lower_limit[i] = data.at(i).toDouble(-0.1);
 		}
 		data = json["saturation_limit"].toObject()["upper"].toArray();
 		for (int i = 0; i < 6; i++) {
-			m_param.saturation_upper_limit[i] = data.at(i).toDouble();
+			m_param.saturation_upper_limit[i] = data.at(i).toDouble(0.1);
 		}
 
 		//set

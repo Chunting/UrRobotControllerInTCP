@@ -261,11 +261,27 @@ bool KinematicSolver::setup(const QString& configFilePath) {
     //TODO 后期需要json文件的有效性验证功能。
 	//TODO 做base frame到 world frame的segment。
 	//TODO 做joint6到机器人末端执行器的segmen。
-	COBOT_LOG.info() << "configFilePath" <<configFilePath.toStdString();
+	//COBOT_LOG.info() << "configFilePath" <<configFilePath.toStdString();
     QJsonObject json;
-    if (loadJson(json, configFilePath)) {	
+    if (loadJson(json, configFilePath)) {
+		//world_base
+		QJsonArray data;
+		double pt[3], rpy[3];
+		data = json["world_base"].toObject()["xyz"].toArray();
+		for (int i = 0; i < 3; i++) {
+			pt[i] = data.at(i).toDouble(0);
+		}
+		data = json["world_base"].toObject()["RPY"].toArray();
+		for (int i = 0; i < 3; i++) {
+			rpy[i] = data.at(i).toDouble(0);
+		}
+		KDL::Frame wb;
+		wb.p = KDL::Vector(pt[0],pt[1],pt[2]);
+		wb.M = KDL::Rotation::RPY(rpy[0], rpy[1], rpy[2]);
 		m_robot_chain.addSegment(Segment(Joint(Joint::None),
-			Frame::DH(0.0, 0.0, 0, 0.0)));
+			wb));	
+	//	m_robot_chain.addSegment(Segment(Joint(Joint::None),
+	//		Frame::DH(0.0, 0.0, 0, 0.0)));
         foreach (const QJsonValue & value, json["param"].toArray()) {
             QJsonObject segmentObj = value.toObject();
 				double a = segmentObj["dh"].toObject()["a"].toDouble();
