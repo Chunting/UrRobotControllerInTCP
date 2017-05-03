@@ -9,7 +9,7 @@
 CobotMotomanRealTimeComm::CobotMotomanRealTimeComm(std::condition_variable& cond_msg, const QString& robotIp, QObject* parent)
         : QObject(parent), m_msg_cond(cond_msg){
 
-    m_robotState = std::make_shared<RobotState>(m_msg_cond);
+    m_robotState = std::make_shared<MotomanRobotState>(m_msg_cond);
     m_robotIp = robotIp;
     m_udpSocket = new QUdpSocket(this);
     //m_udpSocket->setSocketOption(QAbstractSocket::LowDelayOption, 1);
@@ -48,11 +48,9 @@ void CobotMotomanRealTimeComm::start(){
 }
 
 void CobotMotomanRealTimeComm::readData(){
-    auto ba = m_udpSocket->read(2048);
-//    if (ba.size()) {
-//        m_robotState->unpack((uint8_t*) ba.constData());
-//    }
-
+    const int RECV_FRAME_LENGTH_=82;
+    auto ba = m_udpSocket->readAll();
+    m_robotState->unpack(ba);
 }
 
 void CobotMotomanRealTimeComm::onRealTimeDisconnect(){

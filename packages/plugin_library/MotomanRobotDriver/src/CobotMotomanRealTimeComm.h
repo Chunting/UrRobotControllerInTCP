@@ -14,7 +14,6 @@
 #include <memory>
 #include <thread>
 #include <QSemaphore>
-#include "motoman_robot_state.h"
 #include "CobotMotoman.h"
 
 class CobotMotomanRealTimeComm : public QObject {
@@ -27,7 +26,7 @@ public:
     void readData();
     void onConnected();
 
-    std::shared_ptr<RobotState> getRobotState(){ return m_robotState; }
+    std::shared_ptr<MotomanRobotState> getRobotState(){ return m_robotState; }
 
 
 Q_SIGNALS:
@@ -45,7 +44,7 @@ protected:
 
 protected:
     QString m_robotIp;
-    std::shared_ptr<RobotState> m_robotState;
+    std::shared_ptr<MotomanRobotState> m_robotState;
     std::condition_variable& m_msg_cond;
     QUdpSocket* m_udpSocket;
 public:

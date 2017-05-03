@@ -12,7 +12,6 @@
 #include <cobotsys_logger.h>
 #include "CobotMotoman.h"
 #include <cobotsys.h>
-#include "motoman_robot_state.h"
 class CobotMotomanFirmwareQueryer : public QObject {
 Q_OBJECT
 
@@ -31,7 +30,7 @@ public:
      * @param robotState
      * @return
      */
-    std::shared_ptr<RobotState> getVersion(std::shared_ptr<RobotState> robotState){
+    std::shared_ptr<MotomanRobotState> getVersion(std::shared_ptr<MotomanRobotState> robotState){
         QTcpSocket* tcpSocket = new QTcpSocket(this);
         tcpSocket->setSocketOption(QAbstractSocket::LowDelayOption, 1);
         tcpSocket->connectToHost(m_host, 30001);
@@ -40,7 +39,7 @@ public:
             if (tcpSocket->waitForReadyRead(CobotMotoman::MAX_SOCKET_WAIT_)) {
                 auto ba = tcpSocket->read(512);
                 if (robotState) {
-                    robotState->unpack((uint8_t*) ba.constData(), ba.size());
+                    //robotState->unpack((uint8_t*) ba.constData(), ba.size());
                     COBOT_LOG.info() << "Firmware version detected: " << robotState->getVersion();
                 }
                 tcpSocket->close();

@@ -13,7 +13,6 @@
 #include <thread>
 #include <QSemaphore>
 #include "CobotMotoman.h"
-#include "motoman_robot_state.h"
 
 class CobotMotomanComm : public QObject {
 Q_OBJECT
@@ -23,7 +22,7 @@ public:
 
     void setupHost(const QString& host);
 
-    std::shared_ptr<RobotState> getRobotState(){ return m_robotState; }
+    std::shared_ptr<MotomanRobotState> getRobotState(){ return m_robotState; }
     std::string getLocalIp();
 
     /**
@@ -57,7 +56,7 @@ protected Q_SLOTS:
 protected:
     QTcpSocket* m_tcpSocket;
     QString m_host;
-    std::shared_ptr<RobotState> m_robotState;
+    std::shared_ptr<MotomanRobotState> m_robotState;
     std::condition_variable& m_msg_cond;
     std::string localIp_;
     quint8 m_cmdID;//motoman cmd ID

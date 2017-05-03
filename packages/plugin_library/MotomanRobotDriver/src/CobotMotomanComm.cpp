@@ -11,7 +11,7 @@
 CobotMotomanComm::CobotMotomanComm(std::condition_variable& cond_msg, QObject* parent)
         : QObject(parent), m_msg_cond(cond_msg),m_cmdID(0),m_LastCmdID(CobotMotoman::CMD_SERVO_OFF){
 
-    m_robotState = std::make_shared<RobotState>(m_msg_cond);
+    m_robotState = std::make_shared<MotomanRobotState>(m_msg_cond);
 
     m_tcpSocket = new QTcpSocket(this);
 
@@ -58,7 +58,7 @@ void CobotMotomanComm::stop(){
 void CobotMotomanComm::processData(){
     QByteArray msg = m_tcpSocket->readAll();
     if (msg.size() <=0) {
-        m_robotState->setDisconnected();
+        //m_robotState->setDisconnected();
         m_tcpSocket->close();
         Q_EMIT resendCmd();
         return;
