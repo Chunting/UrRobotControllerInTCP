@@ -42,16 +42,16 @@ int KinematicSolver::cartToJnt(const std::vector<double>& initialJoint, const st
 		}
 		break;
 	case -1:
-		COBOT_LOG.error() << "Kinamatic Solver:the gradient of $ E $ towards the joints is to small.";
+		COBOT_LOG.warning() << "Kinamatic Solver:the gradient of $ E $ towards the joints is to small.";
 		break;
 	case -2:
-		COBOT_LOG.error() << "Kinamatic Solver:joint position increments are to small.";
+		COBOT_LOG.warning() << "Kinamatic Solver:joint position increments are to small.";
 		break;
 	case -3:
-		COBOT_LOG.error() << "Kinamatic Solver:number of iterations is exceeded.";
+		COBOT_LOG.warning() << "Kinamatic Solver:number of iterations is exceeded.";
 		break;
 	default:
-		COBOT_LOG.error() << "Kinamatic Solver:  unknown error.";
+		COBOT_LOG.warning() << "Kinamatic Solver failed.";
 		break;
 	}
 	//if (retval != 0) {
@@ -88,16 +88,16 @@ int KinematicSolver::cartToJnt(const Eigen::VectorXd& initialJoint, const std::v
 		}
 		break;
 	case -1:
-		COBOT_LOG.error() << "Kinamatic Solver:the gradient of $ E $ towards the joints is to small.";
+		COBOT_LOG.warning() << "Kinamatic Solver:the gradient of $ E $ towards the joints is to small.";
 		break;
 	case -2:
-		COBOT_LOG.error() << "Kinamatic Solver:joint position increments are to small.";
+		COBOT_LOG.warning() << "Kinamatic Solver:joint position increments are to small.";
 		break;
 	case -3:
-		COBOT_LOG.error() << "Kinamatic Solver:number of iterations is exceeded.";
+		COBOT_LOG.warning() << "Kinamatic Solver:number of iterations is exceeded.";
 		break;
 	default:
-		COBOT_LOG.error() << "Kinamatic Solver:  unknown error.";
+		COBOT_LOG.warning() << "Kinamatic Solver failed.";
 		break;
 	}
 	//if (retval != 0) {
@@ -132,16 +132,16 @@ int KinematicSolver::cartToJnt(const Eigen::VectorXd& initialJoint, const Eigen:
 		targetJoint = q_out.data;
 		break;
 	case -1:
-		COBOT_LOG.error() << "Kinamatic Solver:the gradient of $ E $ towards the joints is to small.";
+		COBOT_LOG.warning() << "Kinamatic Solver:the gradient of $ E $ towards the joints is to small.";
 		break;
 	case -2:
-		COBOT_LOG.error() << "Kinamatic Solver:joint position increments are to small.";
+		COBOT_LOG.warning() << "Kinamatic Solver:joint position increments are to small.";
 		break;
 	case -3:
-		COBOT_LOG.error() << "Kinamatic Solver:number of iterations is exceeded.";
+		COBOT_LOG.warning() << "Kinamatic Solver:number of iterations is exceeded.";
 		break;
 	default:
-		COBOT_LOG.error() << "Kinamatic Solver:  unknown error.";
+		COBOT_LOG.warning() << "Kinamatic Solver failed.";
 		break;
 	}
 	//if (retval != 0) {
