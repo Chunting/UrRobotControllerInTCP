@@ -10,7 +10,7 @@
 #include "cobotsys_abstract_object.h"
 #include <Eigen/Core>
 #include <Eigen/Geometry>
-using std::vector;
+//using std::vector;
 namespace cobotsys {
 
 /**
