@@ -32,6 +32,11 @@ bool UrMover::move(uint32_t moveId, const cv::Point3d& pos, const cv::Vec3d& rpy
     return false;
 }
 
+bool UrMover::move(uint32_t moveId, const std::vector<RobotWaypoint>& waypoints) {
+    // TODO 计算路径，规划完整的Joint
+    return false;
+}
+
 void UrMover::attach(const std::shared_ptr<ArmRobotMoveStatusObserver>& observer) {
     std::lock_guard<std::recursive_mutex> lockGuard(m_mutex);
     for (auto& iter : m_observers) {
@@ -80,6 +85,7 @@ void UrMover::notify(const UrMover::MoveTarget& moveTarget, MoveResult moveResul
         }
     }
 }
+
 
 void UrMover::moveProcess() {
     auto timePoint = std::chrono::high_resolution_clock::now();
@@ -254,3 +260,4 @@ void UrMover::clearAll() {
         notify(iter, MoveResult::Cancled);
     }
 }
+

@@ -127,3 +127,7 @@ void UR10RobotMoveDriver::notify(uint32_t moveId)
         observer->onMoveFinish(moveId, MoveResult::Success);
     }
 }
+
+bool UR10RobotMoveDriver::move(uint32_t moveId, const std::vector<RobotWaypoint>& waypoints) {
+    return false;
+}

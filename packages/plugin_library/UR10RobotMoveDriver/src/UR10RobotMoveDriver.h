@@ -20,6 +20,8 @@ public:
 
     virtual bool move(uint32_t moveId, const cv::Point3d& pos, const cv::Vec3d& rpy);
 
+    virtual bool move(uint32_t moveId, const std::vector<RobotWaypoint>& waypoints);
+
     virtual void attach(const std::shared_ptr<ArmRobotMoveStatusObserver>& observer);
 
     virtual void setRealTimeDriver(const std::shared_ptr<AbstractArmRobotRealTimeDriver>& realTimeDriver);

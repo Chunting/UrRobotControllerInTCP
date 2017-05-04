@@ -173,11 +173,22 @@ std::string simple_typeid_name(const char* pname) {
 
     if (new_class_name.size() >= 3) {
         if (new_class_name.at(0) == 'P') {
-            if (isdigit(new_class_name.at(1)) && isdigit(new_class_name.at(2))){
+            if (isdigit(new_class_name.at(1)) && isdigit(new_class_name.at(2))) {
                 new_class_name = new_class_name.substr(3);
             }
         }
     }
 
     return new_class_name;
+}
+
+std::vector<double> readRealArray(const QJsonValue& realArrayValue) {
+    std::vector<double> rvals;
+
+    auto rArr = realArrayValue.toArray();
+    for (const auto& iter : rArr) {
+        auto jval = iter.toDouble();
+        rvals.push_back(jval);
+    }
+    return rvals;
 }
