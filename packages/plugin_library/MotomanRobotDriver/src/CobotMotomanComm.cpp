@@ -37,10 +37,7 @@ CobotMotomanComm::~CobotMotomanComm(){
 }
 
 void CobotMotomanComm::handleTCPConnected(){
-    m_connectTime++;
-    if (m_connectTime >= 2) {
-        onConnectSuccess();
-    }
+    onConnectSuccess();
 }
 void CobotMotomanComm::handleTCPDisconnected(){
     m_connectTime = 0;

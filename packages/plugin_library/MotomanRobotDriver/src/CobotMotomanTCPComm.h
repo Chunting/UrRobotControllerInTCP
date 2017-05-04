@@ -38,6 +38,7 @@ Q_SIGNALS:
     void disconnected();
     void connectFail();
     void resendCmd();
+    void sendCmd(QByteArray cmd);
     void asyncServojFlushRequired();
 
 public:
@@ -56,26 +57,28 @@ public:
     void stop();
     void setDigitOut(int portIndex, bool b);
     std::string getVersion();
-    void sendCmd(QByteArray& cmd);
     void executeCmd(const ROBOTCMD CmdID,bool resendFlag=false);
-    void stopProg();
 protected:
+
     void processData();
-    void secConnectHandle();
-    void secDisconnectHandle();
+    void connectHandle();
+    void disconnectHandle();
     void onSocketError(QAbstractSocket::SocketError socketError);
     void asyncServojFlush();
+
+
 protected Q_SLOTS:
     void onRensendCmd();
+    void onSendCmd(QByteArray cmd);
+
 protected:
     QTcpSocket* m_tcpSocket;
     QString m_host;
+    quint8 m_lastMotionCmdIndex;
     std::shared_ptr<MotomanRobotState> m_robotState;
     std::condition_variable& m_msg_cond;
     std::string localIp_;
-    quint8 m_cmdID;//motoman cmd ID
-
-    ROBOTCMD m_LastCmdID;
+    std::vector<QByteArray> m_sentCmdCache;
     std::mutex m_rt_res_mutex;
     std::vector<double> m_rt_q_required;
     std::vector<double> m_qTarget;
