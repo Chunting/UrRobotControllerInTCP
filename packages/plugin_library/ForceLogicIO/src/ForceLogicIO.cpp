@@ -1,4 +1,4 @@
-#include "forcelogicio.h"
+#include "ForceLogicIO.h"
 
 ForceLogicIO::ForceLogicIO():m_isStarted(false),
     m_isPaused(false),
