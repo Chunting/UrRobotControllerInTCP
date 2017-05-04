@@ -9,7 +9,7 @@
 #include <extra2.h>
 
 CobotUrRealTimeComm::CobotUrRealTimeComm(std::condition_variable& cond_msg, const QString& hostIp, QObject* parent)
-        : QObject(parent), m_msg_cond(cond_msg){
+        : QObject(parent), m_msg_cond(cond_msg) {
     m_robotState = std::make_shared<RobotStateRT>(m_msg_cond);
     m_tcpServer = new QTcpServer(this);
     m_hostIp = hostIp;
@@ -31,17 +31,17 @@ CobotUrRealTimeComm::CobotUrRealTimeComm(std::condition_variable& cond_msg, cons
     keepalive = 1;
 }
 
-void CobotUrRealTimeComm::onConnected(){
+void CobotUrRealTimeComm::onConnected() {
     COBOT_LOG.info() << "RealTime Connection Ready.";
     Q_EMIT connected();
 }
 
-void CobotUrRealTimeComm::onDisconnected(){
+void CobotUrRealTimeComm::onDisconnected() {
     COBOT_LOG.info() << "CobotUrRealTimeComm real time disconnected";
     Q_EMIT disconnected();
 }
 
-CobotUrRealTimeComm::~CobotUrRealTimeComm(){
+CobotUrRealTimeComm::~CobotUrRealTimeComm() {
     if (m_rtSOCKET) {
         m_rtSOCKET->close();
     }
@@ -51,22 +51,26 @@ CobotUrRealTimeComm::~CobotUrRealTimeComm(){
     INFO_DESTRUCTOR(this);
 }
 
-void CobotUrRealTimeComm::start(){
+void CobotUrRealTimeComm::start() {
     m_SOCKET->connectToHost(m_hostIp, 30003);
     m_tcpServer->listen(QHostAddress::AnyIPv4, REVERSE_PORT_);
 }
 
-void CobotUrRealTimeComm::readData(){
-    auto ba = m_SOCKET->read(2048);
+void CobotUrRealTimeComm::readData() {
+    auto ba = m_SOCKET->readAll();
+
     if (ba.size()) {
-        m_robotState->unpack((uint8_t*) ba.constData());
+        if (m_robotState->getVersion() > 0) {
+            //COBOT_LOG.debug() << "Rt msg size: " << ba.size();
+            m_robotState->unpack((uint8_t*) ba.constData());
+        }
     }
 
     asyncServojFlush();
 }
 
 
-void CobotUrRealTimeComm::asyncServojFlush(){
+void CobotUrRealTimeComm::asyncServojFlush() {
     std::vector<double> tmpq;
     if (m_rt_res_mutex.try_lock()) {
         if (m_rt_q_required.size()) {
@@ -83,7 +87,7 @@ void CobotUrRealTimeComm::asyncServojFlush(){
     servoj(m_qTarget);
 }
 
-void CobotUrRealTimeComm::writeLine(const QByteArray& ba){
+void CobotUrRealTimeComm::writeLine(const QByteArray& ba) {
     auto nba = ba;
     if (nba.size()) {
         if (nba.at(nba.size() - 1) != '\n') {
@@ -93,7 +97,7 @@ void CobotUrRealTimeComm::writeLine(const QByteArray& ba){
     }
 }
 
-void CobotUrRealTimeComm::urProgConnect(){
+void CobotUrRealTimeComm::urProgConnect() {
     if (m_rtSOCKET)
         return;
 
@@ -103,7 +107,7 @@ void CobotUrRealTimeComm::urProgConnect(){
     Q_EMIT realTimeProgConnected();
 }
 
-void CobotUrRealTimeComm::servoj(const std::vector<double>& j){
+void CobotUrRealTimeComm::servoj(const std::vector<double>& j) {
     if (m_rtSOCKET == nullptr) {
         return;
     }
@@ -131,7 +135,7 @@ void CobotUrRealTimeComm::servoj(const std::vector<double>& j){
     bytes_written = m_rtSOCKET->write((char*) buf, 28);
 }
 
-void CobotUrRealTimeComm::stopProg(){
+void CobotUrRealTimeComm::stopProg() {
     if (keepalive) {
         keepalive = 0;
         COBOT_LOG.info() << "Stopping Ur Driver Program";
@@ -144,7 +148,7 @@ void CobotUrRealTimeComm::stopProg(){
     }
 }
 
-void CobotUrRealTimeComm::onRealTimeDisconnect(){
+void CobotUrRealTimeComm::onRealTimeDisconnect() {
     COBOT_LOG.info() << "RealTime Ctrl Disconnected !!!";
 
     m_rtSOCKET->close();
@@ -154,7 +158,7 @@ void CobotUrRealTimeComm::onRealTimeDisconnect(){
     Q_EMIT realTimeProgDisconnect();
 }
 
-void CobotUrRealTimeComm::asyncServoj(const std::vector<double>& positions, bool flushNow){
+void CobotUrRealTimeComm::asyncServoj(const std::vector<double>& positions, bool flushNow) {
     m_rt_res_mutex.lock();
     m_rt_q_required = positions;
     m_rt_res_mutex.unlock();
@@ -166,7 +170,7 @@ void CobotUrRealTimeComm::asyncServoj(const std::vector<double>& positions, bool
     }
 }
 
-void CobotUrRealTimeComm::onSocketError(QAbstractSocket::SocketError socketError){
+void CobotUrRealTimeComm::onSocketError(QAbstractSocket::SocketError socketError) {
     COBOT_LOG.error() << "CobotUrRealTimeComm: " << m_SOCKET->errorString();
     Q_EMIT connectFail();
 }

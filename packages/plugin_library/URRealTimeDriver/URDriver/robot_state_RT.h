@@ -117,6 +117,10 @@ public:
     void setControllerUpdated();
     std::vector<double> getVActual();
     void unpack(uint8_t* buf);
+
+    int getRealTimeMsgLen();
+
+    int rt_msg_len_;
 };
 
 #endif /* ROBOT_STATE_RT_H_ */

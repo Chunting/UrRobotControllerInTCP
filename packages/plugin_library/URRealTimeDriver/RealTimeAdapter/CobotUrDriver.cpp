@@ -41,6 +41,10 @@ CobotUrDriver::~CobotUrDriver() {
 }
 
 void CobotUrDriver::handleCommConnected() {
+    auto ver = m_urCommCtrl->ur->getRobotState()->getVersion();
+    COBOT_LOG.notice() << "CobotUrDriver::handleCommConnected: version: " << ver;
+    m_urRealTimeCommCtrl->ur->getRobotState()->setVersion(m_urCommCtrl->ur->getRobotState()->getVersion());
+    m_urRealTimeCommCtrl->startComm();
     m_connectTime++;
     if (m_connectTime >= 2) {
         onConnectSuccess();
@@ -60,7 +64,6 @@ void CobotUrDriver::startDriver() {
     m_connectTime = 0;
     m_isConnected = false;
     m_urCommCtrl->startComm();
-    m_urRealTimeCommCtrl->startComm();
 }
 
 void CobotUrDriver::handleDisconnected() {
@@ -200,7 +203,9 @@ void CobotUrDriver::setServojGain(double g) {
 void CobotUrDriver::onConnectSuccess() {
     m_isConnected = true;
     ip_addr_ = m_urCommCtrl->ur->getLocalIp();
-    COBOT_LOG.info() << "Local Ip: " << ip_addr_;
+    COBOT_LOG.notice() << "Local Ip: " << ip_addr_;
+    COBOT_LOG.notice() << "Version : " << m_urCommCtrl->ur->getRobotState()->getVersion();
+    m_urRealTimeCommCtrl->ur->getRobotState()->setVersion(m_urCommCtrl->ur->getRobotState()->getVersion());
     uploadProg();
     Q_EMIT driverStartSuccess();
 }

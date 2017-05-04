@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+#include <cobotsys_logger.h>
 #include "robot_state_RT.h"
 #include "do_output.h"
 
@@ -52,6 +53,7 @@ RobotStateRT::RobotStateRT(std::condition_variable& msg_cond) {
     data_published_ = false;
     controller_updated_ = false;
     pMsg_cond_ = &msg_cond;
+    rt_msg_len_ = 0;
 }
 
 RobotStateRT::~RobotStateRT() {
@@ -79,28 +81,25 @@ bool RobotStateRT::getControllerUpdated() {
 
 
 namespace local2 {
-    uint64_t ntoh64(const uint64_t *input)
-    {
-        uint64_t rval;
-        uint8_t *data = (uint8_t *)&rval;
+uint64_t ntoh64(const uint64_t* input) {
+    uint64_t rval;
+    uint8_t* data = (uint8_t*) &rval;
 
-        data[0] = (uint8_t)(*input >> 56);
-        data[1] = (uint8_t)(*input >> 48);
-        data[2] = (uint8_t)(*input >> 40);
-        data[3] = (uint8_t)(*input >> 32);
-        data[4] = (uint8_t)(*input >> 24);
-        data[5] = (uint8_t)(*input >> 16);
-        data[6] = (uint8_t)(*input >> 8);
-        data[7] = (uint8_t)(*input >> 0);
+    data[0] = (uint8_t) (*input >> 56);
+    data[1] = (uint8_t) (*input >> 48);
+    data[2] = (uint8_t) (*input >> 40);
+    data[3] = (uint8_t) (*input >> 32);
+    data[4] = (uint8_t) (*input >> 24);
+    data[5] = (uint8_t) (*input >> 16);
+    data[6] = (uint8_t) (*input >> 8);
+    data[7] = (uint8_t) (*input >> 0);
 
-        return rval;
-    }
+    return rval;
+}
 
-    uint64_t hton64(const uint64_t *input)
-    {
-        return (ntoh64(input));
-    }
-
+uint64_t hton64(const uint64_t* input) {
+    return (ntoh64(input));
+}
 }
 
 double RobotStateRT::ntohd(uint64_t nf) {
@@ -111,7 +110,7 @@ double RobotStateRT::ntohd(uint64_t nf) {
 }
 
 std::vector<double> RobotStateRT::unpackVector(uint8_t* buf, int start_index,
-    int nr_of_vals) {
+                                               int nr_of_vals) {
     uint64_t q;
     std::vector<double> ret;
     for (int i = 0; i < nr_of_vals; i++) {
@@ -383,34 +382,33 @@ void RobotStateRT::unpack(uint8_t* buf) {
     if (version_ >= 1.6 && version_ < 1.7) { //v1.6
         if (len != 756)
             len_good = false;
-    }
-    else if (version_ >= 1.7 && version_ < 1.8) { //v1.7
+    } else if (version_ >= 1.7 && version_ < 1.8) { //v1.7
         if (len != 764)
             len_good = false;
-    }
-    else if (version_ >= 1.8 && version_ < 1.9) { //v1.8
+    } else if (version_ >= 1.8 && version_ < 1.9) { //v1.8
         if (len != 812)
             len_good = false;
-    }
-    else if (version_ >= 3.0 && version_ < 3.2) { //v3.0 & v3.1
+    } else if (version_ >= 3.0 && version_ < 3.2) { //v3.0 & v3.1
         if (len != 1044)
             len_good = false;
-    }
-    else if (version_ >= 3.2 && version_ < 3.3) { //v3.2
+    } else if (version_ >= 3.2 && version_ < 3.3) { //v3.2
         if (len != 1060)
             len_good = false;
     }
 
     if (!len_good) {
-        printf("Wrong length of message on RT interface: %i\n", len);
+        COBOT_LOG.warning() << "Wrong length of message on RT interface: " << len;
         val_lock_.unlock();
         return;
+    } else {
+        rt_msg_len_ = len;
     }
 
     memcpy(&unpack_to, &buf[offset], sizeof(unpack_to));
     time_ = RobotStateRT::ntohd(unpack_to);
     offset += sizeof(double);
     q_target_ = unpackVector(buf, offset, 6);
+    //COBOT_LOG.notice() << "Ver: " << version_ << ", Len: " << len << ", " << putfixedfloats(5, 1, q_actual_);
     offset += sizeof(double) * 6;
     qd_target_ = unpackVector(buf, offset, 6);
     offset += sizeof(double) * 6;
@@ -435,8 +433,7 @@ void RobotStateRT::unpack(uint8_t* buf) {
         tool_vector_actual_ = unpackVector(buf, offset, 6);
         offset += sizeof(double) * 6;
         tcp_speed_actual_ = unpackVector(buf, offset, 6);
-    }
-    else {
+    } else {
         i_control_ = unpackVector(buf, offset, 6);
         offset += sizeof(double) * 6;
         tool_vector_actual_ = unpackVector(buf, offset, 6);
@@ -452,7 +449,7 @@ void RobotStateRT::unpack(uint8_t* buf) {
     offset += sizeof(double) * 6;
 
     memcpy(&digital_input_bits, &buf[offset], sizeof(digital_input_bits));
-    digital_input_bits_ = unpackDigitalInputBits(local2::ntoh64((const uint64_t*)&digital_input_bits));
+    digital_input_bits_ = unpackDigitalInputBits(local2::ntoh64((const uint64_t*) &digital_input_bits));
     offset += sizeof(double);
     motor_temperatures_ = unpackVector(buf, offset, 6);
     offset += sizeof(double) * 6;
@@ -495,5 +492,9 @@ void RobotStateRT::unpack(uint8_t* buf) {
     controller_updated_ = true;
     data_published_ = true;
     pMsg_cond_->notify_all();
+}
+
+int RobotStateRT::getRealTimeMsgLen() {
+    return rt_msg_len_;
 }
 
