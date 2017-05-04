@@ -43,12 +43,19 @@ Q_SIGNALS:
 public:
 
     enum ROBOTCMD {
-        CMD_START_UDP, CMD_SERVO_ON, CMD_SERVO_OFF, CMD_MOVE_ANGLE, CMD_MOVE_IMPULSE
+        CMD_START_UDP,      //启动UDP通信
+        CMD_SERVO_ON,       //开启伺服
+        CMD_SERVO_OFF,      //关闭伺服
+        CMD_QUERY_VERSION,  //查询固件版本
+        CMD_SET_DO,         //设置DO
+        CMD_MOVE_ANGLE,     //让机器人按照角度指令运动
+        CMD_MOVE_IMPULSE    //让机器人按照脉冲指令运动
     };
 
     void start();
     void stop();
-
+    void setDigitOut(int portIndex, bool b);
+    std::string getVersion();
     void sendCmd(QByteArray& cmd);
     void executeCmd(const ROBOTCMD CmdID,bool resendFlag=false);
     void stopProg();
@@ -72,7 +79,8 @@ protected:
     std::mutex m_rt_res_mutex;
     std::vector<double> m_rt_q_required;
     std::vector<double> m_qTarget;
-
+    quint8 m_do_id;//被设置的数字量输出ID号，暂定为16个。
+    bool m_do_bool_value;//被设置的数字量输出值。
     int keepalive;
 };
 

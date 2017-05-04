@@ -12,10 +12,7 @@
 #include "CobotMotoman.h"
 #include "CobotMotomanComm.h"
 #include "CobotMotomanDigitIoAdapter.h"
-
 using namespace cobotsys;
-//TODO Add IO;
-//TODO Add FirmwareQueryer;
 class MotomanDriver : public QObject, public AbstractArmRobotRealTimeDriver {
 Q_OBJECT
 public:
@@ -60,12 +57,12 @@ protected:
     std::vector<double> m_curReqQ;
     bool m_curReqQValid;
 
+    std::shared_ptr<CobotMotomanDigitIoAdapter> m_digitInput;
+    std::shared_ptr<CobotMotomanDigitIoAdapter> m_digitOutput;
+
     std::vector<double> m_robotJointQCache;
 
     CobotMotomanComm* m_motomanComm;
-
-    std::shared_ptr<CobotMotomanDigitIoAdapter> m_digitInput;
-    std::shared_ptr<CobotMotomanDigitIoAdapter> m_digitOutput;
 };
 
 

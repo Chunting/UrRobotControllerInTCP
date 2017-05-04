@@ -8,7 +8,7 @@
 
 
 #include <cobotsys_abstract_digit_io_driver.h>
-#include "CobotMotomanUDPComm.h"
+#include "CobotMotomanTCPComm.h"
 
 using namespace cobotsys;
 
@@ -28,7 +28,7 @@ public:
     virtual bool setToolVoltage(double v);
 
 
-    void setMotomanUDPCtrl(CobotMotomanUDPCommCtrl* realTimeCommCtrl);
+    void setMotomanTCPCommCtrl(CobotMotomanTCPCommCtrl* tcpCommCtrl);
 
 
     // 这是一个内部类，没有怎么严格的要求写。
@@ -41,7 +41,7 @@ public:
 
     int m_debugIoLastStatus;
 
-    CobotMotomanUDPCommCtrl* m_UDPCommCtrl;
+    CobotMotomanTCPCommCtrl* m_TCPCommCtrl;
 
     void debugIoStatus();
 

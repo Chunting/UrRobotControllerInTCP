@@ -6,7 +6,6 @@
 #include <QtCore/QJsonObject>
 #include <extra2.h>
 #include "MotomanDriver.h"
-#include "CobotMotoman.h"
 
 
 MotomanDriver::MotomanDriver() : QObject(nullptr) {
@@ -16,8 +15,6 @@ MotomanDriver::MotomanDriver() : QObject(nullptr) {
     m_motomanComm = nullptr;
     m_curReqQ.clear();
 
-    m_digitInput = make_shared<CobotMotomanDigitIoAdapter>();
-    m_digitOutput = make_shared<CobotMotomanDigitIoAdapter>();
 }
 
 MotomanDriver::~MotomanDriver() {
@@ -76,8 +73,8 @@ bool MotomanDriver::start() {
     m_motomanComm->startDriver();
 
     // 这里是数字驱动的部分
-    m_digitInput->setMotomanUDPCtrl(m_motomanComm->m_motomanUDPCommCtrl);
-    m_digitOutput->setMotomanUDPCtrl(m_motomanComm->m_motomanUDPCommCtrl);
+    m_digitInput->setMotomanTCPCommCtrl(m_motomanComm->m_motomanTCPCommCtrl);
+    m_digitOutput->setMotomanTCPCommCtrl(m_motomanComm->m_motomanTCPCommCtrl);
     m_digitInput->m_isInput = true;
     m_digitOutput->m_isOutput = true;
     return true;
@@ -93,8 +90,8 @@ void MotomanDriver::stop() {
         m_motomanComm->stopDriver();
         m_motomanComm->deleteLater();
         m_motomanComm = nullptr;
-        m_digitInput->setMotomanUDPCtrl(nullptr);
-        m_digitOutput->setMotomanUDPCtrl(nullptr);
+        m_digitInput->setMotomanTCPCommCtrl(nullptr);
+        m_digitOutput->setMotomanTCPCommCtrl(nullptr);
     }
 }
 

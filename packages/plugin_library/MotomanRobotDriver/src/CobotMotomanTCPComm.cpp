@@ -6,7 +6,6 @@
 #include <cobotsys_logger.h>
 #include <QtNetwork/QHostAddress>
 #include "CobotMotomanTCPComm.h"
-#include "CobotMotomanFirmwareQueryer.h"
 
 CobotMotomanTCPComm::CobotMotomanTCPComm(std::condition_variable& cond_msg, QObject* parent)
         : QObject(parent), m_msg_cond(cond_msg),m_cmdID(0),m_LastCmdID(CMD_SERVO_OFF){
@@ -34,17 +33,8 @@ CobotMotomanTCPComm::~CobotMotomanTCPComm(){
 }
 
 void CobotMotomanTCPComm::start(){
-    if (m_host.isEmpty()) return;
-
-    COBOT_LOG.info() << "Acquire firmware version: Connecting...";
-    CobotMotomanFirmwareQueryer firmQueryer(m_host);
-    if (firmQueryer.getVersion(m_robotState)) {
-        /**
-         * Link motoman general message channel
-         */
+    if (!m_host.isEmpty()){
         m_tcpSocket->connectToHost(m_host, TCP_PORT);//Motoman tcp port ID is 11000
-    } else {
-        Q_EMIT connectFail();
     }
 }
 
@@ -139,6 +129,17 @@ void CobotMotomanTCPComm::executeCmd(const ROBOTCMD CmdID,bool resendFlag) {
             cmd[ 2] = 0x00;
             cmd[ 3] = 0x00;
             break;
+        case CMD_QUERY_VERSION:
+            cmd[ 0] = 0xc3;
+            break;
+        case CMD_SET_DO://
+            cmd[ 0] = 0xc2;
+            cmd[ 1] = 0x00;
+            //cmd[ 2] = 0x00;
+            cmd[ 3] = 0xff;
+            cmd[4] = m_do_id;
+            cmd[5] = (quint8)m_do_bool_value;//false设置为0，true设置为非0。
+            break;
         case CMD_MOVE_ANGLE:
             cmd[0]=0xc1;
             cmd[1]=0x0a;
@@ -153,29 +154,17 @@ void CobotMotomanTCPComm::executeCmd(const ROBOTCMD CmdID,bool resendFlag) {
                 }else{
                     angleIncrement[i]=m_robotState.get()->getQActual()[i]-m_qTarget[i];
                 }
-                cmd.push_back(IntToArray(angleIncrement[i]));
+                cmd.push_back(IntToArray((qint32)(angleIncrement[i]*FLOAT_PRECISION)));
                 //Note No speed and accel control now.
             }
             break;
         case CMD_MOVE_IMPULSE:
-            cmd[0]=0xc1;
-            cmd[1]=0x0a;
-            cmd[2]=0x80;
-            for(int i=0;i<6;i++){
-                //或许这里要做成比例式的。
-                if(m_robotState.get()->getQActual()[i]-m_qTarget[i]>MAX_ANGLE_INCREMENT){
-                    angleIncrement[i]=MAX_ANGLE_INCREMENT;
-                }else if(m_robotState.get()->getQActual()[i]-m_qTarget[i]<-MAX_ANGLE_INCREMENT){
-                    angleIncrement[i]=-MAX_ANGLE_INCREMENT;
-                }else{
-                    angleIncrement[i]=m_robotState.get()->getQActual()[i]-m_qTarget[i];
-                }
-                cmd.push_back(IntToArray(angleIncrement[i]));
-                //Note No speed and accel control now.
-            }
+            COBOT_LOG.warning()<<"Not develop yet.";
+            return;
             break;
         default:
             COBOT_LOG.error()<<"Undefined command.";
+            return;
     }
     //cmd.resize(CobotMotoman::FRAME_LENGTH_);
     cmd.resize(FRAME_LENGTH);
@@ -242,4 +231,15 @@ void CobotMotomanTCPComm::stopProg(){
         COBOT_LOG.info() << "Stopping Motoman Driver Program";
         executeCmd(CMD_SERVO_OFF);
     }
+}
+
+void CobotMotomanTCPComm::setDigitOut(int portIndex, bool b) {
+    m_do_id=portIndex;
+    m_do_bool_value=b;
+    executeCmd(CMD_SET_DO);
+}
+
+std::string CobotMotomanTCPComm::getVersion() {
+    COBOT_LOG.warning() << "Not develop yet.";
+    return "1.0";
 }
