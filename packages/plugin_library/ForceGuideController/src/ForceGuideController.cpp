@@ -233,7 +233,13 @@ bool ForceGuideController::createForceControlSolver() {
 void ForceGuideController::guideControlThread() {
 	auto time_cur = std::chrono::high_resolution_clock::now();
 	int nc = 0;
-	static bool btnLastState = true;
+    static bool robotConnectCheck = true;
+    static bool posReadyCheck = true;
+    static bool sensorConnectCheck = true;
+    static bool sensorReadyCheck = true;
+	static bool buttonStateCheck = true;
+    static bool controlSolverCheck = true;
+    static bool kinematicSolverCheck = true;
 	while (!m_exit)
 	{
 		std::chrono::duration<double> dur(0.008);
@@ -245,115 +251,141 @@ void ForceGuideController::guideControlThread() {
 		//COBOT_LOG.info() << "control period: " << time_diff.count();
 
 		if (m_bcontrolStart) {
-			if (!m_bRobotConnect) {
-				if (nc == 125) {
-					COBOT_LOG.error() << "robot not connected!";
-					nc = 0;
-				}
-				continue;
-			}
-			if (!m_bSensorConnect) {
-				if (nc == 125) {
-					COBOT_LOG.error() << "force sensor not connected!";
-					nc = 0;
-				}
-				continue;
-			}
-			if (!m_posReady)
-			{
-				if (nc == 125) {
-					COBOT_LOG.error() << "joint pos not ready!";
-					nc = 0;
-				}
-				continue;
-			}
+          //check robot connection
+          if (!m_bRobotConnect) {
+            if (robotConnectCheck) {
+              COBOT_LOG.error() << "robot not connected!";
+              robotConnectCheck = false;
+            }
+            continue;
+          } else {
+            if (!robotConnectCheck) {
+              COBOT_LOG.notice() << "robot connected!";
+              robotConnectCheck = true;
+            }
+          }
 
-			if (!m_sensorReady)
-			{
-				if (nc == 125) {
-					COBOT_LOG.error() << "sensor data not ready!";
-					nc = 0;
-				}
-				continue;
-			}
-			auto ioStatus = m_ptrRobot->getDigitIoDriver(1);
-			if (!m_setVoltage) {
-				//setToolVoltage
-				ioStatus->setToolVoltage(12.0);
-				m_setVoltage = true;
-			}
+          //check joint data ready
+          if (!m_posReady) {
+            if (posReadyCheck) {
+              COBOT_LOG.error() << "joint data not ready!";
+              posReadyCheck = false;
+            }
+            continue;
+          } else {
+            if (!posReadyCheck) {
+              COBOT_LOG.notice() << "joint data ready!";
+              posReadyCheck = true;
+            }
+          }
 
-			if (ioStatus->getIoStatus(DigitIoPort::Port_Ur_Tool_In_0) == DigitIoStatus::Reset) {
-				//if (nc == 125) {
-				//	COBOT_LOG.notice() << "io button not pressed!";
-				//	nc = 0;
-				//}
-				//continue;
-				if (btnLastState) {
-					COBOT_LOG.notice() << "io button released!";
-					btnLastState = false;
-				}
-				continue;
-			}
-			else {
-				if (!btnLastState) {
-					COBOT_LOG.notice() << "io button pressed!";
-					btnLastState = true;
-				}
-			}
-			if (m_ptrForceControlSolver)
-			{
-				if (m_ptrKinematicSolver) {
+          //setToolVoltage
+          auto ioStatus = m_ptrRobot->getDigitIoDriver(1);
+          if (!m_setVoltage) {
+            //setToolVoltage
+            ioStatus->setToolVoltage(12.0);
+            m_setVoltage = true;
+          }
 
-					m_mutex.lock();
-					std::vector<double> curQ = m_curQ;
-					m_mutex.unlock();
+          //check force sensor connection
+          if (!m_bSensorConnect) {
+            if (sensorConnectCheck) {
+              COBOT_LOG.error() << "force sensor not connected!";
+              sensorConnectCheck = false;
+            }
+            continue;
+          } else {
+            if (!sensorConnectCheck) {
+              COBOT_LOG.notice() << "force sensor connected!";
+              sensorConnectCheck = true;
+            }
+          }
 
-					std::vector<double> offset;
-					m_ptrForceControlSolver->solve(offset);
+          //check sensor data ready
+          if (!m_sensorReady) {
+            if (sensorReadyCheck) {
+              COBOT_LOG.error() << "force sensor data not ready!";
+              sensorReadyCheck = false;
+            }
+            continue;
+          } else {
+            if (!sensorReadyCheck) {
+              COBOT_LOG.notice() << "force sensor data ready!";
+              sensorReadyCheck = true;
+            }
+          }
 
-					std::vector<double> offset_ee;
-					for (int i = 0; i < 6; i++) {
-						offset_ee.push_back(offset[i]);
-					}
+          //check control solver ready
+          if (!m_ptrForceControlSolver) {
+            if (controlSolverCheck) {
+              COBOT_LOG.error() << "force control solver not created!";
+              controlSolverCheck = false;
+            }
+            continue;
+          } else {
+            if (!controlSolverCheck) {
+              COBOT_LOG.notice() << "force control solver created!";
+              controlSolverCheck = true;
+            }
+          }
 
-					std::vector<double> pos;
-					m_ptrKinematicSolver->pose_EEToWorld(curQ, offset_ee, pos);
-					std::vector<double> targetQ;
-					if (m_ptrKinematicSolver->cartToJnt(curQ, pos, targetQ) == 0) {
-						m_ptrRobot->move(targetQ);
-						//if (nc == 125) {
-						//	COBOT_LOG.info() << "do force guider working!";
-							//COBOT_LOG.notice() << " move: " << targetQ[0] << ", " << targetQ[1] << ", " << targetQ[2] << ", " << targetQ[3] << ", " << targetQ[4] << ", " << targetQ[5];
-						//	nc = 0;
-						//}
-						//if (m_firstMove) {
-						//	m_firstMove = false;
-						//	COBOT_LOG.notice() << "first move: " << targetQ[0] << ", " << targetQ[1] << ", " << targetQ[2] << ", " << targetQ[3] << ", " << targetQ[4] << ", " << targetQ[5];
-						//}
-					}
+          //check control solver ready
+          if (!m_ptrKinematicSolver) {
+            if (kinematicSolverCheck) {
+              COBOT_LOG.error() << "kinematic solver not created!";
+              kinematicSolverCheck = false;
+            }
+            continue;
+          } else {
+            if (!kinematicSolverCheck) {
+              COBOT_LOG.notice() << "kinematic solver created!";
+              kinematicSolverCheck = true;
+            }
+          }
 
-					////sleep for loop
-					//std::chrono::milliseconds timespan(10); 
-					//std::this_thread::sleep_for(timespan);
+          m_mutex.lock();
+          std::vector<double> curQ = m_curQ;
+          m_mutex.unlock();
 
-				}
-				else {
-					if (nc == 125) {
-						COBOT_LOG.error() << "kinematic solver not created!";
-						nc = 0;
-					}
-				}
-			}
-			else {
-				if (nc == 125) {
-					COBOT_LOG.error() << "Force control solver not created!";
-					nc = 0;
-				}
-			}
-		}
-		if (nc % 125 == 0)
-			nc = 0;
+          //check button state
+          if (ioStatus->getIoStatus(DigitIoPort::Port_Ur_Tool_In_0) == DigitIoStatus::Reset) {
+            if (buttonStateCheck) {
+              COBOT_LOG.warning() << "io button released!";
+              buttonStateCheck = false;
+
+              //stop robot motion
+              m_ptrRobot->move(curQ);
+            }
+            continue;
+          }
+          else {
+            if (!buttonStateCheck) {
+              COBOT_LOG.notice() << "io button pressed!";
+              buttonStateCheck = true;
+            }
+          }
+
+          //do force guider working
+          std::vector<double> offset;
+          m_ptrForceControlSolver->solve(offset);
+
+          std::vector<double> offset_ee;
+          for (int i = 0; i < 6; i++) {
+            offset_ee.push_back(offset[i]);
+          }
+
+          std::vector<double> pos;
+          m_ptrKinematicSolver->pose_EEToWorld(curQ, offset_ee, pos);
+          std::vector<double> targetQ;
+          if (m_ptrKinematicSolver->cartToJnt(curQ, pos, targetQ) == 0) {
+            m_ptrRobot->move(targetQ);
+            //if (m_firstMove) {
+            //	m_firstMove = false;
+            //	COBOT_LOG.notice() << "first move: " << targetQ[0] << ", " << targetQ[1] << ", " << targetQ[2] << ", " << targetQ[3] << ", " << targetQ[4] << ", " << targetQ[5];
+            //}
+          }
+
+ 		}
 	}
 }
 

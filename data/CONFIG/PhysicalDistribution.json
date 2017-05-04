@@ -45,6 +45,21 @@
       "objectKey": "Placer",
       "factory": "BinpickingPlacerFactory, Ver 1.0",
       "type": "SuckerBinpickingPlacer"
+    },
+    {
+      "objectId": "JointFilter",
+      "objectKey": "JointFilter",
+      "factory": "Ur10FilterFactory, Ver 1.0",
+      "type": "Ur10JointFilter",
+      "config": "CONFIG/PhysicalDistribution.json"
     }
+  ],
+  "JointLimits": [
+    300,
+    300,
+    300,
+    300,
+    300,
+    300
   ]
 }

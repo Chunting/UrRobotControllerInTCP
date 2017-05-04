@@ -143,8 +143,8 @@ void URRealTimeDriver::robotStatusWatcher() {
         // 抓取当前姿态
         if (m_mutex.try_lock()) {
             if (m_urDriver) {
-                auto pState = m_urDriver->m_urRealTimeCommCtrl->ur->getRobotState();
-                q_next = pState->getQActual();
+                auto robotState = m_urDriver->m_urRealTimeCommCtrl->ur->getRobotState();
+                q_next = robotState->getQActual();
                 m_robotJointQCache = q_next;
             }
             m_mutex.unlock();
@@ -162,7 +162,12 @@ void URRealTimeDriver::robotStatusWatcher() {
         // 获取当前控制数据
         if (m_mutex.try_lock()) {
             if (m_curReqQValid) {
-                q_next = m_curReqQ;
+                if (m_curReqQ.size()) {
+                    q_next = m_curReqQ;
+                }
+            }
+            if (m_jointTargetFilter) { // 应用数据过滤，平滑运动
+                m_jointTargetFilter->applyFilter(q_next, pStatus);
             }
             m_mutex.unlock();
         }
@@ -246,6 +251,7 @@ void URRealTimeDriver::_updateDigitIoStatus() {
 void URRealTimeDriver::clearAttachedObject() {
     std::lock_guard<std::mutex> lockGuard(m_mutex);
     m_observers.clear();
+    m_jointTargetFilter.reset();
 }
 
 std::vector<double> URRealTimeDriver::getRobotJointQ() {
@@ -257,4 +263,10 @@ void URRealTimeDriver::handleObjectDestroy(QObject* object) {
     if (*m_objectAlive) {
         handleDriverDisconnect();
     }
+}
+
+bool URRealTimeDriver::setTargetJointFilter(const std::shared_ptr<ArmRobotJointTargetFilter>& filter) {
+    std::lock_guard<std::mutex> lockGuard(m_mutex);
+    m_jointTargetFilter = filter;
+    return true;
 }

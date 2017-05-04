@@ -40,6 +40,8 @@ public:
     static void loadDataPaths();
 
     static std::string getPreDefPath(PreDefPath pathType = Data);
+
+    static void dumpAvailablePath();
 protected:
     static void storSearchPath(const std::string& path_to_find, PreDefPath pathType);
     static std::vector<std::string> base_paths;

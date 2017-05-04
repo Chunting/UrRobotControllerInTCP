@@ -124,6 +124,9 @@ bool CobotUrDriver::uploadProg() {
                 servoj_time_, servoj_lookahead_time_, servoj_gain_);
     else
         sprintf(buf, "\t\t\t\tservoj(q, t=%.4f)\n", servoj_time_);
+
+//    sprintf(buf, "\t\t\t\tmovej(q, t=%.4f)\n", servoj_time_);
+
     cmd_str += buf;
 
     cmd_str += "\t\t\telse:\n";
@@ -158,6 +161,7 @@ bool CobotUrDriver::uploadProg() {
     cmd_str += "end\n";
 
     m_urRealTimeCommCtrl->addCommandToQueue(cmd_str.c_str());
+    COBOT_LOG.notice() << "URScript: \n" << cmd_str;
     return true;
 }
 

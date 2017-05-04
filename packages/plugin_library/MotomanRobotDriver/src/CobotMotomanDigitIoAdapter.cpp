@@ -2,14 +2,15 @@
 // Created by 杨帆 on 17-5-2.
 // Copyright (c) 2017 Wuhan Collaborative Robot Technology Co.,Ltd. All rights reserved.
 //
-
 #include <cobotsys_logger.h>
 #include "CobotMotomanDigitIoAdapter.h"
 
 CobotMotomanDigitIoAdapter::CobotMotomanDigitIoAdapter() {
-    m_realTimeCommCtrl = nullptr;
+    m_TCPCommCtrl = nullptr;
     m_isInput = false;
     m_isOutput = false;
+	m_inputIoStatus = 0;
+	m_outputIoStatus = 0;
 }
 
 CobotMotomanDigitIoAdapter::~CobotMotomanDigitIoAdapter() {
@@ -51,47 +52,40 @@ bool CobotMotomanDigitIoAdapter::isDigitOutput() const {
 
 void CobotMotomanDigitIoAdapter::debugIoStatus() {
     if (isDigitInput() && m_debugIoLastStatus != m_inputIoStatus) {
+#ifdef DEBUG
         COBOT_LOG.message("Input") << std::hex << setw(8) << m_inputIoStatus;
+#endif // DEBUG
+
         m_debugIoLastStatus = m_inputIoStatus;
     }
     if (isDigitOutput() && m_debugIoLastStatus != m_outputIoStatus) {
+#ifdef DEBUG
         COBOT_LOG.message("Output") << std::hex << setw(8) << m_outputIoStatus;
+#endif // DEBUG
+		
         m_debugIoLastStatus = m_outputIoStatus;
     }
 }
 
 void CobotMotomanDigitIoAdapter::setDigitOut(int portIndex, bool b) {
-    char buf[256] = {0};
-    if (portIndex < 8) {
-        sprintf(buf, "sec setOut():\n\tset_standard_digital_out(%d, %s)\nend\n",
-                portIndex, b ? "True" : "False");
-        if (m_realTimeCommCtrl) {
-            m_realTimeCommCtrl->addCommandToQueue(buf);
-        }
+    if (m_TCPCommCtrl) {
+        m_TCPCommCtrl->motoman->setDigitOut(portIndex,b);
     }
 }
 
 bool CobotMotomanDigitIoAdapter::setToolVoltage(double v) {
-    char buf[256];
-    int voltage = (int) v;
-    sprintf(buf, "sec setOut():\n\tset_tool_voltage(%d)\nend\n", voltage);
-    if (m_realTimeCommCtrl) {
-        m_realTimeCommCtrl->addCommandToQueue(buf);
-        return true;
-    }
     return false;
 }
 
-void CobotMotomanDigitIoAdapter::setMotomanRealTimeCtrl(CobotMotomanRealTimeCommCtrl* realTimeCommCtrl) {
-    m_realTimeCommCtrl = realTimeCommCtrl;
-    if (m_realTimeCommCtrl == nullptr) {
+void CobotMotomanDigitIoAdapter::setMotomanTCPCommCtrl(CobotMotomanTCPCommCtrl* tcpCommCtrl) {
+    m_TCPCommCtrl = tcpCommCtrl;
+    if (m_TCPCommCtrl == nullptr) {
         m_inputIoStatus = 0;
         m_outputIoStatus = 0;
     }
-
 }
 
 bool CobotMotomanDigitIoAdapter::isOpened() const {
-    return (m_realTimeCommCtrl != nullptr);
+    return (m_TCPCommCtrl != nullptr);
 }
 

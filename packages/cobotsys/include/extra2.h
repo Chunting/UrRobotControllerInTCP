@@ -15,6 +15,8 @@
 #include <QProcess>
 #include <QStringList>
 #include <QJsonObject>
+#include <QJsonValue>
+#include <QJsonArray>
 #include <QImage>
 #include <opencv2/opencv.hpp>
 #include <cobotsys.h>
@@ -24,6 +26,7 @@
 #include <thread>         // std::this_thread::sleep_until
 #include <chrono>         // std::chrono::system_clock
 #include <ctime>          // std::time_t, std::tm, std::localtime, std::mktime
+
 void qt_ba_to_cobot_log(QByteArray& ba);
 void kill_process_childs(int pid, int ppid, std::function<void(int, int)> killMethod);
 QStringList gen_ros_internal_args(const std::map<QString, QString>& arg_map);
@@ -47,5 +50,7 @@ void range_limit(T& v, const N& min_, const M& max_) {
             v = (T) max_;
     }
 }
+
+std::vector<double> readRealArray(const QJsonValue& realArrayValue);
 
 #endif //PROJECT_EXTRA_H
