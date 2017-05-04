@@ -77,7 +77,12 @@ void PhysicalDistributionController::pause() {
 }
 
 void PhysicalDistributionController::stop() {
+    std::lock_guard<std::mutex> lockctx(m_mutex);
     m_loop = false;
+    if (m_ptrMover) {
+        m_ptrMover->clearAll();
+    }
+
     m_cond.notify_all();
     if (m_mainTaskThread.joinable()) {
         m_mainTaskThread.join();
@@ -88,10 +93,6 @@ void PhysicalDistributionController::stop() {
     }
     if (m_ptrCameraMaster) {
         m_ptrCameraMaster->close();
-    }
-
-    if (m_ptrMover) {
-        m_ptrMover->clearAll();
     }
 
     cv::destroyAllWindows();
@@ -162,7 +163,7 @@ bool PhysicalDistributionController::_setupInternalObjects(ObjectGroup& objectGr
 
     m_ptrRobot->attach(std::dynamic_pointer_cast<ArmRobotRealTimeStatusObserver>(_self));
     m_ptrRobot->attach(std::dynamic_pointer_cast<ArmRobotRealTimeStatusObserver>(m_ptrViewer));
-    if (jfilter){
+    if (jfilter) {
         m_ptrRobot->setTargetJointFilter(jfilter);
     }
 

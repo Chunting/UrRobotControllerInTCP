@@ -138,7 +138,9 @@ void URRealTimeDriver::robotStatusWatcher() {
         auto time_rdy = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double> time_diff = time_rdy - time_cur; // 时间间隙
         time_cur = time_rdy;
-        //COBOT_LOG.info() << "Status Updated: " << time_diff.count();
+        if (time_diff.count() > 9 || time_diff.count() < 7) {
+            COBOT_LOG.warning() << "Ur Status Updated Time Exception: " << time_diff.count();
+        }
 
         // 抓取当前姿态
         if (m_mutex.try_lock()) {
@@ -178,10 +180,6 @@ void URRealTimeDriver::robotStatusWatcher() {
                 m_urDriver->servoj(q_next);
                 m_mutex.unlock();
             }
-            //auto info_log = COBOT_LOG.info();
-            //for (int i = 0; i < (int)q_next.size(); i++) {
-            //	info_log << q_next[i] / M_PI * 180 << ", ";
-            //}
         }
     }
     COBOT_LOG.notice() << "UR Status Watcher shutdown!";

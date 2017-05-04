@@ -43,5 +43,5 @@ void Ur10JointFilter::applyFilter(std::vector<double>& target_, const ArmRobotSt
         target_[i] = curPosi[i] + diffNew[i];
     }
 
-    COBOT_LOG.debug() << putfixedfloats(7, 2, diffNew, 180 / M_PI);
+    //COBOT_LOG.debug() << putfixedfloats(7, 2, diffNew, 180 / M_PI);
 }
