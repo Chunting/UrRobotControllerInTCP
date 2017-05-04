@@ -1,0 +1,11 @@
+{
+  "objectGroup": [
+    {
+      "objectId": "Widget",
+      "objectKey": "Widget",
+      "factory": "SimpleUiFactory, Ver 1.0",
+      "type": "MotomanManipulator",
+      "config": "CONFIG/Motoman_MH5F_config.json"
+    }
+  ]
+}

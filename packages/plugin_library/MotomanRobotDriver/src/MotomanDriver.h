@@ -13,6 +13,7 @@
 #include "CobotMotomanComm.h"
 #include "CobotMotomanDigitIoAdapter.h"
 using namespace cobotsys;
+
 class MotomanDriver : public QObject, public AbstractArmRobotRealTimeDriver {
 Q_OBJECT
 public:
@@ -63,6 +64,8 @@ protected:
     std::vector<double> m_robotJointQCache;
 
     CobotMotomanComm* m_motomanComm;
+
+    std::shared_ptr<bool> m_objectAlive;
 };
 
 

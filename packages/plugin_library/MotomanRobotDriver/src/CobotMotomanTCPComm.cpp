@@ -34,6 +34,7 @@ CobotMotomanTCPComm::~CobotMotomanTCPComm(){
 
 void CobotMotomanTCPComm::start(){
     if (!m_host.isEmpty()){
+        qDebug()<<"m_host "<<m_host<<" TCP Port "<<TCP_PORT;
         m_tcpSocket->connectToHost(m_host, TCP_PORT);//Motoman tcp port ID is 11000
     }
 }

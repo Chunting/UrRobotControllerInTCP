@@ -41,13 +41,11 @@ public:
     CobotMotomanUDPCommCtrl* m_motomanUDPCommCtrl;
 
 protected:
-    void handleCommConnected();
-    void handleRTCommConnected();
-    void handleDisconnected();
-    void handleRTProgConnect();
-    void handleRTProgDisconnect();
+    void handleTCPConnected();
+    void handleUDPConnected();
+    void handleTCPDisconnected();
+    void handleUDPDisconnected();
 
-    bool uploadProg();
     void onConnectSuccess();
 
 protected:

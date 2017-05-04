@@ -35,11 +35,8 @@ Q_SIGNALS:
     void disconnected();
     void connectFail();
 
-    void realTimeProgConnected();
-    void realTimeProgDisconnect();
-
 protected:
-    void onRealTimeDisconnect();
+    void onUDPDisconnect();
     void onSocketError(QAbstractSocket::SocketError socketError);
 
 

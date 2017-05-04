@@ -5,26 +5,21 @@
 #include "CobotMotoman.h"
 #include "CobotMotomanComm.h"
 
-CobotMotomanComm::CobotMotomanComm(std::condition_variable& rt_msg_cond,
-                             std::condition_variable& msg_cond,
+CobotMotomanComm::CobotMotomanComm(std::condition_variable& udp_msg_cond,
+                             std::condition_variable& tcp_msg_cond,
                              const QString& robotAddr,
                              QObject* parent) : QObject(parent){
-    m_motomanTCPCommCtrl = new CobotMotomanTCPCommCtrl(msg_cond, robotAddr, this);
-    m_motomanUDPCommCtrl = new CobotMotomanUDPCommCtrl(rt_msg_cond, robotAddr, this);
+    m_motomanTCPCommCtrl = new CobotMotomanTCPCommCtrl(tcp_msg_cond, robotAddr, this);
+    m_motomanUDPCommCtrl = new CobotMotomanUDPCommCtrl(udp_msg_cond, robotAddr, this);
 
-    connect(m_motomanTCPCommCtrl->motoman, &CobotMotomanTCPComm::connected, this, &CobotMotomanComm::handleCommConnected);
-    connect(m_motomanUDPCommCtrl->motoman, &CobotMotomanUDPComm::connected, this, &CobotMotomanComm::handleRTCommConnected);
+    connect(m_motomanTCPCommCtrl->motoman, &CobotMotomanTCPComm::connected, this, &CobotMotomanComm::handleTCPConnected);
+    connect(m_motomanUDPCommCtrl->motoman, &CobotMotomanUDPComm::connected, this, &CobotMotomanComm::handleUDPConnected);
 
-    connect(m_motomanTCPCommCtrl->motoman, &CobotMotomanTCPComm::disconnected, this, &CobotMotomanComm::handleDisconnected);
-    connect(m_motomanUDPCommCtrl->motoman, &CobotMotomanUDPComm::disconnected, this, &CobotMotomanComm::handleDisconnected);
+    connect(m_motomanTCPCommCtrl->motoman, &CobotMotomanTCPComm::disconnected, this, &CobotMotomanComm::handleTCPDisconnected);
+    connect(m_motomanUDPCommCtrl->motoman, &CobotMotomanUDPComm::disconnected, this, &CobotMotomanComm::handleUDPDisconnected);
 
-    connect(m_motomanUDPCommCtrl->motoman, &CobotMotomanUDPComm::realTimeProgConnected,
-            this, &CobotMotomanComm::handleRTProgConnect);
-    connect(m_motomanUDPCommCtrl->motoman, &CobotMotomanUDPComm::realTimeProgDisconnect,
-            this, &CobotMotomanComm::handleRTProgDisconnect);
-
-    connect(m_motomanTCPCommCtrl->motoman, &CobotMotomanTCPComm::connectFail, this, &CobotMotomanComm::handleDisconnected);
-    connect(m_motomanUDPCommCtrl->motoman, &CobotMotomanUDPComm::connectFail, this, &CobotMotomanComm::handleDisconnected);
+    connect(m_motomanTCPCommCtrl->motoman, &CobotMotomanTCPComm::connectFail, this, &CobotMotomanComm::handleTCPDisconnected);
+    connect(m_motomanUDPCommCtrl->motoman, &CobotMotomanUDPComm::connectFail, this, &CobotMotomanComm::handleUDPDisconnected);
 
 
     m_noDisconnectedAccept = false;
@@ -41,30 +36,13 @@ CobotMotomanComm::~CobotMotomanComm(){
     stopDriver();
 }
 
-void CobotMotomanComm::handleCommConnected(){
+void CobotMotomanComm::handleTCPConnected(){
     m_connectTime++;
     if (m_connectTime >= 2) {
         onConnectSuccess();
     }
 }
-
-void CobotMotomanComm::handleRTCommConnected(){
-    m_connectTime++;
-    if (m_connectTime >= 2) {
-        onConnectSuccess();
-    }
-}
-
-void CobotMotomanComm::startDriver(){
-    m_noDisconnectedAccept = true;
-    m_disconnectCount = 0;
-    m_connectTime = 0;
-    m_isConnected = false;
-    m_motomanTCPCommCtrl->startComm();
-    m_motomanUDPCommCtrl->startComm();
-}
-
-void CobotMotomanComm::handleDisconnected(){
+void CobotMotomanComm::handleTCPDisconnected(){
     m_connectTime = 0;
     m_isConnected = false;
     m_disconnectCount++;
@@ -76,6 +54,25 @@ void CobotMotomanComm::handleDisconnected(){
         Q_EMIT driverStopped();
     }
 }
+
+void CobotMotomanComm::handleUDPConnected(){
+    COBOT_LOG.info() << "UDP Connected";
+}
+
+void CobotMotomanComm::handleUDPDisconnected(){
+    if (m_isConnected) {
+        Q_EMIT driverStopped();
+    }
+}
+void CobotMotomanComm::startDriver(){
+    m_noDisconnectedAccept = true;
+    m_disconnectCount = 0;
+    m_connectTime = 0;
+    m_isConnected = false;
+    m_motomanTCPCommCtrl->startComm();
+    m_motomanUDPCommCtrl->startComm();
+}
+
 
 void CobotMotomanComm::stopDriver(){
     m_noDisconnectedAccept = false;
@@ -122,16 +119,6 @@ void CobotMotomanComm::onConnectSuccess(){
     m_motomanTCPCommCtrl->motoman->executeCmd(CobotMotomanTCPComm::CMD_SERVO_ON);
     m_motomanTCPCommCtrl->motoman->executeCmd(CobotMotomanTCPComm::CMD_START_UDP);
     Q_EMIT driverStartSuccess();
-}
-
-void CobotMotomanComm::handleRTProgConnect(){
-    COBOT_LOG.info() << "Prog Upload Success";
-}
-
-void CobotMotomanComm::handleRTProgDisconnect(){
-    if (m_isConnected) {
-        Q_EMIT driverStopped();
-    }
 }
 
 void CobotMotomanComm::servoj(const std::vector<double>& positions){

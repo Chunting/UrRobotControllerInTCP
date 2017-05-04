@@ -15,6 +15,9 @@ MotomanDriver::MotomanDriver() : QObject(nullptr) {
     m_motomanComm = nullptr;
     m_curReqQ.clear();
 
+    m_digitInput = std::make_shared<CobotMotomanDigitIoAdapter>();
+    m_digitOutput = std::make_shared<CobotMotomanDigitIoAdapter>();
+    m_objectAlive = std::make_shared<bool>(true);
 }
 
 MotomanDriver::~MotomanDriver() {
@@ -23,6 +26,7 @@ MotomanDriver::~MotomanDriver() {
         m_udp_msg_cond.notify_all();
         m_thread.join();
     }
+    *m_objectAlive = false;
 }
 
 void MotomanDriver::move(const std::vector<double>& q) {

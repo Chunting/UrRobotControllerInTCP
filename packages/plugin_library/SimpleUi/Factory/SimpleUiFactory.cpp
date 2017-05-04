@@ -8,6 +8,7 @@
 #include <extra2.h>
 #include <RobotXyz/RobotXyzWidget.h>
 #include <ArmRobotManipulator/ArmRobotManipulator.h>
+#include <MotomanManipulator/MotomanManipulator.h>
 #include <SimpleWidgetViewer/SimpleWidgetViewer.h>
 #include <DragApp/DragAppWidget.h>
 #include <LoggerWidget/BasicLoggerWidget.h>
@@ -16,6 +17,7 @@
 COBOTSYS_FACTORY_BEGIN(SimpleUiFactory)
         COBOTSYS_FACTORY_EXPORT(RobotXyzWidget)
         COBOTSYS_FACTORY_EXPORT(ArmRobotManipulator)
+        COBOTSYS_FACTORY_EXPORT(MotomanManipulator)
         COBOTSYS_FACTORY_EXPORT(SimpleWidgetViewer)
 		COBOTSYS_FACTORY_EXPORT(DragAppWidget)
         COBOTSYS_FACTORY_EXPORT(BasicLoggerWidget)
