@@ -4,35 +4,35 @@
 //
 
 #include <cobotsys_logger.h>
-#include "CobotMotomanRealTimeComm.h"
+#include "CobotMotomanUDPComm.h"
 
-CobotMotomanRealTimeComm::CobotMotomanRealTimeComm(std::condition_variable& cond_msg, const QString& robotIp, QObject* parent)
+CobotMotomanUDPComm::CobotMotomanUDPComm(std::condition_variable& cond_msg, const QString& robotIp, QObject* parent)
         : QObject(parent), m_msg_cond(cond_msg){
 
     m_robotState = std::make_shared<MotomanRobotState>(m_msg_cond);
     m_robotIp = robotIp;
     m_udpSocket = new QUdpSocket(this);
     //m_udpSocket->setSocketOption(QAbstractSocket::LowDelayOption, 1);
-    connect(m_udpSocket, &QUdpSocket::connected, this, &CobotMotomanRealTimeComm::onConnected);
-    connect(m_udpSocket, &QUdpSocket::disconnected, this, &CobotMotomanRealTimeComm::onRealTimeDisconnect);
-    connect(m_udpSocket,&QUdpSocket::readyRead,this,&CobotMotomanRealTimeComm::readData);
+    connect(m_udpSocket, &QUdpSocket::connected, this, &CobotMotomanUDPComm::onConnected);
+    connect(m_udpSocket, &QUdpSocket::disconnected, this, &CobotMotomanUDPComm::onRealTimeDisconnect);
+    connect(m_udpSocket,&QUdpSocket::readyRead,this,&CobotMotomanUDPComm::readData);
     connect(m_udpSocket, static_cast<void (QAbstractSocket::*)(QAbstractSocket::SocketError)>(&QAbstractSocket::error),
-            this, &CobotMotomanRealTimeComm::onSocketError);
+            this, &CobotMotomanUDPComm::onSocketError);
     keepalive = 1;
 }
 
-void CobotMotomanRealTimeComm::onConnected(){
+void CobotMotomanUDPComm::onConnected(){
     COBOT_LOG.info() << "RealTime Connection Ready.";
     Q_EMIT connected();
 }
 
-CobotMotomanRealTimeComm::~CobotMotomanRealTimeComm(){
+CobotMotomanUDPComm::~CobotMotomanUDPComm(){
     if (m_udpSocket) {
         m_udpSocket->close();
     }
 }
 
-void CobotMotomanRealTimeComm::start(){
+void CobotMotomanUDPComm::start(){
     if (m_udpSocket)
         return;
     QHostAddress *robotAddress  = new QHostAddress(m_robotIp);
@@ -47,13 +47,13 @@ void CobotMotomanRealTimeComm::start(){
     Q_EMIT realTimeProgConnected();
 }
 
-void CobotMotomanRealTimeComm::readData(){
+void CobotMotomanUDPComm::readData(){
     const int RECV_FRAME_LENGTH_=82;
     auto ba = m_udpSocket->readAll();
     m_robotState->unpack(ba);
 }
 
-void CobotMotomanRealTimeComm::onRealTimeDisconnect(){
+void CobotMotomanUDPComm::onRealTimeDisconnect(){
     COBOT_LOG.info() << "RealTime Ctrl Disconnected !!!";
     m_udpSocket->close();
     m_udpSocket->deleteLater();
@@ -61,7 +61,7 @@ void CobotMotomanRealTimeComm::onRealTimeDisconnect(){
     Q_EMIT disconnected();
 }
 
-void CobotMotomanRealTimeComm::onSocketError(QAbstractSocket::SocketError socketError){
+void CobotMotomanUDPComm::onSocketError(QAbstractSocket::SocketError socketError){
     COBOT_LOG.error() << "CobotMotomanRealTimeComm: " << m_udpSocket->errorString();
     Q_EMIT connectFail();
 }

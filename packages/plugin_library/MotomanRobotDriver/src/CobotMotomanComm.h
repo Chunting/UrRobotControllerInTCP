@@ -3,76 +3,68 @@
 // Copyright (c) 2017 Wuhan Collaborative Robot Technology Co.,Ltd. All rights reserved.
 //
 
-#ifndef COBOT_MOTOMAN_COMM_H
-#define COBOT_MOTOMAN_COMM_H
+#ifndef COBOT_MOTOMAN_DRIVER_H
+#define COBOT_MOTOMAN_DRIVER_H
 
 #include <QObject>
-#include <QString>
+#include <QTcpServer>
 #include <QTcpSocket>
-#include <memory>
-#include <thread>
-#include <QSemaphore>
-#include "CobotMotoman.h"
-
+#include "CobotMotomanUDPComm.h"
+#include "CobotMotomanTCPComm.h"
 class CobotMotomanComm : public QObject {
 Q_OBJECT
 public:
-    CobotMotomanComm(std::condition_variable& cond_msg, QObject* parent = nullptr);
+    CobotMotomanComm(std::condition_variable& rt_msg_cond,
+                  std::condition_variable& msg_cond,
+                  const QString& robotAddr,
+                  QObject* parent = nullptr);
     ~CobotMotomanComm();
 
-    void setupHost(const QString& host);
 
-    std::shared_ptr<MotomanRobotState> getRobotState(){ return m_robotState; }
-    std::string getLocalIp();
+    void startDriver();
+    void stopDriver();
 
-    /**
- * 这个函数是专门写来用于异步线程发送命令的，可以直接调用
- * @param positions
- * @param flushNow
- */
-    void asyncServoj(const std::vector<double>& positions, bool flushNow = false);
+    void setServojTime(double t);
+    void setServojLookahead(double t);
+    void setServojGain(double g);
+
+    void servoj(const std::vector<double>& positions);
+
 Q_SIGNALS:
-    void connected();
-    void disconnected();
-    void connectFail();
-    void resendCmd();
+    void driverStartFailed();
+    void driverStartSuccess();
+    void driverStopped();
 
-    void asyncServojFlushRequired();
+
 public:
+    CobotMotomanTCPCommCtrl* m_motomanTCPCommCtrl;
+    CobotMotomanUDPCommCtrl* m_motomanUDPCommCtrl;
 
-    enum ROBOTCMD {
-        CMD_START_UDP, CMD_SERVO_ON, CMD_SERVO_OFF, CMD_MOVE_ANGLE, CMD_MOVE_IMPULSE
-    };
-
-    void start();
-    void stop();
-
-    void sendCmd(QByteArray& cmd);
-    void executeCmd(const ROBOTCMD CmdID,bool resendFlag=false);
-    void stopProg();
 protected:
-    void processData();
-    void secConnectHandle();
-    void secDisconnectHandle();
-    void onSocketError(QAbstractSocket::SocketError socketError);
-    void asyncServojFlush();
-protected Q_SLOTS:
-    void onRensendCmd();
+    void handleCommConnected();
+    void handleRTCommConnected();
+    void handleDisconnected();
+    void handleRTProgConnect();
+    void handleRTProgDisconnect();
+
+    bool uploadProg();
+    void onConnectSuccess();
+
 protected:
-    QTcpSocket* m_tcpSocket;
-    QString m_host;
-    std::shared_ptr<MotomanRobotState> m_robotState;
-    std::condition_variable& m_msg_cond;
-    std::string localIp_;
-    quint8 m_cmdID;//motoman cmd ID
+    bool m_noDisconnectedAccept;
 
-    ROBOTCMD m_LastCmdID;
-    std::mutex m_rt_res_mutex;
-    std::vector<double> m_rt_q_required;
-    std::vector<double> m_qTarget;
+private:
 
-    int keepalive;
+    double servoj_time_;
+    double servoj_lookahead_time_;
+    double servoj_gain_;
+    std::string ip_addr_;
+
+    int m_disconnectCount;
+
+    int m_connectTime;
+    bool m_isConnected;
 };
 
 
-#endif //COBOT_MOTOMAN_COMM_H
+#endif //COBOT_MOTOMAN_DRIVER_H

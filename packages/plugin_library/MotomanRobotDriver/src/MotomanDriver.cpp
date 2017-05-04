@@ -5,32 +5,30 @@
 
 #include <QtCore/QJsonObject>
 #include <extra2.h>
-#include "MotomanRealTimeDriver.h"
+#include "MotomanDriver.h"
 #include "CobotMotoman.h"
 
 
-MotomanRealTimeDriver::MotomanRealTimeDriver() : QObject(nullptr) {
+MotomanDriver::MotomanDriver() : QObject(nullptr) {
     m_isWatcherRunning = false;
     m_isStarted = false;
 
-    m_ctrl = nullptr;
-    m_rt_ctrl = nullptr;
-    m_motomanDriver = nullptr;
+    m_motomanComm = nullptr;
     m_curReqQ.clear();
 
     m_digitInput = make_shared<CobotMotomanDigitIoAdapter>();
     m_digitOutput = make_shared<CobotMotomanDigitIoAdapter>();
 }
 
-MotomanRealTimeDriver::~MotomanRealTimeDriver() {
+MotomanDriver::~MotomanDriver() {
     if (m_isWatcherRunning) {
         m_isWatcherRunning = false;
-        m_rt_msg_cond.notify_all();
+        m_udp_msg_cond.notify_all();
         m_thread.join();
     }
 }
 
-void MotomanRealTimeDriver::move(const std::vector<double>& q) {
+void MotomanDriver::move(const std::vector<double>& q) {
     std::lock_guard<std::mutex> lockGuard(m_mutex);
     if (m_isStarted) {
         m_curReqQ = q;
@@ -38,7 +36,7 @@ void MotomanRealTimeDriver::move(const std::vector<double>& q) {
     }
 }
 
-std::shared_ptr<AbstractDigitIoDriver> MotomanRealTimeDriver::getDigitIoDriver(int deviceId) {
+std::shared_ptr<AbstractDigitIoDriver> MotomanDriver::getDigitIoDriver(int deviceId) {
     if (deviceId == 0)
         return m_digitOutput;
     if (deviceId == 1)
@@ -46,7 +44,7 @@ std::shared_ptr<AbstractDigitIoDriver> MotomanRealTimeDriver::getDigitIoDriver(i
     return nullptr;
 }
 
-void MotomanRealTimeDriver::attach(const std::shared_ptr<ArmRobotRealTimeStatusObserver>& observer) {
+void MotomanDriver::attach(const std::shared_ptr<ArmRobotRealTimeStatusObserver>& observer) {
     std::lock_guard<std::mutex> lockGuard(m_mutex);
 
     for (auto& iter : m_observers) {
@@ -60,47 +58,47 @@ void MotomanRealTimeDriver::attach(const std::shared_ptr<ArmRobotRealTimeStatusO
     }
 }
 
-bool MotomanRealTimeDriver::start() {
+bool MotomanDriver::start() {
     std::lock_guard<std::mutex> lockGuard(m_mutex);
 
-    if (m_motomanDriver) {
+    if (m_motomanComm) {
         COBOT_LOG.info() << "Already start, if want restart, stop first";
         return false;
     }
-    m_motomanDriver = new CobotMotomanDriver(m_rt_msg_cond, m_msg_cond, m_attr_robot_ip.c_str());
-    connect(m_motomanDriver, &CobotMotomanDriver::driverStartSuccess, this, &MotomanRealTimeDriver::handleDriverReady);
-    connect(m_motomanDriver, &CobotMotomanDriver::driverStartFailed, this, &MotomanRealTimeDriver::handleDriverDisconnect);
-    connect(m_motomanDriver, &CobotMotomanDriver::driverStopped, this, &MotomanRealTimeDriver::handleDriverDisconnect);
-    connect(m_motomanDriver, &QObject::destroyed, [=](QObject*) { handleDriverDisconnect(); });
-    m_motomanDriver->setServojTime(m_attr_servoj_time);
-    m_motomanDriver->setServojLookahead(m_attr_servoj_lookahead);
-    m_motomanDriver->setServojGain(m_attr_servoj_gain);
-    m_motomanDriver->startDriver();
+    m_motomanComm = new CobotMotomanComm(m_udp_msg_cond, m_tcp_msg_cond, m_attr_robot_ip.c_str());
+    connect(m_motomanComm, &CobotMotomanComm::driverStartSuccess, this, &MotomanDriver::handleDriverReady);
+    connect(m_motomanComm, &CobotMotomanComm::driverStartFailed, this, &MotomanDriver::handleDriverDisconnect);
+    connect(m_motomanComm, &CobotMotomanComm::driverStopped, this, &MotomanDriver::handleDriverDisconnect);
+    connect(m_motomanComm, &QObject::destroyed, [=](QObject*) { handleDriverDisconnect(); });
+    m_motomanComm->setServojTime(m_attr_servoj_time);
+    m_motomanComm->setServojLookahead(m_attr_servoj_lookahead);
+    m_motomanComm->setServojGain(m_attr_servoj_gain);
+    m_motomanComm->startDriver();
 
     // 这里是数字驱动的部分
-    m_digitInput->setMotomanRealTimeCtrl(m_motomanDriver->m_motomanRealTimeCommCtrl);
-    m_digitOutput->setMotomanRealTimeCtrl(m_motomanDriver->m_motomanRealTimeCommCtrl);
+    m_digitInput->setMotomanUDPCtrl(m_motomanComm->m_motomanUDPCommCtrl);
+    m_digitOutput->setMotomanUDPCtrl(m_motomanComm->m_motomanUDPCommCtrl);
     m_digitInput->m_isInput = true;
     m_digitOutput->m_isOutput = true;
     return true;
 }
 
-void MotomanRealTimeDriver::stop() {
+void MotomanDriver::stop() {
     std::lock_guard<std::mutex> lockGuard(m_mutex);
 
-    if (m_motomanDriver) {
+    if (m_motomanComm) {
         m_curReqQValid = false;
         m_curReqQ.clear();
         m_isStarted = false;
-        m_motomanDriver->stopDriver();
-        m_motomanDriver->deleteLater();
-        m_motomanDriver = nullptr;
-        m_digitInput->setMotomanRealTimeCtrl(nullptr);
-        m_digitOutput->setMotomanRealTimeCtrl(nullptr);
+        m_motomanComm->stopDriver();
+        m_motomanComm->deleteLater();
+        m_motomanComm = nullptr;
+        m_digitInput->setMotomanUDPCtrl(nullptr);
+        m_digitOutput->setMotomanUDPCtrl(nullptr);
     }
 }
 
-bool MotomanRealTimeDriver::setup(const QString& configFilePath) {
+bool MotomanDriver::setup(const QString& configFilePath) {
     std::lock_guard<std::mutex> lockGuard(m_mutex);
 
     auto success = _setup(configFilePath);
@@ -112,7 +110,7 @@ bool MotomanRealTimeDriver::setup(const QString& configFilePath) {
     return success;
 }
 
-void MotomanRealTimeDriver::robotStatusWatcher() {
+void MotomanDriver::robotStatusWatcher() {
     std::mutex m;
     std::unique_lock<std::mutex> lck(m);
 
@@ -124,7 +122,7 @@ void MotomanRealTimeDriver::robotStatusWatcher() {
 
     COBOT_LOG.notice() << "Motoman Status Watcher is Running.";
     while (m_isWatcherRunning) {
-        m_rt_msg_cond.wait(lck);
+        m_udp_msg_cond.wait(lck);
 
         if (m_mutex.try_lock()) {
             _updateDigitIoStatus();
@@ -140,8 +138,8 @@ void MotomanRealTimeDriver::robotStatusWatcher() {
 
         // 抓取当前姿态
         if (m_mutex.try_lock()) {
-            if (m_motomanDriver) {
-                auto pState = m_motomanDriver->m_motomanRealTimeCommCtrl->motoman->getRobotState();
+            if (m_motomanComm) {
+                auto pState = m_motomanComm->m_motomanUDPCommCtrl->motoman->getRobotState();
                 q_next = pState->getQActual();
                 m_robotJointQCache = q_next;
             }
@@ -168,7 +166,7 @@ void MotomanRealTimeDriver::robotStatusWatcher() {
         // 更新控制驱动数据, 如果没有数据，默认会是当前状态。
         if (m_isStarted && q_next.size() >= JOINT_NUM) {
             if (m_mutex.try_lock()) {
-                m_motomanDriver->servoj(q_next);
+                m_motomanComm->servoj(q_next);
                 m_mutex.unlock();
             }
             //auto info_log = COBOT_LOG.info();
@@ -180,7 +178,7 @@ void MotomanRealTimeDriver::robotStatusWatcher() {
     COBOT_LOG.notice() << "Motoman Status Watcher shutdown!";
 }
 
-bool MotomanRealTimeDriver::_setup(const QString& configFilePath) {
+bool MotomanDriver::_setup(const QString& configFilePath) {
     QJsonObject json;
     //TODO Maybe it need to be modified.(motoman)
     if (loadJson(json, configFilePath)) {
@@ -190,24 +188,24 @@ bool MotomanRealTimeDriver::_setup(const QString& configFilePath) {
         m_attr_servoj_gain = json["servoj_gain"].toDouble(300);
 
         m_isWatcherRunning = true;
-        m_thread = std::thread(&MotomanRealTimeDriver::robotStatusWatcher, this);
+        m_thread = std::thread(&MotomanDriver::robotStatusWatcher, this);
         return true;
     }
     return false;
 }
 
-void MotomanRealTimeDriver::handleDriverReady() {
+void MotomanDriver::handleDriverReady() {
     m_isStarted = true;
     notify([=](std::shared_ptr<ArmRobotRealTimeStatusObserver>& observer) {
         observer->onArmRobotConnect();
     });
 }
 
-QString MotomanRealTimeDriver::getRobotUrl() {
+QString MotomanDriver::getRobotUrl() {
     return m_attr_robot_ip.c_str();
 }
 
-void MotomanRealTimeDriver::handleDriverDisconnect() {
+void MotomanDriver::handleDriverDisconnect() {
     COBOT_LOG.info() << "MotomanRealTimeDriver Disconnect";
     stop();
     notify([=](std::shared_ptr<ArmRobotRealTimeStatusObserver>& observer) {
@@ -215,7 +213,7 @@ void MotomanRealTimeDriver::handleDriverDisconnect() {
     });
 }
 
-void MotomanRealTimeDriver::notify(std::function<void(std::shared_ptr<ArmRobotRealTimeStatusObserver>& observer)> func) {
+void MotomanDriver::notify(std::function<void(std::shared_ptr<ArmRobotRealTimeStatusObserver>& observer)> func) {
     if (func) {
         std::vector<std::shared_ptr<ArmRobotRealTimeStatusObserver> > observer_tmp;
         if (m_mutex.try_lock()) {
@@ -229,10 +227,10 @@ void MotomanRealTimeDriver::notify(std::function<void(std::shared_ptr<ArmRobotRe
     }
 }
 
-void MotomanRealTimeDriver::_updateDigitIoStatus() {
-    if (m_digitInput && m_isStarted && m_motomanDriver) {
-        auto outBits = m_motomanDriver->m_motomanCommCtrl->motoman->getRobotState()->getDigitalOutputBits();
-        auto inBits = m_motomanDriver->m_motomanCommCtrl->motoman->getRobotState()->getDigitalInputBits();
+void MotomanDriver::_updateDigitIoStatus() {
+    if (m_digitInput && m_isStarted && m_motomanComm) {
+        auto outBits = m_motomanComm->m_motomanTCPCommCtrl->motoman->getRobotState()->getDigitalOutputBits();
+        auto inBits = m_motomanComm->m_motomanTCPCommCtrl->motoman->getRobotState()->getDigitalInputBits();
 
         m_digitInput->m_inputIoStatus = inBits;
         m_digitOutput->m_outputIoStatus = outBits;
@@ -242,12 +240,12 @@ void MotomanRealTimeDriver::_updateDigitIoStatus() {
     }
 }
 
-void MotomanRealTimeDriver::clearAttachedObject() {
+void MotomanDriver::clearAttachedObject() {
     std::lock_guard<std::mutex> lockGuard(m_mutex);
     m_observers.clear();
 }
 
-std::vector<double> MotomanRealTimeDriver::getRobotJointQ() {
+std::vector<double> MotomanDriver::getRobotJointQ() {
     std::lock_guard<std::mutex> lockGuard(m_mutex);
     return m_robotJointQCache;
 }

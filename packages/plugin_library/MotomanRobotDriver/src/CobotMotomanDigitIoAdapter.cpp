@@ -7,7 +7,7 @@
 #include "CobotMotomanDigitIoAdapter.h"
 
 CobotMotomanDigitIoAdapter::CobotMotomanDigitIoAdapter() {
-    m_realTimeCommCtrl = nullptr;
+    m_UDPCommCtrl = nullptr;
     m_isInput = false;
     m_isOutput = false;
 }
@@ -65,8 +65,8 @@ void CobotMotomanDigitIoAdapter::setDigitOut(int portIndex, bool b) {
     if (portIndex < 8) {
         sprintf(buf, "sec setOut():\n\tset_standard_digital_out(%d, %s)\nend\n",
                 portIndex, b ? "True" : "False");
-        if (m_realTimeCommCtrl) {
-            m_realTimeCommCtrl->addCommandToQueue(buf);
+        if (m_UDPCommCtrl) {
+            m_UDPCommCtrl->addCommandToQueue(buf);
         }
     }
 }
@@ -75,16 +75,16 @@ bool CobotMotomanDigitIoAdapter::setToolVoltage(double v) {
     char buf[256];
     int voltage = (int) v;
     sprintf(buf, "sec setOut():\n\tset_tool_voltage(%d)\nend\n", voltage);
-    if (m_realTimeCommCtrl) {
-        m_realTimeCommCtrl->addCommandToQueue(buf);
+    if (m_UDPCommCtrl) {
+        m_UDPCommCtrl->addCommandToQueue(buf);
         return true;
     }
     return false;
 }
 
-void CobotMotomanDigitIoAdapter::setMotomanRealTimeCtrl(CobotMotomanRealTimeCommCtrl* realTimeCommCtrl) {
-    m_realTimeCommCtrl = realTimeCommCtrl;
-    if (m_realTimeCommCtrl == nullptr) {
+void CobotMotomanDigitIoAdapter::setMotomanUDPCtrl(CobotMotomanUDPCommCtrl* realTimeCommCtrl) {
+    m_UDPCommCtrl = realTimeCommCtrl;
+    if (m_UDPCommCtrl == nullptr) {
         m_inputIoStatus = 0;
         m_outputIoStatus = 0;
     }
@@ -92,6 +92,6 @@ void CobotMotomanDigitIoAdapter::setMotomanRealTimeCtrl(CobotMotomanRealTimeComm
 }
 
 bool CobotMotomanDigitIoAdapter::isOpened() const {
-    return (m_realTimeCommCtrl != nullptr);
+    return (m_UDPCommCtrl != nullptr);
 }
 

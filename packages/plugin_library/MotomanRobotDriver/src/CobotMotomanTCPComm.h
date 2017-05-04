@@ -1,0 +1,114 @@
+//
+// Created by 杨帆 on 17-5-2.
+// Copyright (c) 2017 Wuhan Collaborative Robot Technology Co.,Ltd. All rights reserved.
+//
+
+#ifndef COBOT_MOTOMAN_COMM_H
+#define COBOT_MOTOMAN_COMM_H
+
+#include <QObject>
+#include <QString>
+#include <QThread>
+#include <cobotsys_logger.h>
+#include <QTcpSocket>
+#include <memory>
+#include <thread>
+#include <QSemaphore>
+#include "CobotMotoman.h"
+
+class CobotMotomanTCPComm : public QObject {
+Q_OBJECT
+public:
+    CobotMotomanTCPComm(std::condition_variable& cond_msg, QObject* parent = nullptr);
+    ~CobotMotomanTCPComm();
+
+    void setupHost(const QString& host);
+
+    std::shared_ptr<MotomanRobotState> getRobotState(){ return m_robotState; }
+    std::string getLocalIp();
+
+    /**
+ * 这个函数是专门写来用于异步线程发送命令的，可以直接调用
+ * @param positions
+ * @param flushNow
+ */
+    void asyncServoj(const std::vector<double>& positions, bool flushNow = false);
+Q_SIGNALS:
+    void connected();
+    void disconnected();
+    void connectFail();
+    void resendCmd();
+    void asyncServojFlushRequired();
+
+public:
+
+    enum ROBOTCMD {
+        CMD_START_UDP, CMD_SERVO_ON, CMD_SERVO_OFF, CMD_MOVE_ANGLE, CMD_MOVE_IMPULSE
+    };
+
+    void start();
+    void stop();
+
+    void sendCmd(QByteArray& cmd);
+    void executeCmd(const ROBOTCMD CmdID,bool resendFlag=false);
+    void stopProg();
+protected:
+    void processData();
+    void secConnectHandle();
+    void secDisconnectHandle();
+    void onSocketError(QAbstractSocket::SocketError socketError);
+    void asyncServojFlush();
+protected Q_SLOTS:
+    void onRensendCmd();
+protected:
+    QTcpSocket* m_tcpSocket;
+    QString m_host;
+    std::shared_ptr<MotomanRobotState> m_robotState;
+    std::condition_variable& m_msg_cond;
+    std::string localIp_;
+    quint8 m_cmdID;//motoman cmd ID
+
+    ROBOTCMD m_LastCmdID;
+    std::mutex m_rt_res_mutex;
+    std::vector<double> m_rt_q_required;
+    std::vector<double> m_qTarget;
+
+    int keepalive;
+};
+
+
+class CobotMotomanTCPCommCtrl : public QObject {
+Q_OBJECT
+protected:
+    QThread workerThread;
+
+public:
+    CobotMotomanTCPComm* motoman;
+
+public:
+    CobotMotomanTCPCommCtrl(std::condition_variable& cond_msg, const QString& hostIp, QObject* parent = nullptr)
+            : QObject(parent){
+        motoman = new CobotMotomanTCPComm(cond_msg);
+        motoman->setupHost(hostIp);
+        motoman->moveToThread(&workerThread);
+        connect(&workerThread, &QThread::finished, motoman, &QObject::deleteLater);
+        connect(this, &CobotMotomanTCPCommCtrl::start, motoman, &CobotMotomanTCPComm::start);
+        workerThread.start();
+    }
+
+    ~CobotMotomanTCPCommCtrl(){
+        workerThread.quit();
+        workerThread.wait();
+        COBOT_LOG.info() << "CobotMotomanCommCtrl freed";
+    }
+
+    void startComm(){
+        Q_EMIT start();
+    }
+
+Q_SIGNALS:
+    void start();
+};
+
+
+#endif //COBOT_MOTOMAN_COMM_H
