@@ -1,5 +1,5 @@
 {
-  "_comment": "有可能需要添加机器人基座和末端执行器信息",
+  "_comment": "有可能需要添加机器人基座和末端执行器信息。添加mh5f的DH参数信息，待测试！",
   "description": "Motoman MH5F FS100",
   "version": "v1.0",
 
@@ -17,84 +17,84 @@
   "param": [
     {
       "dh": {
-        "a": 0,
-        "d": 0.1519,
-        "alpha": 1.570796327,
-        "theta": 0
-      },
-      "limits": {
-        "_comment": "lower:角度位置下限；upper：角度位置上限；effort：输出力矩上限；velocity：速度上限",
-        "lower": -6.283185307179586,
-        "upper": 6.283185307179586,
-        "effort": 330,
-        "velocity": 2.16
-      }
-    },
-    {
-      "dh": {
-        "a": -0.24365,
-        "d": 0,
+        "a": 0.088,
+        "d": 0.330,
         "alpha": 0,
         "theta": 0
       },
       "limits": {
         "_comment": "lower:角度位置下限；upper：角度位置上限；effort：输出力矩上限；velocity：速度上限",
-        "lower": -6.283185307179586,
-        "upper": 6.283185307179586,
+        "lower": -2.967059728,
+        "upper": 2.967059728,
         "effort": 330,
-        "velocity": 2.16
+        "velocity": 6.562437987
       }
     },
     {
       "dh": {
-        "a": -0.21325,
+        "a": 0.310,
         "d": 0,
-        "alpha": 0,
-        "theta": 0
+        "alpha": 3.1415926535898,
+        "theta": -1.570796327
       },
       "limits": {
         "_comment": "lower:角度位置下限；upper：角度位置上限；effort：输出力矩上限；velocity：速度上限",
-        "lower": -6.283185307179586,
-        "upper": 6.283185307179586,
-        "effort": 150,
-        "velocity": 3.15
+        "lower": -1.134464014,
+        "upper": 2.617993878,
+        "effort": 330,
+        "velocity": 6.108652382
       }
     },
     {
       "dh": {
-        "a": 0,
-        "d": 0.11235,
-        "alpha": 1.570796327,
-        "theta": 0
-      },
-      "limits": {
-        "_comment": "lower:角度位置下限；upper：角度位置上限；effort：输出力矩上限；velocity：速度上限",
-        "lower": -6.283185307179586,
-        "upper": 6.283185307179586,
-        "effort": 54,
-        "velocity": 3.2
-      }
-    },
-    {
-      "dh": {
-        "a": 0,
-        "d": 0.08535,
+        "a": 0.040,
+        "d": 0,
         "alpha": -1.570796327,
         "theta": 0
       },
       "limits": {
         "_comment": "lower:角度位置下限；upper：角度位置上限；effort：输出力矩上限；velocity：速度上限",
-        "lower": -6.283185307179586,
-        "upper": 6.283185307179586,
-        "effort": 54,
-        "velocity": 3.2
+        "lower": -2.373647783,
+        "upper": 2.705260341,
+        "effort": 150,
+        "velocity": 6.981317008
       }
     },
     {
       "dh": {
         "a": 0,
-        "d": 0.0819,
-        "alpha": 0,
+        "d": 0.305,
+        "alpha": 1.570796327,
+        "theta": 0
+      },
+      "limits": {
+        "_comment": "lower:角度位置下限；upper：角度位置上限；effort：输出力矩上限；velocity：速度上限",
+        "lower": -3.316125579,
+        "upper": 3.316125579,
+        "effort": 54,
+        "velocity": 7.853981634
+      }
+    },
+    {
+      "dh": {
+        "a": 0,
+        "d": 0,
+        "alpha": -1.570796327,
+        "theta": 0
+      },
+      "limits": {
+        "_comment": "lower:角度位置下限；upper：角度位置上限；effort：输出力矩上限；velocity：速度上限",
+        "lower": -2.35619449,
+        "upper": 2.35619449,
+        "effort": 54,
+        "velocity": 7.853981634
+      }
+    },
+    {
+      "dh": {
+        "a": 0,
+        "d": 0.080,
+        "alpha": 3.141592654,
         "theta": 0
       },
       "limits": {
@@ -102,7 +102,7 @@
         "lower": -6.283185307179586,
         "upper": 6.283185307179586,
         "effort": 54,
-        "velocity": 3.2
+        "velocity": 12.566370614
       }
     }
   ]
