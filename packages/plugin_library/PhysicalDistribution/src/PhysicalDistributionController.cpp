@@ -122,6 +122,8 @@ bool PhysicalDistributionController::_setupInternalObjects(ObjectGroup& objectGr
     m_ptrPicker = dynamic_pointer_cast<AbstractBinpickingPicker>(objectGroup.getObject("Picker"));
     m_ptrPlacer = dynamic_pointer_cast<AbstractBinpickingPlacer>(objectGroup.getObject("Placer"));
 
+    auto jfilter = dynamic_pointer_cast<ArmRobotJointTargetFilter>(objectGroup.getObject("JointFilter"));
+
     if (m_ptrRobot == nullptr) {
         COBOT_LOG.error() << "fail to init robot.";
         return false;
@@ -160,6 +162,10 @@ bool PhysicalDistributionController::_setupInternalObjects(ObjectGroup& objectGr
 
     m_ptrRobot->attach(std::dynamic_pointer_cast<ArmRobotRealTimeStatusObserver>(_self));
     m_ptrRobot->attach(std::dynamic_pointer_cast<ArmRobotRealTimeStatusObserver>(m_ptrViewer));
+    if (jfilter){
+        m_ptrRobot->setTargetJointFilter(jfilter);
+    }
+
 
     m_ptrCameraMaster->attach(std::dynamic_pointer_cast<CameraStreamObserver>(_self));
 

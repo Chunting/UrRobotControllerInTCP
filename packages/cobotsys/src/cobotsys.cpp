@@ -61,6 +61,7 @@ void parser_app_name(const char* arg) {
 void init_library(int argc, char** argv) {
     FileFinder::loadDataPaths();
     internal_info::parser_app_name(argv[0]);
+    FileFinder::dumpAvailablePath();
 }
 }
 
@@ -75,13 +76,13 @@ std::ostream& operator<<(std::ostream& oss, const QJsonObject& obj) {
     return oss;
 }
 
-bool isFixedPitch(const QFont & font) {
+bool isFixedPitch(const QFont& font) {
     const QFontInfo fi(font);
     COBOT_LOG.message() << fi.family() << fi.fixedPitch();
     return fi.fixedPitch();
 }
 
-QFont getMonospaceFont(){
+QFont getMonospaceFont() {
     QFont font("monospace");
     if (isFixedPitch(font)) return font;
     font.setStyleHint(QFont::Monospace);

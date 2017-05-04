@@ -85,13 +85,14 @@ void FileFinder::storSearchPath(const std::string& path_to_find, PreDefPath path
         }
     }
 
+    if (pathType != AppRuntimeDir) {
+        base_paths.erase(std::remove_if(base_paths.begin(), base_paths.end(),
+                                        [=](const std::string& s) { return s == pre_def_path[pathType]; }),
+                         base_paths.end());
+    }
+
     base_paths.push_back(path_to_find);
     pre_def_path[pathType] = path_to_find;
-    auto log = COBOT_LOG.message("File Finder");
-    log << "Add Path: " << path_to_find;
-    if (pathType == PreDefPath::Data) {
-        log << ", Data Dir Updated";
-    }
 }
 
 std::string realPath2(const std::string& path_to_find) {
@@ -121,5 +122,21 @@ void FileFinder::addSearchPath(const std::string& path_to_find, FileFinder::PreD
 
 std::string FileFinder::getPreDefPath(PreDefPath pathType) {
     return pre_def_path[pathType];
+}
+
+void FileFinder::dumpAvailablePath() {
+    for (auto& path : base_paths) {
+        auto log = COBOT_LOG.message("File Finder");
+        log << "Path: " << path;
+        for (auto& iter : pre_def_path) {
+            if (iter.second == path) {
+                if (iter.first == PreDefPath::Data) log << ", Data";
+                if (iter.first == PreDefPath::Plugin) log << ", Plugin";
+                if (iter.first == PreDefPath::Config) log << ", Config";
+                if (iter.first == PreDefPath::Bin) log << ", Bin";
+                if (iter.first == PreDefPath::Script) log << ", Script";
+            }
+        }
+    }
 }
 }
