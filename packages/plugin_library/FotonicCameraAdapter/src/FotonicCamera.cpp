@@ -242,6 +242,6 @@ int FotonicCamera::getImageCount() const {
 
 void FotonicCamera::notify(const cobotsys::CameraFrame& cameraFrame) {
     for (auto& observer : m_observers) {
-        observer->onCameraStreamUpdate(cameraFrame);
+        observer->onCameraStreamUpdate(cameraFrame, nullptr);
     }
 }
