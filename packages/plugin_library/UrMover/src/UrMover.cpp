@@ -27,7 +27,10 @@ bool UrMover::move(uint32_t moveId, const cv::Point3d& pos, const cv::Vec3d& rpy
     std::lock_guard<std::recursive_mutex> lockGuard(m_mutex);
     if (m_robotConnected) {
         m_targets.push_back({moveId, pos, rpy});
+        COBOT_LOG.debug() << "Total Targets : " << m_targets.size();
         return true;
+    } else {
+        
     }
     return false;
 }
@@ -98,6 +101,8 @@ void UrMover::moveProcess() {
     bool moveFinished = true;
     bool noMoveTarget = true;
 
+    bool clearAction = false;
+
     double actual_pose_diff;
     double pose_err_last = 0;
 
@@ -108,12 +113,14 @@ void UrMover::moveProcess() {
         m_mutex.lock();
         jointNum = m_curJointNum;
         joint = m_curJoint;
+        clearAction = m_clearMoveTarget;
+        m_clearMoveTarget = false;
         m_mutex.unlock();
 
         m_kinematicSolver->jntToCart(joint, curPose);
 
-        if (m_clearMoveTarget) {
-            m_clearMoveTarget = false;
+        if (clearAction) {
+            clearAction = false;
             if (!noMoveTarget) {
                 noMoveTarget = true;
                 moveFinished = true;
@@ -250,10 +257,13 @@ bool UrMover::start() {
 void UrMover::clearAll() {
     std::deque<MoveTarget> tmpTargets;
 
+    COBOT_LOG.notice() << "UrMover: Clear ALL";
+
     m_mutex.lock();
     tmpTargets = m_targets;
     m_targets.clear();
     m_clearMoveTarget = true;
+    auto num_tgt = tmpTargets.size();
     m_mutex.unlock();
 
     for (auto& iter : tmpTargets) {

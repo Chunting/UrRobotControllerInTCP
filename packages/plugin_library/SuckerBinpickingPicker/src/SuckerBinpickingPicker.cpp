@@ -37,8 +37,12 @@ bool SuckerBinpickingPicker::pickObject(const binpicking::BinObjGrabPose& binObj
     // First move to target
     m_moveResult = MoveResult::Cancled;
     m_moveId = m_ptrMover->generateMoveId();
-    m_ptrMover->move(m_moveId, binObjGrabPose.position, binObjGrabPose.rotation);
-    m_msg.wait(uniqueLock);
+    if (m_ptrMover->move(m_moveId, binObjGrabPose.position, binObjGrabPose.rotation)) {
+        m_msg.wait(uniqueLock);
+    } else {
+        COBOT_LOG.error() << "Target move fail.";
+        return false;
+    }
 
 
     // Pick Object
