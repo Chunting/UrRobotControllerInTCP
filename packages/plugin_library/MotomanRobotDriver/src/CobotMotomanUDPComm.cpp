@@ -17,6 +17,7 @@ CobotMotomanUDPComm::CobotMotomanUDPComm(std::condition_variable& cond_msg, cons
     connect(m_udpSocket, &QUdpSocket::disconnected, this, &CobotMotomanUDPComm::onUDPDisconnect);
     connect(m_udpSocket, static_cast<void (QAbstractSocket::*)(QAbstractSocket::SocketError)>(&QAbstractSocket::error),
             this, &CobotMotomanUDPComm::onSocketError);
+    connect(m_udpSocket,&QUdpSocket::readyRead,this,&CobotMotomanUDPComm::readData);
 }
 
 void CobotMotomanUDPComm::onConnected(){
@@ -35,35 +36,20 @@ void CobotMotomanUDPComm::start(){
         COBOT_LOG.error() << "UDP Socket is NULL.";
         return;
     }
-//    //获取本地IP.
-//    foreach (const QHostAddress &address, QNetworkInterface::allAddresses()) {
-//    if (address.protocol() == QAbstractSocket::IPv4Protocol && address != QHostAddress(QHostAddress::LocalHost))
-//        m_localIp=address.toString();
-//    }
-
-    //QHostAddress *robotAddress = new QHostAddress(m_robotIp);
-    QHostAddress *localAddress = new QHostAddress(m_localIp);
-
-    //m_udpSocket->abort();
-
-    //COBOT_LOG.debug()<<"robotAddress->toString()"<<robotAddress->toString();
-    //COBOT_LOG.debug()<<"QHostAddress::LocalHost"<<QHostAddress::LocalHost;
+    m_udpSocket->abort();
     m_udpSocket->bind(UDP_PORT);
-    connect(m_udpSocket,&QUdpSocket::readyRead,this,&CobotMotomanUDPComm::readData);
-    //m_udpSocket->connectToHost(m_robotIp,UDP_PORT);
+    m_udpSocket->connectToHost(m_robotIp,UDP_PORT);
 
     COBOT_LOG.notice()<<"Robot IP:"<<m_robotIp<<" UDP Port:"<<UDP_PORT;
-//    if (!m_udpSocket->waitForConnected()) {
-//        COBOT_LOG.error() << "Failed to connect the udp port of Motoman Robot. IP:"<<m_robotIp<<" udp port:"<<UDP_PORT;
-//        return;
-//    }
+    if (!m_udpSocket->waitForConnected()) {
+        COBOT_LOG.error() << "Failed to connect the udp port of Motoman Robot. IP:"<<m_robotIp<<" udp port:"<<UDP_PORT;
+        return;
+    }
 }
 
 void CobotMotomanUDPComm::readData(){
-    COBOT_LOG.debug()<<"Received UDP package";
     const int RECV_FRAME_LENGTH_=82;
     auto ba = m_udpSocket->readAll();
-
     COBOT_LOG.debug()<<"Received UDP package:"<<QString(ba.toHex());
     m_robotState->unpack(ba);
 }
