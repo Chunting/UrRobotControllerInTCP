@@ -148,7 +148,12 @@ void MotomanManipulator::createRobot() {
 //                                                       tr("Get Robot Config JSON file ..."),
 //                                                       QString(FileFinder::getPreDefPath().c_str()),
 //                                                       tr("JSON files (*.JSON *.json)"));
+
+#ifdef WIN32
+    QString robotConfig = "D:/Projects/cobotsys/data/CONFIG/Motoman_MH5F_config.json";
+#else
     QString robotConfig = "/home/sail/CLionProjects/cobotsys/data/CONFIG/Motoman_MH5F_config.json";
+#endif
     if (robotConfig.isEmpty())
         return;
 
