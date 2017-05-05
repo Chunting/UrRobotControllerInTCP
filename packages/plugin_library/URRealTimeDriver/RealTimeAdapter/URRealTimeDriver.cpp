@@ -171,11 +171,12 @@ void URRealTimeDriver::robotStatusWatcher() {
                 auto robotState = m_urDriver->m_urRealTimeCommCtrl->ur->getRobotState();
                 q_next = robotState->getQActual();
                 m_robotJointQCache = q_next;
+
+                pStatus->q_actual = robotState->getQActual();
+                pStatus->qd_actual = robotState->getQdActual();
             }
             m_mutex.unlock();
         }
-        pStatus->q_actual = q_next;
-
 
         // 通知所有观察者，机器人数据已经更新。
         if (m_isStarted) {

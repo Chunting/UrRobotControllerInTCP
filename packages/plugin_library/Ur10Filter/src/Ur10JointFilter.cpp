@@ -25,6 +25,7 @@ bool Ur10JointFilter::setup(const QString& configFilePath) {
 void Ur10JointFilter::applyFilter(std::vector<double>& target_, const ArmRobotStatusPtr& ptrRobotStatus) {
     m_target = target_;
     auto curPosi = ptrRobotStatus->q_actual;
+    auto curVelo = ptrRobotStatus->qd_actual;
 
     if (m_target.size() != curPosi.size())
         return;
