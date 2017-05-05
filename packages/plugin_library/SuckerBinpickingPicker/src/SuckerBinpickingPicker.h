@@ -17,6 +17,7 @@ class SuckerBinpickingPicker :
         public ArmRobotMoveStatusObserver {
 public:
     SuckerBinpickingPicker();
+    virtual ~SuckerBinpickingPicker();
 
     virtual bool pickObject(const binpicking::BinObjGrabPose& binObjGrabPose);
 

@@ -15,6 +15,9 @@ SuckerBinpickingPicker::SuckerBinpickingPicker()
     m_hasPickDefPose = false;
 }
 
+SuckerBinpickingPicker::~SuckerBinpickingPicker() {
+}
+
 bool SuckerBinpickingPicker::pickObject(const binpicking::BinObjGrabPose& binObjGrabPose) {
     std::mutex localmutex;
     std::unique_lock<std::mutex> uniqueLock(localmutex);
@@ -32,6 +35,7 @@ bool SuckerBinpickingPicker::pickObject(const binpicking::BinObjGrabPose& binObj
     m_digitIoDriver->setIo(m_suckerPortIndex, DigitIoStatus::Reset);
 
     // First move to target
+    m_moveResult = MoveResult::Cancled;
     m_moveId = m_ptrMover->generateMoveId();
     m_ptrMover->move(m_moveId, binObjGrabPose.position, binObjGrabPose.rotation);
     m_msg.wait(uniqueLock);
@@ -63,6 +67,9 @@ bool SuckerBinpickingPicker::pickObject(const binpicking::BinObjGrabPose& binObj
 }
 
 void SuckerBinpickingPicker::clearAttachedObject() {
+    std::lock_guard<std::mutex> lockGuard(m_mutex);
+
+    m_msg.notify_all();
     detachSharedObject(m_digitIoDriver);
     detachSharedObject(m_ptrMover);
 }
@@ -96,3 +103,4 @@ bool SuckerBinpickingPicker::setup(const QString& configFilePath) {
     }
     return false;
 }
+

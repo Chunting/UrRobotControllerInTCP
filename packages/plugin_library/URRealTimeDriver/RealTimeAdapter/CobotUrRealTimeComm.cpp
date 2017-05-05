@@ -53,6 +53,7 @@ CobotUrRealTimeComm::~CobotUrRealTimeComm() {
 
 void CobotUrRealTimeComm::start() {
     m_SOCKET->connectToHost(m_hostIp, 30003);
+    m_SOCKET->setSocketOption(QAbstractSocket::LowDelayOption, 1);
     m_tcpServer->listen(QHostAddress::AnyIPv4, REVERSE_PORT_);
 }
 
@@ -64,6 +65,7 @@ void CobotUrRealTimeComm::readData() {
             m_robotState->unpack((uint8_t*) ba.constData());
         }
     }
+    m_SOCKET->write("\n");
 }
 
 
