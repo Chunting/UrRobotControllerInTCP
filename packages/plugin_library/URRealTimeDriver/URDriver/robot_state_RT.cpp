@@ -398,6 +398,7 @@ void RobotStateRT::unpack(uint8_t* buf) {
 
     if (!len_good) {
         COBOT_LOG.warning() << "Wrong length of message on RT interface: " << len;
+        COBOT_LOG.warning() << buf;
         val_lock_.unlock();
         return;
     } else {

@@ -10,8 +10,8 @@ CobotUrDigitIoAdapter::CobotUrDigitIoAdapter() {
     m_realTimeCommCtrl = nullptr;
     m_isInput = false;
     m_isOutput = false;
-	m_inputIoStatus = 0;
-	m_outputIoStatus = 0;
+    m_inputIoStatus = 0;
+    m_outputIoStatus = 0;
 }
 
 CobotUrDigitIoAdapter::~CobotUrDigitIoAdapter() {
@@ -63,7 +63,7 @@ void CobotUrDigitIoAdapter::debugIoStatus() {
 #ifdef DEBUG
         COBOT_LOG.message("Output") << std::hex << setw(8) << m_outputIoStatus;
 #endif // DEBUG
-		
+
         m_debugIoLastStatus = m_outputIoStatus;
     }
 }
@@ -71,8 +71,15 @@ void CobotUrDigitIoAdapter::debugIoStatus() {
 void CobotUrDigitIoAdapter::setDigitOut(int portIndex, bool b) {
     char buf[256] = {0};
     if (portIndex < 8) {
-        sprintf(buf, "sec setOut():\n\tset_standard_digital_out(%d, %s)\nend\n",
-                portIndex, b ? "True" : "False");
+        auto ver = m_realTimeCommCtrl->ur->getRobotState()->getVersion();
+        if (ver < 2) {
+            sprintf(buf, "sec setOut():\n\tset_digital_out(%d, %s)\nend\n", portIndex,
+                    b ? "True" : "False");
+        } else {
+            sprintf(buf, "sec setOut():\n\tset_standard_digital_out(%d, %s)\nend\n",
+                    portIndex, b ? "True" : "False");
+        }
+
         if (m_realTimeCommCtrl) {
             m_realTimeCommCtrl->addCommandToQueue(buf);
         }
@@ -96,7 +103,6 @@ void CobotUrDigitIoAdapter::setUrRealTimeCtrl(CobotUrRealTimeCommCtrl* realTimeC
         m_inputIoStatus = 0;
         m_outputIoStatus = 0;
     }
-
 }
 
 bool CobotUrDigitIoAdapter::isOpened() const {

@@ -101,6 +101,7 @@ void CobotUrRealTimeComm::writeLine(const QByteArray& ba) {
             nba.push_back('\n');
         }
         m_SOCKET->write(nba);
+        COBOT_LOG.debug() << "\n" << nba.constData();
     }
 }
 
