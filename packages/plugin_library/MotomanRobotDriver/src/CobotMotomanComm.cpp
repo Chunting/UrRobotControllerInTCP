@@ -53,7 +53,7 @@ void CobotMotomanComm::handleTCPDisconnected(){
 }
 
 void CobotMotomanComm::handleUDPConnected(){
-    COBOT_LOG.info() << "UDP Connected";
+
 }
 
 void CobotMotomanComm::handleUDPDisconnected(){
@@ -73,15 +73,15 @@ void CobotMotomanComm::startDriver(){
 
 void CobotMotomanComm::stopDriver(){
     m_noDisconnectedAccept = false;
-    m_motomanUDPCommCtrl->requireStopServoj();
+    m_motomanTCPCommCtrl->motoman->executeCmd(CobotMotomanTCPComm::CMD_SERVO_OFF);
 }
 
 
 void CobotMotomanComm::setServojTime(double t){
-    if (t > 0.008) {
+    if (t > 0.004) {
         servoj_time_ = t;
     } else {
-        servoj_time_ = 0.008;
+        servoj_time_ = 0.004;
     }
 }
 

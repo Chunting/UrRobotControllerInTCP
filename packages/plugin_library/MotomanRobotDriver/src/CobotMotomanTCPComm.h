@@ -3,8 +3,8 @@
 // Copyright (c) 2017 Wuhan Collaborative Robot Technology Co.,Ltd. All rights reserved.
 //
 
-#ifndef COBOT_MOTOMAN_COMM_H
-#define COBOT_MOTOMAN_COMM_H
+#ifndef COBOT_MOTOMAN_TCP_COMM_H
+#define COBOT_MOTOMAN_TCP_COMM_H
 
 #include <QObject>
 #include <QString>
@@ -73,12 +73,12 @@ protected Q_SLOTS:
 
 protected:
     QTcpSocket* m_tcpSocket;
-    QString m_host;
+    QString m_robotIp;
     quint8 m_lastMotionCmdIndex;
     std::shared_ptr<MotomanRobotState> m_robotState;
     std::condition_variable& m_msg_cond;
     std::string localIp_;
-    std::vector<QByteArray> m_sentCmdCache;
+    //std::vector<QByteArray> m_sentCmdCache;
     std::mutex m_rt_res_mutex;
     std::vector<double> m_rt_q_required;
     std::vector<double> m_qTarget;
@@ -122,4 +122,4 @@ Q_SIGNALS:
 };
 
 
-#endif //COBOT_MOTOMAN_COMM_H
+#endif //COBOT_MOTOMAN_TCP_COMM_H

@@ -3,8 +3,8 @@
 // Copyright (c) 2017 Wuhan Collaborative Robot Technology Co.,Ltd. All rights reserved.
 //
 
-#ifndef COBOT_MOTOMAN_DRIVER_H
-#define COBOT_MOTOMAN_DRIVER_H
+#ifndef COBOT_MOTOMAN_COMM_H
+#define COBOT_MOTOMAN_COMM_H
 
 #include <QObject>
 #include <QTcpServer>
@@ -65,4 +65,4 @@ private:
 };
 
 
-#endif //COBOT_MOTOMAN_DRIVER_H
+#endif //COBOT_MOTOMAN_COMM_H

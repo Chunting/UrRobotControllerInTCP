@@ -10,7 +10,7 @@
 CobotMotomanTCPComm::CobotMotomanTCPComm(std::condition_variable& cond_msg, QObject* parent)
         : QObject(parent), m_msg_cond(cond_msg){
     m_lastMotionCmdIndex=1;
-    m_sentCmdCache.clear();
+    //m_sentCmdCache.clear();
     m_robotState = std::make_shared<MotomanRobotState>(m_msg_cond);
 
     m_tcpSocket = new QTcpSocket(this);
@@ -35,14 +35,14 @@ CobotMotomanTCPComm::~CobotMotomanTCPComm(){
 }
 
 void CobotMotomanTCPComm::start(){
-    if (!m_host.isEmpty()){
-        COBOT_LOG.notice()<<"Robot IP:"<<m_host<<" TCP Port:"<<TCP_PORT;
-        m_tcpSocket->connectToHost(m_host, TCP_PORT);//Motoman tcp port ID is 11000
+    if (!m_robotIp.isEmpty()){
+        COBOT_LOG.notice()<<"Robot IP:"<<m_robotIp<<" TCP Port:"<<TCP_PORT;
+        m_tcpSocket->connectToHost(m_robotIp, TCP_PORT);//Motoman tcp port ID is 11000
     }
 }
 
 void CobotMotomanTCPComm::setupHost(const QString& host){
-    m_host = host;
+    m_robotIp = host;
 }
 
 void CobotMotomanTCPComm::stop(){
@@ -76,10 +76,10 @@ void CobotMotomanTCPComm::onSocketError(QAbstractSocket::SocketError socketError
 void CobotMotomanTCPComm::processData(){
     QByteArray msg = m_tcpSocket->readAll();
     QByteArray checkedCmd;
-    if(m_sentCmdCache.size()>0){
-        checkedCmd=m_sentCmdCache[0];
-        m_sentCmdCache.erase(m_sentCmdCache.begin());
-    }
+//    if(m_sentCmdCache.size()>0){
+//        checkedCmd=m_sentCmdCache[0];
+//        m_sentCmdCache.erase(m_sentCmdCache.begin());
+//    }
     COBOT_LOG.debug()<<"The Command received:"<<QString(msg.toHex());
     if (msg.size() <=0) {
         //m_robotState->setDisconnected();
@@ -104,9 +104,9 @@ void CobotMotomanTCPComm::processData(){
 //        Q_EMIT resendCmd();
 //        return;
 //    }
-    if((quint8)msg[0]==m_lastMotionCmdIndex){
-        asyncServojFlush();
-    }
+//    if((quint8)msg[0]==m_lastMotionCmdIndex){
+//        asyncServojFlush();
+//    }
     //TODO: it is dangerous to debug now!
 }
 
@@ -170,7 +170,7 @@ void CobotMotomanTCPComm::executeCmd(const ROBOTCMD CmdID,bool resendFlag) {
                 cmd.push_back(IntToArray((qint32)(angleIncrement[i]*FLOAT_PRECISION)));
                 //Note No speed and accel control now.
             }
-            COBOT_LOG.debug()<<"CMD_MOVE_ANGLE is sent";
+            //COBOT_LOG.debug()<<"CMD_MOVE_ANGLE is sent";
             break;
         case CMD_MOVE_IMPULSE:
             COBOT_LOG.debug()<<"CMD_MOVE_IMPULSE is sent";
@@ -202,11 +202,11 @@ void CobotMotomanTCPComm::onSendCmd(QByteArray cmd) {
         return;
     }
 
-    COBOT_LOG.debug()<<"The Command to be sent:"<<QString(cmd.toHex());
+    //COBOT_LOG.debug()<<"The Command to be sent:"<<QString(cmd.toHex());
     if(m_tcpSocket->state() == QAbstractSocket::ConnectedState)
     {
         m_tcpSocket->write(cmd); //write the data itself
-        m_sentCmdCache.push_back(cmd);
+       // m_sentCmdCache.push_back(cmd);
     }
     else{
         COBOT_LOG.error()<<"TCP socket state is QAbstractSocket::UnconnectedState.";

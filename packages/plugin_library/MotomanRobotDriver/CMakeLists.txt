@@ -1,6 +1,6 @@
 ﻿
 
-project(MotomanRealTimeDriver)
+project(MotomanDriver)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
