@@ -209,6 +209,8 @@ void URRealTimeDriver::robotStatusWatcher() {
         *daemonStatus = *pStatus;
         daemonLock.unlock();
     }
+
+    servoDaemon.join();
     COBOT_LOG.notice() << "UR Status Watcher shutdown!";
 }
 
