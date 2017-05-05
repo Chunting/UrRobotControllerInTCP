@@ -71,7 +71,9 @@ void CobotUrDigitIoAdapter::debugIoStatus() {
 void CobotUrDigitIoAdapter::setDigitOut(int portIndex, bool b) {
     char buf[256] = {0};
     if (portIndex < 8) {
-        auto ver = m_realTimeCommCtrl->ur->getRobotState()->getVersion();
+        double ver = 0;
+        if (m_realTimeCommCtrl)
+            ver = m_realTimeCommCtrl->ur->getRobotState()->getVersion();
         if (ver < 2) {
             sprintf(buf, "sec setOut():\n\tset_digital_out(%d, %s)\nend\n", portIndex,
                     b ? "True" : "False");
