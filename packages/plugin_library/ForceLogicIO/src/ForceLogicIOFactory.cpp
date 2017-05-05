@@ -6,6 +6,6 @@
 #include "cobotsys_abstract_factory_macro.h"
 
 COBOTSYS_FACTORY_BEGIN(ForceLogicIOFactory)
-//        COBOTSYS_FACTORY_EXPORT(ForceLogicIO)
+        COBOTSYS_FACTORY_EXPORT(ForceLogicIO)
 COBOTSYS_FACTORY_END(ForceLogicIOFactory, "1.0")
 
