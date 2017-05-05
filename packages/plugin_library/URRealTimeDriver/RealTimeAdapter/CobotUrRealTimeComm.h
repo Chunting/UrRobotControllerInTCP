@@ -42,9 +42,8 @@ public:
     /**
      * 这个函数是专门写来用于异步线程发送命令的，可以直接调用
      * @param positions
-     * @param flushNow
      */
-    void asyncServoj(const std::vector<double>& positions, bool flushNow = false);
+    void asyncServoj(const std::vector<double>& positions);
 
 
 Q_SIGNALS:
@@ -62,6 +61,8 @@ protected:
     void onRealTimeDisconnect();
     void asyncServojFlush();
     void onSocketError(QAbstractSocket::SocketError socketError);
+
+    void onRealTimeData();
 protected:
     QString m_hostIp;
     std::shared_ptr<RobotStateRT> m_robotState;

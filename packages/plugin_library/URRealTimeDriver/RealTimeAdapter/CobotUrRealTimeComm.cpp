@@ -61,16 +61,15 @@ void CobotUrRealTimeComm::readData() {
 
     if (ba.size()) {
         if (m_robotState->getVersion() > 0) {
-            //COBOT_LOG.debug() << "Rt msg size: " << ba.size();
             m_robotState->unpack((uint8_t*) ba.constData());
         }
     }
-
-    asyncServojFlush();
 }
 
 
 void CobotUrRealTimeComm::asyncServojFlush() {
+    static auto time_pre = std::chrono::high_resolution_clock::now();
+
     std::vector<double> tmpq;
     if (m_rt_res_mutex.try_lock()) {
         if (m_rt_q_required.size()) {
@@ -84,7 +83,13 @@ void CobotUrRealTimeComm::asyncServojFlush() {
         m_qTarget = m_robotState->getQActual();
     }
 
+    auto cur_time = std::chrono::high_resolution_clock::now();
     servoj(m_qTarget);
+    std::chrono::duration<double> diff = cur_time - time_pre;
+    time_pre = cur_time;
+
+    //TODO debug
+//    COBOT_LOG.notice() << "Servoj Time: " << diff.count();
 }
 
 void CobotUrRealTimeComm::writeLine(const QByteArray& ba) {
@@ -104,6 +109,7 @@ void CobotUrRealTimeComm::urProgConnect() {
     m_rtSOCKET = m_tcpServer->nextPendingConnection();
     m_rtSOCKET->setSocketOption(QAbstractSocket::LowDelayOption, 1);
     connect(m_rtSOCKET, &QTcpSocket::disconnected, this, &CobotUrRealTimeComm::onRealTimeDisconnect);
+    connect(m_rtSOCKET, &QTcpSocket::readyRead, this, &CobotUrRealTimeComm::onRealTimeData);
     Q_EMIT realTimeProgConnected();
 }
 
@@ -140,11 +146,6 @@ void CobotUrRealTimeComm::stopProg() {
         keepalive = 0;
         COBOT_LOG.info() << "Stopping Ur Driver Program";
         servoj({});
-
-        /**
-         * 如果默认的程序不能正确的停止，则需要下面的语句。
-         */
-        //   m_SOCKET->write("stopj(10)\n");
     }
 }
 
@@ -158,21 +159,22 @@ void CobotUrRealTimeComm::onRealTimeDisconnect() {
     Q_EMIT realTimeProgDisconnect();
 }
 
-void CobotUrRealTimeComm::asyncServoj(const std::vector<double>& positions, bool flushNow) {
+void CobotUrRealTimeComm::asyncServoj(const std::vector<double>& positions) {
     m_rt_res_mutex.lock();
     m_rt_q_required = positions;
     m_rt_res_mutex.unlock();
 
-//    COBOT_LOG.info() << positions[0];
-
-    if (flushNow) {
-        Q_EMIT asyncServojFlushRequired();
-    }
+    Q_EMIT asyncServojFlushRequired();
 }
 
 void CobotUrRealTimeComm::onSocketError(QAbstractSocket::SocketError socketError) {
     COBOT_LOG.error() << "CobotUrRealTimeComm: " << m_SOCKET->errorString();
     Q_EMIT connectFail();
+}
+
+void CobotUrRealTimeComm::onRealTimeData() {
+    auto ba = m_rtSOCKET->readAll();
+//    COBOT_LOG.notice() << "Realtime: " << ba.constData();
 }
 
 

@@ -26,6 +26,9 @@ void Ur10JointFilter::applyFilter(std::vector<double>& target_, const ArmRobotSt
     m_target = target_;
     auto curPosi = ptrRobotStatus->q_actual;
 
+    if (m_target.size() != curPosi.size())
+        return;
+
     double maxRadPerTick = 60 * M_PI / 180 / 1000 * 8;
     if (m_jointLimits.size() != m_target.size()) {
         m_jointLimits.resize(m_target.size(), maxRadPerTick);

@@ -97,6 +97,8 @@ bool CobotUrDriver::uploadProg() {
     cmd_str += "\tSERVO_RUNNING = 1\n";
     cmd_str += "\tcmd_servo_state = SERVO_IDLE\n";
     cmd_str += "\tcmd_servo_q = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]\n";
+    cmd_str += "\tservo_loop_n = 0\n";
+    cmd_str += "\tservo_loop_old = 0\n";
     cmd_str += "\tdef set_servo_setpoint(q):\n";
     cmd_str += "\t\tenter_critical\n";
     cmd_str += "\t\tcmd_servo_state = SERVO_RUNNING\n";
@@ -109,14 +111,13 @@ bool CobotUrDriver::uploadProg() {
     cmd_str += "\t\t\tenter_critical\n";
     cmd_str += "\t\t\tq = cmd_servo_q\n";
     cmd_str += "\t\t\tdo_brake = False\n";
-    cmd_str += "\t\t\tif (state == SERVO_RUNNING) and ";
-    cmd_str += "(cmd_servo_state == SERVO_IDLE):\n";
+    cmd_str += "\t\t\tif (state == SERVO_RUNNING) and (cmd_servo_state == SERVO_IDLE):\n";
     cmd_str += "\t\t\t\tdo_brake = True\n";
-    cmd_str += "\t\t\t\tkeepalive = 0\n"; // 如果出现这种情况，直接断开连接，退出脚本程序。
     cmd_str += "\t\t\tend\n";
     cmd_str += "\t\t\tstate = cmd_servo_state\n";
     cmd_str += "\t\t\tcmd_servo_state = SERVO_IDLE\n";
     cmd_str += "\t\t\texit_critical\n";
+    cmd_str += "\t\t\tservo_loop_n = servo_loop_n + 1\n";
     cmd_str += "\t\t\tif do_brake:\n";
     cmd_str += "\t\t\t\tstopj(1.0)\n";
     cmd_str += "\t\t\t\tsync()\n";
@@ -127,8 +128,6 @@ bool CobotUrDriver::uploadProg() {
                 servoj_time_, servoj_lookahead_time_, servoj_gain_);
     else
         sprintf(buf, "\t\t\t\tservoj(q, t=%.4f)\n", servoj_time_);
-
-//    sprintf(buf, "\t\t\t\tmovej(q, t=%.4f)\n", servoj_time_);
 
     cmd_str += buf;
 
@@ -155,6 +154,10 @@ bool CobotUrDriver::uploadProg() {
     cmd_str += "params_mult[6] / MULT_jointstate]\n";
     cmd_str += "\t\t\tkeepalive = params_mult[7]\n";
     cmd_str += "\t\t\tset_servo_setpoint(q)\n";
+    cmd_str += "\t\tend\n";
+    cmd_str += "\t\tif servo_loop_old < servo_loop_n:\n";
+    cmd_str += "\t\t\tsocket_set_var(\"ServoLoop\", servo_loop_n)\n";
+    cmd_str += "\t\t\tservo_loop_old = servo_loop_n\n";
     cmd_str += "\t\tend\n";
     cmd_str += "\tend\n";
     cmd_str += "\tsleep(.1)\n";

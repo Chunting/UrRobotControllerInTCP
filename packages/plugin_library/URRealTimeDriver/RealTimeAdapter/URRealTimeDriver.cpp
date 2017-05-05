@@ -123,7 +123,30 @@ void URRealTimeDriver::robotStatusWatcher() {
     std::vector<std::shared_ptr<ArmRobotRealTimeStatusObserver> > observer_tmp;
     std::vector<double> q_next;
 
+    std::vector<double> daemonQ(6, 0);
+    std::mutex daemonLock;
+    auto daemonStatus = std::make_shared<ArmRobotStatus>();
+
     COBOT_LOG.notice() << "UR Status Watcher is Running.";
+    std::thread servoDaemon([&]() { // 这个线程主要用于优化路径
+        auto timeWait = std::chrono::high_resolution_clock::now();
+        while (m_isWatcherRunning) {
+            daemonLock.lock();
+            if (m_mutex.try_lock()) {
+                if (m_jointTargetFilter) {
+                    m_jointTargetFilter->applyFilter(daemonQ, daemonStatus);
+                }
+                if (m_isStarted && m_urDriver) {
+                    m_urDriver->servoj(daemonQ);
+                }
+                m_mutex.unlock();
+            }
+            daemonLock.unlock();
+            timeWait += std::chrono::milliseconds(2);
+            std::this_thread::sleep_until(timeWait);
+        }
+    });
+
     while (m_isWatcherRunning) {
         // Here Wait Ur Status Update
         m_urMessage->wait(uniqueLock);
@@ -138,7 +161,7 @@ void URRealTimeDriver::robotStatusWatcher() {
         auto time_rdy = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double> time_diff = time_rdy - time_cur; // 时间间隙
         time_cur = time_rdy;
-        if (time_diff.count() > 9 || time_diff.count() < 7) {
+        if (time_diff.count() > 0.012|| time_diff.count() < 0.006) {
             COBOT_LOG.warning() << "Ur Status Updated Time Exception: " << time_diff.count();
         }
 
@@ -175,12 +198,16 @@ void URRealTimeDriver::robotStatusWatcher() {
         }
 
         // 更新控制驱动数据, 如果没有数据，默认会是当前状态。
-        if (m_isStarted && q_next.size() >= CobotUr::JOINT_NUM_) {
-            if (m_mutex.try_lock()) {
-                m_urDriver->servoj(q_next);
-                m_mutex.unlock();
-            }
-        }
+//        if (m_isStarted && q_next.size() >= CobotUr::JOINT_NUM_) {
+//            if (m_mutex.try_lock()) {
+//                m_urDriver->servoj(q_next);
+//                m_mutex.unlock();
+//            }
+//        }
+        daemonLock.lock();
+        daemonQ = q_next;
+        *daemonStatus = *pStatus;
+        daemonLock.unlock();
     }
     COBOT_LOG.notice() << "UR Status Watcher shutdown!";
 }
