@@ -3,9 +3,9 @@
 //
 // Code generated for Simulink model 'ForceController'.
 //
-// Model version                  : 1.157
+// Model version                  : 1.192
 // Simulink Coder version         : 8.11 (R2016b) 25-Aug-2016
-// C/C++ source code generated on : Tue Apr 25 00:35:17 2017
+// C/C++ source code generated on : Mon May 08 03:51:17 2017
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: 32-bit Generic
@@ -15,40 +15,33 @@
 #include "ForceController.h"
 
 // Exported block signals
-real_T force_error[6];                 // '<Root>/Dead Zone'
+real_T force_filter[6];                // '<Root>/2-order TF'
+real_T force_error[6];                 // '<Root>/Sum2'
 
 // Exported block parameters
 real_T PID_D[6] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 } ;// Variable: D
                                                     //  Referenced by: '<S1>/Derivative Gain'
 
 
-real_T PID_I[6] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 } ;// Variable: I
-                                                    //  Referenced by: '<S1>/Integral Gain'
+real_T PID_P[6] = { 12.0, 12.0, 12.0, 12.0, 12.0, 12.0 } ;// Variable: P
+                                                          //  Referenced by: '<S1>/Proportional Gain'
 
 
-real_T PID_N[6] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 } ;// Variable: N
-                                                    //  Referenced by: '<S1>/Filter Coefficient'
-
-
-real_T PID_P[6] = { 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 } ;// Variable: P
-                                                    //  Referenced by: '<S1>/Proportional Gain'
-
-
-real_T dead_zone_end[6] = { 0.5, 0.5, 0.5, 0.5, 0.5, 0.5 } ;// Variable: dead_zone_end
+real_T dead_zone_end[6] = { 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 } ;// Variable: dead_zone_end
                                                             //  Referenced by: '<Root>/Dead Zone'
 
 
-real_T dead_zone_start[6] = { -0.5, -0.5, -0.5, -0.5, -0.5, -0.5 } ;// Variable: dead_zone_start
+real_T dead_zone_start[6] = { -1.0, -1.0, -1.0, -1.0, -1.0, -1.0 } ;// Variable: dead_zone_start
                                                                     //  Referenced by: '<Root>/Dead Zone'
 
 
-// Constant parameters (auto storage)
-const ConstP_ForceController_T ForceController_ConstP = {
-  // Expression: [0.0002,0.0002,0.0002,0.5,0.5,0.5]
-  //  Referenced by: '<Root>/Gain'
+real_T filter_den[2] = { 1.0, -0.92 } ;// Variable: filter_den
+                                         //  Referenced by: '<Root>/2-order TF'
 
-  { 0.0002, 0.0002, 0.0002, 0.5, 0.5, 0.5 }
-};
+
+real_T filter_num[2] = { 0.0, 0.08 } ;// Variable: filter_num
+                                        //  Referenced by: '<Root>/2-order TF'
+
 
 static void rate_scheduler(RT_MODEL_ForceController_T *const ForceController_M);
 
@@ -74,55 +67,57 @@ void ForceControllerClass::step(const real_T (&force_ee)[6], const real_T
   (&gravity_ee)[6], real_T (&poseOffset_ee)[6])
 {
   int32_T i;
-  real_T rtb_Gain;
-  real_T rtb_FilterCoefficient;
   real_T rtb_RateLimiter;
-  real_T rateLimiterRate;
+  real_T rtb_ProportionalGain;
+  real_T rtb_TSamp;
   if ((&ForceController_M)->Timing.TaskCounters.TID[1] == 0) {
     for (i = 0; i < 6; i++) {
-      // Sum: '<Root>/Sum2' incorporates:
-      //   Inport: '<Root>/force_ee'
-      //   Inport: '<Root>/gravity_ee'
-
-      rtb_Gain = force_ee[i] - gravity_ee[i];
+      // DiscreteTransferFcn: '<Root>/2-order TF'
+      force_filter[i] = filter_num[1] * ForceController_DW.uorderTF_states[i];
 
       // DeadZone: '<Root>/Dead Zone'
-      if (rtb_Gain > dead_zone_end[i]) {
-        force_error[i] = rtb_Gain - dead_zone_end[i];
-      } else if (rtb_Gain >= dead_zone_start[i]) {
-        force_error[i] = 0.0;
+      if (force_filter[i] > dead_zone_end[i]) {
+        rtb_RateLimiter = force_filter[i] - dead_zone_end[i];
+      } else if (force_filter[i] >= dead_zone_start[i]) {
+        rtb_RateLimiter = 0.0;
       } else {
-        force_error[i] = rtb_Gain - dead_zone_start[i];
+        rtb_RateLimiter = force_filter[i] - dead_zone_start[i];
       }
 
       // End of DeadZone: '<Root>/Dead Zone'
 
       // Gain: '<Root>/Gain'
-      rtb_Gain = ForceController_ConstP.Gain_Gain[i] * force_error[i];
+      rtb_RateLimiter *= ForceController_P.Gain_Gain[i];
 
-      // Gain: '<S1>/Filter Coefficient' incorporates:
-      //   DiscreteIntegrator: '<S1>/Filter'
-      //   Gain: '<S1>/Derivative Gain'
-      //   Sum: '<S1>/SumD'
+      // Gain: '<S1>/Proportional Gain'
+      rtb_ProportionalGain = PID_P[i] * rtb_RateLimiter;
 
-      rtb_FilterCoefficient = (PID_D[i] * rtb_Gain -
-        ForceController_DW.Filter_DSTATE[i]) * PID_N[i];
+      // Gain: '<S1>/Derivative Gain'
+      rtb_RateLimiter *= PID_D[i];
+
+      // SampleTimeMath: '<S3>/TSamp'
+      //
+      //  About '<S3>/TSamp':
+      //   y = u * K where K = 1 / ( w * Ts )
+
+      rtb_TSamp = rtb_RateLimiter * ForceController_P.TSamp_WtEt;
 
       // Sum: '<S1>/Sum' incorporates:
-      //   DiscreteIntegrator: '<S1>/Integrator'
-      //   Gain: '<S1>/Proportional Gain'
+      //   Delay: '<S3>/UD'
+      //   Sum: '<S3>/Diff'
 
-      rtb_RateLimiter = (PID_P[i] * rtb_Gain +
-                         ForceController_DW.Integrator_DSTATE[i]) +
-        rtb_FilterCoefficient;
+      rtb_RateLimiter = (rtb_TSamp - ForceController_DW.UD_DSTATE[i]) +
+        rtb_ProportionalGain;
 
       // RateLimiter: '<Root>/Rate Limiter'
-      rateLimiterRate = rtb_RateLimiter - ForceController_DW.PrevY[i];
-      if (rateLimiterRate > 8.0E-5) {
-        rtb_RateLimiter = ForceController_DW.PrevY[i] + 8.0E-5;
+      rtb_ProportionalGain = rtb_RateLimiter - ForceController_DW.PrevY[i];
+      if (rtb_ProportionalGain > ForceController_P.RateLimiter_RisingLim) {
+        rtb_RateLimiter = ForceController_DW.PrevY[i] +
+          ForceController_P.RateLimiter_RisingLim;
       } else {
-        if (rateLimiterRate < -8.0E-5) {
-          rtb_RateLimiter = ForceController_DW.PrevY[i] + -8.0E-5;
+        if (rtb_ProportionalGain < ForceController_P.RateLimiter_FallingLim) {
+          rtb_RateLimiter = ForceController_DW.PrevY[i] +
+            ForceController_P.RateLimiter_FallingLim;
         }
       }
 
@@ -133,13 +128,18 @@ void ForceControllerClass::step(const real_T (&force_ee)[6], const real_T
       // Outport: '<Root>/poseOffset_ee'
       ForceController_Y.poseOffset_ee[i] = rtb_RateLimiter;
 
-      // Update for DiscreteIntegrator: '<S1>/Integrator' incorporates:
-      //   Gain: '<S1>/Integral Gain'
+      // Sum: '<Root>/Sum2' incorporates:
+      //   Inport: '<Root>/force_ee'
+      //   Inport: '<Root>/gravity_ee'
 
-      ForceController_DW.Integrator_DSTATE[i] += PID_I[i] * rtb_Gain * 0.008;
+      force_error[i] = force_ee[i] - gravity_ee[i];
 
-      // Update for DiscreteIntegrator: '<S1>/Filter'
-      ForceController_DW.Filter_DSTATE[i] += 0.008 * rtb_FilterCoefficient;
+      // Update for DiscreteTransferFcn: '<Root>/2-order TF'
+      ForceController_DW.uorderTF_states[i] = (force_error[i] - filter_den[1] *
+        ForceController_DW.uorderTF_states[i]) / filter_den[0];
+
+      // Update for Delay: '<S3>/UD'
+      ForceController_DW.UD_DSTATE[i] = rtb_TSamp;
     }
   }
 
@@ -168,6 +168,13 @@ void ForceControllerClass::initialize()
   {
     int32_T i;
     for (i = 0; i < 6; i++) {
+      force_filter[i] = 0.0;
+    }
+  }
+
+  {
+    int32_T i;
+    for (i = 0; i < 6; i++) {
       force_error[i] = 0.0;
     }
   }
@@ -178,13 +185,17 @@ void ForceControllerClass::initialize()
 
   {
     int32_T i;
-
-    // InitializeConditions for RateLimiter: '<Root>/Rate Limiter'
     for (i = 0; i < 6; i++) {
-      ForceController_DW.PrevY[i] = 0.0;
-    }
+      // InitializeConditions for DiscreteTransferFcn: '<Root>/2-order TF'
+      ForceController_DW.uorderTF_states[i] =
+        ForceController_P.uorderTF_InitialStates;
 
-    // End of InitializeConditions for RateLimiter: '<Root>/Rate Limiter'
+      // InitializeConditions for Delay: '<S3>/UD'
+      ForceController_DW.UD_DSTATE[i] = ForceController_P.UD_InitialCondition;
+
+      // InitializeConditions for RateLimiter: '<Root>/Rate Limiter'
+      ForceController_DW.PrevY[i] = ForceController_P.RateLimiter_IC;
+    }
   }
 }
 
@@ -197,6 +208,37 @@ void ForceControllerClass::terminate()
 // Constructor
 ForceControllerClass::ForceControllerClass()
 {
+  static const P_ForceController_T ForceController_P_temp = {
+    0.0,                               // Expression: 0
+                                       //  Referenced by: '<Root>/2-order TF'
+
+
+    //  Expression: [0.0005,0.0005,0.0005,0.01,0.01,0.01]
+    //  Referenced by: '<Root>/Gain'
+
+    { 0.0005, 0.0005, 0.0005, 0.01, 0.01, 0.01 },
+    125.0,                             // Computed Parameter: TSamp_WtEt
+                                       //  Referenced by: '<S3>/TSamp'
+
+    0.0,                               // Expression: DifferentiatorICPrevScaledInput
+                                       //  Referenced by: '<S3>/UD'
+
+    8.0,                               // Computed Parameter: RateLimiter_RisingLim
+                                       //  Referenced by: '<Root>/Rate Limiter'
+
+    -8.0,                              // Computed Parameter: RateLimiter_FallingLim
+                                       //  Referenced by: '<Root>/Rate Limiter'
+
+    0.0,                               // Expression: 0
+                                       //  Referenced by: '<Root>/Rate Limiter'
+
+    1U                                 // Computed Parameter: UD_DelayLength
+                                       //  Referenced by: '<S3>/UD'
+
+  };                                   // Modifiable parameters
+
+  // Initialize tunable parameters
+  ForceController_P = ForceController_P_temp;
 }
 
 // Destructor

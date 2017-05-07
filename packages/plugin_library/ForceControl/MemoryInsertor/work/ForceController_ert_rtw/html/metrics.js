@@ -2,36 +2,50 @@ function CodeMetrics() {
 	 this.metricsArray = {};
 	 this.metricsArray.var = new Array();
 	 this.metricsArray.fcn = new Array();
-	 this.metricsArray.var["force_error"] = {file: "/home/sail/CLionProjects/cobotsys/packages/plugin_library/ForceControl/ForceControllerDesign/work/ForceController_ert_rtw/ForceController.cpp",
+	 this.metricsArray.var["PID_D"] = {file: "D:\\Projects\\cobotsys\\packages\\plugin_library\\ForceControl\\MemoryInsertor\\work\\ForceController_ert_rtw\\ForceController.cpp",
 	size: 48};
-	 this.metricsArray.fcn["ForceController.cpp:rate_scheduler"] = {file: "/home/sail/CLionProjects/cobotsys/packages/plugin_library/ForceControl/ForceControllerDesign/work/ForceController_ert_rtw/ForceController.cpp",
+	 this.metricsArray.var["PID_P"] = {file: "D:\\Projects\\cobotsys\\packages\\plugin_library\\ForceControl\\MemoryInsertor\\work\\ForceController_ert_rtw\\ForceController.cpp",
+	size: 48};
+	 this.metricsArray.var["dead_zone_end"] = {file: "D:\\Projects\\cobotsys\\packages\\plugin_library\\ForceControl\\MemoryInsertor\\work\\ForceController_ert_rtw\\ForceController.cpp",
+	size: 48};
+	 this.metricsArray.var["dead_zone_start"] = {file: "D:\\Projects\\cobotsys\\packages\\plugin_library\\ForceControl\\MemoryInsertor\\work\\ForceController_ert_rtw\\ForceController.cpp",
+	size: 48};
+	 this.metricsArray.var["filter_den"] = {file: "D:\\Projects\\cobotsys\\packages\\plugin_library\\ForceControl\\MemoryInsertor\\work\\ForceController_ert_rtw\\ForceController.cpp",
+	size: 16};
+	 this.metricsArray.var["filter_num"] = {file: "D:\\Projects\\cobotsys\\packages\\plugin_library\\ForceControl\\MemoryInsertor\\work\\ForceController_ert_rtw\\ForceController.cpp",
+	size: 16};
+	 this.metricsArray.var["force_error"] = {file: "D:\\Projects\\cobotsys\\packages\\plugin_library\\ForceControl\\MemoryInsertor\\work\\ForceController_ert_rtw\\ForceController.cpp",
+	size: 48};
+	 this.metricsArray.var["force_filter"] = {file: "D:\\Projects\\cobotsys\\packages\\plugin_library\\ForceControl\\MemoryInsertor\\work\\ForceController_ert_rtw\\ForceController.cpp",
+	size: 48};
+	 this.metricsArray.fcn["ForceController.cpp:rate_scheduler"] = {file: "D:\\Projects\\cobotsys\\packages\\plugin_library\\ForceControl\\MemoryInsertor\\work\\ForceController_ert_rtw\\ForceController.cpp",
 	stack: 0,
 	stackTotal: 0};
-	 this.metricsArray.fcn["ForceControllerClass::ForceControllerClass"] = {file: "/home/sail/CLionProjects/cobotsys/packages/plugin_library/ForceControl/ForceControllerDesign/work/ForceController_ert_rtw/ForceController.cpp",
+	 this.metricsArray.fcn["ForceControllerClass::ForceControllerClass"] = {file: "D:\\Projects\\cobotsys\\packages\\plugin_library\\ForceControl\\MemoryInsertor\\work\\ForceController_ert_rtw\\ForceController.cpp",
 	stack: 0,
 	stackTotal: 0};
-	 this.metricsArray.fcn["ForceControllerClass::getBlockParameters"] = {file: "/home/sail/CLionProjects/cobotsys/packages/plugin_library/ForceControl/ForceControllerDesign/work/ForceController_ert_rtw/ForceController.h",
+	 this.metricsArray.fcn["ForceControllerClass::getBlockParameters"] = {file: "D:\\Projects\\cobotsys\\packages\\plugin_library\\ForceControl\\MemoryInsertor\\work\\ForceController_ert_rtw\\ForceController.h",
 	stack: 0,
 	stackTotal: 0};
-	 this.metricsArray.fcn["ForceControllerClass::getRTM"] = {file: "/home/sail/CLionProjects/cobotsys/packages/plugin_library/ForceControl/ForceControllerDesign/work/ForceController_ert_rtw/ForceController.cpp",
+	 this.metricsArray.fcn["ForceControllerClass::getRTM"] = {file: "D:\\Projects\\cobotsys\\packages\\plugin_library\\ForceControl\\MemoryInsertor\\work\\ForceController_ert_rtw\\ForceController.cpp",
 	stack: 0,
 	stackTotal: 0};
-	 this.metricsArray.fcn["ForceControllerClass::initialize"] = {file: "/home/sail/CLionProjects/cobotsys/packages/plugin_library/ForceControl/ForceControllerDesign/work/ForceController_ert_rtw/ForceController.cpp",
-	stack: 4,
-	stackTotal: 4};
-	 this.metricsArray.fcn["ForceControllerClass::setBlockParameters"] = {file: "/home/sail/CLionProjects/cobotsys/packages/plugin_library/ForceControl/ForceControllerDesign/work/ForceController_ert_rtw/ForceController.h",
+	 this.metricsArray.fcn["ForceControllerClass::initialize"] = {file: "D:\\Projects\\cobotsys\\packages\\plugin_library\\ForceControl\\MemoryInsertor\\work\\ForceController_ert_rtw\\ForceController.cpp",
+	stack: 12,
+	stackTotal: 12};
+	 this.metricsArray.fcn["ForceControllerClass::setBlockParameters"] = {file: "D:\\Projects\\cobotsys\\packages\\plugin_library\\ForceControl\\MemoryInsertor\\work\\ForceController_ert_rtw\\ForceController.h",
 	stack: 0,
 	stackTotal: 0};
-	 this.metricsArray.fcn["ForceControllerClass::step"] = {file: "/home/sail/CLionProjects/cobotsys/packages/plugin_library/ForceControl/ForceControllerDesign/work/ForceController_ert_rtw/ForceController.cpp",
-	stack: 16,
-	stackTotal: 16};
-	 this.metricsArray.fcn["ForceControllerClass::terminate"] = {file: "/home/sail/CLionProjects/cobotsys/packages/plugin_library/ForceControl/ForceControllerDesign/work/ForceController_ert_rtw/ForceController.cpp",
+	 this.metricsArray.fcn["ForceControllerClass::step"] = {file: "D:\\Projects\\cobotsys\\packages\\plugin_library\\ForceControl\\MemoryInsertor\\work\\ForceController_ert_rtw\\ForceController.cpp",
+	stack: 32,
+	stackTotal: 32};
+	 this.metricsArray.fcn["ForceControllerClass::terminate"] = {file: "D:\\Projects\\cobotsys\\packages\\plugin_library\\ForceControl\\MemoryInsertor\\work\\ForceController_ert_rtw\\ForceController.cpp",
 	stack: 0,
 	stackTotal: 0};
-	 this.metricsArray.fcn["ForceControllerClass::~ForceControllerClass"] = {file: "/home/sail/CLionProjects/cobotsys/packages/plugin_library/ForceControl/ForceControllerDesign/work/ForceController_ert_rtw/ForceController.cpp",
+	 this.metricsArray.fcn["ForceControllerClass::~ForceControllerClass"] = {file: "D:\\Projects\\cobotsys\\packages\\plugin_library\\ForceControl\\MemoryInsertor\\work\\ForceController_ert_rtw\\ForceController.cpp",
 	stack: 0,
 	stackTotal: 0};
-	 this.metricsArray.fcn["memset"] = {file: "/home/sail/opt/MATLAB/R2016b/sys/lcc/include/string.h",
+	 this.metricsArray.fcn["memset"] = {file: "C:\\MATLAB\\R2016b\\sys\\lcc\\include\\string.h",
 	stack: 0,
 	stackTotal: 0};
 	 this.getMetrics = function(token) { 

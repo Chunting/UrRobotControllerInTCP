@@ -3,9 +3,9 @@
 //
 // Code generated for Simulink model 'ForceController'.
 //
-// Model version                  : 1.144
+// Model version                  : 1.192
 // Simulink Coder version         : 8.11 (R2016b) 25-Aug-2016
-// C/C++ source code generated on : Fri Apr 21 17:47:47 2017
+// C/C++ source code generated on : Mon May 08 03:51:17 2017
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: 32-bit Generic
@@ -14,20 +14,23 @@
 //
 #ifndef RTW_HEADER_ForceController_h_
 #define RTW_HEADER_ForceController_h_
+#include "rtwtypes.h"
 #include <string.h>
 #ifndef ForceController_COMMON_INCLUDES_
 # define ForceController_COMMON_INCLUDES_
 #include "rtwtypes.h"
 #endif                                 // ForceController_COMMON_INCLUDES_
 
-#include "ForceController_types.h"
-
 // Macros for accessing real-time model data structure
+
+// Forward declaration for rtModel
+typedef struct tag_RTM_ForceController_T RT_MODEL_ForceController_T;
 
 // Block states (auto storage) for system '<Root>'
 typedef struct {
-  real_T Integrator_DSTATE[6];         // '<S1>/Integrator'
-  real_T Filter_DSTATE[6];             // '<S1>/Filter'
+  real_T uorderTF_states[6];           // '<Root>/2-order TF'
+  real_T UD_DSTATE[6];                 // '<S3>/UD'
+  real_T PrevY[6];                     // '<Root>/Rate Limiter'
 } DW_ForceController_T;
 
 // External outputs (root outports fed by signals with auto storage)
@@ -37,19 +40,34 @@ typedef struct {
 
 // Parameters (auto storage)
 struct P_ForceController_T_ {
-  real_T D[6];                         // Variable: D
-                                       //  Referenced by: '<S1>/Derivative Gain'
+  real_T uorderTF_InitialStates;       // Expression: 0
+                                       //  Referenced by: '<Root>/2-order TF'
 
-  real_T I[6];                         // Variable: I
-                                       //  Referenced by: '<S1>/Integral Gain'
+  real_T Gain_Gain[6];                 // Expression: [0.0005,0.0005,0.0005,0.01,0.01,0.01]
+                                       //  Referenced by: '<Root>/Gain'
 
-  real_T N[6];                         // Variable: N
-                                       //  Referenced by: '<S1>/Filter Coefficient'
+  real_T TSamp_WtEt;                   // Computed Parameter: TSamp_WtEt
+                                       //  Referenced by: '<S3>/TSamp'
 
-  real_T P[6];                         // Variable: P
-                                       //  Referenced by: '<S1>/Proportional Gain'
+  real_T UD_InitialCondition;          // Expression: DifferentiatorICPrevScaledInput
+                                       //  Referenced by: '<S3>/UD'
+
+  real_T RateLimiter_RisingLim;        // Computed Parameter: RateLimiter_RisingLim
+                                       //  Referenced by: '<Root>/Rate Limiter'
+
+  real_T RateLimiter_FallingLim;       // Computed Parameter: RateLimiter_FallingLim
+                                       //  Referenced by: '<Root>/Rate Limiter'
+
+  real_T RateLimiter_IC;               // Expression: 0
+                                       //  Referenced by: '<Root>/Rate Limiter'
+
+  uint32_T UD_DelayLength;             // Computed Parameter: UD_DelayLength
+                                       //  Referenced by: '<S3>/UD'
 
 };
+
+// Parameters (auto storage)
+typedef struct P_ForceController_T_ P_ForceController_T;
 
 // Real-time Model Data Structure
 struct tag_RTM_ForceController_T {
@@ -84,12 +102,43 @@ extern "C" {
 //  these signals and export their symbols.
 //
 
+extern real_T force_filter[6];         // '<Root>/2-order TF'
 extern real_T force_error[6];          // '<Root>/Sum2'
+
+//
+//  Exported Global Parameters
+//
+//  Note: Exported global parameters are tunable parameters with an exported
+//  global storage class designation.  Code generation will declare the memory for
+//  these parameters and exports their symbols.
+//
+
+extern real_T PID_D[6];                // Variable: D
+                                       //  Referenced by: '<S1>/Derivative Gain'
+
+extern real_T PID_P[6];                // Variable: P
+                                       //  Referenced by: '<S1>/Proportional Gain'
+
+extern real_T dead_zone_end[6];        // Variable: dead_zone_end
+                                       //  Referenced by: '<Root>/Dead Zone'
+
+extern real_T dead_zone_start[6];      // Variable: dead_zone_start
+                                       //  Referenced by: '<Root>/Dead Zone'
+
+extern real_T filter_den[2];           // Variable: filter_den
+                                       //  Referenced by: '<Root>/2-order TF'
+
+extern real_T filter_num[2];           // Variable: filter_num
+                                       //  Referenced by: '<Root>/2-order TF'
+
 
 // Class declaration for model ForceController
 class ForceControllerClass {
   // public data and function members
  public:
+  // Tunable parameters
+  P_ForceController_T ForceController_P;
+
   // model initialize function
   void initialize();
 
@@ -128,9 +177,6 @@ class ForceControllerClass {
 
   // private data and function members
  private:
-  // Tunable parameters
-  P_ForceController_T ForceController_P;
-
   // Block states
   DW_ForceController_T ForceController_DW;
 
@@ -141,7 +187,7 @@ class ForceControllerClass {
 //-
 //  These blocks were eliminated from the model due to optimizations:
 //
-//  Block '<Root>/Gain' : Eliminated nontunable gain of 1
+//  Block '<S3>/DTDup' : Unused code path elimination
 //  Block '<Root>/Rate Transition' : Eliminated since input and output rates are identical
 
 
@@ -161,6 +207,8 @@ class ForceControllerClass {
 //
 //  '<Root>' : 'ForceController'
 //  '<S1>'   : 'ForceController/Discrete PID Controller'
+//  '<S2>'   : 'ForceController/LPF1'
+//  '<S3>'   : 'ForceController/Discrete PID Controller/Differentiator'
 
 #endif                                 // RTW_HEADER_ForceController_h_
 

@@ -479,7 +479,7 @@ Dimension
 </tr>
 <tr class="even">
 <td width="42%" align="left" valign="top">
-D
+<a href="matlab:coder.internal.code2model('ForceController:70')" name="code2model" class="code2model">&lt;Root&gt;/2-order TF</a>
 </td>
 <td width="26%" align="left" valign="top">
 <i>
@@ -491,13 +491,13 @@ Defined externally
 real_T
 </td>
 <td width="10%" align="right" valign="top">
-[1  6]
+1
 </td>
 
 </tr>
 <tr class="odd">
 <td width="42%" align="left" valign="top">
-I
+<a href="matlab:coder.internal.code2model('ForceController:54')" name="code2model" class="code2model">&lt;Root&gt;/Gain</a>
 </td>
 <td width="26%" align="left" valign="top">
 <i>
@@ -515,13 +515,118 @@ real_T
 </tr>
 <tr class="even">
 <td width="42%" align="left" valign="top">
-N
+synthesized block
 </td>
 <td width="26%" align="left" valign="top">
 <i>
 Defined externally
 </i>
 
+</td>
+<td width="21%" align="left" valign="top">
+real_T
+</td>
+<td width="10%" align="right" valign="top">
+1
+</td>
+
+</tr>
+<tr class="odd">
+<td width="42%" align="left" valign="top">
+synthesized block
+</td>
+<td width="26%" align="left" valign="top">
+<i>
+Defined externally
+</i>
+
+</td>
+<td width="21%" align="left" valign="top">
+real_T
+</td>
+<td width="10%" align="right" valign="top">
+1
+</td>
+
+</tr>
+<tr class="even">
+<td width="42%" align="left" valign="top">
+<a href="matlab:coder.internal.code2model('ForceController:55')" name="code2model" class="code2model">&lt;Root&gt;/Rate Limiter</a>
+</td>
+<td width="26%" align="left" valign="top">
+<i>
+Defined externally
+</i>
+
+</td>
+<td width="21%" align="left" valign="top">
+real_T
+</td>
+<td width="10%" align="right" valign="top">
+1
+</td>
+
+</tr>
+<tr class="odd">
+<td width="42%" align="left" valign="top">
+<a href="matlab:coder.internal.code2model('ForceController:55')" name="code2model" class="code2model">&lt;Root&gt;/Rate Limiter</a>
+</td>
+<td width="26%" align="left" valign="top">
+<i>
+Defined externally
+</i>
+
+</td>
+<td width="21%" align="left" valign="top">
+real_T
+</td>
+<td width="10%" align="right" valign="top">
+1
+</td>
+
+</tr>
+<tr class="even">
+<td width="42%" align="left" valign="top">
+<a href="matlab:coder.internal.code2model('ForceController:55')" name="code2model" class="code2model">&lt;Root&gt;/Rate Limiter</a>
+</td>
+<td width="26%" align="left" valign="top">
+<i>
+Defined externally
+</i>
+
+</td>
+<td width="21%" align="left" valign="top">
+real_T
+</td>
+<td width="10%" align="right" valign="top">
+1
+</td>
+
+</tr>
+<tr class="odd">
+<td width="42%" align="left" valign="top">
+synthesized block
+</td>
+<td width="26%" align="left" valign="top">
+<i>
+Defined externally
+</i>
+
+</td>
+<td width="21%" align="left" valign="top">
+uint32_T
+</td>
+<td width="10%" align="right" valign="top">
+1
+</td>
+
+</tr>
+<tr class="even">
+<td width="42%" align="left" valign="top">
+D
+</td>
+<td width="26%" align="left" valign="top">
+PID_D
 </td>
 <td width="21%" align="left" valign="top">
 real_T
@@ -536,16 +641,73 @@ real_T
 P
 </td>
 <td width="26%" align="left" valign="top">
-<i>
-Defined externally
-</i>
-
+PID_P
 </td>
 <td width="21%" align="left" valign="top">
 real_T
 </td>
 <td width="10%" align="right" valign="top">
 [1  6]
+</td>
+
+</tr>
+<tr class="even">
+<td width="42%" align="left" valign="top">
+dead_zone_end
+</td>
+<td width="26%" align="left" valign="top">
+dead_zone_end
+</td>
+<td width="21%" align="left" valign="top">
+real_T
+</td>
+<td width="10%" align="right" valign="top">
+[6  1]
+</td>
+
+</tr>
+<tr class="odd">
+<td width="42%" align="left" valign="top">
+dead_zone_start
+</td>
+<td width="26%" align="left" valign="top">
+dead_zone_start
+</td>
+<td width="21%" align="left" valign="top">
+real_T
+</td>
+<td width="10%" align="right" valign="top">
+[6  1]
+</td>
+
+</tr>
+<tr class="even">
+<td width="42%" align="left" valign="top">
+filter_den
+</td>
+<td width="26%" align="left" valign="top">
+filter_den
+</td>
+<td width="21%" align="left" valign="top">
+real_T
+</td>
+<td width="10%" align="right" valign="top">
+[1  2]
+</td>
+
+</tr>
+<tr class="odd">
+<td width="42%" align="left" valign="top">
+filter_num
+</td>
+<td width="26%" align="left" valign="top">
+filter_num
+</td>
+<td width="21%" align="left" valign="top">
+real_T
+</td>
+<td width="10%" align="right" valign="top">
+[1  2]
 </td>
 
 </tr>

@@ -63,9 +63,12 @@ private:
 
     std::vector<QLabel*> d_lblSig;//3
     std::vector<double*> m_sig;//3
+	std::vector<QComboBox*> d_cboSignal;//3
+	std::vector<QColor> m_sig_color;//3
+
     std::vector<SliderBox*> d_sldBox;//6
     std::vector<double*> m_param;//6
-    std::vector<QComboBox*> d_cboSignal;//3
+
     QComboBox* d_cboParam;
     std::shared_ptr<QWidget> m_loggerWidget;
 };

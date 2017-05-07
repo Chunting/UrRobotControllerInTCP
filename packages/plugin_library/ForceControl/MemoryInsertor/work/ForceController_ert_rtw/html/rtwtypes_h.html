@@ -22,9 +22,9 @@
 </span><span><a class="LN" name="3">    3   </a><span class="CT">//</span>
 </span><span><a class="LN" name="4">    4   </a><span class="CT">// Code generated for Simulink model 'ForceController'.</span>
 </span><span><a class="LN" name="5">    5   </a><span class="CT">//</span>
-</span><span><a class="LN" name="6">    6   </a><span class="CT">// Model version                  : 1.144</span>
+</span><span><a class="LN" name="6">    6   </a><span class="CT">// Model version                  : 1.192</span>
 </span><span><a class="LN" name="7">    7   </a><span class="CT">// Simulink Coder version         : 8.11 (R2016b) 25-Aug-2016</span>
-</span><span><a class="LN" name="8">    8   </a><span class="CT">// C/C++ source code generated on : Fri Apr 21 17:47:47 2017</span>
+</span><span><a class="LN" name="8">    8   </a><span class="CT">// C/C++ source code generated on : Mon May 08 03:51:17 2017</span>
 </span><span><a class="LN" name="9">    9   </a><span class="CT">//</span>
 </span><span><a class="LN" name="10">   10   </a><span class="CT">// Target selection: ert.tlc</span>
 </span><span><a class="LN" name="11">   11   </a><span class="CT">// Embedded hardware selection: 32-bit Generic</span>
@@ -86,94 +86,32 @@
 </span><span><a class="LN" name="67">   67   </a><span class="KW">typedef</span> <span class="DT">unsigned</span> <span class="DT">char</span> <a name="type_uchar_T">uchar_T</a>;
 </span><span><a class="LN" name="68">   68   </a><span class="KW">typedef</span> <a href="#type_char_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_char_T');" target="_self"><font color="#1122aa">char_T</font></a> <a name="type_byte_T">byte_T</a>;
 </span><span><a class="LN" name="69">   69   </a>
-</span><span><a class="LN" name="70">   70   </a><span class="CT">//===========================================================================*</span>
-</span><span><a class="LN" name="71">   71   </a><span class="CT">//  Complex number type definitions                                           *</span>
-</span><span><a class="LN" name="72">   72   </a><span class="CT">// ===========================================================================</span>
-</span><span><a class="LN" name="73">   73   </a><font color="#992211">#</font><span class="PP">define</span> CREAL_T
-</span><span><a class="LN" name="74">   74   </a>
-</span><span><a class="LN" name="75">   75   </a><span class="KW">typedef</span> <span class="KW">struct</span> <b>{</b>
-</span><span><a class="LN" name="76">   76   </a>  <a href="#type_real32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real32_T');" target="_self"><font color="#1122aa">real32_T</font></a> re;
-</span><span><a class="LN" name="77">   77   </a>  <a href="#type_real32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real32_T');" target="_self"><font color="#1122aa">real32_T</font></a> im;
-</span><span><a class="LN" name="78">   78   </a><b>}</b> <a name="type_creal32_T">creal32_T</a>;
-</span><span><a class="LN" name="79">   79   </a>
-</span><span><a class="LN" name="80">   80   </a><span class="KW">typedef</span> <span class="KW">struct</span> <b>{</b>
-</span><span><a class="LN" name="81">   81   </a>  <a href="#type_real64_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real64_T');" target="_self"><font color="#1122aa">real64_T</font></a> re;
-</span><span><a class="LN" name="82">   82   </a>  <a href="#type_real64_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real64_T');" target="_self"><font color="#1122aa">real64_T</font></a> im;
-</span><span><a class="LN" name="83">   83   </a><b>}</b> <a name="type_creal64_T">creal64_T</a>;
+</span><span><a class="LN" name="70">   70   </a><span class="CT">//=======================================================================*</span>
+</span><span><a class="LN" name="71">   71   </a><span class="CT">//  Min and Max:                                                          *</span>
+</span><span><a class="LN" name="72">   72   </a><span class="CT">//    int8_T, int16_T, int32_T     - signed 8, 16, or 32 bit integers     *</span>
+</span><span><a class="LN" name="73">   73   </a><span class="CT">//    uint8_T, uint16_T, uint32_T  - unsigned 8, 16, or 32 bit integers   *</span>
+</span><span><a class="LN" name="74">   74   </a><span class="CT">// =======================================================================</span>
+</span><span><a class="LN" name="75">   75   </a><font color="#992211">#</font><span class="PP">define</span> MAX_int8_T                     ((<a href="#type_int8_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int8_T');" target="_self"><font color="#1122aa">int8_T</font></a>)(127))
+</span><span><a class="LN" name="76">   76   </a><font color="#992211">#</font><span class="PP">define</span> MIN_int8_T                     ((<a href="#type_int8_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int8_T');" target="_self"><font color="#1122aa">int8_T</font></a>)(-128))
+</span><span><a class="LN" name="77">   77   </a><font color="#992211">#</font><span class="PP">define</span> MAX_uint8_T                    ((<a href="#type_uint8_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_uint8_T');" target="_self"><font color="#1122aa">uint8_T</font></a>)(255U))
+</span><span><a class="LN" name="78">   78   </a><font color="#992211">#</font><span class="PP">define</span> MAX_int16_T                    ((<a href="#type_int16_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int16_T');" target="_self"><font color="#1122aa">int16_T</font></a>)(32767))
+</span><span><a class="LN" name="79">   79   </a><font color="#992211">#</font><span class="PP">define</span> MIN_int16_T                    ((<a href="#type_int16_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int16_T');" target="_self"><font color="#1122aa">int16_T</font></a>)(-32768))
+</span><span><a class="LN" name="80">   80   </a><font color="#992211">#</font><span class="PP">define</span> MAX_uint16_T                   ((<a href="#type_uint16_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_uint16_T');" target="_self"><font color="#1122aa">uint16_T</font></a>)(65535U))
+</span><span><a class="LN" name="81">   81   </a><font color="#992211">#</font><span class="PP">define</span> MAX_int32_T                    ((<a href="#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a>)(2147483647))
+</span><span><a class="LN" name="82">   82   </a><font color="#992211">#</font><span class="PP">define</span> MIN_int32_T                    ((<a href="#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a>)(-2147483647-1))
+</span><span><a class="LN" name="83">   83   </a><font color="#992211">#</font><span class="PP">define</span> MAX_uint32_T                   ((<a href="#type_uint32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_uint32_T');" target="_self"><font color="#1122aa">uint32_T</font></a>)(0xFFFFFFFFU))
 </span><span><a class="LN" name="84">   84   </a>
-</span><span><a class="LN" name="85">   85   </a><span class="KW">typedef</span> <span class="KW">struct</span> <b>{</b>
-</span><span><a class="LN" name="86">   86   </a>  <a href="#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> re;
-</span><span><a class="LN" name="87">   87   </a>  <a href="#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> im;
-</span><span><a class="LN" name="88">   88   </a><b>}</b> <a name="type_creal_T">creal_T</a>;
+</span><span><a class="LN" name="85">   85   </a><span class="CT">// Block D-Work pointer type</span>
+</span><span><a class="LN" name="86">   86   </a><span class="KW">typedef</span> <span class="DT">void</span> * <a name="type_pointer_T">pointer_T</a>;
+</span><span><a class="LN" name="87">   87   </a>
+</span><span><a class="LN" name="88">   88   </a><font color="#992211">#</font><span class="PP">endif</span>                                 <span class="CT">// RTWTYPES_H</span>
 </span><span><a class="LN" name="89">   89   </a>
-</span><span><a class="LN" name="90">   90   </a><font color="#992211">#</font><span class="PP">define</span> CINT8_T
-</span><span><a class="LN" name="91">   91   </a>
-</span><span><a class="LN" name="92">   92   </a><span class="KW">typedef</span> <span class="KW">struct</span> <b>{</b>
-</span><span><a class="LN" name="93">   93   </a>  <a href="#type_int8_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int8_T');" target="_self"><font color="#1122aa">int8_T</font></a> re;
-</span><span><a class="LN" name="94">   94   </a>  <a href="#type_int8_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int8_T');" target="_self"><font color="#1122aa">int8_T</font></a> im;
-</span><span><a class="LN" name="95">   95   </a><b>}</b> <a name="type_cint8_T">cint8_T</a>;
-</span><span><a class="LN" name="96">   96   </a>
-</span><span><a class="LN" name="97">   97   </a><font color="#992211">#</font><span class="PP">define</span> CUINT8_T
-</span><span><a class="LN" name="98">   98   </a>
-</span><span><a class="LN" name="99">   99   </a><span class="KW">typedef</span> <span class="KW">struct</span> <b>{</b>
-</span><span><a class="LN" name="100">  100   </a>  <a href="#type_uint8_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_uint8_T');" target="_self"><font color="#1122aa">uint8_T</font></a> re;
-</span><span><a class="LN" name="101">  101   </a>  <a href="#type_uint8_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_uint8_T');" target="_self"><font color="#1122aa">uint8_T</font></a> im;
-</span><span><a class="LN" name="102">  102   </a><b>}</b> <a name="type_cuint8_T">cuint8_T</a>;
-</span><span><a class="LN" name="103">  103   </a>
-</span><span><a class="LN" name="104">  104   </a><font color="#992211">#</font><span class="PP">define</span> CINT16_T
-</span><span><a class="LN" name="105">  105   </a>
-</span><span><a class="LN" name="106">  106   </a><span class="KW">typedef</span> <span class="KW">struct</span> <b>{</b>
-</span><span><a class="LN" name="107">  107   </a>  <a href="#type_int16_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int16_T');" target="_self"><font color="#1122aa">int16_T</font></a> re;
-</span><span><a class="LN" name="108">  108   </a>  <a href="#type_int16_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int16_T');" target="_self"><font color="#1122aa">int16_T</font></a> im;
-</span><span><a class="LN" name="109">  109   </a><b>}</b> <a name="type_cint16_T">cint16_T</a>;
-</span><span><a class="LN" name="110">  110   </a>
-</span><span><a class="LN" name="111">  111   </a><font color="#992211">#</font><span class="PP">define</span> CUINT16_T
-</span><span><a class="LN" name="112">  112   </a>
-</span><span><a class="LN" name="113">  113   </a><span class="KW">typedef</span> <span class="KW">struct</span> <b>{</b>
-</span><span><a class="LN" name="114">  114   </a>  <a href="#type_uint16_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_uint16_T');" target="_self"><font color="#1122aa">uint16_T</font></a> re;
-</span><span><a class="LN" name="115">  115   </a>  <a href="#type_uint16_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_uint16_T');" target="_self"><font color="#1122aa">uint16_T</font></a> im;
-</span><span><a class="LN" name="116">  116   </a><b>}</b> <a name="type_cuint16_T">cuint16_T</a>;
-</span><span><a class="LN" name="117">  117   </a>
-</span><span><a class="LN" name="118">  118   </a><font color="#992211">#</font><span class="PP">define</span> CINT32_T
-</span><span><a class="LN" name="119">  119   </a>
-</span><span><a class="LN" name="120">  120   </a><span class="KW">typedef</span> <span class="KW">struct</span> <b>{</b>
-</span><span><a class="LN" name="121">  121   </a>  <a href="#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> re;
-</span><span><a class="LN" name="122">  122   </a>  <a href="#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> im;
-</span><span><a class="LN" name="123">  123   </a><b>}</b> <a name="type_cint32_T">cint32_T</a>;
-</span><span><a class="LN" name="124">  124   </a>
-</span><span><a class="LN" name="125">  125   </a><font color="#992211">#</font><span class="PP">define</span> CUINT32_T
-</span><span><a class="LN" name="126">  126   </a>
-</span><span><a class="LN" name="127">  127   </a><span class="KW">typedef</span> <span class="KW">struct</span> <b>{</b>
-</span><span><a class="LN" name="128">  128   </a>  <a href="#type_uint32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_uint32_T');" target="_self"><font color="#1122aa">uint32_T</font></a> re;
-</span><span><a class="LN" name="129">  129   </a>  <a href="#type_uint32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_uint32_T');" target="_self"><font color="#1122aa">uint32_T</font></a> im;
-</span><span><a class="LN" name="130">  130   </a><b>}</b> <a name="type_cuint32_T">cuint32_T</a>;
-</span><span><a class="LN" name="131">  131   </a>
-</span><span><a class="LN" name="132">  132   </a><span class="CT">//=======================================================================*</span>
-</span><span><a class="LN" name="133">  133   </a><span class="CT">//  Min and Max:                                                          *</span>
-</span><span><a class="LN" name="134">  134   </a><span class="CT">//    int8_T, int16_T, int32_T     - signed 8, 16, or 32 bit integers     *</span>
-</span><span><a class="LN" name="135">  135   </a><span class="CT">//    uint8_T, uint16_T, uint32_T  - unsigned 8, 16, or 32 bit integers   *</span>
-</span><span><a class="LN" name="136">  136   </a><span class="CT">// =======================================================================</span>
-</span><span><a class="LN" name="137">  137   </a><font color="#992211">#</font><span class="PP">define</span> MAX_int8_T                     ((<a href="#type_int8_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int8_T');" target="_self"><font color="#1122aa">int8_T</font></a>)(127))
-</span><span><a class="LN" name="138">  138   </a><font color="#992211">#</font><span class="PP">define</span> MIN_int8_T                     ((<a href="#type_int8_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int8_T');" target="_self"><font color="#1122aa">int8_T</font></a>)(-128))
-</span><span><a class="LN" name="139">  139   </a><font color="#992211">#</font><span class="PP">define</span> MAX_uint8_T                    ((<a href="#type_uint8_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_uint8_T');" target="_self"><font color="#1122aa">uint8_T</font></a>)(255U))
-</span><span><a class="LN" name="140">  140   </a><font color="#992211">#</font><span class="PP">define</span> MAX_int16_T                    ((<a href="#type_int16_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int16_T');" target="_self"><font color="#1122aa">int16_T</font></a>)(32767))
-</span><span><a class="LN" name="141">  141   </a><font color="#992211">#</font><span class="PP">define</span> MIN_int16_T                    ((<a href="#type_int16_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int16_T');" target="_self"><font color="#1122aa">int16_T</font></a>)(-32768))
-</span><span><a class="LN" name="142">  142   </a><font color="#992211">#</font><span class="PP">define</span> MAX_uint16_T                   ((<a href="#type_uint16_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_uint16_T');" target="_self"><font color="#1122aa">uint16_T</font></a>)(65535U))
-</span><span><a class="LN" name="143">  143   </a><font color="#992211">#</font><span class="PP">define</span> MAX_int32_T                    ((<a href="#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a>)(2147483647))
-</span><span><a class="LN" name="144">  144   </a><font color="#992211">#</font><span class="PP">define</span> MIN_int32_T                    ((<a href="#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a>)(-2147483647-1))
-</span><span><a class="LN" name="145">  145   </a><font color="#992211">#</font><span class="PP">define</span> MAX_uint32_T                   ((<a href="#type_uint32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_uint32_T');" target="_self"><font color="#1122aa">uint32_T</font></a>)(0xFFFFFFFFU))
-</span><span><a class="LN" name="146">  146   </a>
-</span><span><a class="LN" name="147">  147   </a><span class="CT">// Block D-Work pointer type</span>
-</span><span><a class="LN" name="148">  148   </a><span class="KW">typedef</span> <span class="DT">void</span> * <a name="type_pointer_T">pointer_T</a>;
-</span><span><a class="LN" name="149">  149   </a>
-</span><span><a class="LN" name="150">  150   </a><font color="#992211">#</font><span class="PP">endif</span>                                 <span class="CT">// RTWTYPES_H</span>
-</span><span><a class="LN" name="151">  151   </a>
-</span><span><a class="LN" name="152">  152   </a><span class="CT">//</span>
-</span><span><a class="LN" name="153">  153   </a><span class="CT">// File trailer for generated code.</span>
-</span><span><a class="LN" name="154">  154   </a><span class="CT">//</span>
-</span><span><a class="LN" name="155">  155   </a><span class="CT">// [EOF]</span>
-</span><span><a class="LN" name="156">  156   </a><span class="CT">//</span>
-</span><span><a class="LN" name="157">  157   </a>
+</span><span><a class="LN" name="90">   90   </a><span class="CT">//</span>
+</span><span><a class="LN" name="91">   91   </a><span class="CT">// File trailer for generated code.</span>
+</span><span><a class="LN" name="92">   92   </a><span class="CT">//</span>
+</span><span><a class="LN" name="93">   93   </a><span class="CT">// [EOF]</span>
+</span><span><a class="LN" name="94">   94   </a><span class="CT">//</span>
+</span><span><a class="LN" name="95">   95   </a>
 </span></pre>
 </td></tr></table>
 </p>

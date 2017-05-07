@@ -2,7 +2,7 @@
  {
   "sid":"ForceController:4:10",
   "className":"Simulink.Outport",
-  "icon":"WebViewIcon2",
+  "icon":"WebViewIcon3",
   "name":"y",
   "parent":"ForceController:4",
   "inspector":{
@@ -73,7 +73,7 @@
  {
   "sid":"ForceController:4:1",
   "className":"Simulink.Inport",
-  "icon":"WebViewIcon2",
+  "icon":"WebViewIcon3",
   "name":"u",
   "parent":"ForceController:4",
   "inspector":{
@@ -137,9 +137,9 @@
   }
  },
  {
-  "sid":"ForceController:4:1665",
+  "sid":"ForceController:4:1685",
   "className":"Simulink.Sum",
-  "icon":"WebViewIcon2",
+  "icon":"WebViewIcon3",
   "name":"Sum",
   "parent":"ForceController:4",
   "inspector":{
@@ -160,7 +160,7 @@
    ],
    "values":[
     "round",
-    "+++",
+    "+|+",
     "off",
     "Inherit: Inherit via internal rule",
     "SumOutMin",
@@ -195,9 +195,9 @@
   }
  },
  {
-  "sid":"ForceController:4:1666",
+  "sid":"ForceController:4:1686",
   "className":"Simulink.Gain",
-  "icon":"WebViewIcon2",
+  "icon":"WebViewIcon3",
   "name":"Proportional Gain",
   "parent":"ForceController:4",
   "inspector":{
@@ -226,7 +226,7 @@
     "off",
     "PParamMin",
     "PParamMax",
-    "Inherit: Inherit via internal rule",
+    "double",
     "SampleTime"
    ],
    "tabs":[
@@ -253,67 +253,9 @@
   }
  },
  {
-  "sid":"ForceController:4:1667",
+  "sid":"ForceController:4:1687",
   "className":"Simulink.Gain",
-  "icon":"WebViewIcon2",
-  "name":"Integral Gain",
-  "parent":"ForceController:4",
-  "inspector":{
-   "params":[
-    "Gain",
-    "Multiplication",
-    "OutMin",
-    "OutMax",
-    "OutDataTypeStr",
-    "LockScale",
-    "RndMeth",
-    "SaturateOnIntegerOverflow",
-    "ParamMin",
-    "ParamMax",
-    "ParamDataTypeStr",
-    "SampleTime"
-   ],
-   "values":[
-    "I",
-    "Element-wise(K.*u)",
-    "IOutMin",
-    "IOutMax",
-    "Inherit: Inherit via internal rule",
-    "off",
-    "Floor",
-    "off",
-    "IParamMin",
-    "IParamMax",
-    "Inherit: Inherit via internal rule",
-    "SampleTime"
-   ],
-   "tabs":[
-    "Main",
-    "Signal Attributes",
-    "Parameter Attributes",
-    "-Other"
-   ],
-   "tabs_idx":[
-    0,
-    2,
-    8,
-    11
-   ]
-  },
-  "viewer":{
-   "jshandler":"webview/handlers/ElementHandler"
-  },
-  "obj_viewer":[
-  ],
-  "finder":{
-   "blocktype":"Gain",
-   "masktype":""
-  }
- },
- {
-  "sid":"ForceController:4:1668",
-  "className":"Simulink.Gain",
-  "icon":"WebViewIcon2",
+  "icon":"WebViewIcon3",
   "name":"Derivative Gain",
   "parent":"ForceController:4",
   "inspector":{
@@ -342,7 +284,7 @@
     "off",
     "DParamMin",
     "DParamMax",
-    "Inherit: Inherit via internal rule",
+    "double",
     "SampleTime"
    ],
    "tabs":[
@@ -369,287 +311,99 @@
   }
  },
  {
-  "sid":"ForceController:4:1669",
-  "className":"Simulink.DiscreteIntegrator",
+  "sid":"ForceController:4:1688",
+  "className":"Simulink.SubSystem",
   "icon":"WebViewIcon2",
-  "name":"Integrator",
+  "name":"Differentiator",
   "parent":"ForceController:4",
   "inspector":{
    "params":[
-    "IntegratorMethod",
-    "gainval",
-    "ExternalReset",
-    "InitialConditionSource",
-    "InitialCondition",
-    "InitialConditionSetting",
-    "SampleTime",
-    "LimitOutput",
-    "ShowSaturationPort",
-    "ShowStatePort",
-    "IgnoreLimit",
-    "OutMin",
-    "OutMax",
-    "OutDataTypeStr",
-    "LockScale",
-    "RndMeth",
-    "SaturateOnIntegerOverflow",
-    "LowerSaturationLimit",
-    "RTWStateStorageTypeQualifier",
-    "StateIdentifier",
-    "StateMustResolveToSignalObject",
-    "StateSignalObject",
-    "StateStorageClass",
-    "UpperSaturationLimit"
+    "ShowPortLabels",
+    "BlockChoice",
+    "TemplateBlock",
+    "MemberBlocks",
+    "Permissions",
+    "ErrorFcn",
+    "PermitHierarchicalResolution",
+    "TreatAsAtomicUnit",
+    "MinAlgLoopOccurrences",
+    "PropExecContextOutsideSubsystem",
+    "SystemSampleTime",
+    "RTWSystemCode",
+    "RTWFcnNameOpts",
+    "RTWFcnName",
+    "RTWFileNameOpts",
+    "RTWFileName",
+    "FunctionInterfaceSpec",
+    "FunctionWithSeparateData",
+    "RTWMemSecFuncInitTerm",
+    "RTWMemSecFuncExecute",
+    "RTWMemSecDataConstants",
+    "RTWMemSecDataInternal",
+    "RTWMemSecDataParameters",
+    "IsSubsystemVirtual",
+    "Variant",
+    "VariantControl",
+    "OverrideUsingVariant",
+    "GeneratePreprocessorConditionals",
+    "PropagateVariantConditions",
+    "ActiveVariant",
+    "ActiveVariantBlock",
+    "TreatAsGroupedWhenPropagatingVariantConditions"
    ],
    "values":[
-    "Integration: Forward Euler",
-    "1.0",
-    "none",
-    "internal",
-    "InitialConditionForIntegrator",
-    "State (most efficient)",
-    "SampleTime",
-    "off",
-    "off",
-    "off",
-    "off",
-    "IntegratorOutMin",
-    "IntegratorOutMax",
-    "Inherit: Inherit via internal rule",
-    "off",
-    "Floor",
-    "off",
-    "-inf",
+    "FromPortIcon",
     "",
     "",
+    "",
+    "ReadWrite",
+    "",
+    "All",
     "off",
-    [
-    ],
+    "off",
+    "off",
+    "-1",
     "Auto",
-    "inf"
-   ],
-   "tabs":[
-    "Main",
-    "Signal Attributes",
-    "-Other"
-   ],
-   "tabs_idx":[
-    0,
-    11,
-    17
-   ]
-  },
-  "viewer":{
-   "jshandler":"webview/handlers/ElementHandler"
-  },
-  "obj_viewer":[
-  ],
-  "finder":{
-   "blocktype":"DiscreteIntegrator",
-   "masktype":""
-  }
- },
- {
-  "sid":"ForceController:4:1670",
-  "className":"Simulink.DiscreteIntegrator",
-  "icon":"WebViewIcon2",
-  "name":"Filter",
-  "parent":"ForceController:4",
-  "inspector":{
-   "params":[
-    "IntegratorMethod",
-    "gainval",
-    "ExternalReset",
-    "InitialConditionSource",
-    "InitialCondition",
-    "InitialConditionSetting",
-    "SampleTime",
-    "LimitOutput",
-    "ShowSaturationPort",
-    "ShowStatePort",
-    "IgnoreLimit",
-    "OutMin",
-    "OutMax",
-    "OutDataTypeStr",
-    "LockScale",
-    "RndMeth",
-    "SaturateOnIntegerOverflow",
-    "LowerSaturationLimit",
-    "RTWStateStorageTypeQualifier",
-    "StateIdentifier",
-    "StateMustResolveToSignalObject",
-    "StateSignalObject",
-    "StateStorageClass",
-    "UpperSaturationLimit"
-   ],
-   "values":[
-    "Integration: Forward Euler",
-    "1.0",
-    "none",
-    "internal",
-    "InitialConditionForFilter",
-    "State (most efficient)",
-    "SampleTime",
-    "off",
-    "off",
-    "off",
-    "off",
-    "FilterOutMin",
-    "FilterOutMax",
-    "Inherit: Inherit via internal rule",
-    "off",
-    "Floor",
-    "off",
-    "-inf",
-    "",
-    "",
-    "off",
-    [
-    ],
     "Auto",
-    "inf"
+    "",
+    "Auto",
+    "",
+    "void_void",
+    "off",
+    "Inherit from model",
+    "Inherit from model",
+    "Inherit from model",
+    "Inherit from model",
+    "Inherit from model",
+    "on",
+    "off",
+    "",
+    "",
+    "off",
+    "off",
+    "",
+    "",
+    "on"
    ],
    "tabs":[
-    "Main",
-    "Signal Attributes",
-    "-Other"
    ],
    "tabs_idx":[
-    0,
-    11,
-    17
    ]
   },
   "viewer":{
-   "jshandler":"webview/handlers/ElementHandler"
+   "jshandler":"webview/handlers/ContainerHandler"
   },
   "obj_viewer":[
   ],
   "finder":{
-   "blocktype":"DiscreteIntegrator",
-   "masktype":""
-  }
- },
- {
-  "sid":"ForceController:4:1671",
-  "className":"Simulink.Gain",
-  "icon":"WebViewIcon2",
-  "name":"Filter Coefficient",
-  "parent":"ForceController:4",
-  "inspector":{
-   "params":[
-    "Gain",
-    "Multiplication",
-    "OutMin",
-    "OutMax",
-    "OutDataTypeStr",
-    "LockScale",
-    "RndMeth",
-    "SaturateOnIntegerOverflow",
-    "ParamMin",
-    "ParamMax",
-    "ParamDataTypeStr",
-    "SampleTime"
-   ],
-   "values":[
-    "N",
-    "Element-wise(K.*u)",
-    "NOutMin",
-    "NOutMax",
-    "Inherit: Inherit via internal rule",
-    "off",
-    "Floor",
-    "off",
-    "NParamMin",
-    "NParamMax",
-    "Inherit: Inherit via internal rule",
-    "SampleTime"
-   ],
-   "tabs":[
-    "Main",
-    "Signal Attributes",
-    "Parameter Attributes",
-    "-Other"
-   ],
-   "tabs_idx":[
-    0,
-    2,
-    8,
-    11
-   ]
-  },
-  "viewer":{
-   "jshandler":"webview/handlers/ElementHandler"
-  },
-  "obj_viewer":[
-  ],
-  "finder":{
-   "blocktype":"Gain",
-   "masktype":""
-  }
- },
- {
-  "sid":"ForceController:4:1672",
-  "className":"Simulink.Sum",
-  "icon":"WebViewIcon2",
-  "name":"SumD",
-  "parent":"ForceController:4",
-  "inspector":{
-   "params":[
-    "IconShape",
-    "Inputs",
-    "InputSameDT",
-    "AccumDataTypeStr",
-    "OutMin",
-    "OutMax",
-    "OutDataTypeStr",
-    "LockScale",
-    "RndMeth",
-    "SaturateOnIntegerOverflow",
-    "CollapseDim",
-    "CollapseMode",
-    "SampleTime"
-   ],
-   "values":[
-    "round",
-    "|+-",
-    "off",
-    "Inherit: Inherit via internal rule",
-    "SumDOutMin",
-    "SumDOutMax",
-    "Inherit: Inherit via internal rule",
-    "off",
-    "Floor",
-    "off",
-    "1",
-    "All dimensions",
-    "SampleTime"
-   ],
-   "tabs":[
-    "Main",
-    "Signal Attributes",
-    "-Other"
-   ],
-   "tabs_idx":[
-    0,
-    2,
-    10
-   ]
-  },
-  "viewer":{
-   "jshandler":"webview/handlers/ElementHandler"
-  },
-  "obj_viewer":[
-  ],
-  "finder":{
-   "blocktype":"Sum",
+   "blocktype":"SubSystem",
    "masktype":""
   }
  },
  {
   "sid":"ForceController:4:1#out:1",
   "className":"Simulink.Line",
-  "icon":"WebViewIcon3",
+  "icon":"WebViewIcon4",
   "name":"",
   "parent":"ForceController:4",
   "inspector":{
@@ -697,9 +451,9 @@
   ]
  },
  {
-  "sid":"ForceController:4:1667#out:1",
+  "sid":"ForceController:4:1687#out:1",
   "className":"Simulink.Line",
-  "icon":"WebViewIcon3",
+  "icon":"WebViewIcon4",
   "name":"",
   "parent":"ForceController:4",
   "inspector":{
@@ -747,9 +501,9 @@
   ]
  },
  {
-  "sid":"ForceController:4:1669#out:1",
+  "sid":"ForceController:4:1688#out:1",
   "className":"Simulink.Line",
-  "icon":"WebViewIcon3",
+  "icon":"WebViewIcon4",
   "name":"",
   "parent":"ForceController:4",
   "inspector":{
@@ -797,9 +551,9 @@
   ]
  },
  {
-  "sid":"ForceController:4:1668#out:1",
+  "sid":"ForceController:4:1686#out:1",
   "className":"Simulink.Line",
-  "icon":"WebViewIcon3",
+  "icon":"WebViewIcon4",
   "name":"",
   "parent":"ForceController:4",
   "inspector":{
@@ -847,209 +601,9 @@
   ]
  },
  {
-  "sid":"ForceController:4:1672#out:1",
+  "sid":"ForceController:4:1685#out:1",
   "className":"Simulink.Line",
-  "icon":"WebViewIcon3",
-  "name":"",
-  "parent":"ForceController:4",
-  "inspector":{
-   "params":[
-    "SignalNameFromLabel",
-    "MustResolveToSignal",
-    "ShowPropagatedSignal",
-    "DataLogging",
-    "TestPoint",
-    "SignalObjectPackage",
-    "StorageClass",
-    "Description",
-    "documentLink"
-   ],
-   "values":[
-    "",
-    "off",
-    "off",
-    "off",
-    "off",
-    "Simulink",
-    "Auto",
-    "",
-    ""
-   ],
-   "tabs":[
-    "Parameter Attributes",
-    "Logging and Accessibility",
-    "Code Generation",
-    "Documentation"
-   ],
-   "tabs_idx":[
-    0,
-    3,
-    5,
-    7
-   ]
-  },
-  "viewer":{
-   "jshandler":"webview/handlers/ElementHandler"
-  },
-  "obj_viewer":[
-  ],
-  "finder":[
-  ]
- },
- {
-  "sid":"ForceController:4:1671#out:1",
-  "className":"Simulink.Line",
-  "icon":"WebViewIcon3",
-  "name":"",
-  "parent":"ForceController:4",
-  "inspector":{
-   "params":[
-    "SignalNameFromLabel",
-    "MustResolveToSignal",
-    "ShowPropagatedSignal",
-    "DataLogging",
-    "TestPoint",
-    "SignalObjectPackage",
-    "StorageClass",
-    "Description",
-    "documentLink"
-   ],
-   "values":[
-    "",
-    "off",
-    "off",
-    "off",
-    "off",
-    "Simulink",
-    "Auto",
-    "",
-    ""
-   ],
-   "tabs":[
-    "Parameter Attributes",
-    "Logging and Accessibility",
-    "Code Generation",
-    "Documentation"
-   ],
-   "tabs_idx":[
-    0,
-    3,
-    5,
-    7
-   ]
-  },
-  "viewer":{
-   "jshandler":"webview/handlers/ElementHandler"
-  },
-  "obj_viewer":[
-  ],
-  "finder":[
-  ]
- },
- {
-  "sid":"ForceController:4:1670#out:1",
-  "className":"Simulink.Line",
-  "icon":"WebViewIcon3",
-  "name":"",
-  "parent":"ForceController:4",
-  "inspector":{
-   "params":[
-    "SignalNameFromLabel",
-    "MustResolveToSignal",
-    "ShowPropagatedSignal",
-    "DataLogging",
-    "TestPoint",
-    "SignalObjectPackage",
-    "StorageClass",
-    "Description",
-    "documentLink"
-   ],
-   "values":[
-    "",
-    "off",
-    "off",
-    "off",
-    "off",
-    "Simulink",
-    "Auto",
-    "",
-    ""
-   ],
-   "tabs":[
-    "Parameter Attributes",
-    "Logging and Accessibility",
-    "Code Generation",
-    "Documentation"
-   ],
-   "tabs_idx":[
-    0,
-    3,
-    5,
-    7
-   ]
-  },
-  "viewer":{
-   "jshandler":"webview/handlers/ElementHandler"
-  },
-  "obj_viewer":[
-  ],
-  "finder":[
-  ]
- },
- {
-  "sid":"ForceController:4:1666#out:1",
-  "className":"Simulink.Line",
-  "icon":"WebViewIcon3",
-  "name":"",
-  "parent":"ForceController:4",
-  "inspector":{
-   "params":[
-    "SignalNameFromLabel",
-    "MustResolveToSignal",
-    "ShowPropagatedSignal",
-    "DataLogging",
-    "TestPoint",
-    "SignalObjectPackage",
-    "StorageClass",
-    "Description",
-    "documentLink"
-   ],
-   "values":[
-    "",
-    "off",
-    "off",
-    "off",
-    "off",
-    "Simulink",
-    "Auto",
-    "",
-    ""
-   ],
-   "tabs":[
-    "Parameter Attributes",
-    "Logging and Accessibility",
-    "Code Generation",
-    "Documentation"
-   ],
-   "tabs_idx":[
-    0,
-    3,
-    5,
-    7
-   ]
-  },
-  "viewer":{
-   "jshandler":"webview/handlers/ElementHandler"
-  },
-  "obj_viewer":[
-  ],
-  "finder":[
-  ]
- },
- {
-  "sid":"ForceController:4:1665#out:1",
-  "className":"Simulink.Line",
-  "icon":"WebViewIcon3",
+  "icon":"WebViewIcon4",
   "name":"",
   "parent":"ForceController:4",
   "inspector":{

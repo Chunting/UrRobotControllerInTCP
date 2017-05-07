@@ -5,8 +5,8 @@
 MainWindow::MainWindow() : m_ticks(0.0) {
 
     d_calibButton = new QPushButton("Gravity Calib",this);
-    d_connButton = new QPushButton("Device Disconnected", this);
-    d_dragButton = new QPushButton("Drag stop",this);
+    d_connButton = new QPushButton("Connect device", this);
+    d_dragButton = new QPushButton("Start Drag",this);
     d_calibButton->setEnabled(false);
     d_dragButton->setEnabled(false);
     d_plot = new QwtPlot(QwtText("Drag App Monitor"), this);
@@ -18,27 +18,26 @@ MainWindow::MainWindow() : m_ticks(0.0) {
     signalList.push_back("m_force.torque.x");
     signalList.push_back("m_force.torque.y");
     signalList.push_back("m_force.torque.z");
-    signalList.push_back("Force ee 0");
-    signalList.push_back("Force ee 1");
-    signalList.push_back("Force ee 2");
-    signalList.push_back("Force ee 3");
-    signalList.push_back("Force ee 4");
-    signalList.push_back("Force ee 5");
-    signalList.push_back("Force error 0");
-    signalList.push_back("Force error 1");
-    signalList.push_back("Force error 2");
-    signalList.push_back("Force error 3");
-    signalList.push_back("Force error 4");
-    signalList.push_back("Force error 5");
+    signalList.push_back("force_filter 0");
+    signalList.push_back("force_filter 1");
+    signalList.push_back("force_filter 2");
+    signalList.push_back("force_filter 3");
+    signalList.push_back("force_filter 4");
+    signalList.push_back("force_filter 5");
+    signalList.push_back("force_error 0");
+    signalList.push_back("force_error 1");
+    signalList.push_back("force_error 2");
+    signalList.push_back("force_error 3");
+    signalList.push_back("force_error 4");
+    signalList.push_back("force_error 5");
 
 
     QStringList parameterList;//Add the signal that you want to monitor.
     parameterList.push_back("PID.P1-PID.P6");
-    parameterList.push_back("PID.I1-PID.I6");
     parameterList.push_back("PID.D1-PID.D6");
-    parameterList.push_back("PID.N1-PID.N6");
     parameterList.push_back("dead_zone_start");
     parameterList.push_back("dead_zone_end");
+
 
     //TODO 了解new方法何时被delete的。
     QHBoxLayout *mainLayout = new QHBoxLayout(this);
@@ -49,19 +48,29 @@ MainWindow::MainWindow() : m_ticks(0.0) {
     v1Layout->addLayout(v1_h1Layout);
     QHBoxLayout *v2_h1Layout = new QHBoxLayout();
 
+	m_sig_color.push_back(Qt::red);
+	m_sig_color.push_back(Qt::darkCyan);
+	m_sig_color.push_back(Qt::blue);
+	for (int i = 0; i < 3; i++) {
+		QPalette* palette = new QPalette();
+		palette->setColor(QPalette::Window, Qt::white);
+		palette->setColor(QPalette::Text, m_sig_color[i]);
+		palette->setColor(QPalette::WindowText, m_sig_color[i]);
+
+		d_cboSignal.push_back(new QComboBox(this));
+		d_cboSignal[i]->setPalette(*palette);
+		d_cboSignal[i]->clear();
+		d_cboSignal[i]->addItems(signalList);
+
+		d_lblSig.push_back(new QLabel(this));
+		d_lblSig[i]->setPalette(*palette);
+		d_lblSig[i]->setText("0.0");
+		
+		v1_h1Layout->addWidget(d_cboSignal[i]);
+		v1_h1Layout->addWidget(d_lblSig[i]);
+	}
+	
     for(int i=0;i<6;i++){
-        if(i<3){
-            d_cboSignal.push_back(new QComboBox(this));
-            d_cboSignal[i]->clear();
-            d_cboSignal[i]->addItems(signalList);
-
-            d_lblSig.push_back(new QLabel(this));
-            d_lblSig[i]->setText("0.0");
-
-            v1_h1Layout->addWidget(d_cboSignal[i]);
-            v1_h1Layout->addWidget(d_lblSig[i]);
-
-        }
         d_sldBox.push_back(new SliderBox(4));
         v2_h1Layout->addWidget(d_sldBox[i]);
         m_param.push_back(PID_P+i);
@@ -163,36 +172,36 @@ void MainWindow::signalChanged(int index,int SigId){
             COBOT_LOG.notice()<<"Set Signal "<<SigId<<" to m_force.torque.z";
             break;
         case 6://force error 0
-            m_sig[SigId]=m_dragController->force_ee;
-            COBOT_LOG.notice()<<"Set Signal "<<SigId<<" to force ee 0";
+            m_sig[SigId]= force_filter;
+            COBOT_LOG.notice()<<"Set Signal "<<SigId<<" to force_filter 0";
             break;
         case 7://force error 1
-            m_sig[SigId]=m_dragController->force_ee+1;
-            COBOT_LOG.notice()<<"Set Signal "<<SigId<<" to force ee 1";
+            m_sig[SigId]= force_filter+1;
+            COBOT_LOG.notice()<<"Set Signal "<<SigId<<" to force_filter 1";
             break;
         case 8://force error 2
-            m_sig[SigId]=m_dragController->force_ee+2;
-            COBOT_LOG.notice()<<"Set Signal "<<SigId<<" to force ee 2";
+            m_sig[SigId]= force_filter+2;
+            COBOT_LOG.notice()<<"Set Signal "<<SigId<<" to force_filter 2";
             break;
         case 9://force error 3
-            m_sig[SigId]=m_dragController->force_ee+3;
-            COBOT_LOG.notice()<<"Set Signal "<<SigId<<" to force ee 3";
+            m_sig[SigId]= force_filter+3;
+            COBOT_LOG.notice()<<"Set Signal "<<SigId<<" to force_filter 3";
             break;
         case 10://force error 4
-            m_sig[SigId]=m_dragController->force_ee+4;
-            COBOT_LOG.notice()<<"Set Signal "<<SigId<<" to force ee 4";
+            m_sig[SigId]= force_filter+4;
+            COBOT_LOG.notice()<<"Set Signal "<<SigId<<" to force_filter 4";
             break;
         case 11://force error 5
-            m_sig[SigId]=m_dragController->force_ee+5;
-            COBOT_LOG.notice()<<"Set Signal "<<SigId<<" to force ee 5";
+            m_sig[SigId]= force_filter+5;
+            COBOT_LOG.notice()<<"Set Signal "<<SigId<<" to force_filter 5";
             break;
         case 12://force error 0
             m_sig[SigId]=force_error;
-            COBOT_LOG.notice()<<"Set Signal "<<SigId<<" to force error 0";
+            COBOT_LOG.notice()<<"Set Signal "<<SigId<<" to force_error 0";
             break;
         case 13://force error 1
             m_sig[SigId]=force_error+1;
-            COBOT_LOG.notice()<<"Set Signal "<<SigId<<" to force error 1";
+            COBOT_LOG.notice()<<"Set Signal "<<SigId<<" to force_error 1";
             break;
         case 14://force error 2
             m_sig[SigId]=force_error+2;
@@ -200,26 +209,24 @@ void MainWindow::signalChanged(int index,int SigId){
             break;
         case 15://force error 3
             m_sig[SigId]=force_error+3;
-            COBOT_LOG.notice()<<"Set Signal "<<SigId<<" to force error 3";
+            COBOT_LOG.notice()<<"Set Signal "<<SigId<<" to force_error 3";
             break;
         case 16://force error 4
             m_sig[SigId]=force_error+4;
-            COBOT_LOG.notice()<<"Set Signal "<<SigId<<" to force error 4";
+            COBOT_LOG.notice()<<"Set Signal "<<SigId<<" to force_error 4";
             break;
         case 17://force error 5
             m_sig[SigId]=force_error+5;
-            COBOT_LOG.notice()<<"Set Signal "<<SigId<<" to force error 5";
+            COBOT_LOG.notice()<<"Set Signal "<<SigId<<" to force_error 5";
             break;
         default:
-            COBOT_LOG.notice()<<"Signal "<<SigId<<" selected ee.";
+            COBOT_LOG.error()<<"Signal "<<SigId<<" selected error.";
             break;
     }
 }
 void MainWindow::onParamGroupChanged(int index){
 //    parameterList.push_back("PID.P1-PID.P6");
-//    parameterList.push_back("PID.I1-PID.I6");
 //    parameterList.push_back("PID.D1-PID.D6");
-//    parameterList.push_back("PID.N1-PID.N6");
 //    parameterList.push_back("dead_zone_start");
 //    parameterList.push_back("dead_zone_end");
     switch(index){
@@ -233,17 +240,7 @@ void MainWindow::onParamGroupChanged(int index){
             }
             COBOT_LOG.notice()<<"PID.P1-PID.P6 selected.";
             break;
-        case 1://PID.I1-PID.I6
-
-            for(int i=0;i<6;i++)
-            {
-                m_param[i]=PID_I+i;
-                d_sldBox[i]->setNum(*m_param[i]);
-                d_sldBox[i]->d_slider->setValue(*m_param[i]);
-            }
-            COBOT_LOG.notice()<<"PID.I1-PID.I6 selected.";
-            break;
-        case 2://PID.D1-PID.D6
+        case 1://PID.D1-PID.D6
 
             for(int i=0;i<6;i++)
             {
@@ -251,19 +248,9 @@ void MainWindow::onParamGroupChanged(int index){
                 d_sldBox[i]->setNum(*m_param[i]);
                 d_sldBox[i]->d_slider->setValue(*m_param[i]);
             }
-            COBOT_LOG.notice()<<"PID.D1-PID.P6 selected.";
+            COBOT_LOG.notice()<<"PID.D1-PID.D6 selected.";
             break;
-        case 3://PID.N1-PID.N6
-
-            for(int i=0;i<6;i++)
-            {
-                m_param[i]=PID_N+i;
-                d_sldBox[i]->setNum(*m_param[i]);
-                d_sldBox[i]->d_slider->setValue(*m_param[i]);
-            }
-            COBOT_LOG.notice()<<"PID.N1-PID.N6 selected.";
-            break;
-        case 4://dead_zone_start
+        case 2://dead_zone_start
 
             for(int i=0;i<6;i++)
             {
@@ -271,9 +258,9 @@ void MainWindow::onParamGroupChanged(int index){
                 d_sldBox[i]->setNum(*m_param[i]);
                 d_sldBox[i]->d_slider->setValue(*m_param[i]);
             }
-            COBOT_LOG.notice()<<"PID.N1-PID.N6 selected.";
+            COBOT_LOG.notice()<<"dead_zone_start selected.";
             break;
-        case 5://dead_zone_end
+        case 3://dead_zone_end
 
             for(int i=0;i<6;i++)
             {
@@ -281,19 +268,17 @@ void MainWindow::onParamGroupChanged(int index){
                 d_sldBox[i]->setNum(*m_param[i]);
                 d_sldBox[i]->d_slider->setValue(*m_param[i]);
             }
-            COBOT_LOG.notice()<<"PID.N1-PID.N6 selected.";
+            COBOT_LOG.notice()<<"dead_zone_end selected.";
             break;
         default:
-            COBOT_LOG.notice()<<"Parameter selected error.";
+            COBOT_LOG.error()<<"Parameter selected error.";
             break;
     }
 }
 
 void MainWindow::onSlide1ValueChanged(double value){
 //    parameterList.push_back("PID.P1-PID.P6");
-//    parameterList.push_back("PID.I1-PID.I6");
 //    parameterList.push_back("PID.D1-PID.D6");
-//    parameterList.push_back("PID.N1-PID.N6");
     *m_param[0]=value;
     //COBOT_LOG.notice()<<"Slide1 changed to "<<value;
 }
@@ -376,9 +361,9 @@ void MainWindow::initializePlot() {
     curves[0]->setSamples(m_ticks.data(), m_curve_y1.data(), m_ticks.size());
     curves[1]->setSamples(m_ticks.data(), m_curve_y2.data(), m_ticks.size());
     curves[2]->setSamples(m_ticks.data(), m_curve_y3.data(), m_ticks.size());
-    curves[0]->setPen(QPen(Qt::red));
-    curves[1]->setPen(QPen(Qt::green));
-    curves[2]->setPen(QPen(Qt::yellow));
+    curves[0]->setPen(QPen(m_sig_color[0]));
+    curves[1]->setPen(QPen(m_sig_color[1]));
+    curves[2]->setPen(QPen(m_sig_color[2]));
     curves[0]->attach(d_plot);
     curves[1]->attach(d_plot);
     curves[2]->attach(d_plot);
@@ -391,12 +376,12 @@ void MainWindow::onConnectDevice() {
 
         m_timer->start(10);
         m_dragController->onStartDrag();
-        d_connButton->setText("Device Connected");
+        d_connButton->setText("Disconnect device");
         d_calibButton->setEnabled(true);
     } else {
         m_timer->stop();
         m_dragController->onStopDrag();//
-        d_connButton->setText("Device Disonnected");
+        d_connButton->setText("Connect device");
         //d_calibButton->setEnabled(false);
         //d_dragButton->setEnabled(false);
     }
@@ -411,10 +396,10 @@ void MainWindow::onDragStart(){
     dragStatus=!dragStatus;
     if(dragStatus){
         m_dragController->setControllerStatus(DragController::DRAG);
-        d_dragButton->setText("Drag start");
+        d_dragButton->setText("Stop Drag");
     }else{
         m_dragController->setControllerStatus(DragController::IDLE);
-        d_dragButton->setText("Drag stop");
+        d_dragButton->setText("Start Drag");
     }
 
 }

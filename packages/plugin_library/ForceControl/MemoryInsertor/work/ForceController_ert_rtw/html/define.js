@@ -6,17 +6,24 @@ this.def["gravity_ee"] = {file: "ert_main_cpp.html",line:26,type:"var"};
 this.def["poseOffset_ee"] = {file: "ert_main_cpp.html",line:29,type:"var"};
 this.def["rt_OneStep"] = {file: "ert_main_cpp.html",line:43,type:"fcn"};
 this.def["main"] = {file: "ert_main_cpp.html",line:79,type:"fcn"};
+this.def["force_filter"] = {file: "ForceController_cpp.html",line:18,type:"var"};
 this.def["force_error"] = {file: "ForceController_cpp.html",line:19,type:"var"};
-this.def["rate_scheduler"] = {file: "ForceController_cpp.html",line:27,type:"fcn"};
-this.def["step"] = {file: "ForceController_cpp.html",line:40,type:"fcn"};
-this.def["initialize"] = {file: "ForceController_cpp.html",line:92,type:"fcn"};
-this.def["terminate"] = {file: "ForceController_cpp.html",line:116,type:"fcn"};
-this.def["getRTM"] = {file: "ForceController_cpp.html",line:157,type:"fcn"};
-this.def["DW_ForceController_T"] = {file: "ForceController_h.html",line:31,type:"type"};
-this.def["ExtY_ForceController_T"] = {file: "ForceController_h.html",line:36,type:"type"};
-this.def["public"] = {file: "ForceController_h.html",line:92,type:"fcn"};
-this.def["P_ForceController_T"] = {file: "ForceController_types_h.html",line:20,type:"type"};
-this.def["RT_MODEL_ForceController_T"] = {file: "ForceController_types_h.html",line:23,type:"type"};
+this.def["PID_D"] = {file: "ForceController_cpp.html",line:22,type:"var"};
+this.def["PID_P"] = {file: "ForceController_cpp.html",line:26,type:"var"};
+this.def["dead_zone_end"] = {file: "ForceController_cpp.html",line:30,type:"var"};
+this.def["dead_zone_start"] = {file: "ForceController_cpp.html",line:34,type:"var"};
+this.def["filter_den"] = {file: "ForceController_cpp.html",line:38,type:"var"};
+this.def["filter_num"] = {file: "ForceController_cpp.html",line:42,type:"var"};
+this.def["rate_scheduler"] = {file: "ForceController_cpp.html",line:53,type:"fcn"};
+this.def["step"] = {file: "ForceController_cpp.html",line:66,type:"fcn"};
+this.def["initialize"] = {file: "ForceController_cpp.html",line:157,type:"fcn"};
+this.def["terminate"] = {file: "ForceController_cpp.html",line:203,type:"fcn"};
+this.def["getRTM"] = {file: "ForceController_cpp.html",line:251,type:"fcn"};
+this.def["RT_MODEL_ForceController_T"] = {file: "ForceController_h.html",line:27,type:"type"};
+this.def["DW_ForceController_T"] = {file: "ForceController_h.html",line:34,type:"type"};
+this.def["ExtY_ForceController_T"] = {file: "ForceController_h.html",line:39,type:"type"};
+this.def["P_ForceController_T"] = {file: "ForceController_h.html",line:70,type:"type"};
+this.def["ForceController_P"] = {file: "ForceController_h.html",line:140,type:"var"};
 this.def["int8_T"] = {file: "rtwtypes_h.html",line:47,type:"type"};
 this.def["uint8_T"] = {file: "rtwtypes_h.html",line:48,type:"type"};
 this.def["int16_T"] = {file: "rtwtypes_h.html",line:49,type:"type"};
@@ -34,22 +41,13 @@ this.def["ulong_T"] = {file: "rtwtypes_h.html",line:65,type:"type"};
 this.def["char_T"] = {file: "rtwtypes_h.html",line:66,type:"type"};
 this.def["uchar_T"] = {file: "rtwtypes_h.html",line:67,type:"type"};
 this.def["byte_T"] = {file: "rtwtypes_h.html",line:68,type:"type"};
-this.def["creal32_T"] = {file: "rtwtypes_h.html",line:78,type:"type"};
-this.def["creal64_T"] = {file: "rtwtypes_h.html",line:83,type:"type"};
-this.def["creal_T"] = {file: "rtwtypes_h.html",line:88,type:"type"};
-this.def["cint8_T"] = {file: "rtwtypes_h.html",line:95,type:"type"};
-this.def["cuint8_T"] = {file: "rtwtypes_h.html",line:102,type:"type"};
-this.def["cint16_T"] = {file: "rtwtypes_h.html",line:109,type:"type"};
-this.def["cuint16_T"] = {file: "rtwtypes_h.html",line:116,type:"type"};
-this.def["cint32_T"] = {file: "rtwtypes_h.html",line:123,type:"type"};
-this.def["cuint32_T"] = {file: "rtwtypes_h.html",line:130,type:"type"};
-this.def["pointer_T"] = {file: "rtwtypes_h.html",line:148,type:"type"};
+this.def["pointer_T"] = {file: "rtwtypes_h.html",line:86,type:"type"};
 }
 CodeDefine.instance = new CodeDefine();
 var testHarnessInfo = {OwnerFileName: "", HarnessOwner: "", HarnessName: "", IsTestHarness: "0"};
 var relPathToBuildDir = "../ert_main.c";
-var fileSep = "/";
-var isPC = false;
+var fileSep = "\\";
+var isPC = true;
 function Html2SrcLink() {
 	this.html2SrcPath = new Array;
 	this.html2Root = new Array;
@@ -59,10 +57,6 @@ function Html2SrcLink() {
 	this.html2Root["ForceController_cpp.html"] = "ForceController_cpp.html";
 	this.html2SrcPath["ForceController_h.html"] = "../ForceController.h";
 	this.html2Root["ForceController_h.html"] = "ForceController_h.html";
-	this.html2SrcPath["ForceController_private_h.html"] = "../ForceController_private.h";
-	this.html2Root["ForceController_private_h.html"] = "ForceController_private_h.html";
-	this.html2SrcPath["ForceController_types_h.html"] = "../ForceController_types.h";
-	this.html2Root["ForceController_types_h.html"] = "ForceController_types_h.html";
 	this.html2SrcPath["rtwtypes_h.html"] = "../rtwtypes.h";
 	this.html2Root["rtwtypes_h.html"] = "rtwtypes_h.html";
 	this.getLink2Src = function (htmlFileName) {
@@ -80,4 +74,4 @@ function Html2SrcLink() {
 }
 Html2SrcLink.instance = new Html2SrcLink();
 var fileList = [
-"ert_main_cpp.html","ForceController_cpp.html","ForceController_h.html","ForceController_private_h.html","ForceController_types_h.html","rtwtypes_h.html"];
+"ert_main_cpp.html","ForceController_cpp.html","ForceController_h.html","rtwtypes_h.html"];

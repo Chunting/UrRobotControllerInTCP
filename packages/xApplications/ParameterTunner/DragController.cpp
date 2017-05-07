@@ -77,6 +77,11 @@ bool DragController::createArmRobotDriver(const QString& configFilePath) {
 		auto ob = std::dynamic_pointer_cast<ArmRobotRealTimeStatusObserver>(shared_from_this());
         m_ptrRobot->attach(ob);
         if (m_ptrRobot->setup(objConfig)) {
+			auto pFilter = GlobalObjectFactory::instance()->createObject("Ur10FilterFactory, Ver 1.0", "Ur10JointFilter");
+			pFilter->setup("CONFIG/FilterSpeed.json");
+			auto ppf = std::dynamic_pointer_cast<ArmRobotJointTargetFilter>(pFilter);
+
+			m_ptrRobot->setTargetJointFilter(ppf);
             COBOT_LOG.notice() << "Create and setup success";
 			return true;
         } else {
@@ -368,7 +373,10 @@ void DragController::DragPhase() {
         auto ioStatus = m_ptrRobot->getDigitIoDriver(1);
         if (ioStatus->getIoStatus(DigitIoPort::Port_Ur_Tool_In_0) != DigitIoStatus::Set) {
             m_ptrRobot->move(targetJoint);
-        }
+		}else {
+			m_ptrRobot->move(m_jointValues);
+		}
+        
     }
     //将控制周期严格限制为2ms。
 //        time+=1;
