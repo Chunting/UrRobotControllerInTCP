@@ -3,6 +3,8 @@
 // Copyright (c) 2017 Wuhan Collaborative Robot Technology Co.,Ltd. All rights reserved.
 //
 
+#include <cobotsys_file_finder.h>
+#include <fstream>
 #include "CobotUrDriver.h"
 
 CobotUrDriver::CobotUrDriver(std::shared_ptr<std::condition_variable>& msg,
@@ -145,7 +147,7 @@ bool CobotUrDriver::uploadProg() {
     cmd_str += "\t\t\t\tsync()\n";
     cmd_str += "\t\t\tend\n";
     cmd_str += "\t\tend\n";
-    cmd_str += "\t\tstopj(10.0)\n";
+    cmd_str += "\t\tstopj(1.0)\n";
     cmd_str += "\tend\n";
 
     sprintf(buf, "\tsocket_open(\"%s\", %i)\n", ip_addr_.c_str(), m_urRealTimeCommCtrl->ur->REVERSE_PORT_);
@@ -178,8 +180,36 @@ bool CobotUrDriver::uploadProg() {
     cmd_str += "\tsleep(.1)\n";
     cmd_str += "\tsocket_close()\n";
     cmd_str += "\tkill thread_servo\n";
-    cmd_str += "\tstopj(10)\n";
+    cmd_str += "\tstopj(1.0)\n";
     cmd_str += "end\n";
+
+    auto cmd_file = cobotsys::FileFinder::find("CONFIG/UrDriverScript/UrDriverScript");
+    if (cmd_file.size()) {
+        std::fstream file_;
+        file_.open(cmd_file, std::ios_base::in);
+        if (file_.is_open()) {
+            file_.seekg(0, std::ios_base::end);
+            auto size_ = file_.tellg();
+            file_.seekg(0, std::ios_base::beg);
+            std::vector<char> buf_((int) size_ + 1, 0);
+            file_.read(&buf_[0], size_);
+            cmd_str = &buf_[0];
+
+            QString script = cmd_str.c_str();
+
+            if (m_urCommCtrl->ur->getRobotState()->getVersion() >= 3.1)
+                sprintf(buf, "t=%.4f, lookahead_time=%.4f, gain=%.0f", servoj_time_, servoj_lookahead_time_,
+                        servoj_gain_);
+            else
+                sprintf(buf, "t=%.4f", servoj_time_);
+
+            script.replace("ARG_HOST_ADDR", ip_addr_.c_str());
+            script.replace("ARG_HOST_PORT", QString::number(m_urRealTimeCommCtrl->ur->REVERSE_PORT_));
+            script.replace("ARG_SERVOJ_ARGS", buf);
+            cmd_str = script.toStdString();
+        }
+    }
+
 
     m_urRealTimeCommCtrl->addCommandToQueue(cmd_str.c_str());
     COBOT_LOG.notice() << "URScript: \n" << cmd_str;

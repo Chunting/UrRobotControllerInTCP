@@ -1,0 +1,71 @@
+# Script by File
+def driverProg():
+	MULT_jointstate = 1000000
+	keepalive = 1
+	SERVO_IDLE = 0
+	SERVO_RUNNING = 1
+	cmd_servo_state = SERVO_IDLE
+	cmd_servo_q = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+	servo_loop_n = 0
+	servo_loop_old = 0
+	def set_servo_setpoint(q):
+		enter_critical
+		cmd_servo_state = SERVO_RUNNING
+		cmd_servo_q = q
+		exit_critical
+	end
+	num_brake = 0
+	num_brake_total = 0
+	brake_q = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+	thread servoThread():
+		state = SERVO_IDLE
+		while keepalive > 0:
+			enter_critical
+			q = cmd_servo_q
+			brake_q = cmd_servo_q
+			do_brake = False
+			if (state == SERVO_RUNNING) and (cmd_servo_state == SERVO_IDLE):
+				do_brake = True
+				num_brake_total = num_brake_total + 1
+			else:
+				num_brake = 0
+			end
+			state = cmd_servo_state
+			cmd_servo_state = SERVO_IDLE
+			exit_critical
+			if do_brake:
+				servo_loop_n = servo_loop_n + 1
+				num_brake = num_brake + 1
+				if num_brake < 5:
+					servoj(brake_q, ARG_SERVOJ_ARGS)
+				else:
+					stopj(1.0)
+					sync()
+				end
+			elif state == SERVO_RUNNING:
+				servoj(q, ARG_SERVOJ_ARGS)
+			else:
+				sync()
+			end
+		end
+		stopj(1.0)
+	end
+	socket_open("ARG_HOST_ADDR", ARG_HOST_PORT)
+	thread_servo = run servoThread()
+	while keepalive > 0:
+		params_mult = socket_read_binary_integer(6+1)
+		if params_mult[0] > 0:
+			q = [params_mult[1] / MULT_jointstate, params_mult[2] / MULT_jointstate, params_mult[3] / MULT_jointstate, params_mult[4] / MULT_jointstate, params_mult[5] / MULT_jointstate, params_mult[6] / MULT_jointstate]
+			keepalive = params_mult[7]
+			set_servo_setpoint(q)
+		end
+		if servo_loop_old < servo_loop_n:
+			servo_loop_old = servo_loop_n
+			socket_set_var("TCPBrake", num_brake_total)
+		end
+	end
+	sleep(.1)
+	socket_close()
+	kill thread_servo
+	stopj(1.0)
+end

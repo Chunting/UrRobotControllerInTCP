@@ -345,7 +345,7 @@ void PhysicalDistributionController::onButtonTestPicker() {
     if (m_taskEmpty) {
         m_doTestPicker = true;
         m_testPickerPose.target_info = "TEST";
-        m_testPickerPose.position = {100 / 1000.0, -100 / 1000.0, 500 / 1000.0};
+        m_testPickerPose.position = {0.1, 0.1, 500 / 1000.0};
         m_testPickerPose.rotation = {0, 0, 0};
         m_taskEmptyDebugAction = true;
     }
