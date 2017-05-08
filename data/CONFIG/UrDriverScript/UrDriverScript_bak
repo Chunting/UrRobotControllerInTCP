@@ -6,17 +6,17 @@ def driverProg():
 	SERVO_RUNNING = 1
 	cmd_servo_state = SERVO_IDLE
 	cmd_servo_q = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-	
-	tcp_brake_num = 0
-	tcp_brake_num_old = 0
-	num_sync = 0
-	
+	servo_loop_n = 0
+	servo_loop_old = 0
 	def set_servo_setpoint(q):
 		enter_critical
 		cmd_servo_state = SERVO_RUNNING
 		cmd_servo_q = q
 		exit_critical
 	end
+	num_brake = 0
+	num_sync = 0
+	num_brake_total = 0
 
 	thread servoThread():
 		state = SERVO_IDLE
@@ -28,21 +28,23 @@ def driverProg():
 			
 			if (state == SERVO_RUNNING) and (cmd_servo_state == SERVO_IDLE):
 				do_brake = True
+				num_brake_total = num_brake_total + 1
+			else:
+				num_brake = 0
 			end
-			
 			state = cmd_servo_state
 			cmd_servo_state = SERVO_IDLE
 			exit_critical
 
 			if do_brake:
-				tcp_brake_num = tcp_brake_num + 1
+				servo_loop_n = servo_loop_n + 1
 				stopj(1.0)
 				sync()
 			elif state == SERVO_RUNNING:
 				servoj(q, ARG_SERVOJ_ARGS)
 			else:
-				num_sync = num_sync + 1
 				sync()
+				num_sync = num_sync + 1
 			end
 		end
 		stopj(1.0)
@@ -56,9 +58,9 @@ def driverProg():
 			keepalive = params_mult[7]
 			set_servo_setpoint(q)
 		end
-		if tcp_brake_num_old < tcp_brake_num:
-			tcp_brake_num_old = tcp_brake_num
-			socket_set_var("TCPBrake", tcp_brake_num)
+		if servo_loop_old < servo_loop_n:
+			servo_loop_old = servo_loop_n
+			socket_set_var("TCPBrake", num_brake_total)
 		end
 	end
 	sleep(.1)
