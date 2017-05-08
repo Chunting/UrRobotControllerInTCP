@@ -153,16 +153,11 @@ bool Kinect2Camera::capture(int waitMs) {
             cv::Mat((int) registered.height, (int) registered.width, CV_8UC4, registered.data).copyTo(
                     registered_color);
 
-            cobotsys::ImageFrame c_color = {cobotsys::ImageType::Color, raw_color};
-            cobotsys::ImageFrame c_depth = {cobotsys::ImageType::Depth, raw_depth};
-            cobotsys::ImageFrame c_ir = {cobotsys::ImageType::Ir, raw_ir};
-
-
             cobotsys::CameraFrame streamFrames;
             streamFrames.capture_time = timeAfterWait;
-            streamFrames.frames.push_back(c_color);
-            streamFrames.frames.push_back(c_depth);
-            streamFrames.frames.push_back(c_ir);
+            streamFrames.frames.push_back({cobotsys::ImageType::Color, raw_color});
+            streamFrames.frames.push_back({cobotsys::ImageType::Depth, raw_depth});
+            streamFrames.frames.push_back({cobotsys::ImageType::Ir, raw_ir});
             streamFrames.frames.push_back({cobotsys::ImageType::Depth, undistorted_depth});
             streamFrames.frames.push_back({cobotsys::ImageType::Color, registered_color});
 
@@ -195,6 +190,7 @@ void Kinect2Camera::notify(const cobotsys::CameraFrame& cameraFrame) {
 
 libfreenect2::PacketPipeline* Kinect2Camera::createPipeline(int deviceId) {
     libfreenect2::PacketPipeline* pipeline = nullptr;
+    return pipeline;
 #ifdef LIBFREENECT2_WITH_CUDA_SUPPORT
     if (pipeline == nullptr) {
         pipeline = new libfreenect2::CudaPacketPipeline(deviceId);
