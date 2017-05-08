@@ -65,7 +65,7 @@ void CobotUrRealTimeComm::readData() {
             m_robotState->unpack((uint8_t*) ba.constData());
         }
     }
-    m_SOCKET->write("\n");
+    m_SOCKET->write("sec noreply():\nend\n");
 }
 
 
@@ -101,7 +101,8 @@ void CobotUrRealTimeComm::writeLine(const QByteArray& ba) {
             nba.push_back('\n');
         }
         m_SOCKET->write(nba);
-        COBOT_LOG.debug() << "\n" << nba.constData();
+
+//        COBOT_LOG.debug() << "\n" << nba.constData();
     }
 }
 

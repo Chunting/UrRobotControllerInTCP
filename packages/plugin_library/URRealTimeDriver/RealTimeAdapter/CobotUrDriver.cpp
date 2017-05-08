@@ -122,8 +122,8 @@ bool CobotUrDriver::uploadProg() {
     cmd_str += "\t\t\tstate = cmd_servo_state\n";
     cmd_str += "\t\t\tcmd_servo_state = SERVO_IDLE\n";
     cmd_str += "\t\t\texit_critical\n";
-    cmd_str += "\t\t\tservo_loop_n = servo_loop_n + 1\n";
     cmd_str += "\t\t\tif do_brake:\n";
+    cmd_str += "\t\t\t\tservo_loop_n = servo_loop_n + 1\n";
     cmd_str += "\t\t\t\tnum_brake = num_brake + 1\n";
     cmd_str += "\t\t\t\tif num_brake < 5:\n";
     cmd_str += "\t\t\t\t\tservoj(brake_q)\n";
@@ -167,12 +167,12 @@ bool CobotUrDriver::uploadProg() {
     cmd_str += "\t\tend\n";
     cmd_str += "\t\tif servo_loop_old < servo_loop_n:\n";
     cmd_str += "\t\t\tservo_loop_old = servo_loop_n\n";
-    cmd_str += "\t\tend\n";
-
-    cmd_str += "\t\tif num_brake > 0:\n";
     cmd_str += "\t\t\tsocket_set_var(\"TCPBrake\", num_brake)\n";
     cmd_str += "\t\t\tsocket_set_var(\"ServoLoop\", servo_loop_n)\n";
     cmd_str += "\t\tend\n";
+
+//    cmd_str += "\t\tif num_brake > 0:\n";
+//    cmd_str += "\t\tend\n";
 
     cmd_str += "\tend\n";
     cmd_str += "\tsleep(.1)\n";
