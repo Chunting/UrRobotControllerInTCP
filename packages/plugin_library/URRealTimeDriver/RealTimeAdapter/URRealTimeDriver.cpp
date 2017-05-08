@@ -162,7 +162,7 @@ void URRealTimeDriver::robotStatusWatcher() {
         std::chrono::duration<double> time_diff = time_rdy - time_cur; // 时间间隙
         time_cur = time_rdy;
         if (time_diff.count() > 0.012|| time_diff.count() < 0.006) {
-            COBOT_LOG.warning() << "Ur Status Updated Time Exception: " << time_diff.count();
+//            COBOT_LOG.warning() << "Ur Status Updated Time Exception: " << time_diff.count();
         }
 
         // 抓取当前姿态
