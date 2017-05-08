@@ -3,9 +3,9 @@
 //
 // Code generated for Simulink model 'ForceController'.
 //
-// Model version                  : 1.192
+// Model version                  : 1.195
 // Simulink Coder version         : 8.11 (R2016b) 25-Aug-2016
-// C/C++ source code generated on : Mon May 08 03:51:17 2017
+// C/C++ source code generated on : Mon May 08 08:07:10 2017
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: 32-bit Generic
@@ -43,9 +43,6 @@ struct P_ForceController_T_ {
   real_T uorderTF_InitialStates;       // Expression: 0
                                        //  Referenced by: '<Root>/2-order TF'
 
-  real_T Gain_Gain[6];                 // Expression: [0.0005,0.0005,0.0005,0.01,0.01,0.01]
-                                       //  Referenced by: '<Root>/Gain'
-
   real_T TSamp_WtEt;                   // Computed Parameter: TSamp_WtEt
                                        //  Referenced by: '<S3>/TSamp'
 
@@ -60,6 +57,9 @@ struct P_ForceController_T_ {
 
   real_T RateLimiter_IC;               // Expression: 0
                                        //  Referenced by: '<Root>/Rate Limiter'
+
+  real_T Gain_Gain[6];                 // Expression: [0.0005,0.0005,0.0005,0.01,0.01,0.01]
+                                       //  Referenced by: '<Root>/Gain'
 
   uint32_T UD_DelayLength;             // Computed Parameter: UD_DelayLength
                                        //  Referenced by: '<S3>/UD'

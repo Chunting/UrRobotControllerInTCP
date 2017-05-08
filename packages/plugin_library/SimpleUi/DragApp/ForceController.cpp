@@ -3,9 +3,9 @@
 //
 // Code generated for Simulink model 'ForceController'.
 //
-// Model version                  : 1.192
+// Model version                  : 1.195
 // Simulink Coder version         : 8.11 (R2016b) 25-Aug-2016
-// C/C++ source code generated on : Mon May 08 03:51:17 2017
+// C/C++ source code generated on : Mon May 08 08:07:10 2017
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: 32-bit Generic
@@ -35,12 +35,12 @@ real_T dead_zone_start[6] = { -1.0, -1.0, -1.0, -1.0, -1.0, -1.0 } ;// Variable:
                                                                     //  Referenced by: '<Root>/Dead Zone'
 
 
-real_T filter_den[2] = { 1.0, -0.8166 } ;// Variable: filter_den
-                                         //  Referenced by: '<Root>/2-order TF'
+real_T filter_den[2] = { 1.0, -0.9 } ; // Variable: filter_den
+                                       //  Referenced by: '<Root>/2-order TF'
 
 
-real_T filter_num[2] = { 0.0, 0.1834 } ;// Variable: filter_num
-                                        //  Referenced by: '<Root>/2-order TF'
+real_T filter_num[2] = { 0.0, 0.1 } ;  // Variable: filter_num
+                                       //  Referenced by: '<Root>/2-order TF'
 
 
 static void rate_scheduler(RT_MODEL_ForceController_T *const ForceController_M);
@@ -86,9 +86,6 @@ void ForceControllerClass::step(const real_T (&force_ee)[6], const real_T
 
       // End of DeadZone: '<Root>/Dead Zone'
 
-      // Gain: '<Root>/Gain'
-      rtb_RateLimiter *= ForceController_P.Gain_Gain[i];
-
       // Gain: '<S1>/Proportional Gain'
       rtb_ProportionalGain = PID_P[i] * rtb_RateLimiter;
 
@@ -125,8 +122,11 @@ void ForceControllerClass::step(const real_T (&force_ee)[6], const real_T
 
       // End of RateLimiter: '<Root>/Rate Limiter'
 
-      // Outport: '<Root>/poseOffset_ee'
-      ForceController_Y.poseOffset_ee[i] = rtb_RateLimiter;
+      // Outport: '<Root>/poseOffset_ee' incorporates:
+      //   Gain: '<Root>/Gain'
+
+      ForceController_Y.poseOffset_ee[i] = ForceController_P.Gain_Gain[i] *
+        rtb_RateLimiter;
 
       // Sum: '<Root>/Sum2' incorporates:
       //   Inport: '<Root>/force_ee'
@@ -212,11 +212,6 @@ ForceControllerClass::ForceControllerClass()
     0.0,                               // Expression: 0
                                        //  Referenced by: '<Root>/2-order TF'
 
-
-    //  Expression: [0.0005,0.0005,0.0005,0.01,0.01,0.01]
-    //  Referenced by: '<Root>/Gain'
-
-    { 0.0005, 0.0005, 0.0005, 0.01, 0.01, 0.01 },
     125.0,                             // Computed Parameter: TSamp_WtEt
                                        //  Referenced by: '<S3>/TSamp'
 
@@ -232,6 +227,11 @@ ForceControllerClass::ForceControllerClass()
     0.0,                               // Expression: 0
                                        //  Referenced by: '<Root>/Rate Limiter'
 
+
+    //  Expression: [0.0005,0.0005,0.0005,0.01,0.01,0.01]
+    //  Referenced by: '<Root>/Gain'
+
+    { 0.0005, 0.0005, 0.0005, 0.01, 0.01, 0.01 },
     1U                                 // Computed Parameter: UD_DelayLength
                                        //  Referenced by: '<S3>/UD'
 
