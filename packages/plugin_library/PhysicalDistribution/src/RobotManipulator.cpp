@@ -4,6 +4,7 @@
 //
 
 #include <extra2.h>
+#include <QtWidgets/QRadioButton>
 #include "RobotManipulator.h"
 
 RobotManipulator::RobotManipulator() {
@@ -21,6 +22,8 @@ RobotManipulator::RobotManipulator() {
     connect(ui.btnSetHome, &QPushButton::released, this, &RobotManipulator::onButtonSetHome);
     connect(ui.btnSetWaypoint, &QPushButton::released, this, &RobotManipulator::onButtonSetWaypoint);
     connect(ui.btnGoHome, &QPushButton::released, this, &RobotManipulator::onButtonGoHome);
+    connect(ui.rbBase, &QRadioButton::toggled, [=]() { onButtonResetJoint(); });
+    connect(ui.rbJoint, &QRadioButton::toggled, [=]() { onButtonResetJoint(); });
 }
 
 RobotManipulator::~RobotManipulator() {

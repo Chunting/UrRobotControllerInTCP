@@ -177,7 +177,7 @@ void CobotUrRealTimeComm::onSocketError(QAbstractSocket::SocketError socketError
 
 void CobotUrRealTimeComm::onRealTimeData() {
     auto ba = m_rtSOCKET->readAll();
-//    COBOT_LOG.notice() << "Realtime: " << ba.constData();
+    COBOT_LOG.warning() << "Realtime: " << ba.constData();
 }
 
 

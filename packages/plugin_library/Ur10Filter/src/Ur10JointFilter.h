@@ -21,6 +21,7 @@ protected:
     std::vector<double> m_target;
     std::vector<double> m_preTarget;
     std::vector<double> m_jointLimits;
+    std::vector<double> m_jointAccLimits;
 };
 
 

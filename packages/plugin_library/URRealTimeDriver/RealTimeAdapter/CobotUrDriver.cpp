@@ -105,22 +105,32 @@ bool CobotUrDriver::uploadProg() {
     cmd_str += "\t\tcmd_servo_q = q\n";
     cmd_str += "\t\texit_critical\n";
     cmd_str += "\tend\n";
+    cmd_str += "\tnum_brake = 0\n";
+    cmd_str += "\tbrake_q = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]\n";
     cmd_str += "\tthread servoThread():\n";
     cmd_str += "\t\tstate = SERVO_IDLE\n";
     cmd_str += "\t\twhile keepalive > 0:\n";
     cmd_str += "\t\t\tenter_critical\n";
     cmd_str += "\t\t\tq = cmd_servo_q\n";
+    cmd_str += "\t\t\tbrake_q = cmd_servo_q\n";
     cmd_str += "\t\t\tdo_brake = False\n";
     cmd_str += "\t\t\tif (state == SERVO_RUNNING) and (cmd_servo_state == SERVO_IDLE):\n";
     cmd_str += "\t\t\t\tdo_brake = True\n";
+    cmd_str += "\t\t\telse:\n";
+    cmd_str += "\t\t\t\tnum_brake = 0\n";
     cmd_str += "\t\t\tend\n";
     cmd_str += "\t\t\tstate = cmd_servo_state\n";
     cmd_str += "\t\t\tcmd_servo_state = SERVO_IDLE\n";
     cmd_str += "\t\t\texit_critical\n";
     cmd_str += "\t\t\tservo_loop_n = servo_loop_n + 1\n";
     cmd_str += "\t\t\tif do_brake:\n";
-    cmd_str += "\t\t\t\tstopj(1.0)\n";
-    cmd_str += "\t\t\t\tsync()\n";
+    cmd_str += "\t\t\t\tnum_brake = num_brake + 1\n";
+    cmd_str += "\t\t\t\tif num_brake < 5:\n";
+    cmd_str += "\t\t\t\t\tservoj(brake_q)\n";
+    cmd_str += "\t\t\t\telse:\n";
+    cmd_str += "\t\t\t\t\tstopj(1.0)\n";
+    cmd_str += "\t\t\t\t\tsync()\n";
+    cmd_str += "\t\t\t\tend\n";
     cmd_str += "\t\t\telif state == SERVO_RUNNING:\n";
 
     if (m_urCommCtrl->ur->getRobotState()->getVersion() >= 3.1)
@@ -156,9 +166,14 @@ bool CobotUrDriver::uploadProg() {
     cmd_str += "\t\t\tset_servo_setpoint(q)\n";
     cmd_str += "\t\tend\n";
     cmd_str += "\t\tif servo_loop_old < servo_loop_n:\n";
-    cmd_str += "\t\t\tsocket_set_var(\"ServoLoop\", servo_loop_n)\n";
     cmd_str += "\t\t\tservo_loop_old = servo_loop_n\n";
     cmd_str += "\t\tend\n";
+
+    cmd_str += "\t\tif num_brake > 0:\n";
+    cmd_str += "\t\t\tsocket_set_var(\"TCPBrake\", num_brake)\n";
+    cmd_str += "\t\t\tsocket_set_var(\"ServoLoop\", servo_loop_n)\n";
+    cmd_str += "\t\tend\n";
+
     cmd_str += "\tend\n";
     cmd_str += "\tsleep(.1)\n";
     cmd_str += "\tsocket_close()\n";

@@ -5,6 +5,7 @@
 
 #include <extra2.h>
 #include "Ur10JointFilter.h"
+#include <cxx/cxx.h>
 
 Ur10JointFilter::Ur10JointFilter() {
 }
@@ -16,7 +17,8 @@ bool Ur10JointFilter::setup(const QString& configFilePath) {
     QJsonObject configJson;
     if (loadJson(configJson, configFilePath)) {
         m_jointLimits = readRealArray(configJson["JointLimits"]);
-        for (auto& val : m_jointLimits) val = val * M_PI / 180 / 1000 * 8;
+        m_jointAccLimits = readRealArray(configJson["JointAccLimits"]);
+        cxx::scale_all(m_jointLimits, M_PI / 180 / 1000 * 8);
         COBOT_LOG.notice() << "Joint Filter Limits: " << putfixedfloats(6, 1, m_jointLimits, 180 / M_PI);
     }
     return true;
@@ -30,22 +32,29 @@ void Ur10JointFilter::applyFilter(std::vector<double>& target_, const ArmRobotSt
     if (m_target.size() != curPosi.size())
         return;
 
-    double maxRadPerTick = 60 * M_PI / 180 / 1000 * 8;
+    if (cxx::distance(curVelo) > 0.001) {
+//        COBOT_LOG.debug() << "J-Speed: " << putfixedfloats(6, 3, curVelo, 180 / M_PI);
+    }
+
+    double maxRadPerTick = 360 * M_PI / 180 / 1000 * 8;
     if (m_jointLimits.size() != m_target.size()) {
         m_jointLimits.resize(m_target.size(), maxRadPerTick);
         COBOT_LOG.warning() << "Config Joint Limit use Default: " << maxRadPerTick;
     }
 
+    auto posiInc = curVelo;
     std::vector<double> diffNew(m_target.size(), 0);
+
+    cxx::norm_all(posiInc);
+    cxx::add_other(posiInc, m_jointAccLimits);
+
     for (size_t i = 0; i < m_target.size(); i++) {
         diffNew[i] = m_target[i] - curPosi[i];
 
-        if (diffNew[i] > m_jointLimits[i])
-            diffNew[i] = m_jointLimits[i];
-        if (diffNew[i] < -m_jointLimits[i])
-            diffNew[i] = -m_jointLimits[i];
+        cxx::limit(diffNew[i], posiInc[i]);
+
+        cxx::limit(diffNew[i], m_jointLimits[i]);
+
         target_[i] = curPosi[i] + diffNew[i];
     }
-
-    //COBOT_LOG.debug() << putfixedfloats(7, 2, diffNew, 180 / M_PI);
 }
