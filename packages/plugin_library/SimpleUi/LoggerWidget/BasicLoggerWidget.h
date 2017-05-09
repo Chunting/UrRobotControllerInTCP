@@ -35,6 +35,20 @@ protected:
 
     void customMenu();
 
+    void parserLogTypeName(const QString& line_, QString& type_, QString& name_);
+
+    void showLogType(const QString& type_, bool show_);
+    void showLogName(const QString& name_, bool show_);
+
+    void loopAllTextBlock(std::function<void(QTextBlock&)> func);
+
+    bool isTypeVisible(const QString& type_);
+    bool isNameVisible(const QString& name_);
+
+    void addTextFilter(QMenu* menu);
+    void addHideItems(QMenu* menu);
+
+    void appendFilterMessage();
 protected:
     QPlainTextEdit* m_plainTextEdit;
     QVBoxLayout* m_boxLayout;
@@ -44,6 +58,10 @@ protected:
     std::mutex m_mutex;
 
     bool m_autoScrollBottom;
+    bool m_enableFilter;
+
+    std::map<QString, bool> m_typeFilter;
+    std::map<QString, bool> m_nameFilter;
 };
 
 
