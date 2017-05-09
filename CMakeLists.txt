@@ -105,6 +105,7 @@ endif ()
 #
 #scan_package_path(${CMAKE_CURRENT_SOURCE_DIR}/packages)
 
+# 用于在子项目子目录里给Plugin提供全局的include路径
 function(global_include_append include_path)
     include_directories(${include_path})
     set_property(GLOBAL PROPERTY CORE_INC ${include_path} APPEND)
