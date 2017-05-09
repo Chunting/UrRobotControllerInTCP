@@ -29,6 +29,10 @@ find_package(Qt5Gui REQUIRED)
 find_package(Qt5Widgets REQUIRED)
 find_package(Qt5OpenGL REQUIRED)
 find_package(Qt5Network REQUIRED)
+
+find_package(Qt5Xml REQUIRED)
+find_package(Qt5Qml REQUIRED)
+
 find_package(OpenCV REQUIRED)
 find_package(Boost REQUIRED COMPONENTS date_time system program_options filesystem)
 message(STATUS "BOOST_INCLUDEDIR " ${Boost_LIBRARY_DIRS})
