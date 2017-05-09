@@ -42,7 +42,7 @@ bool BasicLoggerWidget::setup(const QString& configFilePath) {
         }
 
         for (const auto& iter : loggerConfig["Name"].toArray()) {
-            m_typeFilter[iter.toString()] = false;
+            m_nameFilter[iter.toString()] = false;
         }
     }
     return true;
