@@ -7,7 +7,7 @@
 #include "MatMerger.h"
 #include <opencv2/opencv.hpp>
 
-QImage cv_mat_to_qimage(const cv::Mat &mat){
+QImage cv_mat_to_qimage(const cv::Mat& mat) {
     // 8-bits unsigned, NO. OF CHANNELS = 1
     if (mat.type() == CV_8UC1) {
         QImage image(mat.cols, mat.rows, QImage::Format_Indexed8);
@@ -17,9 +17,9 @@ QImage cv_mat_to_qimage(const cv::Mat &mat){
             image.setColor(i, qRgb(i, i, i));
         }
         // Copy input Mat
-        uchar *pSrc = mat.data;
+        uchar* pSrc = mat.data;
         for (int row = 0; row < mat.rows; row++) {
-            uchar *pDest = image.scanLine(row);
+            uchar* pDest = image.scanLine(row);
             memcpy(pDest, pSrc, mat.cols);
             pSrc += mat.step;
         }
@@ -28,14 +28,14 @@ QImage cv_mat_to_qimage(const cv::Mat &mat){
         // 8-bits unsigned, NO. OF CHANNELS = 3
     else if (mat.type() == CV_8UC3) {
         // Copy input Mat
-        const uchar *pSrc = (const uchar *) mat.data;
+        const uchar* pSrc = (const uchar*) mat.data;
         // Create QImage with same dimensions as input Mat
         QImage image(pSrc, mat.cols, mat.rows, mat.step, QImage::Format_RGB888);
         return image.rgbSwapped();
     } else if (mat.type() == CV_8UC4) {
 //        qDebug() << "CV_8UC4";
         // Copy input Mat
-        const uchar *pSrc = (const uchar *) mat.data;
+        const uchar* pSrc = (const uchar*) mat.data;
         // Create QImage with same dimensions as input Mat
         QImage image(pSrc, mat.cols, mat.rows, mat.step, QImage::Format_ARGB32);
         return image.copy();
@@ -49,7 +49,7 @@ QImage cv_mat_to_qimage(const cv::Mat &mat){
     }
 }
 
-void write(cv::FileStorage &fs, const std::string &, const MatLayoutData &data){
+void write(cv::FileStorage& fs, const std::string&, const MatLayoutData& data) {
     fs << "{"
        << "name" << data.name
        << "x" << data.x
@@ -59,7 +59,7 @@ void write(cv::FileStorage &fs, const std::string &, const MatLayoutData &data){
        << "}";
 }
 
-void read(const cv::FileNode &node, MatLayoutData &data, const MatLayoutData &default_value){
+void read(const cv::FileNode& node, MatLayoutData& data, const MatLayoutData& default_value) {
     if (node.empty()) {
         data = default_value;
     } else {
@@ -71,18 +71,18 @@ void read(const cv::FileNode &node, MatLayoutData &data, const MatLayoutData &de
     }
 }
 
-void write(cv::FileStorage &fs, const std::string &, const MatMerger &data){
+void write(cv::FileStorage& fs, const std::string&, const MatMerger& data) {
     data.write(fs);
 }
 
-void read(const cv::FileNode &node, MatMerger &data, const MatMerger &default_value){
+void read(const cv::FileNode& node, MatMerger& data, const MatMerger& default_value) {
     if (node.empty())
         data = default_value;
     else
         data.read(node);
 }
 
-std::ostream &operator<<(std::ostream &oss, const MatLayoutData &layoutData){
+std::ostream& operator<<(std::ostream& oss, const MatLayoutData& layoutData) {
     oss << std::setw(16) << layoutData.name << ", "
         << std::setw(7) << layoutData.x
         << ", "
@@ -92,15 +92,15 @@ std::ostream &operator<<(std::ostream &oss, const MatLayoutData &layoutData){
     return oss;
 }
 
-MatMerger::MatMerger(){
+MatMerger::MatMerger() {
 }
 
-MatMerger::~MatMerger(){
+MatMerger::~MatMerger() {
 }
 
 #define MAT_MERGER_NODE "MatMerger"
 
-bool MatMerger::loadMatLayout(const std::string &path){
+bool MatMerger::loadMatLayout(const std::string& path) {
     cv::FileStorage fs(path, cv::FileStorage::READ);
     if (fs.isOpened()) {
         layout_array.clear();
@@ -110,17 +110,17 @@ bool MatMerger::loadMatLayout(const std::string &path){
     return false;
 }
 
-void MatMerger::saveMatLayout(const std::string &path){
+void MatMerger::saveMatLayout(const std::string& path) {
     cv::FileStorage fs(path, cv::FileStorage::WRITE);
     if (fs.isOpened()) {
         fs << MAT_MERGER_NODE << (*this);
     }
 }
 
-void MatMerger::write(cv::FileStorage &fs) const{
+void MatMerger::write(cv::FileStorage& fs) const {
     fs << "{";
     fs << "layouts" << "[";
-    for (auto &dat : layout_array) {
+    for (auto& dat : layout_array) {
         fs << dat;
     }
     fs << "]";
@@ -128,45 +128,45 @@ void MatMerger::write(cv::FileStorage &fs) const{
 }
 
 
-void MatMerger::read(const cv::FileNode &fn){
+void MatMerger::read(const cv::FileNode& fn) {
     auto fsIter = fn["layouts"];
     if (fsIter.type() == cv::FileNode::SEQ) {
         layout_array.clear();
-        for (const auto &iter : fsIter) {
+        for (const auto& iter : fsIter) {
             MatLayoutData matLay;
             iter >> matLay;
             layout_array.push_back(matLay);
 
-            COBOT_LOG.notice() << matLay;
+            COBOT_LOG.notice("MatMerger") << matLay;
         }
     }
 }
 
-MatMerger::MatMerger(const MatMerger &r) : layout_array(r.layout_array){
+MatMerger::MatMerger(const MatMerger& r) : layout_array(r.layout_array) {
 }
 
-void MatMerger::updateMat(const std::string &name, const cv::Mat &mat){
+void MatMerger::updateMat(const std::string& name, const cv::Mat& mat) {
     inner_lock.lock();
     cached_mat[name] = mat;
     inner_lock.unlock();
 //    COBOT_LOG.notice() << "image updated, " << name;
 }
 
-MatMerger &MatMerger::operator=(const MatMerger &r){
+MatMerger& MatMerger::operator=(const MatMerger& r) {
     layout_array = r.layout_array;
     return *this;
 }
 
-void MatMerger::draw(QPainter &painter){
+void MatMerger::draw(QPainter& painter) {
     std::map<std::string, QImage> images;
     std::map<std::string, MatLayoutData> cached_layout;
 
     inner_lock.lock();
-    for (const auto &l : layout_array) {
+    for (const auto& l : layout_array) {
         cached_layout[l.name] = l;
     }
 
-    for (auto &iter : cached_mat) {
+    for (auto& iter : cached_mat) {
         if (cached_layout.find(iter.first) != cached_layout.end()) {
             if (iter.second.cols > 0 && iter.second.rows > 0) {
                 images[iter.first] = cv_mat_to_qimage(iter.second);
@@ -176,8 +176,8 @@ void MatMerger::draw(QPainter &painter){
     inner_lock.unlock();
 
     // draw
-    for (auto &iter : images) {
-        const auto &layout_style = cached_layout[iter.first];
+    for (auto& iter : images) {
+        const auto& layout_style = cached_layout[iter.first];
         if (layout_style.isScaled()) {
             painter.drawImage(QRect(layout_style.x, layout_style.y, layout_style.width, layout_style.height),
                               iter.second);
@@ -187,15 +187,15 @@ void MatMerger::draw(QPainter &painter){
     }
 }
 
-void MatMerger::clear(){
+void MatMerger::clear() {
     inner_lock.lock();
     cached_mat.clear();
     inner_lock.unlock();
 }
 
-void MatMerger::imshow(const std::string &name){
+void MatMerger::imshow(const std::string& name) {
     inner_lock.lock();
-    auto &mat = cached_mat[name];
+    auto& mat = cached_mat[name];
     if (mat.cols > 0 && mat.rows > 0)
         cv::imshow(name, cached_mat[name]);
     inner_lock.unlock();

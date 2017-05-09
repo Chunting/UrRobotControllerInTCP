@@ -127,7 +127,7 @@ void URRealTimeDriver::robotStatusWatcher() {
     std::mutex daemonLock;
     auto daemonStatus = std::make_shared<ArmRobotStatus>();
 
-    COBOT_LOG.notice() << "UR Status Watcher is Running.";
+    COBOT_LOG.notice("UrDriver") << "Watcher is Running.";
     std::thread servoDaemon([&]() { // 这个线程主要用于优化路径
         auto timeWait = std::chrono::high_resolution_clock::now();
         while (m_isWatcherRunning) {
@@ -212,7 +212,7 @@ void URRealTimeDriver::robotStatusWatcher() {
     }
 
     servoDaemon.join();
-    COBOT_LOG.notice() << "UR Status Watcher shutdown!";
+    COBOT_LOG.notice("UrDriver") << "Watcher shutdown!";
 }
 
 bool URRealTimeDriver::_setup(const QString& configFilePath) {

@@ -53,7 +53,7 @@ void parser_app_name(const char* arg) {
     }
 
     COBOT_LOG.setCurrentInstanceName(internal_app_name);
-    COBOT_LOG.notice() << internal_app_directory << ", " << internal_app_name;
+    COBOT_LOG.notice("App Info") << internal_app_directory << ", " << internal_app_name;
 }
 }
 
