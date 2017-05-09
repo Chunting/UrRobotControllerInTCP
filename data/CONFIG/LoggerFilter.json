@@ -1,10 +1,11 @@
 {
-  "LoggerWidgetSetup": {
-    "EnableFilter": true,
-    "EnableGUIFilterMenu": true,
-    "Type": [],
-    "Name": [
-      "FontFinder"
-    ]
-  }
+    "LoggerWidgetSetup": {
+        "EnableFilter": true,
+        "EnableGUIFilterMenu": true,
+        "Name": [
+            "MatMerger"
+        ],
+        "Type": [
+        ]
+    }
 }

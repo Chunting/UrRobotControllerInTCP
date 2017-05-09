@@ -16,6 +16,7 @@
 #include <map>
 
 #include <cobotsys_logger.h>
+#include <QString>
 
 namespace cobotsys {
 
@@ -34,6 +35,8 @@ public:
 public:
     static bool isFileExist(const std::string& filePath);
     static std::string find(const std::string& base_name);
+    static QString find(const QString& base_name);
+    static std::string find(const char* base_name);
     static void addSearchPath(const std::string& path_to_find, PreDefPath pathType = AppRuntimeDir);
     static std::string realPathOf(const std::string& path);
 

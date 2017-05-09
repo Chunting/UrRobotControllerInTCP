@@ -139,4 +139,14 @@ void FileFinder::dumpAvailablePath() {
         }
     }
 }
+
+QString FileFinder::find(const QString& base_name) {
+    std::string s = base_name.toLocal8Bit().constData();
+    auto rs = find(s);
+    return QString::fromLocal8Bit(rs.c_str());
+}
+
+std::string FileFinder::find(const char* base_name) {
+    return find(std::string(base_name));
+}
 }

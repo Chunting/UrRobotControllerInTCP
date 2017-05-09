@@ -6,12 +6,15 @@
 #include <cobotsys.h>
 #include <cobotsys_gui_logger_highlighter.h>
 #include <extra2.h>
+#include <cobotsys_file_finder.h>
 #include "BasicLoggerWidget.h"
 
 BasicLoggerWidget::BasicLoggerWidget() {
     m_autoScrollBottom = true;
     m_enableFilter = false;
     m_enableGUIFilterMenu = true;
+    m_ctxMenuFont = getMonospaceFont();
+    m_ctxMenuFont.setBold(true);
     setupUi();
 }
 
@@ -27,6 +30,9 @@ bool BasicLoggerWidget::setup(const QString& configFilePath) {
         cpath = "CONFIG/LoggerFilter.json"; // Give a default config json file.
 
     if (loadJson(jsonConfig, cpath)) {
+        m_configPath = cobotsys::FileFinder::find(cpath);
+        COBOT_LOG.debug("DEBUG_0") << m_configPath;
+
         auto loggerConfig = jsonConfig["LoggerWidgetSetup"].toObject();
         m_enableFilter = loggerConfig["EnableFilter"].toBool(false);
         m_enableGUIFilterMenu = loggerConfig["EnableGUIFilterMenu"].toBool(true);
@@ -121,6 +127,7 @@ void BasicLoggerWidget::setupUi() {
 
 void BasicLoggerWidget::customMenu() {
     auto menu = m_plainTextEdit->createStandardContextMenu();
+    menu->setFont(m_ctxMenuFont);
 
     menu->addSeparator();
     if (m_enableGUIFilterMenu) {
@@ -196,11 +203,15 @@ bool BasicLoggerWidget::isNameVisible(const QString& name_) {
 void BasicLoggerWidget::addTextFilter(QMenu* menu) {
     QAction* action;
     auto filterMenu = menu->addMenu(tr("Text Filter"));
+    filterMenu->setFont(m_ctxMenuFont);
 
     action = filterMenu->addAction(tr("Enable Filter"));
     action->setCheckable(true);
     action->setChecked(m_enableFilter);
     connect(action, &QAction::triggered, [=](bool bChecked) { m_enableFilter = bChecked; });
+
+    filterMenu->addSeparator();
+    addConfigMenu(filterMenu);
 
     if (m_enableFilter) {
         filterMenu->addSeparator();
@@ -247,6 +258,9 @@ void BasicLoggerWidget::addHideItems(QMenu* menu) {
     QAction* action;
     bool noHideItems = true;
     auto hideItems = menu->addMenu(tr("Hide Types"));
+    hideItems->setFont(m_ctxMenuFont);
+    action = hideItems->addAction(tr("Show All"));
+    connect(action, &QAction::triggered, [=](bool) { m_typeFilter.clear(); });
 
     for (auto& iter : m_typeFilter) {
         if (!iter.second) {
@@ -261,6 +275,10 @@ void BasicLoggerWidget::addHideItems(QMenu* menu) {
 
     noHideItems = true;
     hideItems = menu->addMenu(tr("Hide Names"));
+    hideItems->setFont(m_ctxMenuFont);
+    action = hideItems->addAction(tr("Show All"));
+    connect(action, &QAction::triggered, [=](bool) { m_nameFilter.clear(); });
+
     for (auto& iter : m_nameFilter) {
         if (!iter.second) {
             action = hideItems->addAction(iter.first);
@@ -271,6 +289,55 @@ void BasicLoggerWidget::addHideItems(QMenu* menu) {
         }
     }
     if (noHideItems) hideItems->setEnabled(false);
+}
+
+void BasicLoggerWidget::saveConfig() {
+    if (m_configPath.isEmpty()) {
+        COBOT_LOG.notice("LoggerWin") << "Current Widget Create Without Config. Save Ignore.";
+    } else {
+        QJsonObject jsonConfig;
+        if (loadJson(jsonConfig, m_configPath)) {
+            QJsonObject loggerConfig;
+            loggerConfig["EnableFilter"] = m_enableFilter;
+            loggerConfig["EnableGUIFilterMenu"] = m_enableGUIFilterMenu;
+            QJsonArray types, names;
+            for (auto& iter : m_typeFilter) { if (!iter.second) types.push_back(iter.first); }
+            for (auto& iter : m_nameFilter) { if (!iter.second) names.push_back(iter.first); }
+            loggerConfig["Type"] = types;
+            loggerConfig["Name"] = names;
+            jsonConfig["LoggerWidgetSetup"] = loggerConfig;
+
+            QJsonDocument configDoc(jsonConfig);
+            auto ba = configDoc.toJson();
+            QFile configFile(m_configPath);
+            if (configFile.open(QIODevice::WriteOnly)) {
+                configFile.write(ba);
+            } else {
+                COBOT_LOG.warning("LoggerWin") << configFile.errorString() << ", " << m_configPath;
+            }
+        }
+    }
+}
+
+void BasicLoggerWidget::loadConfig() {
+    if (m_configPath.isEmpty()) {
+        COBOT_LOG.notice("LoggerWin") << "Current Widget Create Without Config. Load Ignore.";
+    } else {
+        setup(m_configPath);
+    }
+}
+
+void BasicLoggerWidget::addConfigMenu(QMenu* menu) {
+    QAction* action;
+
+    auto cMenu = menu->addMenu(tr("Config"));
+    cMenu->setFont(m_ctxMenuFont);
+
+    action = cMenu->addAction(tr("Load"));
+    connect(action, &QAction::triggered, this, &BasicLoggerWidget::loadConfig);
+
+    action = cMenu->addAction(tr("Save"));
+    connect(action, &QAction::triggered, this, &BasicLoggerWidget::saveConfig);
 }
 
 

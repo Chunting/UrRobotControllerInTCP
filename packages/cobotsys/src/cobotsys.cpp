@@ -82,7 +82,8 @@ bool isFixedPitch(const QFont& font) {
     return fi.fixedPitch();
 }
 
-QFont getMonospaceFont() {
+
+QFont enumMonospaceFont() {
     QFont font("monospace");
     if (isFixedPitch(font)) return font;
     font.setStyleHint(QFont::Monospace);
@@ -92,4 +93,15 @@ QFont getMonospaceFont() {
     font.setFamily("courier");
     if (isFixedPitch(font)) return font;
     return font;
+}
+
+QFont getMonospaceFont() {
+    static bool monospaceInit = false;
+    static QFont monospaceFont;
+    if (monospaceInit)
+        return monospaceFont;
+
+    monospaceFont = enumMonospaceFont();
+    monospaceInit = true;
+    return monospaceFont;
 }

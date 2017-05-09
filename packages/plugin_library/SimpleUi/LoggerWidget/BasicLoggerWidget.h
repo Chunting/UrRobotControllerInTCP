@@ -49,6 +49,10 @@ protected:
     void addHideItems(QMenu* menu);
 
     void appendFilterMessage();
+
+    void addConfigMenu(QMenu* menu);
+    void saveConfig();
+    void loadConfig();
 protected:
     QPlainTextEdit* m_plainTextEdit;
     QVBoxLayout* m_boxLayout;
@@ -63,6 +67,9 @@ protected:
 
     std::map<QString, bool> m_typeFilter;
     std::map<QString, bool> m_nameFilter;
+
+    QString m_configPath;
+    QFont m_ctxMenuFont;
 };
 
 
