@@ -5,11 +5,13 @@
 
 #include <cobotsys.h>
 #include <cobotsys_gui_logger_highlighter.h>
+#include <extra2.h>
 #include "BasicLoggerWidget.h"
 
 BasicLoggerWidget::BasicLoggerWidget() {
     m_autoScrollBottom = true;
     m_enableFilter = false;
+    m_enableGUIFilterMenu = true;
     setupUi();
 }
 
@@ -18,6 +20,25 @@ BasicLoggerWidget::~BasicLoggerWidget() {
 }
 
 bool BasicLoggerWidget::setup(const QString& configFilePath) {
+    QJsonObject jsonConfig;
+    QString cpath = configFilePath;
+
+    if (cpath.isEmpty())
+        cpath = "CONFIG/LoggerFilter.json"; // Give a default config json file.
+
+    if (loadJson(jsonConfig, cpath)) {
+        auto loggerConfig = jsonConfig["LoggerWidgetSetup"].toObject();
+        m_enableFilter = loggerConfig["EnableFilter"].toBool(false);
+        m_enableGUIFilterMenu = loggerConfig["EnableGUIFilterMenu"].toBool(true);
+
+        for (const auto& iter : loggerConfig["Type"].toArray()) {
+            m_typeFilter[iter.toString()] = false;
+        }
+
+        for (const auto& iter : loggerConfig["Name"].toArray()) {
+            m_typeFilter[iter.toString()] = false;
+        }
+    }
     return true;
 }
 
@@ -102,8 +123,10 @@ void BasicLoggerWidget::customMenu() {
     auto menu = m_plainTextEdit->createStandardContextMenu();
 
     menu->addSeparator();
-    addTextFilter(menu);
-    menu->addSeparator();
+    if (m_enableGUIFilterMenu) {
+        addTextFilter(menu);
+        menu->addSeparator();
+    }
 
     auto action = menu->addAction(tr("Clear"));
     connect(action, &QAction::triggered, [=]() { m_plainTextEdit->clear(); });

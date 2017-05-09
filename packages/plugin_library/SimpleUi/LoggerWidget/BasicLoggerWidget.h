@@ -59,6 +59,7 @@ protected:
 
     bool m_autoScrollBottom;
     bool m_enableFilter;
+    bool m_enableGUIFilterMenu;
 
     std::map<QString, bool> m_typeFilter;
     std::map<QString, bool> m_nameFilter;

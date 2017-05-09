@@ -1,0 +1,10 @@
+{
+  "LoggerWidgetSetup": {
+    "EnableFilter": true,
+    "EnableGUIFilterMenu": true,
+    "Type": [],
+    "Name": [
+      "FontFinder"
+    ]
+  }
+}

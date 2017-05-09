@@ -33,6 +33,7 @@ void MainWindow::setupUi() {
     /// Logger
     if (GlobalObjectFactory::instance()) {
         auto obj = GlobalObjectFactory::instance()->createObject("SimpleUiFactory, Ver 1.0", "BasicLoggerWidget");
+        obj->setup("");
         m_loggerWidget = std::dynamic_pointer_cast<QWidget>(obj);
         m_loggerWidget->setWindowFlags(Qt::Window);
     }
