@@ -106,14 +106,13 @@ public:
 
     void append(const std::string& message);
 
-    MessageWrapper message(const std::string& entry, LoggerLevel level = LoggerLevel::Debug);
-    MessageWrapper message();
-    MessageWrapper error();
-    MessageWrapper warning();
-    MessageWrapper notice();
-    MessageWrapper info();
-    MessageWrapper fatal();
-    MessageWrapper debug();
+    MessageWrapper message(const std::string& module_ = "", LoggerLevel level = LoggerLevel::Debug);
+    MessageWrapper error(const std::string& module_ = "");
+    MessageWrapper warning(const std::string& module_ = "");
+    MessageWrapper notice(const std::string& module_ = "");
+    MessageWrapper info(const std::string& module_ = "");
+    MessageWrapper fatal(const std::string& module_ = "");
+    MessageWrapper debug(const std::string& module_ = "");
 
     void setAppendFilter(std::function<void(const std::string& message)> filter);
     void addFilter(void* obj, std::function<void(const std::string& message)> filter);

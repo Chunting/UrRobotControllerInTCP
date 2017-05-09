@@ -38,7 +38,7 @@ QImage matToQImage(const cv::Mat& mat);
 
 std::string simple_typeid_name(const char* pname);
 
-#define INFO_DESTRUCTOR(_this) COBOT_LOG.info() << "Destructor: " << simple_typeid_name(typeid(_this).name())
+#define INFO_DESTRUCTOR(_this) COBOT_LOG.info("Destructor") << simple_typeid_name(typeid(_this).name())
 
 
 template<class T, class N, class M>

@@ -85,5 +85,8 @@ void BasicLoggerWidget::customMenu() {
     action->setChecked(m_autoScrollBottom);
     connect(action, &QAction::triggered, [=](bool bChecked) { m_autoScrollBottom = bChecked; });
 
+    action = menu->addAction(tr("Go Bottom"));
+    connect(action, &QAction::triggered, [=](bool) { m_plainTextEdit->setTextCursor(m_textCursor); });
+
     menu->exec(QCursor::pos());
 }

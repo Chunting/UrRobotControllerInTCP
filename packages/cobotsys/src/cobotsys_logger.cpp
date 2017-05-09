@@ -126,37 +126,33 @@ Logger& Logger::instance() {
     return logger;
 }
 
-Logger::MessageWrapper Logger::message(const std::string& entry, LoggerLevel level) {
-    return MessageWrapper(entry, *this, level);
+Logger::MessageWrapper Logger::message(const std::string& module_, LoggerLevel level) {
+    return MessageWrapper(module_, *this, level);
 }
 
-Logger::MessageWrapper Logger::message() {
-    return message("", LoggerLevel::Debug);
+Logger::MessageWrapper Logger::error(const std::string& module_) {
+    return message(module_, LoggerLevel::Error);
 }
 
-Logger::MessageWrapper Logger::error() {
-    return message("", LoggerLevel::Error);
+Logger::MessageWrapper Logger::fatal(const std::string& module_) {
+    return message(module_, LoggerLevel::Fatal);
 }
 
-Logger::MessageWrapper Logger::fatal() {
-    return message("", LoggerLevel::Fatal);
+Logger::MessageWrapper Logger::warning(const std::string& module_) {
+    return message(module_, LoggerLevel::Warning);
 }
 
-Logger::MessageWrapper Logger::warning() {
-    return message("", LoggerLevel::Warning);
+Logger::MessageWrapper Logger::notice(const std::string& module_) {
+    return message(module_, LoggerLevel::Notice);
 }
 
-Logger::MessageWrapper Logger::notice() {
-    return message("", LoggerLevel::Notice);
-}
-
-Logger::MessageWrapper Logger::info() {
-    return message("", LoggerLevel::Info);
+Logger::MessageWrapper Logger::info(const std::string& module_) {
+    return message(module_, LoggerLevel::Info);
 }
 
 
-Logger::MessageWrapper Logger::debug() {
-    return message("", LoggerLevel::Debug);
+Logger::MessageWrapper Logger::debug(const std::string& module_) {
+    return message(module_, LoggerLevel::Debug);
 }
 
 void Logger::setCurrentInstanceName(const std::string& s) {

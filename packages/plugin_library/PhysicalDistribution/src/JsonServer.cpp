@@ -14,7 +14,7 @@ JsonServer::JsonServer(QObject* parent)
     m_pWebSocketServer = new QWebSocketServer("CobotJsonSimulatork", QWebSocketServer::NonSecureMode, this);
     if (m_pWebSocketServer->listen(QHostAddress::Any, 45454)) {
         connect(m_pWebSocketServer, &QWebSocketServer::newConnection, this, &JsonServer::onNewConnection);
-        COBOT_LOG.info() << "JsonServer listening on port" << 45454;
+        COBOT_LOG.info("JsonServer") << "listening on port: " << 45454;
     }
 
     connect(this, &JsonServer::apiTaskUpdate, this, &JsonServer::replyTaskStage);
