@@ -1,0 +1,479 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<polishingtask xmlns:cpt="http://www.cobotsys.com">
+  <!--A complete description of the polishing task, which mainly includes the following:
+1.workshop description
+2.product description with polishing path description
+-->
+  <asset>
+    <contributor>
+      <author>Cobot</author>
+      <!--buildtool:Tools to generate polishing task.
+"PolishingArtDesigner v1.0" is a example name of UI tools to design polishing task.
+-->
+      <buildtool>PolishingArtDesigner v1.0</buildtool>
+    </contributor>
+    <created author="lhc" time="2017-03-16 17:09"/>
+    <modified author="lhc" time="2017-03-16 17:10"/>
+    <unit>
+      <time>second</time>
+      <length>meter</length>
+    </unit>
+    <!--About up_axis
+There are 3 types:
+1.Z_UP(default)
+2.Y_UP
+3.X_UP-->
+    <up_axis>Z_UP</up_axis>
+    <description>Polishing a phone shell</description>
+    <requirements>Smoothness reaches XX standards.</requirements>
+  </asset>
+  <property name="pi" value="3.14159265"/>
+  <workshop>
+    <!--Workshop description mainly has the following parts:
+1. Robot description, the main information are urdf file and robot position in the workshop coordinate system.
+2. Polisher description, the main information include polisher position in the workshop coordinate system and polishing feature which is currently not yet expanded.
+Note:
+1. There is only one polisher, and later can be expanded to multiple.
+2. The current polishing process, assuming that the product has been installed in the end of the robot fixture, if the future to do the automatic folder products, and then further expaned.
+3. Assume that there is only one robot and one product in the workshop.-->
+    <robot name="polishingrobot" type="motoman_mh5f">
+      <origin xyz="0 0 0.01" rpy="0 0 0"/>
+      <filename>package://cobot_description/description/workshop/polish_workshop.urdf.xacro</filename>
+    </robot>
+    <polisher id="1" type="Band">
+      <origin xyz="0.56 0.0 0.343" rpy="${-pi/2-11*pi/180} 0 ${pi/2}"/>
+      <!--<origin xyz="0.56 0.0 0.42" rpy="${-pi/2-11*pi/180} 0 ${pi/2}"/>-->
+    </polisher>
+    <polisher id="2" type="Band">
+      <origin xyz="0.56 0.0 0.42" rpy="${pi-11*pi/180} 0 ${pi/2}"/>
+    </polisher>
+    <polisher id="3" type="Band">
+      <origin xyz="0.56 0.0 0.42" rpy="${-pi+11*pi/180} 0 ${-pi/2}"/>
+    </polisher>
+  </workshop>
+  <product name="phone shell">
+    <!--The Product descripthon includes the following information:
+1. Geometric model of the product to be polished;
+2. The material of the product to be polished;
+3. Polishing Path including force and speed information.
+
+The validity of the polishing path is guaranteed by the polishing task generation tool, or be checked by the polishing task parser.
+validity stardard include:
+1. The polishing path must be on the product surface.
+2. The polisher must be able to contact effectively with the product. an invalid example such as: polished product surface is smaller and deeper grooves, but the polishing is only a wide-band 	form, and this may not be able to polish.-->
+    <!--<origin xyz="0.0 0.0 0.077" rpy="${-pi/2} 0.0 0.0"/>-->
+    <geometry>
+      <mesh filename="/description/product/visual/fixed_shell.stl"/>
+    </geometry>
+    <material name="steel"/>
+    <polishingpath>
+      <!--Polishingpath describes a complete polishing path using basic path list.
+there are two main types of basic path: space line segment(LINE) and space arc segment(ARC). They are mainly determined by startpoint, endpoint, direction vector.
+The space line segment is uniquely determined by the start and end points.
+The space arc segment is uniquely determined by the direction vector of the start and end points and the tangent vector at the start point.
+
+The basic path describes the information as follows:
+1.polisherid: the ID of polisher participated;
+2.curve_type: path curve type
+3.startpoint: start point
+4.endpoint: end point
+5.direction: direction vector
+6.force: the contact force at start and end point. The force in the entire path linearly changes from start point force to end point force.
+	If the contact force at start and end point are equal, it means that constant force control is to be performed.
+	At present, we only consider the situation of constant force control on basic path, the future can also be expanded.
+7.speed: the speed at start and end point. The speed in the entire path linearly changes from start point speed to end point speed.
+	If the speed at the start point and end point are equal, it means that constant speed control is to be performed.
+	At present, we only consider the situation of constant speed control on basic path, the future can also be expanded.-->
+      <path>
+        <polishing_id>1</polishing_id>
+        <curve_type>LINE</curve_type>
+        <startpoint>0.0 0.0 0.03</startpoint>
+        <endpoint>  0.0 0.0 -0.03</endpoint>
+        <direction>0.0 0.0 -1.0</direction>
+        <force>2 2</force>
+      </path>
+      <path>
+        <polishing_id>1</polishing_id>
+        <curve_type>LINE</curve_type>
+        <startpoint>0.0 0.0 -0.03</startpoint>
+        <endpoint>  0.0 0.0 0.03</endpoint>
+        <direction>0.0 0.0 1.0</direction>
+        <force>2 2</force>
+      </path>
+      <path>
+        <polishing_id>1</polishing_id>
+        <curve_type>LINE</curve_type>
+        <startpoint>0.0 0.0 0.03</startpoint>
+        <endpoint>  0.0 0.0 -0.03</endpoint>
+        <direction>0.0 0.0 -1.0</direction>
+        <force>2 2</force>
+      </path>
+      <path>
+        <polishing_id>1</polishing_id>
+        <curve_type>LINE</curve_type>
+        <startpoint>0.0 0.0 -0.03</startpoint>
+        <endpoint>  0.0 0.0 0.03</endpoint>
+        <direction>0.0 0.0 1.0</direction>
+        <force>2 2</force>
+      </path>
+      <path>
+        <polishing_id>1</polishing_id>
+        <curve_type>LINE</curve_type>
+        <startpoint>0.0 0.0 0.03</startpoint>
+        <endpoint>  0.0 0.0 -0.03</endpoint>
+        <direction>0.0 0.0 -1.0</direction>
+        <force>2 2</force>
+      </path>
+      <path>
+        <polishing_id>1</polishing_id>
+        <curve_type>LINE</curve_type>
+        <startpoint>0.0 0.0 -0.03</startpoint>
+        <endpoint>  0.0 0.0 0.03</endpoint>
+        <direction>0.0 0.0 1.0</direction>
+        <force>2 2</force>
+      </path>
+      <path>
+        <polishing_id>1</polishing_id>
+        <curve_type>LINE</curve_type>
+        <startpoint>0.0 0.0 0.03</startpoint>
+        <endpoint>  0.0 0.0 -0.03</endpoint>
+        <direction>0.0 0.0 -1.0</direction>
+        <force>2 2</force>
+      </path>
+      <path>
+        <polishing_id>1</polishing_id>
+        <curve_type>LINE</curve_type>
+        <startpoint>0.0 0.0 -0.03</startpoint>
+        <endpoint>  0.0 0.0 0.03</endpoint>
+        <direction>0.0 0.0 1.0</direction>
+        <force>2 2</force>
+      </path>
+      <path>
+        <polishing_id>1</polishing_id>
+        <curve_type>LINE</curve_type>
+        <startpoint>0.0 0.0 0.03</startpoint>
+        <endpoint>  0.0 0.0 -0.03</endpoint>
+        <direction>0.0 0.0 -1.0</direction>
+        <force>2 2</force>
+      </path>
+      <path>
+        <polishing_id>1</polishing_id>
+        <curve_type>LINE</curve_type>
+        <startpoint>0.0 0.0 -0.03</startpoint>
+        <endpoint>  0.0 0.0 0.03</endpoint>
+        <direction>0.0 0.0 1.0</direction>
+        <force>2 2</force>
+      </path>
+      <path>
+        <polishing_id>1</polishing_id>
+        <curve_type>LINE</curve_type>
+        <startpoint>0.0 0.0 0.03</startpoint>
+        <endpoint>  0.0 0.0 -0.03</endpoint>
+        <direction>0.0 0.0 -1.0</direction>
+        <force>2 2</force>
+      </path>
+      <path>
+        <polishing_id>1</polishing_id>
+        <curve_type>LINE</curve_type>
+        <startpoint>0.0 0.0 -0.03</startpoint>
+        <endpoint>  0.0 0.0 0.03</endpoint>
+        <direction>0.0 0.0 1.0</direction>
+        <force>2 2</force>
+      </path>
+      <path>
+        <polishing_id>1</polishing_id>
+        <curve_type>LINE</curve_type>
+        <startpoint>0.0 0.0 0.03</startpoint>
+        <endpoint>  0.0 0.0 -0.03</endpoint>
+        <direction>0.0 0.0 -1.0</direction>
+        <force>2 2</force>
+      </path>
+      <path>
+        <polishing_id>1</polishing_id>
+        <curve_type>LINE</curve_type>
+        <startpoint>0.0 0.0 -0.03</startpoint>
+        <endpoint>  0.0 0.0 0.03</endpoint>
+        <direction>0.0 0.0 1.0</direction>
+        <force>2 2</force>
+      </path>
+      <path>
+        <polishing_id>1</polishing_id>
+        <curve_type>LINE</curve_type>
+        <startpoint>0.0 0.0 0.03</startpoint>
+        <endpoint>  0.0 0.0 -0.03</endpoint>
+        <direction>0.0 0.0 -1.0</direction>
+        <force>2 2</force>
+      </path>
+      <path>
+        <polishing_id>1</polishing_id>
+        <curve_type>LINE</curve_type>
+        <startpoint>0.0 0.0 -0.03</startpoint>
+        <endpoint>  0.0 0.0 0.03</endpoint>
+        <direction>0.0 0.0 1.0</direction>
+        <force>2 2</force>
+      </path>
+      <path>
+        <polishing_id>1</polishing_id>
+        <curve_type>LINE</curve_type>
+        <startpoint>0.0 0.0 0.03</startpoint>
+        <endpoint>  0.0 0.0 -0.03</endpoint>
+        <direction>0.0 0.0 -1.0</direction>
+        <force>2 2</force>
+      </path>
+      <path>
+        <polishing_id>1</polishing_id>
+        <curve_type>LINE</curve_type>
+        <startpoint>0.0 0.0 -0.03</startpoint>
+        <endpoint>  0.0 0.0 0.03</endpoint>
+        <direction>0.0 0.0 1.0</direction>
+        <force>2 2</force>
+      </path>
+      <path>
+        <polishing_id>1</polishing_id>
+        <curve_type>LINE</curve_type>
+        <startpoint>0.0 0.0 0.03</startpoint>
+        <endpoint>  0.0 0.0 -0.03</endpoint>
+        <direction>0.0 0.0 -1.0</direction>
+        <force>2 2</force>
+      </path>
+      <path>
+        <polishing_id>1</polishing_id>
+        <curve_type>LINE</curve_type>
+        <startpoint>0.0 0.0 -0.03</startpoint>
+        <endpoint>  0.0 0.0 0.03</endpoint>
+        <direction>0.0 0.0 1.0</direction>
+        <force>2 2</force>
+      </path>
+      <path>
+        <polishing_id>1</polishing_id>
+        <curve_type>LINE</curve_type>
+        <startpoint>0.0 0.0 0.03</startpoint>
+        <endpoint>  0.0 0.0 -0.03</endpoint>
+        <direction>0.0 0.0 -1.0</direction>
+        <force>2 2</force>
+      </path>
+      <path>
+        <polishing_id>1</polishing_id>
+        <curve_type>LINE</curve_type>
+        <startpoint>0.0 0.0 -0.03</startpoint>
+        <endpoint>  0.0 0.0 0.03</endpoint>
+        <direction>0.0 0.0 1.0</direction>
+        <force>2 2</force>
+      </path>
+      <path>
+        <polishing_id>1</polishing_id>
+        <curve_type>LINE</curve_type>
+        <startpoint>0.0 0.0 0.03</startpoint>
+        <endpoint>  0.0 0.0 -0.03</endpoint>
+        <direction>0.0 0.0 -1.0</direction>
+        <force>2 2</force>
+      </path>
+      <path>
+        <polishing_id>1</polishing_id>
+        <curve_type>LINE</curve_type>
+        <startpoint>0.0 0.0 -0.03</startpoint>
+        <endpoint>  0.0 0.0 0.03</endpoint>
+        <direction>0.0 0.0 1.0</direction>
+        <force>2 2</force>
+      </path>
+      <path>
+        <polishing_id>1</polishing_id>
+        <curve_type>LINE</curve_type>
+        <startpoint>0.0 0.0 0.03</startpoint>
+        <endpoint>  0.0 0.0 -0.03</endpoint>
+        <direction>0.0 0.0 -1.0</direction>
+        <force>2 2</force>
+      </path>
+      <path>
+        <polishing_id>1</polishing_id>
+        <curve_type>LINE</curve_type>
+        <startpoint>0.0 0.0 -0.03</startpoint>
+        <endpoint>  0.0 0.0 0.03</endpoint>
+        <direction>0.0 0.0 1.0</direction>
+        <force>2 2</force>
+      </path>
+      <path>
+        <polishing_id>1</polishing_id>
+        <curve_type>LINE</curve_type>
+        <startpoint>0.0 0.0 0.03</startpoint>
+        <endpoint>  0.0 0.0 -0.03</endpoint>
+        <direction>0.0 0.0 -1.0</direction>
+        <force>2 2</force>
+      </path>
+      <path>
+        <polishing_id>1</polishing_id>
+        <curve_type>LINE</curve_type>
+        <startpoint>0.0 0.0 -0.03</startpoint>
+        <endpoint>  0.0 0.0 0.03</endpoint>
+        <direction>0.0 0.0 1.0</direction>
+        <force>2 2</force>
+      </path>
+      <path>
+        <polishing_id>1</polishing_id>
+        <curve_type>LINE</curve_type>
+        <startpoint>0.0 0.0 0.03</startpoint>
+        <endpoint>  0.0 0.0 -0.03</endpoint>
+        <direction>0.0 0.0 -1.0</direction>
+        <force>2 2</force>
+      </path>
+      <path>
+        <polishing_id>1</polishing_id>
+        <curve_type>LINE</curve_type>
+        <startpoint>0.0 0.0 -0.03</startpoint>
+        <endpoint>  0.0 0.0 0.03</endpoint>
+        <direction>0.0 0.0 1.0</direction>
+        <force>2 2</force>
+      </path>
+      <path>
+        <polishing_id>1</polishing_id>
+        <curve_type>LINE</curve_type>
+        <startpoint>0.0 0.0 0.03</startpoint>
+        <endpoint>  0.0 0.0 -0.03</endpoint>
+        <direction>0.0 0.0 -1.0</direction>
+        <force>2 2</force>
+      </path>
+      <path>
+        <polishing_id>1</polishing_id>
+        <curve_type>LINE</curve_type>
+        <startpoint>0.0 0.0 -0.03</startpoint>
+        <endpoint>  0.0 0.0 0.03</endpoint>
+        <direction>0.0 0.0 1.0</direction>
+        <force>2 2</force>
+      </path>
+      <path>
+        <polishing_id>1</polishing_id>
+        <curve_type>LINE</curve_type>
+        <startpoint>0.0 0.0 0.03</startpoint>
+        <endpoint>  0.0 0.0 -0.03</endpoint>
+        <direction>0.0 0.0 -1.0</direction>
+        <force>2 2</force>
+      </path>
+      <path>
+        <polishing_id>1</polishing_id>
+        <curve_type>LINE</curve_type>
+        <startpoint>0.0 0.0 -0.03</startpoint>
+        <endpoint>  0.0 0.0 0.03</endpoint>
+        <direction>0.0 0.0 1.0</direction>
+        <force>2 2</force>
+      </path>
+      <path>
+        <polishing_id>1</polishing_id>
+        <curve_type>LINE</curve_type>
+        <startpoint>0.0 0.0 0.03</startpoint>
+        <endpoint>  0.0 0.0 -0.03</endpoint>
+        <direction>0.0 0.0 -1.0</direction>
+        <force>2 2</force>
+      </path>
+      <path>
+        <polishing_id>1</polishing_id>
+        <curve_type>LINE</curve_type>
+        <startpoint>0.0 0.0 -0.03</startpoint>
+        <endpoint>  0.0 0.0 0.03</endpoint>
+        <direction>0.0 0.0 1.0</direction>
+        <force>2 2</force>
+      </path>
+      <path>
+        <polishing_id>1</polishing_id>
+        <curve_type>LINE</curve_type>
+        <startpoint>0.0 0.0 0.03</startpoint>
+        <endpoint>  0.0 0.0 -0.03</endpoint>
+        <direction>0.0 0.0 -1.0</direction>
+        <force>2 2</force>
+      </path>
+      <path>
+        <polishing_id>1</polishing_id>
+        <curve_type>LINE</curve_type>
+        <startpoint>0.0 0.0 -0.03</startpoint>
+        <endpoint>  0.0 0.0 0.03</endpoint>
+        <direction>0.0 0.0 1.0</direction>
+        <force>2 2</force>
+      </path>
+      <path>
+      <polishing_id>1</polishing_id>
+      <curve_type>LINE</curve_type>
+      <startpoint>0.0 0.0 0.03</startpoint>
+      <endpoint>  0.0 0.0 -0.03</endpoint>
+      <direction>0.0 0.0 -1.0</direction>
+      <force>2 2</force>
+      </path>
+      <path>
+        <polishing_id>1</polishing_id>
+        <curve_type>LINE</curve_type>
+        <startpoint>0.0 0.0 -0.03</startpoint>
+        <endpoint>  0.0 0.0 0.03</endpoint>
+        <direction>0.0 0.0 1.0</direction>
+        <force>2 2</force>
+      </path>
+
+      <path>
+        <polishing_id>2</polishing_id>
+        <curve_type>ARC</curve_type>
+        <startpoint>0.0 0.0 -0.033</startpoint>
+        <endpoint>  0.0 0.0025 -0.03733</endpoint>
+        <direction>0.0 0.0 -1.0</direction>
+        <force>2 2</force>
+      </path>
+      <path>
+        <polishing_id>2</polishing_id>
+        <curve_type>ARC</curve_type>
+        <startpoint>0.0 0.0025 -0.03733</startpoint>
+        <endpoint>  0.0 0.0 -0.033</endpoint>
+        <direction>0.0 -0.866 0.5</direction>
+        <force>2 2</force>
+      </path>
+      <path>
+        <polishing_id>2</polishing_id>
+        <curve_type>ARC</curve_type>
+        <startpoint>0.0 0.0 -0.033</startpoint>
+        <endpoint>  0.0 0.0025 -0.03733</endpoint>
+        <direction>0.0 0.0 -1.0</direction>
+        <force>2 2</force>
+      </path>
+      <path>
+        <polishing_id>2</polishing_id>
+        <curve_type>ARC</curve_type>
+        <startpoint>0.0 0.0025 -0.03733</startpoint>
+        <endpoint>  0.0 0.0 -0.033</endpoint>
+        <direction>0.0 -0.866 0.5</direction>
+        <force>2 2</force>
+      </path>
+
+
+
+      <path>
+        <polishing_id>3</polishing_id>
+        <curve_type>ARC</curve_type>
+        <startpoint>0.0 0.0 0.033</startpoint>
+        <endpoint>  0.0 0.0025 0.03733</endpoint>
+        <direction>0.0 0.0 1.0</direction>
+        <force>2 2</force>
+      </path>
+      <path>
+        <polishing_id>3</polishing_id>
+        <curve_type>ARC</curve_type>
+        <startpoint>0.0 0.0025 0.03733</startpoint>
+        <endpoint>  0.0 0.0 0.033</endpoint>
+        <direction>0.0 -0.866 -0.5</direction>
+        <force>2 2</force>
+      </path>
+      <path>
+        <polishing_id>3</polishing_id>
+        <curve_type>ARC</curve_type>
+        <startpoint>0.0 0.0 0.033</startpoint>
+        <endpoint>  0.0 0.0025 0.03733</endpoint>
+        <direction>0.0 0.0 1.0</direction>
+        <force>2 2</force>
+      </path>
+      <path>
+        <polishing_id>3</polishing_id>
+        <curve_type>ARC</curve_type>
+        <startpoint>0.0 0.0025 0.03733</startpoint>
+        <endpoint>  0.0 0.0 0.033</endpoint>
+        <direction>0.0 -0.866 -0.5</direction>
+        <force>2 2</force>
+      </path>
+
+
+    </polishingpath>
+  </product>
+</polishingtask>
