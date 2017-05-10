@@ -20,7 +20,7 @@ int main(int argc, char** argv){
 
     globalObjectFactory.loadLibrarys();
 
-    pObject = globalObjectFactory.createObject("ForcePolishingController, Ver 1.0", "ForcePolishingController");
+    pObject = globalObjectFactory.createObject("ForcePolishingControllerFactory, Ver 1.0", "ForcePolishingController");
 
     auto pController = std::dynamic_pointer_cast<cobotsys::AbstractController>(pObject);
 

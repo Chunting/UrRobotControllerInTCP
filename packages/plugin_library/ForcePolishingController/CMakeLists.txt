@@ -18,6 +18,6 @@ file(GLOB ${PROJECT_NAME}_files src/*)
 
 add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_files} )
 
-target_link_libraries(${PROJECT_NAME} cobotsys Qt5::Xml Qt5::Qml)
+target_link_libraries(${PROJECT_NAME} cobotsys Qt5::Xml Qt5::Qml orocos-kdl)
 
 install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION plugins RUNTIME DESTINATION plugins)

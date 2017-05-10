@@ -1,7 +1,7 @@
 #ifndef POLISHINGTASK_H
 #define POLISHINGTASK_H
 
-#include <cobotsys_abstract_object.h>
+#include <cobotsys.h>
 #include <QJSEngine>
 #include <frames.hpp>
 
@@ -9,9 +9,6 @@
 #include <Eigen/Geometry>
 
 
-#ifndef COBOT_DEBUG
-    #define COBOT_DEBUG false
-#endif
 /**
  * \note PTD:Polishing Task Description
  * PolishingTask.ptd is a XML Document that file extension name is customized with ptd.
@@ -37,6 +34,13 @@ struct LineSegment_Type {
     Eigen::Vector3d endPoint;
     Eigen::Vector3d nominalDirection;
     double force;
+};
+
+struct Facet{
+    Eigen::Vector4f plane;
+    Eigen::Vector3f vertex1;
+    Eigen::Vector3f vertex2;
+    Eigen::Vector3f vertex3;
 };
 
 /** \brief a list of trajectory points.
@@ -136,22 +140,14 @@ struct Segment_Type {
 */
 
 
-class CPolishingTask {
+class PolishingTask {
 public:
-    CPolishingTask(double linePrecision = -1.0 ,double arcPrecision = -1.0);
-
     /** \param filename: ptd file path with file name.
      */
-    CPolishingTask(const std::string &fileName, double segmentPrecision = -1.0 ,double arcPrecision = -1.0);
+    PolishingTask(double segmentPrecision = -1.0 ,double arcPrecision = -1.0);
 
-    /** \brief parse Polishing Task Description (PTD) file.
-    \param segmentPrecision maximum length of polishing segment.
-    \return if parsed success, then return true, otherwise, return false.
-    \note it assume that ptd fils path is already recorded in m_ptdPath
-    */
-    bool parsePTD(double segmentPrecision = -1.0 ,double arcPrecision = -1.0);
 
-    /** \brief parse Polishing Task Description (PTD) file.
+    /** \brief parse Polishing Task Description (PTD) =file.
     \param ptdName ptd file full path name.
     \param segmentPrecision maximum length of polishing segment.
     \return if parsed success, then return true, otherwise, return false.
@@ -159,6 +155,8 @@ public:
     */
     bool parsePTD(const std::string &ptdName, double segmentPrecision = -1.0 ,double arcPrecision = -1.0);
 
+
+    void parseSTL(std::string model_path);
     /** \brief get Line segment list on the product parsed from polishing task
      * It should be called after parsePTD function is called.
     */
@@ -202,7 +200,6 @@ public:
     ArcFunction_Type arcParser(Eigen::Vector3d startPoint, Eigen::Vector3d endPoint, Eigen::Vector3d startTangentDirection);
 
 protected:
-
     /** \brief parse a data of Segment_Type type to a list of LineSegment_Type type and push parsed data to m_lineSegmentList
     */
     bool push2LineSegmentList(Segment_Type segment);
@@ -243,6 +240,7 @@ protected:
     bool verifyPTD();
 
 private:
+    std::vector<Facet> m_model_data;
     std::vector<PolishingSegment_Type> m_polishingSegments;
     std::vector<Trajectory_Type> m_cartesianTrajectory;// Under the EE Frame
     KDL::Frame m_RobotFrame;

@@ -3,39 +3,15 @@
 #include <QtXml>
 
 using namespace Eigen;
-
-const std::string CPolishingTask::VERSION_STR="V1.04";
+using namespace KDL;
+const std::string PolishingTask::VERSION_STR="V1.04";
 /** \note v1.1: Added norminal vector information parser to the class.
  *
  */
 
-
-CPolishingTask::CPolishingTask(double linePrecision ,double arcPrecision) {
-    /**Setting polishing path discretization precision. line precision and arc precision should be separated.
-     * original m_segmentPrecision just kept. But it won't be used.
-     * the default value of linePrecision is -1,
-     * the default value of arcPrecision is -1,
-     * when the value less than zero, it means to automatically determine the two precision.
-     * Now this determine algorithm is simple, and it can extend to more intelligent.
-     */
-
-    if(linePrecision>0) {
-        m_segmentPrecision = linePrecision;
-        m_LinePrecision = linePrecision;
-    } else {
-        m_segmentPrecision =0.001;
-        m_LinePrecision =0.001;
-    }
-    if(arcPrecision>0) {
-        m_ArcPrecision = arcPrecision;
-    } else {
-        m_ArcPrecision =0.0001;
-    }
-}
-
-CPolishingTask::CPolishingTask(const std::string &ptdName, double linePrecision, double arcPrecision) {
+PolishingTask::PolishingTask(double linePrecision, double arcPrecision) {
     //save the ptd file path infomation.
-    m_ptdPath = QString(ptdName.c_str());
+
     if(linePrecision>0) {
         m_segmentPrecision = linePrecision;
         m_LinePrecision = linePrecision;
@@ -48,12 +24,10 @@ CPolishingTask::CPolishingTask(const std::string &ptdName, double linePrecision,
     } else {
         m_ArcPrecision =0.0001;
     }
+    m_model_data.clear();
 }
 
-bool CPolishingTask::parsePTD(double linePrecision, double arcPrecision) {
-    return parsePTD(m_ptdPath.toStdString(), linePrecision, arcPrecision);
-}
-bool CPolishingTask::parsePTD(const std::string &ptdName, double linePrecision, double arcPrecision) {
+bool PolishingTask::parsePTD(const std::string &ptdName, double linePrecision, double arcPrecision) {
     /** segmentPrecision<0 represent automatic calculate optimal segment precision.
      *  the main function to parse PTD file.
      */
@@ -112,20 +86,15 @@ bool CPolishingTask::parsePTD(const std::string &ptdName, double linePrecision, 
     //TODO m_productModelPath=ros::package::getPath("cobot_description");
     //TODO ROS_INFO("cobot_polishing_task: The path of cobot_description package is: %s.",m_productModelPath.data());
     m_productModelPath.append(productModelSubPath.toStdString());
+    COBOT_LOG.debug() << "m_productModelPath:" << QString::fromStdString(m_productModelPath);
 
-#if COBOT_DEBUG
-    qDebug() << "m_productModelPath:" << QString::fromStdString(m_productModelPath);
-#endif
     //m_origFrame = FrameParser(origin.attributeNode("xyz").nodeValue(), origin.attributeNode("rpy").nodeValue());
-#if COBOT_DEBUG
-    qDebug() << "m_origFrame: x = " << m_origFrame.p.x()
-             << " y = " << m_origFrame.p.y()
-             << " z = " << m_origFrame.p.z();
-#endif
+//    COBOT_LOG.debug()  << "m_origFrame: x = " << m_origFrame.p.x()
+//             << " y = " << m_origFrame.p.y()
+//             << " z = " << m_origFrame.p.z();
     QDomNodeList paths = product.firstChildElement("polishingpath").elementsByTagName("path");
-#if COBOT_DEBUG
-    qDebug() << "Paths size is:" << paths.size();
-#endif
+    COBOT_LOG.debug() << "Paths size is:" << paths.size();
+
     static const QStringList tokenList = QStringList() << "LINE" << "ARC";
 
     for (int i = 0; i < paths.size(); i++) {
@@ -133,37 +102,37 @@ bool CPolishingTask::parsePTD(const std::string &ptdName, double linePrecision, 
         QDomNode n = paths.item(i);
         int polishing_id = n.firstChildElement("polishing_id").text().toInt();
         segment.curveType = (Curve_Type) tokenList.indexOf(n.firstChildElement("curve_type").text());
-#if COBOT_DEBUG
-        qDebug() << "curvetype:" << segment.curveType
+
+        COBOT_LOG.debug() << "curvetype:" << segment.curveType
                  << "text" << n.firstChildElement("curve_type").text();
-#endif
+
         segment.startPoint = vectorParser(n.firstChildElement("startpoint").text());
-#if COBOT_DEBUG
-        qDebug() << "startPoint: x = " << segment.startPoint.x()
+
+        COBOT_LOG.debug() << "startPoint: x = " << segment.startPoint.x()
                  << " y = " << segment.startPoint.y()
                  << " z = " << segment.startPoint.z();
-#endif
+
         segment.endPoint = vectorParser(n.firstChildElement("endpoint").text());
-#if COBOT_DEBUG
-        qDebug() << "endPoint: x = " << segment.endPoint.x()
+
+        COBOT_LOG.debug() << "endPoint: x = " << segment.endPoint.x()
                  << " y = " << segment.endPoint.y()
                  << " z = " << segment.endPoint.z();
-#endif
+
         segment.startTangentDirection = vectorParser(n.firstChildElement("direction").text());
-#if COBOT_DEBUG
-        qDebug() << "startTangentDirection: x = " << segment.startTangentDirection.x()
+
+        COBOT_LOG.debug() << "startTangentDirection: x = " << segment.startTangentDirection.x()
                  << " y = " << segment.startTangentDirection.y()
                  << " z = " << segment.startTangentDirection.z();
-#endif
+
         std::vector<double> fc = getNumList(n.firstChildElement("force").text());
         if (fc.size() == 2) {
             segment.startForce = fc[0];
             segment.endForce = fc[1];
         }
-#if COBOT_DEBUG
-        qDebug() << "startForce = " << segment.startForce
+
+        COBOT_LOG.debug() << "startForce = " << segment.startForce
                  << "endForce = " << segment.endForce;
-#endif
+
         push2LineSegmentList(segment);
     }
     updateNorminalDirction();
@@ -171,7 +140,7 @@ bool CPolishingTask::parsePTD(const std::string &ptdName, double linePrecision, 
     return verifyPTD();
 }
 
-bool CPolishingTask::updateTrajectory(){
+bool PolishingTask::updateTrajectory(){
     /**
      * Update Trajecetory to ee frame.
      */
@@ -187,7 +156,7 @@ bool CPolishingTask::updateTrajectory(){
     return true;
 }
 
-KDL::Frame CPolishingTask::FrameParser(Eigen::Vector3d point,Eigen::Vector3d axis){
+KDL::Frame PolishingTask::FrameParser(Eigen::Vector3d point,Eigen::Vector3d axis){
     //Calculate rotation axis
     Eigen::Vector3d y_axis=Eigen::Vector3d(0,1,0);
     Eigen::Vector3d rot_axis;
@@ -208,93 +177,48 @@ KDL::Frame CPolishingTask::FrameParser(Eigen::Vector3d point,Eigen::Vector3d axi
     KDL::Vector vec(point.x(),point.y(),point.z());
     return KDL::Frame(KDL::Rotation::Rot(rotAxis,angle),vec);
 }
-bool CPolishingTask::updateNorminalDirction() {
-
-    /**\brief access and load product model file.
-     */
-
-////    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
-////
-////    pcl::PolygonMesh mesh;
-////
-////    if (pcl::io::loadPolygonFileSTL (m_productModelPath, mesh) == 0)
-////    {
-////        PCL_ERROR("Failed to load STL file\n");
-////        return false;
-////    }
-////
-////    /**\brief calculate norminal direction of each facet.
-////     */
-////    pcl::fromPCLPointCloud2(mesh.cloud, *cloud);
-////    std::cout << "Loaded " << cloud->size () << " data points from fixed_shell.stl" << std::endl;
-////    Eigen::Vector4f plane;
-////    std::vector<Eigen::Vector4f> planes;
-////    float curvature;
-////    pcl::Vertices indices;
-////    std::vector<int> indices_int(3);
-////    foreach(indices,mesh.polygons){
-////        copy(indices.vertices.begin(),indices.vertices.end(),indices_int.begin());
-////        pcl::computePointNormal(*cloud,indices_int,plane,curvature);
-////        planes.push_back(plane);
-//#if COBOT_DEBUG
-//            std::cout<<"plane: "<<endl<<plane<<endl<<"curvature: "<<curvature<<std::endl;
-//#endif
-//        }
-//
-//    Eigen::Vector3d middlePoint;
-//
-//    //Eigen::Hyperplane<double,3>::Through()
-//
-//    for(unsigned long k1=0;k1<m_polishingSegments.size();k1++){
-//        PolishingSegment_Type& polishing_segment=m_polishingSegments.at(k1);
-//        if(polishing_segment.curve_type==LINE){
-//            for (int k2 = 0; k2 < polishing_segment.data.size(); ++k2)
-//            {
-//                middlePoint=(polishing_segment.data.at(k2).startPoint+polishing_segment.data.at(k2).endPoint)/2;
-//                std::vector<double> distances;
-//                double minDistance=EPSILON;
-//                double distance=0;
-//                long minIndex=-1;
-//                for(unsigned long k=0;k<planes.size();k++){
-//                    plane=planes.at(k);
-//                    Eigen::Vector3d normVect(plane.coeff(0),plane.coeff(1),plane.coeff(2));
-//                    distance=(middlePoint.dot(normVect)+plane.coeff(3))/normVect.norm();
-//                    if(distance<0) distance=-distance;
-//                    if(distance<minDistance){
-//                        minDistance=distance;
-//                        minIndex=k;
-//                    }
-//                }
-//                if(minIndex>=0){
-//                    plane=planes.at(minIndex);
-//                    polishing_segment.data.at(k2).nominalDirection=Eigen::Vector3d(plane.coeff(0),plane.coeff(1),plane.coeff(2));
-////                ROS_INFO("Segment ID: %d; point ID: %d; norminal direction: (%f,%f,%f)"
-////                ,(int)k1,(int)k2,plane.coeff(0),plane.coeff(1),plane.coeff(2));
-//                }
-//            }
-//        }else if(polishing_segment.curve_type==ARC){
-//            //TODO add code for arc parser.
-//            //parser at push2LineSegmentList().
-//        }
-//        else{
-//            ROS_ERROR("Error: CPolishingTask::updateNorminalDirction()-Invalid curve type");
-//        }
-//    }
-
-    /** Compute the Least-Squares plane fit for a given set of points,
-     *  using their indices, and return the estimated plane parameters
-     *  together with the surface curvature.
-     *    template <typename PointT> inline void
-     *    computePointNormal (const pcl::PointCloud<PointT> &cloud, const std::vector<int> &indices,
-     *    Eigen::Vector4f &plane_parameters, float &curvature)
-     */
-    // Save output
-//    QString savepath =dir.absolutePath() + "/bun0-mls.pcd";
-//    pcl::io::savePCDFileASCII(savepath.toStdString(), *cloud);
-//    qDebug()<<path;
+bool PolishingTask::updateNorminalDirction() {
+    Eigen::Vector3d middlePoint;
+    for(unsigned long k1=0;k1<m_polishingSegments.size();k1++){
+        PolishingSegment_Type& polishing_segment=m_polishingSegments.at(k1);
+        if(polishing_segment.curve_type==LINE){
+            for (int k2 = 0; k2 < polishing_segment.data.size(); ++k2)
+            {
+                middlePoint=(polishing_segment.data.at(k2).startPoint+polishing_segment.data.at(k2).endPoint)/2;
+                std::vector<double> distances;
+                double minDistance=EPSILON;
+                double distance=0;
+                long minIndex=-1;
+                Eigen::Vector4f plane;
+                for(unsigned long k=0;k<m_model_data.size();k++){
+                    plane=m_model_data.at(k).plane;
+                    Eigen::Vector3d normVect(plane(0),plane(1),plane(2));
+                    distance=(middlePoint.dot(normVect)+plane(3))/normVect.norm();
+                    if(distance<0) distance=-distance;
+                    if(distance<minDistance){
+                        minDistance=distance;
+                        minIndex=k;
+                    }
+                }
+                if(minIndex>=0){
+                    plane=m_model_data.at(minIndex).plane;
+                    polishing_segment.data.at(k2).nominalDirection=Eigen::Vector3d(plane(0),plane(1),plane(2));
+//                COBOT_LOG.notice()<<"Segment ID: %d; point ID: %d; norminal direction: (%f,%f,%f)"
+//                ,(int)k1,(int)k2,plane(0),plane(1),plane(2);
+                }
+            }
+        }else if(polishing_segment.curve_type==ARC){
+            //TODO add code for arc parser.
+            //parser at push2LineSegmentList().
+        }
+        else{
+            COBOT_LOG.error()<<"Error: CPolishingTask::updateNorminalDirction()-Invalid curve type";
+            return false;
+        }
+    }
     return true;
 }
-bool CPolishingTask::push2LineSegmentList(Segment_Type segment) {
+bool PolishingTask::push2LineSegmentList(Segment_Type segment) {
     /**
      * divide a whole segment to a list of short line segment.
      */
@@ -385,18 +309,18 @@ bool CPolishingTask::push2LineSegmentList(Segment_Type segment) {
 
 }
 
-bool CPolishingTask::verifyPTD() {
+bool PolishingTask::verifyPTD() {
     /**
      * check if PTD can not execute right.(IK calulate error, unreasonable and so on...)
      */
     return true;
 }
 
-KDL::Frame CPolishingTask::FrameParser(const QString xyzString, const QString rpyString) {
+KDL::Frame PolishingTask::FrameParser(const QString xyzString, const QString rpyString) {
     /**
      * parse the frame from a xyzString and rpyString from ptd file.
      */
-    //qDebug()<<"xyzString: "<<xyzString<<"rpyString"<<rpyString;
+    //COBOT_LOG.debug()<<"xyzString: "<<xyzString<<"rpyString"<<rpyString;
     Eigen::Vector3d rpy = vectorParser(rpyString);
     Eigen::Vector3d vect = vectorParser(xyzString);
     KDL::Vector xyz(vect.x(), vect.y(), vect.z());
@@ -404,7 +328,7 @@ KDL::Frame CPolishingTask::FrameParser(const QString xyzString, const QString rp
     return KDL::Frame(KDL::Rotation::RPY(rpy.x(), rpy.y(), rpy.z()), xyz);
 }
 
-Eigen::Vector3d CPolishingTask::vectorParser(const QString vectorString) {
+Eigen::Vector3d PolishingTask::vectorParser(const QString vectorString) {
     /**
      * parse the vector from a string,like "0,0,1".
      * This support javascript expression.
@@ -414,30 +338,22 @@ Eigen::Vector3d CPolishingTask::vectorParser(const QString vectorString) {
     if (vect.size() == 3) {
         return Eigen::Vector3d(vect.at(0), vect.at(1), vect.at(2));
     } else {
-#if COBOT_DEBUG
-        qDebug() << "Parse " << vectorString << "error in CPolishingTask::vectorParser";
-#endif
+        COBOT_LOG.debug() << "Parse " << vectorString << "error in CPolishingTask::vectorParser";
         return Eigen::Vector3d();
     }
 }
 
-std::vector<double> CPolishingTask::getNumList(const QString vectorString) {
+std::vector<double> PolishingTask::getNumList(const QString vectorString) {
 
     //This funcion can add feature that eval the expression'value like:${pi/2}.
     std::vector<double> ls;
     QStringList strlist = vectorString.split(" ", QString::SkipEmptyParts);
-#if COBOT_DEBUG
-    qDebug() << vectorString;
-#endif
+    COBOT_LOG.debug() << vectorString;
         foreach(QString num, strlist) {
         if (num.left(2) == "${" && num.right(1) == "}") {
-#if COBOT_DEBUG
-            qDebug() << num;
-#endif
+            COBOT_LOG.debug() << num;
             num = num.mid(2, num.length() - 3);
-#if COBOT_DEBUG
-            qDebug() << num;
-#endif
+            COBOT_LOG.debug() << num;
             QJSValue exp_value = m_JSEngine.evaluate(num);
 
             if (exp_value.isNumber()) {
@@ -461,7 +377,7 @@ std::vector<double> CPolishingTask::getNumList(const QString vectorString) {
     return ls;
 }
 
-bool CPolishingTask::write2XML(std::string path) {
+bool PolishingTask::write2XML(std::string path) {
     /**
      * write the polishingSegments result to a xml document.
      *
@@ -492,7 +408,7 @@ bool CPolishingTask::write2XML(std::string path) {
 
     QFile outFile(QString::fromStdString(path));
     if (!outFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        qDebug("Failed to open file for writing.");
+        COBOT_LOG.debug()<<"Failed to open file for writing.";
         return false;
     }
 
@@ -505,7 +421,7 @@ bool CPolishingTask::write2XML(std::string path) {
 }
 
 
-ArcFunction_Type CPolishingTask::arcParser(Eigen::Vector3d startPoint, Eigen::Vector3d endPoint,
+ArcFunction_Type PolishingTask::arcParser(Eigen::Vector3d startPoint, Eigen::Vector3d endPoint,
                                            Eigen::Vector3d startTangentDirection) {
     /**Calculate Rotation
      * Process:
@@ -548,4 +464,59 @@ ArcFunction_Type CPolishingTask::arcParser(Eigen::Vector3d startPoint, Eigen::Ve
     //Direction need to test to fullfile the rotation direction.
 
     return result;
+}
+void PolishingTask::parseSTL(std::string model_path){
+    m_model_data.clear();
+    /*** \ref https://en.wikipedia.org/wiki/STL_(file_format)
+     *  UINT8[80] – Header
+     *  UINT32 – Number of triangles
+     *  foreach triangle
+     *  REAL32[3] – Normal vector
+     *  REAL32[3] – Vertex 1
+     *  REAL32[3] – Vertex 2
+     *  REAL32[3] – Vertex 3
+     *  UINT16 – Attribute byte count
+     *  end
+     */
+
+    QFile file(model_path.c_str());
+    file.open(QIODevice::ReadOnly);
+    file.seek(0);
+    QDataStream in(&file);    // read the data serialized from the file
+    if (in.status() != QDataStream::Ok ){
+        COBOT_LOG.error()<<(int)in.status();
+    }
+    in.setByteOrder(QDataStream::LittleEndian);
+    in.setFloatingPointPrecision(QDataStream::SinglePrecision);
+    quint32 ntriangles;
+    quint16 control_bytes;
+    Facet facet;
+    file.seek(80);
+    in >> ntriangles;
+    for (quint32 k = 0; k < ntriangles;k++) {
+        float dat[12];
+        for(int i=0;i<12;i++){
+            file.seek(84+k*50+i*4);
+            in >> dat[i];
+        }
+        file.seek(84+k*50+48);
+        in >> control_bytes;
+        //facet.normal<<dat[0],dat[1],dat[2];法相自己计算。
+        facet.vertex1<<dat[3],dat[4],dat[5];
+        facet.vertex2<<dat[6],dat[7],dat[8];
+        facet.vertex3<<dat[9],dat[10],dat[11];
+        //normal=(p3-p2)X(p1-p2)| d=-p1*normal;
+        Eigen::Vector3f dirct(facet.vertex3-facet.vertex2);
+        Eigen::Vector3f normVect(dirct.cross(facet.vertex1-facet.vertex2));
+        normVect.normalize();
+        float d=-facet.vertex1.dot(normVect);
+        facet.plane<<normVect,d;
+//        COBOT_LOG.debug()<<"facet ID: "<<k;
+//        COBOT_LOG.debug()<<"facet.plane: "<<facet.plane(0)<<","<<facet.plane(1)<<","<<facet.plane(2)<<","<<facet.plane(3);
+//        COBOT_LOG.debug()<<"facet.vertex1: "<<facet.vertex1(0)<<","<<facet.vertex1(1)<<","<<facet.vertex1(2);
+//        COBOT_LOG.debug()<<"facet.vertex2: "<<facet.vertex2(0)<<","<<facet.vertex2(1)<<","<<facet.vertex2(2);
+//        COBOT_LOG.debug()<<"facet.vertex3: "<<facet.vertex3(0)<<","<<facet.vertex3(1)<<","<<facet.vertex3(2);
+        m_model_data.push_back(facet);
+
+    }
 }

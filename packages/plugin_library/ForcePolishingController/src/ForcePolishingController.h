@@ -8,11 +8,12 @@
 
 
 #include "cobotsys_abstract_controller.h"
+#include "polishingtask.h"
 #include <QObject>
-
 using namespace cobotsys;
 class ForcePolishingController : public cobotsys::AbstractController {
 public:
+
 	ForcePolishingController();
     virtual ~ForcePolishingController();
 
@@ -24,6 +25,8 @@ public:
 protected:
 	std::string m_model_path;
 	std::string m_ptd_path;
+    PolishingTask m_polishingTask;
+
 };
 
 #endif //PROJECT_FORCE_POLISHING_CONTROLLER_H
