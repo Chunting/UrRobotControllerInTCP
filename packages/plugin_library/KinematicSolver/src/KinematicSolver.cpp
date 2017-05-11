@@ -271,17 +271,14 @@ bool KinematicSolver::setup(const QString& configFilePath) {
 		for (int i = 0; i < 3; i++) {
 			pt[i] = data.at(i).toDouble(0);
 		}
-		data = json["world_base"].toObject()["RPY"].toArray();
+		data = json["world_base"].toObject()["rpy"].toArray();
 		for (int i = 0; i < 3; i++) {
 			rpy[i] = data.at(i).toDouble(0);
 		}
 		KDL::Frame wb;
 		wb.p = KDL::Vector(pt[0],pt[1],pt[2]);
 		wb.M = KDL::Rotation::RPY(rpy[0], rpy[1], rpy[2]);
-		m_robot_chain.addSegment(Segment(Joint(Joint::None),
-			wb));	
-	//	m_robot_chain.addSegment(Segment(Joint(Joint::None),
-	//		Frame::DH(0.0, 0.0, 0, 0.0)));
+		m_robot_chain.addSegment(Segment(Joint(Joint::None), wb));
         foreach (const QJsonValue & value, json["param"].toArray()) {
             QJsonObject segmentObj = value.toObject();
 				double a = segmentObj["dh"].toObject()["a"].toDouble();
@@ -297,8 +294,18 @@ bool KinematicSolver::setup(const QString& configFilePath) {
 				jointLimits.velocity = segmentObj["limits"].toObject()["velocity"].toDouble();
 				m_robot_joint_limits.push_back(jointLimits);
         }
-		m_robot_chain.addSegment(Segment(Joint(Joint::None),
-            Frame::DH(0.0,0.0,0.01,-M_PI_2)));//to modify end frame.
+		data = json["ee_frame"].toObject()["xyz"].toArray();
+		for (int i = 0; i < 3; i++) {
+			pt[i] = data.at(i).toDouble(0);
+		}
+		data = json["ee_frame"].toObject()["rpy"].toArray();
+		for (int i = 0; i < 3; i++) {
+			rpy[i] = data.at(i).toDouble(0);
+		}
+		KDL::Frame ee;
+		ee.p = KDL::Vector(pt[0],pt[1],pt[2]);
+		ee.M = KDL::Rotation::RPY(rpy[0], rpy[1], rpy[2]);
+		m_robot_chain.addSegment(Segment(Joint(Joint::None), ee));
 		m_fk_solver=new KDL::ChainFkSolverPos_recursive(m_robot_chain);
 		m_ik_solver=new KDL::ChainIkSolverPos_LMA(m_robot_chain);
 

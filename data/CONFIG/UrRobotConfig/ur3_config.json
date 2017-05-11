@@ -11,7 +11,14 @@
   "step_angle": 1,
   "range_low": -30,
   "range_high": 30,
-
+  "world_base": {
+    "xyz":[0,0,0],
+    "rpy":[ 0,0,0]
+  },
+  "ee_frame": {
+    "xyz":[0,0,0],
+    "rpy":[0,0,0]
+  },
   "param": [
     {
       "dh": {

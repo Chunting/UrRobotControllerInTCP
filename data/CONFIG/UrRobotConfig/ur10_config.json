@@ -11,6 +11,14 @@
   "step_angle": 1,
   "range_low": -30,
   "range_high": 30,
+  "world_base": {
+    "xyz":[0,0,0],
+    "rpy":[ 0,0,0]
+  },
+  "ee_frame": {
+    "xyz":[0,0,0],
+    "rpy":[0,0,0]
+  },
   "param": [
     {
       "dh": {
@@ -91,6 +99,21 @@
       "dh": {
         "a": 0,
         "d": 0.0922,
+        "alpha": 0,
+        "theta": 0
+      },
+      "limits": {
+        "_comment": "lower:角度位置下限；upper：角度位置上限；effort：输出力矩上限；velocity：速度上限",
+        "lower": -6.283185307179586,
+        "upper": 6.283185307179586,
+        "effort": 54,
+        "velocity": 3.2
+      }
+    },
+    {
+      "dh": {
+        "a": 0,
+        "d": 0,
         "alpha": 0,
         "theta": 0
       },
