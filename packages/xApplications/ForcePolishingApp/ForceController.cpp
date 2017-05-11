@@ -3,9 +3,9 @@
 //
 // Code generated for Simulink model 'ForceController'.
 //
-// Model version                  : 1.205
+// Model version                  : 1.207
 // Simulink Coder version         : 8.12 (R2017a) 16-Feb-2017
-// C/C++ source code generated on : Thu May 11 12:06:56 2017
+// C/C++ source code generated on : Thu May 11 12:28:57 2017
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: 32-bit Generic
@@ -74,13 +74,12 @@ static void rate_scheduler(RT_MODEL_ForceController_T *const ForceController_M)
 }
 
 // Model step function
-void ForceControllerClass::step(const real_T fz_touch, real_T (&dis_offset)[6])
+void ForceControllerClass::step(const real_T fz_touch, real_T &dis_offset)
 {
   real_T rtb_FilterCoefficient;
   real_T rtb_RateLimiter;
   real_T rtb_Sum;
   real_T Sum3;
-  int32_T i;
 
   // Copy value for root inport '<Root>/Fz_touch' since it is accessed globally
   ForceController_U.Fz_touch = fz_touch;
@@ -149,11 +148,7 @@ void ForceControllerClass::step(const real_T fz_touch, real_T (&dis_offset)[6])
     // Outport: '<Root>/disOffset' incorporates:
     //   Gain: '<Root>/Gain'
 
-    for (i = 0; i < 6; i++) {
-      ForceController_Y.disOffset[i] = ForceController_P.Gain_Gain[i] * CV;
-    }
-
-    // End of Outport: '<Root>/disOffset'
+    ForceController_Y.disOffset = ForceController_P.Gain_Gain * CV;
 
     // Gain: '<S1>/Integral Gain'
     rtb_RateLimiter = PID_I * Sum3;
@@ -178,11 +173,7 @@ void ForceControllerClass::step(const real_T fz_touch, real_T (&dis_offset)[6])
   rate_scheduler((&ForceController_M));
 
   // Copy value for root outport '<Root>/disOffset' since it is accessed globally 
-  {
-    int32_T i;
-    for (i = 0; i < 6; i++)
-      dis_offset[i] = ForceController_Y.disOffset[i];
-  }
+  dis_offset = ForceController_Y.disOffset;
 }
 
 // Model initialize function
@@ -259,11 +250,9 @@ ForceControllerClass::ForceControllerClass()
     0.0,                               // Expression: 0
                                        //  Referenced by: '<Root>/Rate Limiter'
 
+    0.005                              // Expression: 0.005
+                                       //  Referenced by: '<Root>/Gain'
 
-    //  Expression: [0.0005,0.0005,0.0005,0.01,0.01,0.01]
-    //  Referenced by: '<Root>/Gain'
-
-    { 0.0005, 0.0005, 0.0005, 0.01, 0.01, 0.01 }
   };                                   // Modifiable parameters
 
   // Initialize tunable parameters

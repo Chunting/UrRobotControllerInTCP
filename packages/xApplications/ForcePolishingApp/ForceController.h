@@ -3,9 +3,9 @@
 //
 // Code generated for Simulink model 'ForceController'.
 //
-// Model version                  : 1.205
+// Model version                  : 1.207
 // Simulink Coder version         : 8.12 (R2017a) 16-Feb-2017
-// C/C++ source code generated on : Thu May 11 12:06:56 2017
+// C/C++ source code generated on : Thu May 11 12:28:57 2017
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: 32-bit Generic
@@ -46,7 +46,7 @@ typedef struct {
 
 // External outputs (root outports fed by signals with auto storage)
 typedef struct {
-  real_T disOffset[6];                 // '<Root>/disOffset'
+  real_T disOffset;                    // '<Root>/disOffset'
 } ExtY_ForceController_T;
 
 // Parameters (auto storage)
@@ -78,7 +78,7 @@ struct P_ForceController_T_ {
   real_T RateLimiter_IC;               // Expression: 0
                                        //  Referenced by: '<Root>/Rate Limiter'
 
-  real_T Gain_Gain[6];                 // Expression: [0.0005,0.0005,0.0005,0.01,0.01,0.01]
+  real_T Gain_Gain;                    // Expression: 0.005
                                        //  Referenced by: '<Root>/Gain'
 
 };
@@ -175,7 +175,7 @@ class ForceControllerClass {
   void initialize();
 
   // model step function
-  void step(const real_T fz_touch, real_T (&dis_offset)[6]);
+  void step(const real_T fz_touch, real_T &dis_offset);
 
   // model terminate function
   void terminate();
