@@ -11,6 +11,7 @@
 #include <cobotsys_logger.h>
 #include <extra2.h>
 #include "CobotUrRealTimeComm.h"
+#include "CobotUr.h"
 
 class CobotUrRealTimeCommCtrl : public QObject {
 Q_OBJECT
@@ -20,10 +21,14 @@ protected:
 public:
     CobotUrRealTimeComm* ur;
     std::shared_ptr<std::condition_variable> cond_msg;
+    std::shared_ptr<ref_num> ref_num_;
 public:
-    CobotUrRealTimeCommCtrl(std::shared_ptr<std::condition_variable>& msg,
+    CobotUrRealTimeCommCtrl(std::shared_ptr<ref_num>& refNum,
+                            std::shared_ptr<std::condition_variable>& msg,
                             const QString& hostIp, QObject* parent = nullptr)
             : QObject(parent) {
+        ref_num_ = refNum;
+        ref_num_->add_ref();
         cond_msg = msg;
         ur = new CobotUrRealTimeComm(*cond_msg.get(), hostIp);
         ur->moveToThread(&workerThread);
@@ -39,6 +44,7 @@ public:
         workerThread.quit();
         workerThread.wait();
         INFO_DESTRUCTOR(this);
+        ref_num_->dec_ref();
     }
 
     void startComm() {

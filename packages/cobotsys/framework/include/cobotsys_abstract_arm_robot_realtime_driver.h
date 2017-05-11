@@ -114,6 +114,8 @@ public:
      */
     virtual bool start() = 0;
 
+    virtual bool isStarted() const;
+
     /**
      * 停止实时机器人控制
      */

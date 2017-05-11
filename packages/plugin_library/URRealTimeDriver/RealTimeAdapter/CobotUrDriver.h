@@ -11,11 +11,14 @@
 #include <QTcpSocket>
 #include "CobotUrRealTimeCommCtrl.h"
 #include "CobotUrCommCtrl.h"
+#include "CobotUr.h"
 
 class CobotUrDriver : public QObject {
 Q_OBJECT
 public:
-    CobotUrDriver(std::shared_ptr<std::condition_variable>& msg,
+    CobotUrDriver(
+            std::shared_ptr<ref_num>& refNum,
+            std::shared_ptr<std::condition_variable>& msg,
             const QString& robotAddr, QObject* parent = nullptr);
     ~CobotUrDriver();
 
@@ -48,6 +51,8 @@ protected:
 
     bool uploadProg();
     void onConnectSuccess();
+
+    void delayUpload();
 protected:
     bool m_noDisconnectedAccept;
 

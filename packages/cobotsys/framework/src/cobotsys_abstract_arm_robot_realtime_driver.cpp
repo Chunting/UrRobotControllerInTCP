@@ -19,6 +19,11 @@ bool AbstractArmRobotRealTimeDriver::setTargetJointFilter(const std::shared_ptr<
     return false;
 }
 
+bool AbstractArmRobotRealTimeDriver::isStarted() const {
+    COBOT_LOG.warning("CORE") << "implement plugin not finished!";
+    return false;
+}
+
 ArmRobotRealTimeStatusObserver::ArmRobotRealTimeStatusObserver() {
 }
 

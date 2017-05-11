@@ -20,6 +20,8 @@ URRealTimeDriver::URRealTimeDriver() : QObject(nullptr) {
     m_digitOutput = std::make_shared<CobotUrDigitIoAdapter>();
     m_objectAlive = std::make_shared<bool>(true);
     m_urMessage = std::make_shared<std::condition_variable>();
+    m_numAlived = std::make_shared<ref_num>();
+    connect(this, &URRealTimeDriver::reqStart, this, &URRealTimeDriver::inrStartHandle);
 }
 
 URRealTimeDriver::~URRealTimeDriver() {
@@ -61,14 +63,9 @@ void URRealTimeDriver::attach(const std::shared_ptr<ArmRobotRealTimeStatusObserv
     }
 }
 
-bool URRealTimeDriver::start() {
-    std::lock_guard<std::mutex> lockGuard(m_mutex);
 
-    if (m_urDriver) {
-        COBOT_LOG.info() << "Already start, if want restart, stop first";
-        return false;
-    }
-    m_urDriver = new CobotUrDriver(m_urMessage, m_attr_robot_ip.c_str());
+void URRealTimeDriver::inrStartHandle() {
+    m_urDriver = new CobotUrDriver(m_numAlived, m_urMessage, m_attr_robot_ip.c_str());
     connect(m_urDriver, &CobotUrDriver::driverStartSuccess, this, &URRealTimeDriver::handleDriverReady);
     connect(m_urDriver, &CobotUrDriver::driverStartFailed, this, &URRealTimeDriver::handleDriverDisconnect);
     connect(m_urDriver, &CobotUrDriver::driverStopped, this, &URRealTimeDriver::handleDriverDisconnect);
@@ -83,6 +80,22 @@ bool URRealTimeDriver::start() {
     m_digitOutput->setUrRealTimeCtrl(m_urDriver->m_urRealTimeCommCtrl);
     m_digitInput->m_isInput = true;
     m_digitOutput->m_isOutput = true;
+}
+
+bool URRealTimeDriver::start() {
+    std::lock_guard<std::mutex> lockGuard(m_mutex);
+
+    if (!m_numAlived->isZero()) {
+        COBOT_LOG.info("UrDriver") << "Last stop not finished. " << m_numAlived->getValue();
+        return false;
+    }
+
+    if (m_urDriver) {
+        COBOT_LOG.info("UrDriver") << "Already start, if want restart, stop first";
+        return false;
+    }
+
+    Q_EMIT reqStart();
     return true;
 }
 
@@ -98,6 +111,7 @@ void URRealTimeDriver::stop() {
         m_urDriver = nullptr;
         m_digitInput->setUrRealTimeCtrl(nullptr);
         m_digitOutput->setUrRealTimeCtrl(nullptr);
+        COBOT_LOG.info("UrDriver") << "Driver Stopped.";
     }
 }
 
@@ -161,7 +175,7 @@ void URRealTimeDriver::robotStatusWatcher() {
         auto time_rdy = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double> time_diff = time_rdy - time_cur; // 时间间隙
         time_cur = time_rdy;
-        if (time_diff.count() > 0.012|| time_diff.count() < 0.006) {
+        if (time_diff.count() > 0.012 || time_diff.count() < 0.006) {
 //            COBOT_LOG.warning() << "Ur Status Updated Time Exception: " << time_diff.count();
         }
 
@@ -298,3 +312,8 @@ bool URRealTimeDriver::setTargetJointFilter(const std::shared_ptr<ArmRobotJointT
     m_jointTargetFilter = filter;
     return true;
 }
+
+bool URRealTimeDriver::isStarted() const {
+    return m_isStarted;
+}
+

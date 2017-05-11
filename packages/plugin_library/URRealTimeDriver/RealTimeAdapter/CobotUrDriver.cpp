@@ -5,12 +5,15 @@
 
 #include <cobotsys_file_finder.h>
 #include <fstream>
+#include <QtCore/QTimer>
 #include "CobotUrDriver.h"
 
-CobotUrDriver::CobotUrDriver(std::shared_ptr<std::condition_variable>& msg,
-                             const QString& robotAddr, QObject* parent) : QObject(parent) {
-    m_urCommCtrl = new CobotUrCommCtrl(robotAddr, this);
-    m_urRealTimeCommCtrl = new CobotUrRealTimeCommCtrl(msg, robotAddr, this);
+CobotUrDriver::CobotUrDriver(
+        std::shared_ptr<ref_num>& refNum,
+        std::shared_ptr<std::condition_variable>& msg,
+        const QString& robotAddr, QObject* parent) : QObject(parent) {
+    m_urCommCtrl = new CobotUrCommCtrl(refNum, robotAddr, this);
+    m_urRealTimeCommCtrl = new CobotUrRealTimeCommCtrl(refNum, msg, robotAddr, this);
 
     connect(m_urCommCtrl->ur, &CobotUrComm::connected, this, &CobotUrDriver::handleCommConnected);
     connect(m_urRealTimeCommCtrl->ur, &CobotUrRealTimeComm::connected, this, &CobotUrDriver::handleRTCommConnected);
@@ -251,11 +254,27 @@ void CobotUrDriver::setServojGain(double g) {
 void CobotUrDriver::onConnectSuccess() {
     m_isConnected = true;
     ip_addr_ = m_urCommCtrl->ur->getLocalIp();
-    COBOT_LOG.notice() << "Local Ip: " << ip_addr_;
-    COBOT_LOG.notice() << "Version : " << m_urCommCtrl->ur->getRobotState()->getVersion();
+    COBOT_LOG.notice("UrSec") << "Local Ip: " << ip_addr_;
+    COBOT_LOG.notice("UrSec") << "Version : " << m_urCommCtrl->ur->getRobotState()->getVersion();
+    COBOT_LOG.notice("UrSec") << "RunState: " << std::boolalpha << m_urCommCtrl->ur->getRobotState()->isReady();
     m_urRealTimeCommCtrl->ur->getRobotState()->setVersion(m_urCommCtrl->ur->getRobotState()->getVersion());
-    uploadProg();
-    Q_EMIT driverStartSuccess();
+
+    delayUpload();
+}
+
+void CobotUrDriver::delayUpload() {
+    if (m_urCommCtrl == nullptr) return;
+    if (m_urCommCtrl->ur == nullptr) return;
+    if (m_urCommCtrl->ur->getRobotState()->isReady()) {
+        COBOT_LOG.notice("UrSEC") << "Mode    : " << (int) m_urCommCtrl->ur->getRobotState()->getRobotMode();
+        COBOT_LOG.notice("UrSEC") << "Prog    : " << std::boolalpha
+                                  << (int) m_urCommCtrl->ur->getRobotState()->isProgramRunning();
+        uploadProg();
+        Q_EMIT driverStartSuccess();
+    } else {
+        COBOT_LOG.warning("UrSEC") << "Ur Robot is not READY!!! Will try later.";
+        QTimer::singleShot(500, this, &CobotUrDriver::delayUpload);
+    }
 }
 
 void CobotUrDriver::handleRTProgConnect() {
@@ -273,3 +292,4 @@ void CobotUrDriver::servoj(const std::vector<double>& positions) {
         m_urRealTimeCommCtrl->ur->asyncServoj(positions);
     }
 }
+

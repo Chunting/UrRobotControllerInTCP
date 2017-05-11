@@ -10,7 +10,7 @@
 #include <cobotsys.h>
 
 CobotUrComm::CobotUrComm(std::condition_variable& cond_msg, QObject* parent)
-        : QObject(parent), m_msg_cond(cond_msg){
+        : QObject(parent), m_msg_cond(cond_msg) {
 
     m_robotState = std::make_shared<RobotState>(m_msg_cond);
 
@@ -25,12 +25,12 @@ CobotUrComm::CobotUrComm(std::condition_variable& cond_msg, QObject* parent)
             this, &CobotUrComm::onSocketError);
 }
 
-CobotUrComm::~CobotUrComm(){
+CobotUrComm::~CobotUrComm() {
     m_tcpSocket->close();
     INFO_DESTRUCTOR(this);
 }
 
-void CobotUrComm::start(){
+void CobotUrComm::start() {
     if (m_host.isEmpty()) return;
 
     COBOT_LOG.info() << "Acquire firmware version: Connecting...";
@@ -45,14 +45,14 @@ void CobotUrComm::start(){
     }
 }
 
-void CobotUrComm::setupHost(const QString& host){
+void CobotUrComm::setupHost(const QString& host) {
     m_host = host;
 }
 
-void CobotUrComm::stop(){
+void CobotUrComm::stop() {
 }
 
-void CobotUrComm::processData(){
+void CobotUrComm::processData() {
     auto ba = m_tcpSocket->read(2048);
     if (ba.size() > 0) {
         m_robotState->unpack((uint8_t*) ba.constData(), ba.size());
@@ -62,22 +62,22 @@ void CobotUrComm::processData(){
     }
 }
 
-void CobotUrComm::secConnectHandle(){
-    COBOT_LOG.info() << "Secondary interface: Got connection";
+void CobotUrComm::secConnectHandle() {
     localIp_ = m_tcpSocket->localAddress().toString().toStdString();
+    COBOT_LOG.info("UrDriverSec") << "Secondary interface: Got connection. IP: " << localIp_;
     Q_EMIT connected();
 }
 
-std::string CobotUrComm::getLocalIp(){
+std::string CobotUrComm::getLocalIp() {
     return localIp_;
 }
 
-void CobotUrComm::secDisconnectHandle(){
+void CobotUrComm::secDisconnectHandle() {
     COBOT_LOG.info() << "Secondary interface: disconnected";
     Q_EMIT disconnected();
 }
 
-void CobotUrComm::onSocketError(QAbstractSocket::SocketError socketError){
+void CobotUrComm::onSocketError(QAbstractSocket::SocketError socketError) {
     COBOT_LOG.error() << "CobotUrComm: " << m_tcpSocket->errorString();
     Q_EMIT connectFail();
 }

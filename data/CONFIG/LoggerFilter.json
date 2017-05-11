@@ -3,6 +3,7 @@
         "EnableFilter": true,
         "EnableGUIFilterMenu": true,
         "Name": [
+            "FontFinder",
             "MatMerger"
         ],
         "Type": [

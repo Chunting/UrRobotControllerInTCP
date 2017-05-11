@@ -14,6 +14,7 @@
 #include "CobotUrRealTimeCommCtrl.h"
 #include "CobotUrDriver.h"
 #include "CobotUrDigitIoAdapter.h"
+#include "CobotUr.h"
 
 using namespace cobotsys;
 
@@ -27,12 +28,21 @@ public:
     virtual std::shared_ptr<AbstractDigitIoDriver> getDigitIoDriver(int deviceId = 0);
     virtual void attach(const std::shared_ptr<ArmRobotRealTimeStatusObserver>& observer);
     virtual bool start();
+    virtual bool isStarted() const;
     virtual void stop();
     virtual bool setup(const QString& configFilePath);
     virtual QString getRobotUrl();
     virtual void clearAttachedObject();
     virtual std::vector<double> getRobotJointQ();
     virtual bool setTargetJointFilter(const std::shared_ptr<ArmRobotJointTargetFilter>& filter);
+
+
+Q_SIGNALS:
+    void reqStart();
+
+protected:
+    void inrStartHandle();
+
 protected:
     void robotStatusWatcher();
 
@@ -76,8 +86,9 @@ protected:
     std::shared_ptr<CobotUrDigitIoAdapter> m_digitOutput;
 
 
-
     std::shared_ptr<bool> m_objectAlive;
+
+    std::shared_ptr<ref_num> m_numAlived;
 };
 
 
