@@ -1,0 +1,309 @@
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>RTW Report - ForceController.cpp</title>
+<link rel="stylesheet" type="text/css" href="rtwreport.css"></link><script language="JavaScript" type="text/javascript" src="rtwreport_utils.js"></script>
+<SCRIPT type="text/javascript" language="JavaScript" src="slwebview.js"></SCRIPT>
+<SCRIPT type="text/javascript" language="JavaScript" src="id_mapping.js"></SCRIPT>
+<SCRIPT type="text/javascript" src="rtwannotate.js"></SCRIPT>
+</head>
+<body bgcolor="#eeeeee" onload="try {if (top) { if (top.rtwFileOnLoad) top.rtwFileOnLoad(window.document); else local_onload();}} catch(err) {};if (typeof rtwannotate === 'function') {rtwannotate('ForceController_cpp_cov.xml');}">
+<p>
+<table border="0" cellspacing="0" cellpadding="6" width="100%%" height="100%%"><tr><td width="100%%" valign="top" bgcolor="#ffffff">
+<h4>File: <a href="../ForceController.cpp" target="rtwreport_document_frame" id="linkToText_plain">ForceController.cpp</a></h4>
+<pre id="RTWcode">
+<span><a class="LN" name="1">    1   </a><span class="CT">//</span>
+</span><span><a class="LN" name="2">    2   </a><span class="CT">// File: ForceController.cpp</span>
+</span><span><a class="LN" name="3">    3   </a><span class="CT">//</span>
+</span><span><a class="LN" name="4">    4   </a><span class="CT">// Code generated for Simulink model 'ForceController'.</span>
+</span><span><a class="LN" name="5">    5   </a><span class="CT">//</span>
+</span><span><a class="LN" name="6">    6   </a><span class="CT">// Model version                  : 1.205</span>
+</span><span><a class="LN" name="7">    7   </a><span class="CT">// Simulink Coder version         : 8.12 (R2017a) 16-Feb-2017</span>
+</span><span><a class="LN" name="8">    8   </a><span class="CT">// C/C++ source code generated on : Thu May 11 12:06:56 2017</span>
+</span><span><a class="LN" name="9">    9   </a><span class="CT">//</span>
+</span><span><a class="LN" name="10">   10   </a><span class="CT">// Target selection: ert.tlc</span>
+</span><span><a class="LN" name="11">   11   </a><span class="CT">// Embedded hardware selection: 32-bit Generic</span>
+</span><span><a class="LN" name="12">   12   </a><span class="CT">// Code generation objectives: Unspecified</span>
+</span><span><a class="LN" name="13">   13   </a><span class="CT">// Validation result: Not run</span>
+</span><span><a class="LN" name="14">   14   </a><span class="CT">//</span>
+</span><span><a class="LN" name="15">   15   </a><font color="#992211">#</font><span class="PP">include</span> <font color="#992211">&quot;ForceController.h&quot;</font>
+</span><span><a class="LN" name="16">   16   </a>
+</span><span><a class="LN" name="17">   17   </a><span class="CT">// Exported block signals</span>
+</span><span><a class="LN" name="18">   18   </a><a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> <a name="var_force_filter">force_filter</a>;                   <span class="CT">// '<a href="matlab:coder.internal.code2model('ForceController:70')" name="code2model"><font color="#117755"><i>&lt;Root&gt;/2-order TF</i></font></a>'</span>
+</span><span><a class="LN" name="19">   19   </a><a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> <a name="var_CV">CV</a>;                             <span class="CT">// '<a href="matlab:coder.internal.code2model('ForceController:17')" name="code2model"><font color="#117755"><i>&lt;Root&gt;/Saturation</i></font></a>'</span>
+</span><span><a class="LN" name="20">   20   </a>
+</span><span><a class="LN" name="21">   21   </a><span class="CT">// Exported block parameters</span>
+</span><span><a class="LN" name="22">   22   </a><a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> <a name="var_PID_D">PID_D</a> = 0.0;                    <span class="CT">// Variable: D</span>
+</span><span><a class="LN" name="23">   23   </a>                                       <span class="CT">//  Referenced by: '<a href="matlab:coder.internal.code2model('ForceController:4:1684')" name="code2model"><font color="#117755"><i>&lt;S1&gt;/Derivative Gain</i></font></a>'</span>
+</span><span><a class="LN" name="24">   24   </a>
+</span><span><a class="LN" name="25">   25   </a><a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> <a name="var_PID_I">PID_I</a> = 1.0;                    <span class="CT">// Variable: I</span>
+</span><span><a class="LN" name="26">   26   </a>                                       <span class="CT">//  Referenced by: '<a href="matlab:coder.internal.code2model('ForceController:4:1683')" name="code2model"><font color="#117755"><i>&lt;S1&gt;/Integral Gain</i></font></a>'</span>
+</span><span><a class="LN" name="27">   27   </a>
+</span><span><a class="LN" name="28">   28   </a><a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> <a name="var_K_lamuda">K_lamuda</a> = 0.02;                <span class="CT">// Variable: K_lamuda</span>
+</span><span><a class="LN" name="29">   29   </a>                                       <span class="CT">//  Referenced by: '<a href="matlab:coder.internal.code2model('ForceController:74')" name="code2model"><font color="#117755"><i>&lt;Root&gt;/Gain1</i></font></a>'</span>
+</span><span><a class="LN" name="30">   30   </a>
+</span><span><a class="LN" name="31">   31   </a><a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> <a name="var_PID_N">PID_N</a> = 0.0;                    <span class="CT">// Variable: N</span>
+</span><span><a class="LN" name="32">   32   </a>                                       <span class="CT">//  Referenced by: '<a href="matlab:coder.internal.code2model('ForceController:4:1687')" name="code2model"><font color="#117755"><i>&lt;S1&gt;/Filter Coefficient</i></font></a>'</span>
+</span><span><a class="LN" name="33">   33   </a>
+</span><span><a class="LN" name="34">   34   </a><a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> <a name="var_PID_P">PID_P</a> = 10.0;                   <span class="CT">// Variable: P</span>
+</span><span><a class="LN" name="35">   35   </a>                                       <span class="CT">//  Referenced by: '<a href="matlab:coder.internal.code2model('ForceController:4:1682')" name="code2model"><font color="#117755"><i>&lt;S1&gt;/Proportional Gain</i></font></a>'</span>
+</span><span><a class="LN" name="36">   36   </a>
+</span><span><a class="LN" name="37">   37   </a><a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> <a name="var_dead_zone_end">dead_zone_end</a> = 1.0;            <span class="CT">// Variable: dead_zone_end</span>
+</span><span><a class="LN" name="38">   38   </a>                                       <span class="CT">//  Referenced by: '<a href="matlab:coder.internal.code2model('ForceController:16')" name="code2model"><font color="#117755"><i>&lt;Root&gt;/Dead Zone</i></font></a>'</span>
+</span><span><a class="LN" name="39">   39   </a>
+</span><span><a class="LN" name="40">   40   </a><a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> <a name="var_dead_zone_start">dead_zone_start</a> = -1.0;         <span class="CT">// Variable: dead_zone_start</span>
+</span><span><a class="LN" name="41">   41   </a>                                       <span class="CT">//  Referenced by: '<a href="matlab:coder.internal.code2model('ForceController:16')" name="code2model"><font color="#117755"><i>&lt;Root&gt;/Dead Zone</i></font></a>'</span>
+</span><span><a class="LN" name="42">   42   </a>
+</span><span><a class="LN" name="43">   43   </a><a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> <a name="var_filter_den">filter_den</a>[2] = <b>{</b> 1.0, -0.9 <b>}</b> ; <span class="CT">// Variable: filter_den</span>
+</span><span><a class="LN" name="44">   44   </a>                                       <span class="CT">//  Referenced by: '<a href="matlab:coder.internal.code2model('ForceController:70')" name="code2model"><font color="#117755"><i>&lt;Root&gt;/2-order TF</i></font></a>'</span>
+</span><span><a class="LN" name="45">   45   </a>
+</span><span><a class="LN" name="46">   46   </a>
+</span><span><a class="LN" name="47">   47   </a><a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> <a name="var_filter_num">filter_num</a>[2] = <b>{</b> 0.0, 0.1 <b>}</b> ;  <span class="CT">// Variable: filter_num</span>
+</span><span><a class="LN" name="48">   48   </a>                                       <span class="CT">//  Referenced by: '<a href="matlab:coder.internal.code2model('ForceController:70')" name="code2model"><font color="#117755"><i>&lt;Root&gt;/2-order TF</i></font></a>'</span>
+</span><span><a class="LN" name="49">   49   </a>
+</span><span><a class="LN" name="50">   50   </a>
+</span><span><a class="LN" name="51">   51   </a><a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> <a name="var_saturation_lower_limit">saturation_lower_limit</a> = -100.0;<span class="CT">// Variable: saturation_lower_limit</span>
+</span><span><a class="LN" name="52">   52   </a>                                       <span class="CT">//  Referenced by: '<a href="matlab:coder.internal.code2model('ForceController:17')" name="code2model"><font color="#117755"><i>&lt;Root&gt;/Saturation</i></font></a>'</span>
+</span><span><a class="LN" name="53">   53   </a>
+</span><span><a class="LN" name="54">   54   </a><a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> <a name="var_saturation_upper_limit">saturation_upper_limit</a> = 100.0; <span class="CT">// Variable: saturation_upper_limit</span>
+</span><span><a class="LN" name="55">   55   </a>                                       <span class="CT">//  Referenced by: '<a href="matlab:coder.internal.code2model('ForceController:17')" name="code2model"><font color="#117755"><i>&lt;Root&gt;/Saturation</i></font></a>'</span>
+</span><span><a class="LN" name="56">   56   </a>
+</span><span><a class="LN" name="57">   57   </a><span class="DT">static</span> <span class="DT">void</span> <a href="#fcn_rate_scheduler" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_rate_scheduler');" target="_self"><font color="#1122aa">rate_scheduler</font></a>(<a href="ForceController_h.html#type_RT_MODEL_ForceController_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_RT_MODEL_ForceController_T');" target="_self"><font color="#1122aa">RT_MODEL_ForceController_T</font></a> *<span class="DT">const</span> ForceController_M);
+</span><span><a class="LN" name="58">   58   </a>
+</span><span><a class="LN" name="59">   59   </a><span class="CT">//</span>
+</span><span><a class="LN" name="60">   60   </a><span class="CT">//   This function updates active task flag for each subrate.</span>
+</span><span><a class="LN" name="61">   61   </a><span class="CT">// The function is called at model base rate, hence the</span>
+</span><span><a class="LN" name="62">   62   </a><span class="CT">// generated code self-manages all its subrates.</span>
+</span><span><a class="LN" name="63">   63   </a><span class="CT">//</span>
+</span><span><a class="LN" name="64">   64   </a><span class="DT">static</span> <span class="DT">void</span> <a name="fcn_rate_scheduler">rate_scheduler</a>(<a href="ForceController_h.html#type_RT_MODEL_ForceController_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_RT_MODEL_ForceController_T');" target="_self"><font color="#1122aa">RT_MODEL_ForceController_T</font></a> *<span class="DT">const</span> ForceController_M)
+</span><span><a class="LN" name="65">   65   </a><b>{</b>
+</span><span><a class="LN" name="66">   66   </a>  <span class="CT">// Compute which subrates run during the next base time step.  Subrates</span>
+</span><span><a class="LN" name="67">   67   </a>  <span class="CT">//  are an integer multiple of the base rate counter.  Therefore, the subtask</span>
+</span><span><a class="LN" name="68">   68   </a>  <span class="CT">//  counter is reset when it reaches its limit (zero means run).</span>
+</span><span><a class="LN" name="69">   69   </a>
+</span><span><a class="LN" name="70">   70   </a>  (ForceController_M-&gt;Timing.TaskCounters.TID[1])++;
+</span><span><a class="LN" name="71">   71   </a>  <span class="KW">if</span> ((ForceController_M-&gt;Timing.TaskCounters.TID[1]) &gt; 3) <b>{</b><span class="CT">// Sample time: [0.008s, 0.0s] </span>
+</span><span><a class="LN" name="72">   72   </a>    ForceController_M-&gt;Timing.TaskCounters.TID[1] = 0;
+</span><span><a class="LN" name="73">   73   </a>  <b>}</b>
+</span><span><a class="LN" name="74">   74   </a><b>}</b>
+</span><span><a class="LN" name="75">   75   </a>
+</span><span><a class="LN" name="76">   76   </a><span class="CT">// Model step function</span>
+</span><span><a class="LN" name="77">   77   </a><span class="DT">void</span> ForceControllerClass::<a name="fcn_step">step</a>(<span class="DT">const</span> <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> fz_touch, <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> (&amp;dis_offset)[6])
+</span><span><a class="LN" name="78">   78   </a><b>{</b>
+</span><span><a class="LN" name="79">   79   </a>  <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_FilterCoefficient;
+</span><span><a class="LN" name="80">   80   </a>  <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_RateLimiter;
+</span><span><a class="LN" name="81">   81   </a>  <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> rtb_Sum;
+</span><span><a class="LN" name="82">   82   </a>  <a href="rtwtypes_h.html#type_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_real_T');" target="_self"><font color="#1122aa">real_T</font></a> Sum3;
+</span><span><a class="LN" name="83">   83   </a>  <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> i;
+</span><span><a class="LN" name="84">   84   </a>
+</span><span><a class="LN" name="85">   85   </a>  <span class="CT">// Copy value for root inport '<a href="matlab:coder.internal.code2model('ForceController:40')" name="code2model"><font color="#117755"><i>&lt;Root&gt;/Fz_touch</i></font></a>' since it is accessed globally</span>
+</span><span><a class="LN" name="86">   86   </a>  ForceController_U.Fz_touch = fz_touch;
+</span><span><a class="LN" name="87">   87   </a>
+</span><span><a class="LN" name="88">   88   </a>  <span class="CT">// DiscreteTransferFcn: '<a href="matlab:coder.internal.code2model('ForceController:70')" name="code2model"><font color="#117755"><i>&lt;Root&gt;/2-order TF</i></font></a>'</span>
+</span><span><a class="LN" name="89">   89   </a>  <a href="#var_force_filter" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_force_filter');" target="_self"><font color="#1122aa">force_filter</font></a> = <a href="#var_filter_num" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_filter_num');" target="_self"><font color="#1122aa">filter_num</font></a>[1] * ForceController_DW.uorderTF_states;
+</span><span><a class="LN" name="90">   90   </a>
+</span><span><a class="LN" name="91">   91   </a>  <span class="CT">// DeadZone: '<a href="matlab:coder.internal.code2model('ForceController:16')" name="code2model"><font color="#117755"><i>&lt;Root&gt;/Dead Zone</i></font></a>'</span>
+</span><span><a class="LN" name="92">   92   </a>  <span class="KW">if</span> (<a href="#var_force_filter" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_force_filter');" target="_self"><font color="#1122aa">force_filter</font></a> &gt; <a href="#var_dead_zone_end" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_dead_zone_end');" target="_self"><font color="#1122aa">dead_zone_end</font></a>) <b>{</b>
+</span><span><a class="LN" name="93">   93   </a>    Sum3 = <a href="#var_force_filter" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_force_filter');" target="_self"><font color="#1122aa">force_filter</font></a> - <a href="#var_dead_zone_end" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_dead_zone_end');" target="_self"><font color="#1122aa">dead_zone_end</font></a>;
+</span><span><a class="LN" name="94">   94   </a>  <b>}</b> <span class="KW">else</span> <span class="KW">if</span> (<a href="#var_force_filter" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_force_filter');" target="_self"><font color="#1122aa">force_filter</font></a> &gt;= <a href="#var_dead_zone_start" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_dead_zone_start');" target="_self"><font color="#1122aa">dead_zone_start</font></a>) <b>{</b>
+</span><span><a class="LN" name="95">   95   </a>    Sum3 = 0.0;
+</span><span><a class="LN" name="96">   96   </a>  <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="97">   97   </a>    Sum3 = <a href="#var_force_filter" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_force_filter');" target="_self"><font color="#1122aa">force_filter</font></a> - <a href="#var_dead_zone_start" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_dead_zone_start');" target="_self"><font color="#1122aa">dead_zone_start</font></a>;
+</span><span><a class="LN" name="98">   98   </a>  <b>}</b>
+</span><span><a class="LN" name="99">   99   </a>
+</span><span><a class="LN" name="100">  100   </a>  <span class="CT">// End of DeadZone: '<a href="matlab:coder.internal.code2model('ForceController:16')" name="code2model"><font color="#117755"><i>&lt;Root&gt;/Dead Zone</i></font></a>'</span>
+</span><span><a class="LN" name="101">  101   </a>
+</span><span><a class="LN" name="102">  102   </a>  <span class="CT">// Sum: '<a href="matlab:coder.internal.code2model('ForceController:81')" name="code2model"><font color="#117755"><i>&lt;Root&gt;/Sum3</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="103">  103   </a>  <span class="CT">//   Memory: '<a href="matlab:coder.internal.code2model('ForceController:83')" name="code2model"><font color="#117755"><i>&lt;Root&gt;/Memory</i></font></a>'</span>
+</span><span><a class="LN" name="104">  104   </a>
+</span><span><a class="LN" name="105">  105   </a>  Sum3 -= ForceController_B.Gain1;
+</span><span><a class="LN" name="106">  106   </a>  <span class="KW">if</span> ((&amp;ForceController_M)-&gt;Timing.TaskCounters.TID[1] == 0) <b>{</b>
+</span><span><a class="LN" name="107">  107   </a>    <span class="CT">// Gain: '<a href="matlab:coder.internal.code2model('ForceController:4:1687')" name="code2model"><font color="#117755"><i>&lt;S1&gt;/Filter Coefficient</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="108">  108   </a>    <span class="CT">//   DiscreteIntegrator: '<a href="matlab:coder.internal.code2model('ForceController:4:1686')" name="code2model"><font color="#117755"><i>&lt;S1&gt;/Filter</i></font></a>'</span>
+</span><span><a class="LN" name="109">  109   </a>    <span class="CT">//   Gain: '<a href="matlab:coder.internal.code2model('ForceController:4:1684')" name="code2model"><font color="#117755"><i>&lt;S1&gt;/Derivative Gain</i></font></a>'</span>
+</span><span><a class="LN" name="110">  110   </a>    <span class="CT">//   Sum: '<a href="matlab:coder.internal.code2model('ForceController:4:1688')" name="code2model"><font color="#117755"><i>&lt;S1&gt;/SumD</i></font></a>'</span>
+</span><span><a class="LN" name="111">  111   </a>
+</span><span><a class="LN" name="112">  112   </a>    rtb_FilterCoefficient = (<a href="#var_PID_D" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_PID_D');" target="_self"><font color="#1122aa">PID_D</font></a> * Sum3 - ForceController_DW.Filter_DSTATE) *
+</span><span><a class="LN" name="113">  113   </a>      <a href="#var_PID_N" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_PID_N');" target="_self"><font color="#1122aa">PID_N</font></a>;
+</span><span><a class="LN" name="114">  114   </a>
+</span><span><a class="LN" name="115">  115   </a>    <span class="CT">// Sum: '<a href="matlab:coder.internal.code2model('ForceController:4:1681')" name="code2model"><font color="#117755"><i>&lt;S1&gt;/Sum</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="116">  116   </a>    <span class="CT">//   DiscreteIntegrator: '<a href="matlab:coder.internal.code2model('ForceController:4:1685')" name="code2model"><font color="#117755"><i>&lt;S1&gt;/Integrator</i></font></a>'</span>
+</span><span><a class="LN" name="117">  117   </a>    <span class="CT">//   Gain: '<a href="matlab:coder.internal.code2model('ForceController:4:1682')" name="code2model"><font color="#117755"><i>&lt;S1&gt;/Proportional Gain</i></font></a>'</span>
+</span><span><a class="LN" name="118">  118   </a>
+</span><span><a class="LN" name="119">  119   </a>    rtb_Sum = (<a href="#var_PID_P" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_PID_P');" target="_self"><font color="#1122aa">PID_P</font></a> * Sum3 + ForceController_DW.Integrator_DSTATE) +
+</span><span><a class="LN" name="120">  120   </a>      rtb_FilterCoefficient;
+</span><span><a class="LN" name="121">  121   </a>
+</span><span><a class="LN" name="122">  122   </a>    <span class="CT">// RateLimiter: '<a href="matlab:coder.internal.code2model('ForceController:55')" name="code2model"><font color="#117755"><i>&lt;Root&gt;/Rate Limiter</i></font></a>'</span>
+</span><span><a class="LN" name="123">  123   </a>    rtb_RateLimiter = rtb_Sum - ForceController_DW.PrevY;
+</span><span><a class="LN" name="124">  124   </a>    <span class="KW">if</span> (rtb_RateLimiter &gt; <a href="ForceController_h.html#var_ForceController_P" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_ForceController_P');" target="_self"><font color="#1122aa">ForceController_P</font></a>.RateLimiter_RisingLim) <b>{</b>
+</span><span><a class="LN" name="125">  125   </a>      rtb_RateLimiter = ForceController_DW.PrevY +
+</span><span><a class="LN" name="126">  126   </a>        <a href="ForceController_h.html#var_ForceController_P" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_ForceController_P');" target="_self"><font color="#1122aa">ForceController_P</font></a>.RateLimiter_RisingLim;
+</span><span><a class="LN" name="127">  127   </a>    <b>}</b> <span class="KW">else</span> <span class="KW">if</span> (rtb_RateLimiter &lt; <a href="ForceController_h.html#var_ForceController_P" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_ForceController_P');" target="_self"><font color="#1122aa">ForceController_P</font></a>.RateLimiter_FallingLim) <b>{</b>
+</span><span><a class="LN" name="128">  128   </a>      rtb_RateLimiter = ForceController_DW.PrevY +
+</span><span><a class="LN" name="129">  129   </a>        <a href="ForceController_h.html#var_ForceController_P" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_ForceController_P');" target="_self"><font color="#1122aa">ForceController_P</font></a>.RateLimiter_FallingLim;
+</span><span><a class="LN" name="130">  130   </a>    <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="131">  131   </a>      rtb_RateLimiter = rtb_Sum;
+</span><span><a class="LN" name="132">  132   </a>    <b>}</b>
+</span><span><a class="LN" name="133">  133   </a>
+</span><span><a class="LN" name="134">  134   </a>    ForceController_DW.PrevY = rtb_RateLimiter;
+</span><span><a class="LN" name="135">  135   </a>
+</span><span><a class="LN" name="136">  136   </a>    <span class="CT">// End of RateLimiter: '<a href="matlab:coder.internal.code2model('ForceController:55')" name="code2model"><font color="#117755"><i>&lt;Root&gt;/Rate Limiter</i></font></a>'</span>
+</span><span><a class="LN" name="137">  137   </a>
+</span><span><a class="LN" name="138">  138   </a>    <span class="CT">// Saturate: '<a href="matlab:coder.internal.code2model('ForceController:17')" name="code2model"><font color="#117755"><i>&lt;Root&gt;/Saturation</i></font></a>'</span>
+</span><span><a class="LN" name="139">  139   </a>    <span class="KW">if</span> (rtb_RateLimiter &gt; <a href="#var_saturation_upper_limit" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_saturation_upper_limit');" target="_self"><font color="#1122aa">saturation_upper_limit</font></a>) <b>{</b>
+</span><span><a class="LN" name="140">  140   </a>      <a href="#var_CV" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_CV');" target="_self"><font color="#1122aa">CV</font></a> = <a href="#var_saturation_upper_limit" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_saturation_upper_limit');" target="_self"><font color="#1122aa">saturation_upper_limit</font></a>;
+</span><span><a class="LN" name="141">  141   </a>    <b>}</b> <span class="KW">else</span> <span class="KW">if</span> (rtb_RateLimiter &lt; <a href="#var_saturation_lower_limit" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_saturation_lower_limit');" target="_self"><font color="#1122aa">saturation_lower_limit</font></a>) <b>{</b>
+</span><span><a class="LN" name="142">  142   </a>      <a href="#var_CV" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_CV');" target="_self"><font color="#1122aa">CV</font></a> = <a href="#var_saturation_lower_limit" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_saturation_lower_limit');" target="_self"><font color="#1122aa">saturation_lower_limit</font></a>;
+</span><span><a class="LN" name="143">  143   </a>    <b>}</b> <span class="KW">else</span> <b>{</b>
+</span><span><a class="LN" name="144">  144   </a>      <a href="#var_CV" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_CV');" target="_self"><font color="#1122aa">CV</font></a> = rtb_RateLimiter;
+</span><span><a class="LN" name="145">  145   </a>    <b>}</b>
+</span><span><a class="LN" name="146">  146   </a>
+</span><span><a class="LN" name="147">  147   </a>    <span class="CT">// End of Saturate: '<a href="matlab:coder.internal.code2model('ForceController:17')" name="code2model"><font color="#117755"><i>&lt;Root&gt;/Saturation</i></font></a>'</span>
+</span><span><a class="LN" name="148">  148   </a>
+</span><span><a class="LN" name="149">  149   </a>    <span class="CT">// Outport: '<a href="matlab:coder.internal.code2model('ForceController:42')" name="code2model"><font color="#117755"><i>&lt;Root&gt;/disOffset</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="150">  150   </a>    <span class="CT">//   Gain: '<a href="matlab:coder.internal.code2model('ForceController:54')" name="code2model"><font color="#117755"><i>&lt;Root&gt;/Gain</i></font></a>'</span>
+</span><span><a class="LN" name="151">  151   </a>
+</span><span><a class="LN" name="152">  152   </a>    <span class="KW">for</span> (i = 0; i &lt; 6; i++) <b>{</b>
+</span><span><a class="LN" name="153">  153   </a>      ForceController_Y.disOffset[i] = <a href="ForceController_h.html#var_ForceController_P" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_ForceController_P');" target="_self"><font color="#1122aa">ForceController_P</font></a>.Gain_Gain[i] * <a href="#var_CV" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_CV');" target="_self"><font color="#1122aa">CV</font></a>;
+</span><span><a class="LN" name="154">  154   </a>    <b>}</b>
+</span><span><a class="LN" name="155">  155   </a>
+</span><span><a class="LN" name="156">  156   </a>    <span class="CT">// End of Outport: '<a href="matlab:coder.internal.code2model('ForceController:42')" name="code2model"><font color="#117755"><i>&lt;Root&gt;/disOffset</i></font></a>'</span>
+</span><span><a class="LN" name="157">  157   </a>
+</span><span><a class="LN" name="158">  158   </a>    <span class="CT">// Gain: '<a href="matlab:coder.internal.code2model('ForceController:4:1683')" name="code2model"><font color="#117755"><i>&lt;S1&gt;/Integral Gain</i></font></a>'</span>
+</span><span><a class="LN" name="159">  159   </a>    rtb_RateLimiter = <a href="#var_PID_I" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_PID_I');" target="_self"><font color="#1122aa">PID_I</font></a> * Sum3;
+</span><span><a class="LN" name="160">  160   </a>
+</span><span><a class="LN" name="161">  161   </a>    <span class="CT">// Gain: '<a href="matlab:coder.internal.code2model('ForceController:74')" name="code2model"><font color="#117755"><i>&lt;Root&gt;/Gain1</i></font></a>'</span>
+</span><span><a class="LN" name="162">  162   </a>    ForceController_B.Gain1 = <a href="#var_K_lamuda" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_K_lamuda');" target="_self"><font color="#1122aa">K_lamuda</font></a> * rtb_Sum;
+</span><span><a class="LN" name="163">  163   </a>
+</span><span><a class="LN" name="164">  164   </a>    <span class="CT">// Update for DiscreteIntegrator: '<a href="matlab:coder.internal.code2model('ForceController:4:1685')" name="code2model"><font color="#117755"><i>&lt;S1&gt;/Integrator</i></font></a>'</span>
+</span><span><a class="LN" name="165">  165   </a>    ForceController_DW.Integrator_DSTATE += <a href="ForceController_h.html#var_ForceController_P" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_ForceController_P');" target="_self"><font color="#1122aa">ForceController_P</font></a>.Integrator_gainval
+</span><span><a class="LN" name="166">  166   </a>      * rtb_RateLimiter;
+</span><span><a class="LN" name="167">  167   </a>
+</span><span><a class="LN" name="168">  168   </a>    <span class="CT">// Update for DiscreteIntegrator: '<a href="matlab:coder.internal.code2model('ForceController:4:1686')" name="code2model"><font color="#117755"><i>&lt;S1&gt;/Filter</i></font></a>'</span>
+</span><span><a class="LN" name="169">  169   </a>    ForceController_DW.Filter_DSTATE += <a href="ForceController_h.html#var_ForceController_P" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_ForceController_P');" target="_self"><font color="#1122aa">ForceController_P</font></a>.Filter_gainval *
+</span><span><a class="LN" name="170">  170   </a>      rtb_FilterCoefficient;
+</span><span><a class="LN" name="171">  171   </a>  <b>}</b>
+</span><span><a class="LN" name="172">  172   </a>
+</span><span><a class="LN" name="173">  173   </a>  <span class="CT">// Update for DiscreteTransferFcn: '<a href="matlab:coder.internal.code2model('ForceController:70')" name="code2model"><font color="#117755"><i>&lt;Root&gt;/2-order TF</i></font></a>' incorporates:</span>
+</span><span><a class="LN" name="174">  174   </a>  <span class="CT">//   Update for Inport: '<a href="matlab:coder.internal.code2model('ForceController:40')" name="code2model"><font color="#117755"><i>&lt;Root&gt;/Fz_touch</i></font></a>'</span>
+</span><span><a class="LN" name="175">  175   </a>
+</span><span><a class="LN" name="176">  176   </a>  ForceController_DW.uorderTF_states = (ForceController_U.Fz_touch - <a href="#var_filter_den" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_filter_den');" target="_self"><font color="#1122aa">filter_den</font></a>
+</span><span><a class="LN" name="177">  177   </a>    [1] * ForceController_DW.uorderTF_states) / <a href="#var_filter_den" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_filter_den');" target="_self"><font color="#1122aa">filter_den</font></a>[0];
+</span><span><a class="LN" name="178">  178   </a>  <a href="#fcn_rate_scheduler" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_rate_scheduler');" target="_self"><font color="#1122aa">rate_scheduler</font></a>((&amp;ForceController_M));
+</span><span><a class="LN" name="179">  179   </a>
+</span><span><a class="LN" name="180">  180   </a>  <span class="CT">// Copy value for root outport '<a href="matlab:coder.internal.code2model('ForceController:42')" name="code2model"><font color="#117755"><i>&lt;Root&gt;/disOffset</i></font></a>' since it is accessed globally </span>
+</span><span><a class="LN" name="181">  181   </a>  <b>{</b>
+</span><span><a class="LN" name="182">  182   </a>    <a href="rtwtypes_h.html#type_int32_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_int32_T');" target="_self"><font color="#1122aa">int32_T</font></a> i;
+</span><span><a class="LN" name="183">  183   </a>    <span class="KW">for</span> (i = 0; i &lt; 6; i++)
+</span><span><a class="LN" name="184">  184   </a>      dis_offset[i] = ForceController_Y.disOffset[i];
+</span><span><a class="LN" name="185">  185   </a>  <b>}</b>
+</span><span><a class="LN" name="186">  186   </a><b>}</b>
+</span><span><a class="LN" name="187">  187   </a>
+</span><span><a class="LN" name="188">  188   </a><span class="CT">// Model initialize function</span>
+</span><span><a class="LN" name="189">  189   </a><span class="DT">void</span> ForceControllerClass::<a name="fcn_initialize">initialize</a>()
+</span><span><a class="LN" name="190">  190   </a><b>{</b>
+</span><span><a class="LN" name="191">  191   </a>  <span class="CT">// Registration code</span>
+</span><span><a class="LN" name="192">  192   </a>
+</span><span><a class="LN" name="193">  193   </a>  <span class="CT">// initialize real-time model</span>
+</span><span><a class="LN" name="194">  194   </a>  (<span class="DT">void</span>) memset((<span class="DT">void</span> *)(&amp;ForceController_M), 0,
+</span><span><a class="LN" name="195">  195   </a>                <span class="KW">sizeof</span>(<a href="ForceController_h.html#type_RT_MODEL_ForceController_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_RT_MODEL_ForceController_T');" target="_self"><font color="#1122aa">RT_MODEL_ForceController_T</font></a>));
+</span><span><a class="LN" name="196">  196   </a>
+</span><span><a class="LN" name="197">  197   </a>  <span class="CT">// block I/O</span>
+</span><span><a class="LN" name="198">  198   </a>  (<span class="DT">void</span>) memset(((<span class="DT">void</span> *) &amp;ForceController_B), 0,
+</span><span><a class="LN" name="199">  199   </a>                <span class="KW">sizeof</span>(<a href="ForceController_h.html#type_B_ForceController_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_B_ForceController_T');" target="_self"><font color="#1122aa">B_ForceController_T</font></a>));
+</span><span><a class="LN" name="200">  200   </a>
+</span><span><a class="LN" name="201">  201   </a>  <span class="CT">// exported global signals</span>
+</span><span><a class="LN" name="202">  202   </a>  <a href="#var_force_filter" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_force_filter');" target="_self"><font color="#1122aa">force_filter</font></a> = 0.0;
+</span><span><a class="LN" name="203">  203   </a>  <a href="#var_CV" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_CV');" target="_self"><font color="#1122aa">CV</font></a> = 0.0;
+</span><span><a class="LN" name="204">  204   </a>
+</span><span><a class="LN" name="205">  205   </a>  <span class="CT">// states (dwork)</span>
+</span><span><a class="LN" name="206">  206   </a>  (<span class="DT">void</span>) memset((<span class="DT">void</span> *)&amp;ForceController_DW, 0,
+</span><span><a class="LN" name="207">  207   </a>                <span class="KW">sizeof</span>(<a href="ForceController_h.html#type_DW_ForceController_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_DW_ForceController_T');" target="_self"><font color="#1122aa">DW_ForceController_T</font></a>));
+</span><span><a class="LN" name="208">  208   </a>
+</span><span><a class="LN" name="209">  209   </a>  <span class="CT">// InitializeConditions for DiscreteTransferFcn: '<a href="matlab:coder.internal.code2model('ForceController:70')" name="code2model"><font color="#117755"><i>&lt;Root&gt;/2-order TF</i></font></a>'</span>
+</span><span><a class="LN" name="210">  210   </a>  ForceController_DW.uorderTF_states = <a href="ForceController_h.html#var_ForceController_P" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_ForceController_P');" target="_self"><font color="#1122aa">ForceController_P</font></a>.uorderTF_InitialStates;
+</span><span><a class="LN" name="211">  211   </a>
+</span><span><a class="LN" name="212">  212   </a>  <span class="CT">// InitializeConditions for Memory: '<a href="matlab:coder.internal.code2model('ForceController:83')" name="code2model"><font color="#117755"><i>&lt;Root&gt;/Memory</i></font></a>'</span>
+</span><span><a class="LN" name="213">  213   </a>  ForceController_B.Gain1 = <a href="ForceController_h.html#var_ForceController_P" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_ForceController_P');" target="_self"><font color="#1122aa">ForceController_P</font></a>.Memory_X0;
+</span><span><a class="LN" name="214">  214   </a>
+</span><span><a class="LN" name="215">  215   </a>  <span class="CT">// InitializeConditions for DiscreteIntegrator: '<a href="matlab:coder.internal.code2model('ForceController:4:1685')" name="code2model"><font color="#117755"><i>&lt;S1&gt;/Integrator</i></font></a>'</span>
+</span><span><a class="LN" name="216">  216   </a>  ForceController_DW.Integrator_DSTATE = <a href="ForceController_h.html#var_ForceController_P" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_ForceController_P');" target="_self"><font color="#1122aa">ForceController_P</font></a>.Integrator_IC;
+</span><span><a class="LN" name="217">  217   </a>
+</span><span><a class="LN" name="218">  218   </a>  <span class="CT">// InitializeConditions for DiscreteIntegrator: '<a href="matlab:coder.internal.code2model('ForceController:4:1686')" name="code2model"><font color="#117755"><i>&lt;S1&gt;/Filter</i></font></a>'</span>
+</span><span><a class="LN" name="219">  219   </a>  ForceController_DW.Filter_DSTATE = <a href="ForceController_h.html#var_ForceController_P" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_ForceController_P');" target="_self"><font color="#1122aa">ForceController_P</font></a>.Filter_IC;
+</span><span><a class="LN" name="220">  220   </a>
+</span><span><a class="LN" name="221">  221   </a>  <span class="CT">// InitializeConditions for RateLimiter: '<a href="matlab:coder.internal.code2model('ForceController:55')" name="code2model"><font color="#117755"><i>&lt;Root&gt;/Rate Limiter</i></font></a>'</span>
+</span><span><a class="LN" name="222">  222   </a>  ForceController_DW.PrevY = <a href="ForceController_h.html#var_ForceController_P" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_ForceController_P');" target="_self"><font color="#1122aa">ForceController_P</font></a>.RateLimiter_IC;
+</span><span><a class="LN" name="223">  223   </a><b>}</b>
+</span><span><a class="LN" name="224">  224   </a>
+</span><span><a class="LN" name="225">  225   </a><span class="CT">// Model terminate function</span>
+</span><span><a class="LN" name="226">  226   </a><span class="DT">void</span> ForceControllerClass::<a name="fcn_terminate">terminate</a>()
+</span><span><a class="LN" name="227">  227   </a><b>{</b>
+</span><span><a class="LN" name="228">  228   </a>  <span class="CT">// (no terminate code required)</span>
+</span><span><a class="LN" name="229">  229   </a><b>}</b>
+</span><span><a class="LN" name="230">  230   </a>
+</span><span><a class="LN" name="231">  231   </a><span class="CT">// Constructor</span>
+</span><span><a class="LN" name="232">  232   </a>ForceControllerClass::ForceControllerClass()
+</span><span><a class="LN" name="233">  233   </a><b>{</b>
+</span><span><a class="LN" name="234">  234   </a>  <span class="DT">static</span> <span class="DT">const</span> <a href="ForceController_h.html#type_P_ForceController_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_P_ForceController_T');" target="_self"><font color="#1122aa">P_ForceController_T</font></a> ForceController_P_temp = <b>{</b>
+</span><span><a class="LN" name="235">  235   </a>    0.0,                               <span class="CT">// Expression: 0</span>
+</span><span><a class="LN" name="236">  236   </a>                                       <span class="CT">//  Referenced by: '<a href="matlab:coder.internal.code2model('ForceController:70')" name="code2model"><font color="#117755"><i>&lt;Root&gt;/2-order TF</i></font></a>'</span>
+</span><span><a class="LN" name="237">  237   </a>
+</span><span><a class="LN" name="238">  238   </a>    0.0,                               <span class="CT">// Expression: 0</span>
+</span><span><a class="LN" name="239">  239   </a>                                       <span class="CT">//  Referenced by: '<a href="matlab:coder.internal.code2model('ForceController:83')" name="code2model"><font color="#117755"><i>&lt;Root&gt;/Memory</i></font></a>'</span>
+</span><span><a class="LN" name="240">  240   </a>
+</span><span><a class="LN" name="241">  241   </a>    0.008,                             <span class="CT">// Computed Parameter: Integrator_gainval</span>
+</span><span><a class="LN" name="242">  242   </a>                                       <span class="CT">//  Referenced by: '<a href="matlab:coder.internal.code2model('ForceController:4:1685')" name="code2model"><font color="#117755"><i>&lt;S1&gt;/Integrator</i></font></a>'</span>
+</span><span><a class="LN" name="243">  243   </a>
+</span><span><a class="LN" name="244">  244   </a>    0.0,                               <span class="CT">// Expression: InitialConditionForIntegrator</span>
+</span><span><a class="LN" name="245">  245   </a>                                       <span class="CT">//  Referenced by: '<a href="matlab:coder.internal.code2model('ForceController:4:1685')" name="code2model"><font color="#117755"><i>&lt;S1&gt;/Integrator</i></font></a>'</span>
+</span><span><a class="LN" name="246">  246   </a>
+</span><span><a class="LN" name="247">  247   </a>    0.008,                             <span class="CT">// Computed Parameter: Filter_gainval</span>
+</span><span><a class="LN" name="248">  248   </a>                                       <span class="CT">//  Referenced by: '<a href="matlab:coder.internal.code2model('ForceController:4:1686')" name="code2model"><font color="#117755"><i>&lt;S1&gt;/Filter</i></font></a>'</span>
+</span><span><a class="LN" name="249">  249   </a>
+</span><span><a class="LN" name="250">  250   </a>    0.0,                               <span class="CT">// Expression: InitialConditionForFilter</span>
+</span><span><a class="LN" name="251">  251   </a>                                       <span class="CT">//  Referenced by: '<a href="matlab:coder.internal.code2model('ForceController:4:1686')" name="code2model"><font color="#117755"><i>&lt;S1&gt;/Filter</i></font></a>'</span>
+</span><span><a class="LN" name="252">  252   </a>
+</span><span><a class="LN" name="253">  253   </a>    8.0,                               <span class="CT">// Computed Parameter: RateLimiter_RisingLim</span>
+</span><span><a class="LN" name="254">  254   </a>                                       <span class="CT">//  Referenced by: '<a href="matlab:coder.internal.code2model('ForceController:55')" name="code2model"><font color="#117755"><i>&lt;Root&gt;/Rate Limiter</i></font></a>'</span>
+</span><span><a class="LN" name="255">  255   </a>
+</span><span><a class="LN" name="256">  256   </a>    -8.0,                              <span class="CT">// Computed Parameter: RateLimiter_FallingLim</span>
+</span><span><a class="LN" name="257">  257   </a>                                       <span class="CT">//  Referenced by: '<a href="matlab:coder.internal.code2model('ForceController:55')" name="code2model"><font color="#117755"><i>&lt;Root&gt;/Rate Limiter</i></font></a>'</span>
+</span><span><a class="LN" name="258">  258   </a>
+</span><span><a class="LN" name="259">  259   </a>    0.0,                               <span class="CT">// Expression: 0</span>
+</span><span><a class="LN" name="260">  260   </a>                                       <span class="CT">//  Referenced by: '<a href="matlab:coder.internal.code2model('ForceController:55')" name="code2model"><font color="#117755"><i>&lt;Root&gt;/Rate Limiter</i></font></a>'</span>
+</span><span><a class="LN" name="261">  261   </a>
+</span><span><a class="LN" name="262">  262   </a>
+</span><span><a class="LN" name="263">  263   </a>    <span class="CT">//  Expression: [0.0005,0.0005,0.0005,0.01,0.01,0.01]</span>
+</span><span><a class="LN" name="264">  264   </a>    <span class="CT">//  Referenced by: '<a href="matlab:coder.internal.code2model('ForceController:54')" name="code2model"><font color="#117755"><i>&lt;Root&gt;/Gain</i></font></a>'</span>
+</span><span><a class="LN" name="265">  265   </a>
+</span><span><a class="LN" name="266">  266   </a>    <b>{</b> 0.0005, 0.0005, 0.0005, 0.01, 0.01, 0.01 <b>}</b>
+</span><span><a class="LN" name="267">  267   </a>  <b>}</b>;                                   <span class="CT">// Modifiable parameters</span>
+</span><span><a class="LN" name="268">  268   </a>
+</span><span><a class="LN" name="269">  269   </a>  <span class="CT">// Initialize tunable parameters</span>
+</span><span><a class="LN" name="270">  270   </a>  <a href="ForceController_h.html#var_ForceController_P" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'var_ForceController_P');" target="_self"><font color="#1122aa">ForceController_P</font></a> = ForceController_P_temp;
+</span><span><a class="LN" name="271">  271   </a><b>}</b>
+</span><span><a class="LN" name="272">  272   </a>
+</span><span><a class="LN" name="273">  273   </a><span class="CT">// Destructor</span>
+</span><span><a class="LN" name="274">  274   </a>ForceControllerClass::~ForceControllerClass()
+</span><span><a class="LN" name="275">  275   </a><b>{</b>
+</span><span><a class="LN" name="276">  276   </a>  <span class="CT">// Currently there is no destructor body generated.</span>
+</span><span><a class="LN" name="277">  277   </a><b>}</b>
+</span><span><a class="LN" name="278">  278   </a>
+</span><span><a class="LN" name="279">  279   </a><span class="CT">// Real-Time Model get method</span>
+</span><span><a class="LN" name="280">  280   </a><a href="ForceController_h.html#type_RT_MODEL_ForceController_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_RT_MODEL_ForceController_T');" target="_self"><font color="#1122aa">RT_MODEL_ForceController_T</font></a> * ForceControllerClass::<a name="fcn_getRTM">getRTM</a>()
+</span><span><a class="LN" name="281">  281   </a><b>{</b>
+</span><span><a class="LN" name="282">  282   </a>  <span class="KW">return</span> (&amp;ForceController_M);
+</span><span><a class="LN" name="283">  283   </a><b>}</b>
+</span><span><a class="LN" name="284">  284   </a>
+</span><span><a class="LN" name="285">  285   </a><span class="CT">//</span>
+</span><span><a class="LN" name="286">  286   </a><span class="CT">// File trailer for generated code.</span>
+</span><span><a class="LN" name="287">  287   </a><span class="CT">//</span>
+</span><span><a class="LN" name="288">  288   </a><span class="CT">// [EOF]</span>
+</span><span><a class="LN" name="289">  289   </a><span class="CT">//</span>
+</span><span><a class="LN" name="290">  290   </a>
+</span></pre>
+</td></tr></table>
+</p>
+</body>
+</html>

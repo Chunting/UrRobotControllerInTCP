@@ -30,6 +30,7 @@
 #include <QThread>
 
 #include "polishingtask.h"
+#include "ForceController.h"
 //TODO 或可以提出去到XApplication
 using namespace cobotsys;
 typedef std::vector<double> StdVector;
@@ -82,7 +83,7 @@ protected:
     std::shared_ptr<AbstractArmRobotRealTimeDriver> m_ptrRobot;
     std::shared_ptr<AbstractKinematicSolver> m_ptrSolver;
 	std::shared_ptr<AbstractForceSensor> m_ptrForceSensor;
-	//std::shared_ptr<ForceControllerClass> m_ptrForceController;
+	std::shared_ptr<ForceControllerClass> m_ptrForceController;
 
 	QMutex m_mutex;
     bool m_stop;

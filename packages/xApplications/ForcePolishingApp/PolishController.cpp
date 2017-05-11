@@ -8,7 +8,7 @@ typedef std::chrono::high_resolution_clock::time_point timestamp;
 
 
 PolishController::PolishController() :m_stop(false){
-	//m_ptrForceController.reset(new ForceControllerClass());
+	m_ptrForceController.reset(new ForceControllerClass());
 	m_jointValues.resize(6);
     m_loadGravity.force=cv::Point3d(0.0,0.0,1);
     m_loadGravity.torque=cv::Point3d(0.0,0.0,0.0);
@@ -23,9 +23,9 @@ PolishController::~PolishController() {
 }
 
 void PolishController::onStartDrag() {
-//	if (m_ptrForceController) {
-//		m_ptrForceController->initialize();
-//	}
+	if (m_ptrForceController) {
+        m_ptrForceController->initialize();
+    }
 	if (m_ptrRobot) {
 		m_ptrRobot->start();
 	}
