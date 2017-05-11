@@ -7,7 +7,7 @@
 typedef std::chrono::high_resolution_clock::time_point timestamp;
 
 
-PolishController::PolishController() :m_stop(false){
+PolishController::PolishController() :m_stop(false),force_control_en(false){
 	m_ptrForceController.reset(new ForceControllerClass());
 	m_jointValues.resize(6);
     m_loadGravity.force=cv::Point3d(0.0,0.0,1);
@@ -339,54 +339,48 @@ void PolishController::PolishPhase() {
     //chrono
     static long time=0;
 
-//    static real_T gravity_ee[6] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
-//    static real_T poseOffset_ee[6] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
-//    static real_T force_ee_t[6]={ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+    static real_T gravity_ee[6] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+    static real_T poseOffset_ee[6] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+    static real_T force_ee_t[6]={ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+    static real_T fz_touch=0.0;
+    static real_T disOffset=0.0;
     Eigen::VectorXd currentJoints(6);
 
     timestamp timenow=std::chrono::high_resolution_clock::now();
     timestamp timeout = timenow + std::chrono::milliseconds(2);
     m_mutex.lock();
-//    for (int i = 0; i < 6; i++) {
-//        currentJoints(i) = m_jointValues[i];
-//        force_ee_t[i]=force_ee[i];
-//    }
+    for (int i = 0; i < 6; i++) {
+        currentJoints(i) = m_jointValues[i];
+        force_ee_t[i]=force_ee[i];
+    }
     m_mutex.unlock();
     //计算gravity_ee
 
     //TODO 修改接口为cv向量表示。
-
+    //TODO parseTzTouch
     m_ptrSolver->vector_WorldToEE(currentJoints,
                                   Eigen::Vector3d(m_loadGravity.force.x, m_loadGravity.force.y, m_loadGravity.force.z),
                                   gravity_t_ee);
-//    gravity_ee[0] = gravity_t_ee.x();
-//    gravity_ee[1] = gravity_t_ee.y();
-//    gravity_ee[2] = gravity_t_ee.z();
-//    gravity_ee[3] = m_loadGravity.torque.x;
-//    gravity_ee[4] = m_loadGravity.torque.y;
-//    gravity_ee[5] = m_loadGravity.torque.z;
+    gravity_ee[0] = gravity_t_ee.x();
+    gravity_ee[1] = gravity_t_ee.y();
+    gravity_ee[2] = gravity_t_ee.z();
+    gravity_ee[3] = m_loadGravity.torque.x;
+    gravity_ee[4] = m_loadGravity.torque.y;
+    gravity_ee[5] = m_loadGravity.torque.z;
+    fz_touch=parseFzTouch();
+    m_ptrForceController->step(fz_touch, disOffset);
 
-    //m_ptrForceController->step(force_ee_t, gravity_ee, poseOffset_ee);
+
     if(time%4==0){
-        std::vector<double> pose_ee;
-//        for (int i = 0; i < 6; i++) {
-//            pose_ee.push_back(poseOffset_ee[i]);
-//        }
-        std::vector<double> pose_world;
-        m_ptrSolver->pose_EEToWorld(currentJoints, pose_ee, pose_world);
         std::vector<double> targetJoint;
+        //TODO MotionPlanner
+        std::vector<double> actualTarget=MotionPlanner(disOffset);
         //timestamp t1=std::chrono::high_resolution_clock::now();
-        m_ptrSolver->cartToJnt(currentJoints, pose_world, targetJoint);
+        m_ptrSolver->cartToJnt(currentJoints, actualTarget, targetJoint);
         //timestamp t2=std::chrono::high_resolution_clock::now();
         //std::chrono::duration<double> dur=t2-t1;
         //COBOT_LOG.notice()<<"cartToJnt Execute time:"<<dur.count();
-        auto ioStatus = m_ptrRobot->getDigitIoDriver(1);
-        if (ioStatus->getIoStatus(DigitIoPort::Port_Ur_Tool_In_0) != DigitIoStatus::Set) {
-            m_ptrRobot->move(targetJoint);
-		}else {
-			m_ptrRobot->move(m_jointValues);
-		}
-        
+        m_ptrRobot->move(targetJoint);
     }
     //将控制周期严格限制为2ms。
 //        time+=1;
@@ -395,7 +389,21 @@ void PolishController::PolishPhase() {
 //        }
     std::this_thread::sleep_until(timeout);
 }
-
+double PolishController::parseFzTouch(){
+    //1.polishing point在ee下的frame。
+    //force_ee*polishingFrame中的Fz分量即为所求。
+    return 0.0;
+}
+std::vector<double>  PolishController::MotionPlanner(double disOffset){
+    //norminal frame 1,2
+    std::vector<double> actualTarget;
+    if(force_control_en){
+        //
+    }else{
+        //cartesian_path_;
+        return actualTarget;
+    }
+}
 void PolishController::cartesian_path_generator() {
     COBOT_LOG.info()<<"The version of CPolishingTask is "<<m_polishingTask.VERSION_STR.data();
     //Get T_CPi

@@ -73,6 +73,8 @@ protected:
 	void onMoveFinish(uint32_t moveId);
 	void PolishPhase();
 	void GravityCalib();
+	double parseFzTouch();
+	std::vector<double>  MotionPlanner(double disOffset);
 	void cartesian_path_generator();
 	KDL::Frame getPolisherFrame(int id);
 	void defineInterimPath();
@@ -95,7 +97,7 @@ protected:
 	std::string m_model_path;
 	std::string m_ptd_path;
 	PolishingTask m_polishingTask;
-
+    bool force_control_en;
 	std::vector<std::vector<KDL::Frame> > cartesian_path_;
 	std::vector<std::vector<KDL::Frame> > interim_path_;
 };
