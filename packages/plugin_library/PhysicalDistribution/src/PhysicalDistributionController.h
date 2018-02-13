@@ -57,6 +57,7 @@ protected:
     void onButtonTestPlacer();
     void onButtonTestTask0_1();
     void onButtonCancelCurrentTask();
+    void onButtonTask();
 
     void rendererDebugImage();
 
@@ -119,6 +120,10 @@ protected:
     bool m_cancelCurrentTask;
 
     Ui::PhysicalDistributionController ui;
+
+    bool m_Task;
+    unsigned int task_count;
+
 };
 
 

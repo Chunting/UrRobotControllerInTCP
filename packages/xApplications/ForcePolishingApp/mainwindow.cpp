@@ -11,7 +11,7 @@ MainWindow::MainWindow() : m_ticks(0.0) {
 
     d_calibButton = new QPushButton("Gravity Calib",this);
     d_connButton = new QPushButton("Connect device", this);
-    d_dragButton = new QPushButton("Start Drag",this);
+    d_dragButton = new QPushButton("Start Polishing",this);
     d_calibButton->setEnabled(false);
     d_dragButton->setEnabled(false);
     d_plot = new QwtPlot(QwtText("Polishing App Monitor"), this);
@@ -401,10 +401,10 @@ void MainWindow::onDragStart(){
     dragStatus=!dragStatus;
     if(dragStatus){
         m_polishController->setControllerStatus(PolishController::DRAG);
-        d_dragButton->setText("Stop Drag");
+        d_dragButton->setText("Stop Polishing");
     }else{
         m_polishController->setControllerStatus(PolishController::IDLE);
-        d_dragButton->setText("Start Drag");
+        d_dragButton->setText("Start Polishing");
     }
 
 }

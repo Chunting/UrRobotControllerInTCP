@@ -6,21 +6,20 @@
       "objectKey": "Robot",
       "factory": "URRealTimeDriverFactory, Ver 1.0",
       "type": "URRealTimeDriver",
-      "config": "CONFIG/UrRobotConfig/ur_sim_config.json"
+      "config": "CONFIG/UrRobotConfig/ur10_180_config.json"
     },
     {
       "objectId": "KinematicSolver",
       "objectKey": "KinematicSolver",
       "factory": "KinematicSolverFactory, Ver 1.0",
       "type": "KinematicSolver",
-      "config": "CONFIG/UrRobotConfig/ur5_180_config.json"
+      "config": "CONFIG/UrRobotConfig/ur10_180_config.json"
     },
     {
       "objectId": "RobotMover",
       "objectKey": "RobotMover",
       "factory": "UrMoverFactory, Ver 1.0",
-      "type": "UrMover",
-      "config": ""
+      "type": "UrMover"
     },
     {
       "objectId": "MasterCamera",
@@ -31,14 +30,16 @@
     {
       "objectId": "VisionDetector",
       "objectKey": "VisionDetector",
-      "factory": "SampleVisionDetectorFactory, Ver 1.0",
-      "type": "SampleVisionDetector"
+      "factory": "BinpickingDetectorBottleFactory, Ver 1.0",
+      "type": "BinpickingDetectorBottle",
+      "config": "binpicking_param_box.xml"
     },
     {
       "objectId": "Picker",
       "objectKey": "Picker",
       "factory": "BinpickingPickerFactory, Ver 1.0",
-      "type": "SuckerBinpickingPicker"
+      "type": "SuckerBinpickingPicker",
+      "config": "CONFIG/test/picker.json"
     },
     {
       "objectId": "Placer",

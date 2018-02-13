@@ -17,6 +17,8 @@
 #include <cobotsys_logger.h>
 #include <chrono>
 
+//#include "ImageCloudConverter.h"
+
 using namespace cobotsys;
 
 class Kinect2Camera : public cobotsys::AbstractCamera {
@@ -61,6 +63,7 @@ protected:
     libfreenect2::Freenect2* m_freenect2;
     libfreenect2::Freenect2Device* m_freenectDev;
     int m_devicdId;
+   // ImageCloudConverter converter;
 
     std::string m_deviceSerialNumber;
 

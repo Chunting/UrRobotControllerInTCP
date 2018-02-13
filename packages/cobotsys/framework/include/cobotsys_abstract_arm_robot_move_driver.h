@@ -39,6 +39,7 @@ public:
 namespace cobotsys {
 
 struct RobotWaypoint {
+    uint32_t moveId;
     double desireVelocity;
     cv::Point3d position;
     cv::Vec3d rpy;
@@ -52,6 +53,7 @@ struct RobotWaypoint {
 
     static RobotWaypoint fromArray(const std::vector<double>& posi, double vel = 1.0) {
         RobotWaypoint robotWaypoint;
+        robotWaypoint.moveId = 0;
         robotWaypoint.desireVelocity = vel;
         if (posi.size() >= 6) {
             robotWaypoint.position = {posi[0], posi[1], posi[2]};
@@ -89,7 +91,7 @@ public:
      * @retval true 目标位置可以到达
      * @retval false 目标位置不可到达
      */
-    virtual bool move(uint32_t moveId, const std::vector<RobotWaypoint>& waypoints) = 0;
+    virtual bool move(const std::vector<RobotWaypoint>& waypoints) = 0;
 
     /**
      * 当一次 move() 操作结束后， 即会调用对应的 onMoveFinish() 函数
@@ -120,6 +122,20 @@ public:
      * @return 返回一个 moveId 数值
      */
     static uint32_t generateMoveId();
+};
+
+
+class AbstractSyncMover : public AbstractObject {
+public:
+    AbstractSyncMover();
+    virtual ~AbstractSyncMover();
+
+    /**
+     * 把所有的点都移动完成后才返回, 是基于AbstractArmRobotMoveDriver的一种基本封装。
+     * @param movePoints
+     */
+    virtual bool move(const std::vector<RobotWaypoint>& movePoints) = 0;
+    virtual void setArmRobotMover(const std::shared_ptr<AbstractArmRobotMoveDriver>& robotMover) = 0;
 };
 }
 

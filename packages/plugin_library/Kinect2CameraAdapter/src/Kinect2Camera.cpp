@@ -19,6 +19,10 @@ Kinect2Camera::Kinect2Camera()
     m_isOpened = false;
 
     registration = nullptr;
+
+   /* converter.setMode(HD);
+    converter.setYamlPath("/home/cll/Project/cobotsys-0518/data/Calibration/003992562447");
+    converter.init();*/
 }
 
 Kinect2Camera::~Kinect2Camera() {
@@ -153,14 +157,29 @@ bool Kinect2Camera::capture(int waitMs) {
             cv::Mat((int) registered.height, (int) registered.width, CV_8UC4, registered.data).copyTo(
                     registered_color);
 
+
+/*
+
+            converter.setInputImages(raw_color,raw_depth);
+            Mat registeredDepth,registeredColor;
+            converter.registerDepth(registeredDepth,registeredColor);
+*/
+
+
+            cobotsys::ImageFrame c_color = {cobotsys::ImageType::Color, raw_color};
+            cobotsys::ImageFrame c_depth = {cobotsys::ImageType::Depth, raw_depth};
+            cobotsys::ImageFrame c_ir = {cobotsys::ImageType::Ir, raw_ir};
+
             cobotsys::CameraFrame streamFrames;
             streamFrames.capture_time = timeAfterWait;
-            streamFrames.frames.push_back({cobotsys::ImageType::Color, raw_color});
-            streamFrames.frames.push_back({cobotsys::ImageType::Depth, raw_depth});
-            streamFrames.frames.push_back({cobotsys::ImageType::Ir, raw_ir});
+            streamFrames.frames.push_back(c_color);
+            streamFrames.frames.push_back(c_depth);
+            streamFrames.frames.push_back(c_ir);
             streamFrames.frames.push_back({cobotsys::ImageType::Depth, undistorted_depth});
-            streamFrames.frames.push_back({cobotsys::ImageType::Color, registered_color});
-
+            streamFrames.frames.push_back({cobotsys::ImageType::Color, registered_color});//4
+             /*
+            streamFrames.frames.push_back({cobotsys::ImageType::Depth, registeredDepth});//5
+            streamFrames.frames.push_back({cobotsys::ImageType::Color, registeredColor});//5*/
             notify(streamFrames);
 
             m_listener->release(frames);
@@ -171,14 +190,12 @@ bool Kinect2Camera::capture(int waitMs) {
     return false;
 }
 
-
 void Kinect2Camera::delayClose() {
     if (m_isCloseCallInNotify) {
         close();
     }
     m_isCloseCallInNotify = false;
 }
-
 
 void Kinect2Camera::notify(const cobotsys::CameraFrame& cameraFrame) {
     m_isNotifyCalling = true;

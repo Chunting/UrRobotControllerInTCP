@@ -43,9 +43,28 @@ private:
     uint32_t m_moveId;
     MoveResult m_moveResult;
     DigitIoPort m_suckerPortIndex;
+    DigitIoPort m_cylinderPortIndex;
     bool m_hasPickDefPose;
+
     cv::Point3d m_defHomePos;
     cv::Vec3d m_defHomeRpy;
+    cv::Point3d m_defWaitPos;
+    cv::Vec3d m_defWaitRpy;
+    cv::Point3d m_defPlacePos;
+    cv::Vec3d m_defPlaceRpy;
+
+    std::vector<RobotWaypoint> TargetPoint;
+    RobotWaypoint m_targets;
+    uint32_t m_moveId1;
+    uint32_t m_moveId2;
+    uint32_t m_moveId3;
+    uint32_t m_moveId4;
+    uint32_t m_moveId5;
+    uint32_t m_moveId6;
+    uint32_t m_moveId7;
+    unsigned int count;
+
+
 };
 
 

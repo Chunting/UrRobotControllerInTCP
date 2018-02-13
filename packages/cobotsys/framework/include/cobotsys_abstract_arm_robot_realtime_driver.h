@@ -70,17 +70,21 @@ public:
     virtual ~ArmRobotJointTargetFilter();
 
     virtual void applyFilter(std::vector<double>& target_, const ArmRobotStatusPtr& ptrRobotStatus) = 0;
+    virtual void SetPar(int LocationFlag,int CountFlag,std::vector<std::vector<double>>Route)= 0;//纯虚函数
+    virtual bool GetFinishFlag()= 0;
 };
 
 /**
  *
- * 实时手臂，多关节机器人驱动接口，提供Joint关节脚驱动。
+ * 实时手臂，多关节机器人驱动接口，提供Joint关节角度驱动。
  * move()
  */
 class AbstractArmRobotRealTimeDriver : public AbstractObject {
 public:
     AbstractArmRobotRealTimeDriver();
     virtual ~AbstractArmRobotRealTimeDriver();
+
+   // virtual bool IsNowP2pFinished()= 0;//用来获取标志位的
 
     /**
      * 这个是一个实时控制的接口，每次调用都会直接反应到当前控制周期内的效果

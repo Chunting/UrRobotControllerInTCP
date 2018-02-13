@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<opencv_storage>
+    <MinDistanceX>-0.360</MinDistanceX>//X方向最小距离   单位：米
+    <MaxDistanceX>0.17</MaxDistanceX>//X方向最大距离
+
+    <MinDistanceY>-0.150</MinDistanceY>//Y方向最小距离   单位：米
+    <MaxDistanceY>0.300</MaxDistanceY>//Y方向最大距离
+
+    <MinDistanceZ>0.600</MinDistanceZ>//Z方向工件到相机最小距离   单位：米 0.5
+    <MaxDistanceZ>0.945</MaxDistanceZ>//Z方向工件到相机最远距离
+
+    <ObjectHeight>0.450</ObjectHeight>//工件高度
+    <SamplingDistance>0.002</SamplingDistance>//点云采样距离
+    <PlaneDitance>0.002</PlaneDitance>//平面拟合采样距离
+</opencv_storage>

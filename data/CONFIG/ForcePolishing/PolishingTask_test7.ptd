@@ -471,6 +471,7 @@ The basic path describes the information as follows:
         <endpoint>  0.0 0.0 0.033</endpoint>
         <direction>0.0 -0.866 -0.5</direction>
         <force>2 2</force>
+        <roll>${-pi/2}</roll>
       </path>
 
 

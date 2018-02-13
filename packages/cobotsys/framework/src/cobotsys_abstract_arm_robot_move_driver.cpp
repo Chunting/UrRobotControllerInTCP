@@ -29,4 +29,10 @@ uint32_t AbstractArmRobotMoveDriver::generateMoveId() {
     moveId++;
     return moveId;
 }
+
+AbstractSyncMover::AbstractSyncMover() {
+}
+
+AbstractSyncMover::~AbstractSyncMover() {
+}
 }

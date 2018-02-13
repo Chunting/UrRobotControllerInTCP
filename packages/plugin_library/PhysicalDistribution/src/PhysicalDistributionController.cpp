@@ -4,6 +4,7 @@
 //
 
 #include <extra2.h>
+#include <opencv2/contrib/contrib.hpp>
 #include <cobotsys_file_finder.h>
 #include "PhysicalDistributionController.h"
 #include "RobotStatusViewer.h"
@@ -16,6 +17,10 @@ PhysicalDistributionController::PhysicalDistributionController() {
     m_taskEmpty = true;
     m_taskEmptyDebugAction = false;
     m_cancelCurrentTask = false;
+
+    task_count = 0;
+    m_Task = 0;
+
     m_jsonServer = new JsonServer(this);
     connect(m_jsonServer, &JsonServer::reqStart, this, &PhysicalDistributionController::start);
     connect(m_jsonServer, &JsonServer::reqStop, this, &PhysicalDistributionController::stop);
@@ -38,7 +43,7 @@ PhysicalDistributionController::~PhysicalDistributionController() {
     detachSharedObject(m_ptrManiputor);
 }
 
-bool PhysicalDistributionController::setup(const QString& configFilePath) {
+bool PhysicalDistributionController::setup(const QString &configFilePath) {
     ObjectGroup objectGroup;
     QJsonObject jsonObject;
     if (loadJson(jsonObject, configFilePath)) {
@@ -109,12 +114,12 @@ void PhysicalDistributionController::onArmRobotDisconnect() {
     COBOT_LOG.notice() << "Robot Driver Disconnected.";
 }
 
-void PhysicalDistributionController::onArmRobotStatusUpdate(const ArmRobotStatusPtr& ptrRobotStatus) {
+void PhysicalDistributionController::onArmRobotStatusUpdate(const ArmRobotStatusPtr &ptrRobotStatus) {
 }
 
 using std::dynamic_pointer_cast;
 
-bool PhysicalDistributionController::_setupInternalObjects(ObjectGroup& objectGroup) {
+bool PhysicalDistributionController::_setupInternalObjects(ObjectGroup &objectGroup) {
     m_ptrRobot = dynamic_pointer_cast<AbstractArmRobotRealTimeDriver>(objectGroup.getObject("Robot"));
     m_ptrKinematicSolver = dynamic_pointer_cast<AbstractKinematicSolver>(objectGroup.getObject("KinematicSolver"));
     m_ptrMover = dynamic_pointer_cast<AbstractArmRobotMoveDriver>(objectGroup.getObject("RobotMover"));
@@ -202,6 +207,9 @@ void PhysicalDistributionController::mainLoop() {
         if (visionSuccess) { // 只有前一个任务处理成功，才可以处理下一个任务。
             if (m_jsonServer->api_pickTask(taskInfo)) {
                 COBOT_LOG.notice() << "Task: " << taskInfo.objFrom << " -> " << taskInfo.objTo;
+                if (!((taskInfo.objFrom == "1") && (taskInfo.objTo == "1"))) {
+                    m_Task = 0;
+                }
             } else { // No task in server queue.
                 m_taskEmpty = true;
                 if (m_taskEmptyPrint) {
@@ -218,6 +226,7 @@ void PhysicalDistributionController::mainLoop() {
 
                 // Sleep, and Continue
                 std::this_thread::sleep_for(std::chrono::milliseconds(10));
+
                 continue;
             }
             m_taskEmptyPrint = true;
@@ -231,36 +240,53 @@ void PhysicalDistributionController::mainLoop() {
             visionSuccess = true;
             continue;
         }
+        do {
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            if(m_cancelCurrentTask){
+                m_cancelCurrentTask = false;
+                break;
+            }
+            // First, capture camera image.
+            if (!_stepCaptureImage(uniqueLock)) break;
+            // 调用视觉处理函数
 
+            visionSuccess = m_ptrDetector->processVisionImage(m_images);
+            if (visionSuccess) {
+                std::cout << "visionSuccess" << std::endl;
+                std::vector<BinObjGrabPose> results;
+                ACTION_STEP(m_ptrDetector->getPickObjects(results));
+                if (m_Task) {
+                    task_count++;
+                }
 
-        // First, capture camera image.
-        if (!_stepCaptureImage(uniqueLock)) break;
+                for (auto &obj : results) {
+                    // Pick, 这里是带有路径规划的抓取
+                    if (m_ptrPicker->pickObject(obj)) { // 抓取成功，则发送信息
+                        m_jsonServer->api_setupTaskStage(taskInfo, JsonServer::TaskStage::PickFinish);
+                    } else {
+                        // TODO 这里的流程控制需要做更多的工作。与外部系统集成
+                        COBOT_LOG.error() << "Picker fail, lookup log for more information.";
+                    }
+                    ACTION_STEP();
 
-        // 调用视觉处理函数
-        visionSuccess = m_ptrDetector->processVisionImage(m_images);
-        if (visionSuccess) {
-            std::vector<BinObjGrabPose> results;
-            ACTION_STEP(m_ptrDetector->getPickObjects(results));
-
-            for (auto& obj : results) {
-                // Pick, 这里是带有路径规划的抓取
-                if (m_ptrPicker->pickObject(obj)) { // 抓取成功，则发送信息
-                    m_jsonServer->api_setupTaskStage(taskInfo, JsonServer::TaskStage::PickFinish);
-                } else {
-                    // TODO 这里的流程控制需要做更多的工作。与外部系统集成
-                    COBOT_LOG.error() << "Picker fail, lookup log for more information.";
+                    // Place, 目的地，控制机器人移动到任务指定的目的地。然后放下物体。
+                    ACTION_STEP(m_ptrPlacer->placeObject());
+                    m_jsonServer->api_setupTaskStage(taskInfo, JsonServer::TaskStage::DropFinish);
+                    if (m_Task && task_count) {
+                        task_count = 0;
+                        break;
+                    }
                 }
                 ACTION_STEP();
-
-                // Place, 目的地，控制机器人移动到任务指定的目的地。然后放下物体。
-                ACTION_STEP(m_ptrPlacer->placeObject());
-                m_jsonServer->api_setupTaskStage(taskInfo, JsonServer::TaskStage::DropFinish);
+                m_jsonServer->api_setupTaskStage(taskInfo, JsonServer::TaskStage::End);
+                if (!((taskInfo.objFrom == "1") && (taskInfo.objTo == "1"))) {
+                    break;
+                }
+            } else {
+                COBOT_LOG.warning() << "Vision Detector Fail to Compute Target Grab Pose. Retry...";
             }
-            ACTION_STEP();
-            m_jsonServer->api_setupTaskStage(taskInfo, JsonServer::TaskStage::End);
-        } else {
-            COBOT_LOG.warning() << "Vision Detector Fail to Compute Target Grab Pose. Retry...";
-        }
+
+        } while (visionSuccess);
         ACTION_STEP();
     }
     COBOT_LOG.info() << "Main loop thread finished.";
@@ -278,16 +304,16 @@ void PhysicalDistributionController::_doTestActions() {
     }
 }
 
-void PhysicalDistributionController::onCameraStreamUpdate(const CameraFrame& cameraFrame, AbstractCamera* camera) {
+void PhysicalDistributionController::onCameraStreamUpdate(const CameraFrame &cameraFrame, AbstractCamera *camera) {
     m_numImageCaptured++;
     m_imageUpdated = true;
-    for (const auto& iter : cameraFrame.frames) {
+    for (const auto &iter : cameraFrame.frames) {
         m_images.push_back({camera->getSerialNumber(), cameraFrame.capture_time, iter.data, iter.type});
     }
     m_cond.notify_all();
 }
 
-bool PhysicalDistributionController::_stepCaptureImage(std::unique_lock<std::mutex>& uniqueLock) {
+bool PhysicalDistributionController::_stepCaptureImage(std::unique_lock<std::mutex> &uniqueLock) {
     static int num_print = 0;
     m_imageUpdated = false;
     m_images.clear();
@@ -334,6 +360,8 @@ void PhysicalDistributionController::setupUi() {
     connect(ui.btnTESTTask_0_3, &QPushButton::released, [=]() { m_jsonServer->api_debugTaskOnce("0", "3"); });
     connect(ui.btnTESTTask_0_4, &QPushButton::released, [=]() { m_jsonServer->api_debugTaskOnce("0", "4"); });
 
+    connect(ui.btnTESTTask, &QPushButton::released, this, &PhysicalDistributionController::onButtonTask);
+
     connect(ui.btnTaskCancel, &QPushButton::released, this, &PhysicalDistributionController::onButtonCancelCurrentTask);
 }
 
@@ -358,7 +386,7 @@ void PhysicalDistributionController::onButtonTestPlacer() {
     }
 }
 
-cv::Mat toColor(const cv::Mat& depth) {
+cv::Mat toColor(const cv::Mat &depth) {
     double vmin, vmax, alpha;
     cv::Mat color, gray;
     cv::minMaxLoc(depth, &vmin, &vmax);
@@ -368,7 +396,7 @@ cv::Mat toColor(const cv::Mat& depth) {
     return color;
 }
 
-cv::Mat toGray(const cv::Mat& ir) {
+cv::Mat toGray(const cv::Mat &ir) {
     double vmin, vmax, alpha;
     cv::Mat gray;
     cv::minMaxLoc(ir, &vmin, &vmax);
@@ -401,8 +429,16 @@ void PhysicalDistributionController::onButtonTestTask0_1() {
     m_jsonServer->api_debugTaskOnce("0", "1");
 }
 
+void PhysicalDistributionController::onButtonTask() {
+    m_jsonServer->api_debugTaskOnce("1", "1");
+    task_count = 0;
+    m_Task = 1;
+}
+
 void PhysicalDistributionController::onButtonCancelCurrentTask() {
     m_cancelCurrentTask = true;
+    task_count = 0;
+    m_Task = 0;
 }
 
 

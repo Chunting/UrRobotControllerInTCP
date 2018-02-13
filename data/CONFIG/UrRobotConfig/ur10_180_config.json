@@ -2,7 +2,7 @@
   "_comment": "有可能需要添加机器人基座和末端执行器信息",
   "description": "Universal Robot - UR10",
   "version": "v1.1",
-  "robot_ip": "192.168.1.180",
+  "robot_ip": "192.168.11.190",
   "robot_factory": "URRealTimeDriverFactory, Ver 1.0",
   "robot_type": "URRealTimeDriver",
   "servoj_time": 0.008,
@@ -16,7 +16,7 @@
     "rpy":[ 0,0,0]
   },
   "ee_frame": {
-    "xyz":[0,0,0],
+    "xyz":[0.022,-0.038,0.35],
     "rpy":[0,0,0]
   },
   "param": [
