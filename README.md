@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 
 # 编译说明
@@ -56,3 +57,6 @@
 程序会根据JSON的描述，来创建共享库里的Widget应用。
 
 
+=======
+# UrRobotControllerInTCP
+>>>>>>> 1cd468dbb47b79038813ea93b2f9dc17ffb3340b
